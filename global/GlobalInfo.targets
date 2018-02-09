@@ -1,0 +1,16 @@
+<Project>
+	<PropertyGroup>
+		<Company>codeworx gmbh</Company>
+		<Copyright>copyright © codeworx 2017</Copyright>
+		<VersionPrefix>1.0.0-beta1</VersionPrefix>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+		<GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<PropertyGroup>
+		<CodeAnalysisRuleSet>..\..\global\StyleCop.ruleset</CodeAnalysisRuleSet>
+		<DebugType>Full</DebugType>
+	</PropertyGroup>
+
+</Project>

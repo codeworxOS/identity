@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+</head>
+
+<body>
+    <form method="post">
+        <input type="text" id="username" name="username" />
+        <input type="password" id="password" name="password" />
+        <button type="submit" id="login">login</button>
+        <ul id="external"></ul>
+    </form>
+    <script type="text/javascript" src="js/login.js"></script>
+    <script type="text/javascript">
+        var loginForm = new LoginForm();
+        loginForm.initialize(false, '{{returnUrl}}');
+    </script>
+</body>
+</html>

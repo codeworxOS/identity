@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "module": "umd",
+    "sourceMap": false,
+    "target": "es5",
+    "outDir": "./js/"
+  }
+}
