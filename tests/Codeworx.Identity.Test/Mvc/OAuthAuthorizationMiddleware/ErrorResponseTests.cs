@@ -20,34 +20,10 @@ namespace Codeworx.Identity.Test.Mvc.OAuthAuthorizationMiddlewareTests
 {
     public class ErrorResponseTests : IDisposable
     {
-        private const string RequestPath = "/oauth";
+        private const string RequestPath = "/oauth20";
 
-        private readonly TestServer _testServer;
         private readonly HttpClient _testClient;
-
-        private class Startup
-        {
-            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-            public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
-            {
-                app.MapWhen(
-                    p => p.Request.Path.Equals(RequestPath),
-                    p => p.UseMiddleware<OAuthAuthorizationMiddleware>());
-            }
-
-            // This method gets called by the runtime. Use this method to add services to the container.
-            // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-            public void ConfigureServices(IServiceCollection services)
-            {
-                var builder = new IdentityServiceBuilder(services, Constants.DefaultAuthenticationScheme);
-
-                services.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
-                services.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
-
-                services.AddAuthentication(options => options.DefaultAuthenticateScheme = Constants.DefaultAuthenticationScheme)
-                        .AddCookie(Constants.DefaultAuthenticationScheme);
-            }
-        }
+        private readonly TestServer _testServer;
 
         public ErrorResponseTests()
         {
@@ -56,6 +32,12 @@ namespace Codeworx.Identity.Test.Mvc.OAuthAuthorizationMiddlewareTests
 
             _testServer = new TestServer(builder);
             _testClient = _testServer.CreateClient();
+        }
+
+        public void Dispose()
+        {
+            _testServer?.Dispose();
+            _testClient?.Dispose();
         }
 
         [Fact]
@@ -69,10 +51,28 @@ namespace Codeworx.Identity.Test.Mvc.OAuthAuthorizationMiddlewareTests
             Assert.Contains("Invalid request", responseHtml);
         }
 
-        public void Dispose()
+        private class Startup
         {
-            _testServer?.Dispose();
-            _testClient?.Dispose();
+            // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<IdentityOptions> options)
+            {
+                app.UseCodeworxIdentity(options.Value);
+            }
+
+            // This method gets called by the runtime. Use this method to add services to the container.
+            // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+            public void ConfigureServices(IServiceCollection services)
+            {
+                services.AddCodeworxIdentity();
+
+                //var builder = new IdentityServiceBuilder(services, Constants.DefaultAuthenticationScheme);
+
+                //services.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
+                //services.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
+
+                //services.AddAuthentication(options => options.DefaultAuthenticateScheme = Constants.DefaultAuthenticationScheme)
+                //        .AddCookie(Constants.DefaultAuthenticationScheme);
+            }
         }
     }
 }

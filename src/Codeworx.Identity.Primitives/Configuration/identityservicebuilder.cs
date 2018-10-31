@@ -182,6 +182,8 @@ namespace Codeworx.Identity.Configuration
 
             private class DummyUser : IUser
             {
+                public string DefaultTenantKey => null;
+
                 public string Identity => Constants.DefaultAdminUserId;
 
                 public string Name => Constants.DefaultAdminUserName;
