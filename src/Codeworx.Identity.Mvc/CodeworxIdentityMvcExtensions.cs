@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.Mvc
 {
@@ -52,13 +53,25 @@ namespace Codeworx.Identity.Mvc
             return builder;
         }
 
-        public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings)
+        public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings, bool useQueryStringOnPost = false)
         {
             Stream jsonStream = null;
 
             try
             {
-                if (request.HasFormContentType)
+                if (useQueryStringOnPost || HttpMethods.IsGet(request.Method))
+                {
+                    jsonStream = new MemoryStream();
+                    using (var sw = new StreamWriter(jsonStream, Encoding.UTF8, 1024, true))
+                    {
+                        using (var writer = new JsonTextWriter(sw))
+                        {
+                            await WriteJsonObjectAsync(writer, request.Query);
+                        }
+                    }
+                    jsonStream.Seek(0, SeekOrigin.Begin);
+                }
+                else if (request.HasFormContentType)
                 {
                     jsonStream = new MemoryStream();
                     using (var sw = new StreamWriter(jsonStream, Encoding.UTF8, 1024, true))
@@ -160,6 +173,36 @@ namespace Codeworx.Identity.Mvc
                     }
                 }
             }
+            await writer.WriteEndObjectAsync();
+        }
+
+        private static async Task WriteJsonObjectAsync(JsonTextWriter writer, IEnumerable<KeyValuePair<string, StringValues>> query)
+        {
+            var properties = query.GroupBy(p => p.Key, p => p.Value)
+                                  .ToDictionary(g => g.Key, g => g.ToList());
+
+            await writer.WriteStartObjectAsync();
+            foreach (var item in properties)
+            {
+                await writer.WritePropertyNameAsync(item.Key);
+                var values = item.Value;
+
+                if (values.Count > 1)
+                {
+                    await writer.WriteStartArrayAsync();
+                }
+
+                foreach (var value in values)
+                {
+                    await writer.WriteValueAsync(value);
+                }
+
+                if (values.Count > 1)
+                {
+                    await writer.WriteEndArrayAsync();
+                }
+            }
+
             await writer.WriteEndObjectAsync();
         }
     }

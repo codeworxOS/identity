@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.Mvc
 {
@@ -30,6 +33,13 @@ namespace Codeworx.Identity.Mvc
             }
             else
             {
+                var setting = new JsonSerializerSettings
+                              {
+                                  ContractResolver = new CamelCasePropertyNamesContractResolver()
+                              };
+
+                var request = await context.Request.BindAsync<AuthorizationRequest>(setting);
+
                 await context.Response.WriteAsync($"Authorization {context.User.Identity.Name}");
             }
         }
