@@ -17,6 +17,6 @@ namespace Codeworx.Identity.OAuth
 
         [RegularExpression(Constants.ErrorUriValidation)]
         [DataMember(Order = 3, Name = Constants.ErrorUriName)]
-        public string ErrorUi { get; set; }
+        public string ErrorUri { get; set; }
     }
 }
