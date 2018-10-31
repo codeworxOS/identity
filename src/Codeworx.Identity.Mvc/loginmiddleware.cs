@@ -58,12 +58,20 @@ namespace Codeworx.Identity.Mvc
                     var identityData = await identityProvider.LoginAsync(request.UserName, request.Password);
                     var principal = identityData.ToClaimsPrincipal();
 
-                    await context.SignInAsync(_service.AuthenticationScheme, principal);
+                    if (identityData.TenantKey != null)
+                    {
+                        await context.SignInAsync(_service.AuthenticationScheme, principal);
+                    }
+                    else
+                    {
+                        await context.SignInAsync(Constants.MissingTenantAuthenticationScheme, principal);
+                        context.Response.Redirect(_service.Options.OauthEndpoint);
+                        return;
+                    }
 
                     if (hasReturnUrl)
                     {
-                        context.Response.GetTypedHeaders().Location = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
-                        context.Response.StatusCode = StatusCodes.Status302Found;
+                        context.Response.Redirect(returnUrl);
                         return;
                     }
                     body = await _template.GetLoggedinTemplate(returnUrl);

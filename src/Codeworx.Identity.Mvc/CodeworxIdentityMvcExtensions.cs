@@ -101,16 +101,16 @@ namespace Codeworx.Identity.Mvc
                         p => p.Request.Path.Equals(options.OauthEndpoint),
                         p => p.UseMiddleware<OAuthAuthroizationMiddleware>())
                     .MapWhen(
-                        p => p.Request.Path.Equals("/account/login"),
+                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                         p => p.UseMiddleware<LoginMiddleware>())
                     .MapWhen(
-                        p => p.Request.Path.Equals("/account/me"),
+                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                         p => p.UseMiddleware<ProfileEnpointMiddleware>())
                     .MapWhen(
-                        p => p.Request.Path.Equals("/account/winlogin"),
+                        p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
                         p => p.UseMiddleware<WindowsLoginMiddleware>())
                     .MapWhen(
-                        p => p.Request.Path.Equals("/account/providers"),
+                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
                         p => p.UseMiddleware<ProvidersMiddleware>())
                     .MapWhen(
                         EmbeddedResourceMiddleware.Condition,

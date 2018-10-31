@@ -7,9 +7,12 @@ namespace Codeworx.Identity.Configuration
         public IdentityOptions()
         {
             OauthEndpoint = "/oauth20";
+            AccountEndpoint = "/account";
             CookieExpiration = TimeSpan.FromHours(1);
             AuthenticationCookie = "identity";
         }
+
+        public string AccountEndpoint { get; set; }
 
         public string AuthenticationCookie { get; set; }
 

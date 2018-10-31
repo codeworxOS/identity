@@ -19,6 +19,7 @@
         public const string ExternalWindowsProviderName = "Windows";
         public const string IdClaimType = "sub";
         public const string JsonExtension = ".json";
+        public const string MissingTenantAuthenticationScheme = "Identity.Missing.Tenant";
         public const string NameClaimType = "name";
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
@@ -9,6 +10,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         {
             this.Tenants = new HashSet<TenantUser>();
         }
+
+        public Tenant DefaultTenant { get; set; }
+
+        public Guid? DefaultTenantId { get; set; }
+
+        public string DefaultTenantKey => DefaultTenantId?.ToString("N");
 
         public string Identity => Id.ToString("N");
 
