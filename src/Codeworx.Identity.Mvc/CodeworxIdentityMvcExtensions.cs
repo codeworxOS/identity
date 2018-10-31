@@ -112,7 +112,7 @@ namespace Codeworx.Identity.Mvc
                         p => p.UseMiddleware<OAuthTokenMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.OauthEndpoint),
-                        p => p.UseMiddleware<OAuthAuthroizationMiddleware>())
+                        p => p.UseMiddleware<OAuthAuthorizationMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals("/account/login"),
                         p => p.UseMiddleware<LoginMiddleware>())
