@@ -28,6 +28,8 @@ namespace Codeworx.Identity.Mvc
         {
             var ci = principal.Identity as ClaimsIdentity;
 
+            var data = ci.ToIdentityData();
+
             if (Service.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
                 context.Response.ContentType = contentType;
@@ -44,20 +46,32 @@ namespace Codeworx.Identity.Mvc
                 {
                     await jw.WriteStartObjectAsync();
 
-                    foreach (var item in ci.Claims.GroupBy(p => p.Type))
+                    await jw.WritePropertyNameAsync(Constants.IdClaimType);
+                    await jw.WriteValueAsync(data.Identifyer);
+
+                    await jw.WritePropertyNameAsync(Constants.NameClaimType);
+                    await jw.WriteValueAsync(data.Login);
+
+                    if (data.TenantKey != null)
                     {
-                        await jw.WritePropertyNameAsync(item.Key);
-                        if (item.Count() > 1)
+                        await jw.WritePropertyNameAsync(Constants.CurrentTenantClaimType);
+                        await jw.WriteValueAsync(data.TenantKey);
+                    }
+
+                    foreach (var item in data.Claims)
+                    {
+                        await jw.WritePropertyNameAsync(item.Type);
+                        if (item.Values.Count() > 1)
                         {
                             await jw.WriteStartArrayAsync();
                         }
 
-                        foreach (var val in item)
+                        foreach (var val in item.Values)
                         {
-                            await jw.WriteValueAsync(val.Value);
+                            await jw.WriteValueAsync(val);
                         }
 
-                        if (item.Count() > 1)
+                        if (item.Values.Count() > 1)
                         {
                             await jw.WriteEndArrayAsync();
                         }

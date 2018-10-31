@@ -32,7 +32,7 @@ namespace Codeworx.Identity.Mvc
 
             var result = await context.AuthenticateAsync();
 
-            context.Request.Query.TryGetValue("returnurl", out StringValues returnUrl);
+            var hasReturnUrl = context.Request.Query.TryGetValue("returnurl", out StringValues returnUrl);
 
             if (result.Succeeded)
             {
@@ -59,6 +59,13 @@ namespace Codeworx.Identity.Mvc
                     var principal = identityData.ToClaimsPrincipal();
 
                     await context.SignInAsync(_service.AuthenticationScheme, principal);
+
+                    if (hasReturnUrl)
+                    {
+                        context.Response.GetTypedHeaders().Location = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+                        context.Response.StatusCode = StatusCodes.Status302Found;
+                        return;
+                    }
                     body = await _template.GetLoggedinTemplate(returnUrl);
                 }
                 catch (AuthenticationException)

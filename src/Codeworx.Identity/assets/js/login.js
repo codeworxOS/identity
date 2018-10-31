@@ -107,10 +107,9 @@ var LoginForm = (function () {
     LoginForm.prototype.login = function (ev) {
         alert('login');
         var data = this.serialize(this.form);
-        //this.postData<string>(window.location.href, data, p => alert(p));
+        this.postData(window.location.href, data, function (p) { return alert(p); });
         return false;
     };
-    ;
     LoginForm.prototype.serialize = function (form) {
         var field, l, s = [];
         if (typeof form == 'object' && form.nodeName == "FORM") {

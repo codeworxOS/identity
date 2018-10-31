@@ -145,10 +145,10 @@ class LoginForm {
         alert('login');
         var data = this.serialize(this.form);
 
-        //this.postData<string>(window.location.href, data, p => alert(p));
+        this.postData<string>(window.location.href, data, p => alert(p));
 
         return false;
-    };
+    }
 
     private serialize(form: HTMLFormElement) {
         var field: any, l, s = [];
