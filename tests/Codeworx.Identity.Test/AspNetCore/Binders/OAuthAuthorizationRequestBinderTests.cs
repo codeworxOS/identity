@@ -17,17 +17,37 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
                                                                                   };
 
         [Fact]
-        public void FromQuery_ReturnsBoundRequest()
+        public void FromQuery_NullQuery_ReturnsBoundObject()
+        {
+            var instance = new OAuthAuthorizationRequestBinder();
+
+            var request = instance.FromQuery(null);
+
+            Assert.IsType<SuccessfulBindingResult>(request);
+        }
+
+        [Fact]
+        public void FromQuery_EmptyQuery_ReturnsBoundObject()
+        {
+            var instance = new OAuthAuthorizationRequestBinder();
+
+            var request = instance.FromQuery(new Dictionary<string, IReadOnlyCollection<string>>());
+
+            Assert.IsType<SuccessfulBindingResult>(request);
+        }
+
+        [Fact]
+        public void FromQuery_ValidQuery_ReturnsBoundRequest()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
-        public void FromQuery_ClientIdentifierDuplicated_ThrowsException()
+        public void FromQuery_ClientIdentifierDuplicated_ReturnsErrorObject()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
@@ -39,7 +59,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         }
 
         [Fact]
-        public void FromQuery_RedirectUriDuplicated_ThrowsException()
+        public void FromQuery_RedirectUriDuplicated_ReturnsErrorObject()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
@@ -51,7 +71,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         }
 
         [Fact]
-        public void FromQuery_ResponseTypeDuplicated_ThrowsException()
+        public void FromQuery_ResponseTypeDuplicated_ReturnsErrorObject()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
@@ -63,7 +83,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         }
 
         [Fact]
-        public void FromQuery_ScopeDuplicated_ThrowsException()
+        public void FromQuery_ScopeDuplicated_ReturnsErrorObject()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
@@ -75,7 +95,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         }
 
         [Fact]
-        public void FromQuery_StateDuplicated_ThrowsException()
+        public void FromQuery_StateDuplicated_ReturnsErrorObject()
         {
             var instance = new OAuthAuthorizationRequestBinder();
 
@@ -95,7 +115,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -107,7 +127,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -119,7 +139,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -131,7 +151,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -143,7 +163,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -155,7 +175,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -167,7 +187,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -179,7 +199,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -191,7 +211,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
 
         [Fact]
@@ -203,7 +223,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var request = instance.FromQuery(_query);
 
-            Assert.NotNull(request);
+            Assert.IsType<SuccessfulBindingResult>(request);
         }
     }
 }

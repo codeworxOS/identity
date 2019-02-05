@@ -9,11 +9,17 @@ namespace Codeworx.Identity.AspNetCore.Binders
     {
         public IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
         {
-            query.TryGetValue(OAuth.Constants.ClientIdName, out var clientId);
-            query.TryGetValue(OAuth.Constants.RedirectUriName, out var redirectUri);
-            query.TryGetValue(OAuth.Constants.ResponseTypeName, out var responseType);
-            query.TryGetValue(OAuth.Constants.ScopeName, out var scope);
-            query.TryGetValue(OAuth.Constants.StateName, out var state);
+            IReadOnlyCollection<string> clientId = null;
+            IReadOnlyCollection<string> redirectUri = null;
+            IReadOnlyCollection<string> responseType = null;
+            IReadOnlyCollection<string> scope = null;
+            IReadOnlyCollection<string> state = null;
+
+            query?.TryGetValue(OAuth.Constants.ClientIdName, out clientId);
+            query?.TryGetValue(OAuth.Constants.RedirectUriName, out redirectUri);
+            query?.TryGetValue(OAuth.Constants.ResponseTypeName, out responseType);
+            query?.TryGetValue(OAuth.Constants.ScopeName, out scope);
+            query?.TryGetValue(OAuth.Constants.StateName, out state);
 
             if (clientId?.Count > 1)
             {
