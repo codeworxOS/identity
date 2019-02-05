@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2E062D53
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Test", "tests\Codeworx.Identity.Test\Codeworx.Identity.Test.csproj", "{079B7667-28FD-489F-96A2-03656CB67FFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Mvc", "src\Codeworx.Identity.Mvc\Codeworx.Identity.Mvc.csproj", "{4170D9C3-470B-46C1-A4FE-DAFEA5EB4D65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.AspNetCore", "src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj", "{4170D9C3-470B-46C1-A4FE-DAFEA5EB4D65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Web.Test", "src\Codeworx.Identity.Web.Test\Codeworx.Identity.Web.Test.csproj", "{72C1594C-5753-4BA4-AE61-573E5A8A4F9A}"
 EndProject

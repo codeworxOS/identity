@@ -15,7 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Principal;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public class ProfileEnpointMiddleware : AuthenticatedMiddleware
     {

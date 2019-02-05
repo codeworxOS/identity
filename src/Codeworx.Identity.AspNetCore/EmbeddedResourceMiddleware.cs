@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Net;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public class EmbeddedResourceMiddleware
     {

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Codeworx.Identity.Mvc\Codeworx.Identity.Mvc.csproj" />
+    <ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
     <ProjectReference Include="..\..\src\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>

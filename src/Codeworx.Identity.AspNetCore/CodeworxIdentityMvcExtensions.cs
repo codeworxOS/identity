@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public static class CodeworxIdentityMvcExtensions
     {

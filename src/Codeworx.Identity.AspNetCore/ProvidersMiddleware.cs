@@ -12,7 +12,7 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using System.Text.Encodings.Web;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public class ProvidersMiddleware
     {

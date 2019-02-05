@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public abstract class AuthenticatedMiddleware
     {

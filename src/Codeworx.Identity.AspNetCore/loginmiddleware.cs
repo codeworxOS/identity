@@ -11,7 +11,7 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public class LoginMiddleware
     {

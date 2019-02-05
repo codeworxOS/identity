@@ -11,7 +11,7 @@ using Microsoft.Extensions.Primitives;
 using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
     public class WindowsLoginMiddleware
     {
