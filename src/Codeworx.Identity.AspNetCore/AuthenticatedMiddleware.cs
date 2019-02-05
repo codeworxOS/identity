@@ -14,7 +14,7 @@ namespace Codeworx.Identity.AspNetCore
     {
         protected RequestDelegate Next;
 
-        public AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        protected AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
             Next = next;
             Service = service;

@@ -1,65 +1,53 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class OAuthAuthorizationMiddleware
+    public class OAuthAuthorizationMiddleware : AuthenticatedMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
+        private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
+        private readonly IResponseBinder<AuthorizationErrorResponse> _authorizationErrorResponseBinder;
+        private readonly IResponseBinder<AuthorizationCodeResponse> _authorizationCodeResponseBinder;
+        private readonly IAuthorizationService _authorizationService;
 
-        public OAuthAuthorizationMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public OAuthAuthorizationMiddleware(RequestDelegate next,
+                                            Configuration.IdentityService service,
+                                            IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
+                                            IResponseBinder<AuthorizationErrorResponse> authorizationErrorResponseBinder,
+                                            IResponseBinder<AuthorizationCodeResponse> authorizationCodeResponseBinder,
+                                            IAuthorizationService authorizationService)
+            : base(next, service)
         {
-            _next = next;
-            _service = service;
+            _authorizationRequestBinder = authorizationRequestBinder;
+            _authorizationErrorResponseBinder = authorizationErrorResponseBinder;
+            _authorizationCodeResponseBinder = authorizationCodeResponseBinder;
+            _authorizationService = authorizationService;
         }
 
-        public async Task Invoke(HttpContext context)
+        protected override async Task OnInvokeAsync(HttpContext context, IPrincipal principal)
         {
-            var result = await context.AuthenticateAsync(_service.AuthenticationScheme);
+            var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
 
-            if (result.Succeeded && result.Principal == null)
+            if (bindingResult.Error != null)
             {
-                await context.ChallengeAsync(_service.AuthenticationScheme);
+                await _authorizationErrorResponseBinder.RespondAsync(bindingResult.Error, context);
             }
-            else
+            else if(bindingResult.Result != null)
             {
-                var setting = new JsonSerializerSettings
-                              {
-                                  ContractResolver = new CamelCasePropertyNamesContractResolver()
-                              };
+                var result = await _authorizationService.AuthorizeRequest(bindingResult.Result);
 
-                var request = await context.Request.BindAsync<AuthorizationRequest>(setting);
-
-                AuthorizationErrorResponse errorResponse = null;
-
-                ICollection<ValidationResult> validationResults = new List<ValidationResult>();
-                if (!Validator.TryValidateObject(request, new ValidationContext(request), validationResults))
+                if (result.Error != null)
                 {
-                    //errorResponse = new AuthorizationErrorResponse
-                    //                {
-                    //                    Error = OAuth.Constants.Error.InvalidRequest,
-                    //                    State = request.State,
-                    //                    ErrorDescription = string.Join("\n", validationResults.Select(p => $"{string.Join(",", p.MemberNames)}: {p.ErrorMessage}"))
-                    //                };
+                    await _authorizationErrorResponseBinder.RespondAsync(result.Error, context);
                 }
-
-                if (errorResponse?.Error == OAuth.Constants.Error.InvalidRequest)
+                else if (result.Response != null)
                 {
-                    await context.Response.WriteAsync($"Invalid request\n{errorResponse.ErrorDescription}");
-
-                    return;
+                    await _authorizationCodeResponseBinder.RespondAsync(result.Response, context);
                 }
-
-                await context.Response.WriteAsync($"Authorization {context.User.Identity.Name}");
             }
         }
     }
