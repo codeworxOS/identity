@@ -45,9 +45,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
         }
 
         [Fact]
@@ -70,9 +70,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
             Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
         }
     }
