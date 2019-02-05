@@ -6,12 +6,13 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationErrorResponse : AuthorizationResponse
     {
-        public AuthorizationErrorResponse(string error, string errorDescription, string errorUri, string state)
+        public AuthorizationErrorResponse(string error, string errorDescription, string errorUri, string state, string redirectUri = null)
             : base(state)
         {
             this.Error = error;
             this.ErrorDescription = errorDescription;
             this.ErrorUri = errorUri;
+            this.RedirectUri = redirectUri;
         }
 
         [Required]
@@ -26,5 +27,8 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.ErrorUriValidation)]
         [DataMember(Order = 3, Name = Constants.ErrorUriName)]
         public string ErrorUri { get; }
+
+        [IgnoreDataMember]
+        public string RedirectUri { get; }
     }
 }
