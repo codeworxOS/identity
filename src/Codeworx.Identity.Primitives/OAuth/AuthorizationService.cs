@@ -27,7 +27,7 @@ namespace Codeworx.Identity.OAuth
 
             await Task.Yield();
 
-            return new AuthorizationResult(new AuthorizationCodeResponse(request.State, "HARDCODED TEST CODE"));
+            return new AuthorizationResult(new AuthorizationCodeResponse(request.State, "HARDCODED TEST CODE", request.RedirectUri));
         }
     }
 }
