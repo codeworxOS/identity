@@ -1,12 +1,12 @@
-﻿using System;
-
-namespace Codeworx.Identity.OAuth.Validation
+﻿namespace Codeworx.Identity.OAuth.Validation
 {
-    public class ClientIdInvalidResult : ValidationResult<AuthorizationErrorResponse>
+    public class ClientIdInvalidResult : IValidationResult<AuthorizationErrorResponse>
     {
-        public override AuthorizationErrorResponse GetError()
+        public ClientIdInvalidResult(string state = null)
         {
-            throw new NotImplementedException();
+            this.Error = new AuthorizationErrorResponse(Constants.Error.InvalidRequest, Constants.ClientIdName, null, state);
         }
+
+        public AuthorizationErrorResponse Error { get; }
     }
 }

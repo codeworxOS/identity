@@ -2,6 +2,6 @@
 {
     public interface IValidationResult<out TResult>
     {
-        TResult GetError();
+        TResult Error { get; }
     }
 }
