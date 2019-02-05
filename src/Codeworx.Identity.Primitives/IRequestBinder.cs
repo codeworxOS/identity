@@ -2,8 +2,8 @@
 
 namespace Codeworx.Identity
 {
-    public interface IRequestBinder<out TRequest>
+    public interface IRequestBinder<out TRequest, out TError>
     {
-        TRequest FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query);
+        IRequestBindingResult<TRequest, TError> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query);
     }
 }

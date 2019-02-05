@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Exceptions;
+using Codeworx.Identity.OAuth.BindingResults;
 
 namespace Codeworx.Identity.AspNetCore.Binders
 {
-    public class OAuthAuthorizationRequestBinder : IRequestBinder<AuthorizationRequest>
+    public class OAuthAuthorizationRequestBinder : IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>
     {
-        public AuthorizationRequest FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
+        public IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
         {
             query.TryGetValue(OAuth.Constants.ClientIdName, out var clientId);
             query.TryGetValue(OAuth.Constants.RedirectUriName, out var redirectUri);
@@ -17,34 +17,36 @@ namespace Codeworx.Identity.AspNetCore.Binders
 
             if (clientId?.Count > 1)
             {
-                throw new ClientIdDuplicatedException(state?.FirstOrDefault());
+                return new ClientIdDuplicatedResult(state?.FirstOrDefault());
             }
 
             if (redirectUri?.Count > 1)
             {
-                throw new RedirectUriDuplicatedException(state?.FirstOrDefault());
+                return new RedirectUriDuplicatedResult(state?.FirstOrDefault());
             }
 
             if (responseType?.Count > 1)
             {
-                throw new ResponseTypeDuplicatedException(state?.FirstOrDefault());
+                return new ResponseTypeDuplicatedResult(state?.FirstOrDefault());
             }
 
             if (scope?.Count > 1)
             {
-                throw new ScopeDuplicatedException(state?.FirstOrDefault());
+                return new ScopeDuplicatedResult(state?.FirstOrDefault());
             }
 
             if (state?.Count > 1)
             {
-                throw new StateDuplicatedException(state?.FirstOrDefault());
+                return new StateDuplicatedResult(state?.FirstOrDefault());
             }
 
-            return new AuthorizationRequest(clientId?.FirstOrDefault(),
-                                            redirectUri?.FirstOrDefault(),
-                                            responseType?.FirstOrDefault(),
-                                            scope?.FirstOrDefault(),
-                                            state?.FirstOrDefault());
+            var request = new AuthorizationRequest(clientId?.FirstOrDefault(),
+                                                   redirectUri?.FirstOrDefault(),
+                                                   responseType?.FirstOrDefault(),
+                                                   scope?.FirstOrDefault(),
+                                                   state?.FirstOrDefault());
+
+            return new SuccessfulBindingResult(request);
         }
     }
 }

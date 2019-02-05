@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Codeworx.Identity.AspNetCore.Binders;
-using Codeworx.Identity.OAuth.Exceptions;
+using Codeworx.Identity.OAuth.BindingResults;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.Binders
@@ -34,12 +33,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             _query[OAuth.Constants.ClientIdName] = new[] { "id1", "id2" };
 
-            var error = Assert.Throws<ClientIdDuplicatedException>(() => instance.FromQuery(_query));
+            var result = instance.FromQuery(_query);
 
-            Assert.Equal(OAuth.Constants.Error.InvalidRequest, error.GetError().Error);
-            Assert.Contains(OAuth.Constants.ClientIdName, error.GetError().ErrorDescription);
-
-            Assert.Equal(_query[OAuth.Constants.StateName].First(), error.GetError().State);
+            Assert.IsType<ClientIdDuplicatedResult>(result);
         }
 
         [Fact]
@@ -49,12 +45,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             _query[OAuth.Constants.RedirectUriName] = new[] { "http://redirect1", "http://redirect2" };
 
-            var error = Assert.Throws<RedirectUriDuplicatedException>(() => instance.FromQuery(_query));
+            var result = instance.FromQuery(_query);
 
-            Assert.Equal(OAuth.Constants.Error.InvalidRequest, error.GetError().Error);
-            Assert.Contains(OAuth.Constants.RedirectUriName, error.GetError().ErrorDescription);
-
-            Assert.Equal(_query[OAuth.Constants.StateName].First(), error.GetError().State);
+            Assert.IsType<RedirectUriDuplicatedResult>(result);
         }
 
         [Fact]
@@ -64,12 +57,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             _query[OAuth.Constants.ResponseTypeName] = new[] { "type1", "type2" };
 
-            var error = Assert.Throws<ResponseTypeDuplicatedException>(() => instance.FromQuery(_query));
+            var result = instance.FromQuery(_query);
 
-            Assert.Equal(OAuth.Constants.Error.InvalidRequest, error.GetError().Error);
-            Assert.Contains(OAuth.Constants.ResponseTypeName, error.GetError().ErrorDescription);
-
-            Assert.Equal(_query[OAuth.Constants.StateName].First(), error.GetError().State);
+            Assert.IsType<ResponseTypeDuplicatedResult>(result);
         }
 
         [Fact]
@@ -79,12 +69,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             _query[OAuth.Constants.ScopeName] = new[] { "scope1", "scope2" };
 
-            var error = Assert.Throws<ScopeDuplicatedException>(() => instance.FromQuery(_query));
+            var result = instance.FromQuery(_query);
 
-            Assert.Equal(OAuth.Constants.Error.InvalidRequest, error.GetError().Error);
-            Assert.Contains(OAuth.Constants.ScopeName, error.GetError().ErrorDescription);
-
-            Assert.Equal(_query[OAuth.Constants.StateName].First(), error.GetError().State);
+            Assert.IsType<ScopeDuplicatedResult>(result);
         }
 
         [Fact]
@@ -94,12 +81,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             _query[OAuth.Constants.StateName] = new[] { "state1", "state2" };
 
-            var error = Assert.Throws<StateDuplicatedException>(() => instance.FromQuery(_query));
+            var result = instance.FromQuery(_query);
 
-            Assert.Equal(OAuth.Constants.Error.InvalidRequest, error.GetError().Error);
-            Assert.Contains(OAuth.Constants.StateName, error.GetError().ErrorDescription);
-
-            Assert.Equal(error.GetError().State, _query[OAuth.Constants.StateName].First());
+            Assert.IsType<StateDuplicatedResult>(result);
         }
 
         [Fact]
