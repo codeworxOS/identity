@@ -14,13 +14,13 @@ namespace Codeworx.Identity.Mvc
     {
         protected RequestDelegate Next;
 
-        public AuthenticatedMiddleware(RequestDelegate next, IdentityService service)
+        public AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
             Next = next;
             Service = service;
         }
 
-        protected IdentityService Service { get; }
+        protected Configuration.IdentityService Service { get; }
 
         public async Task Invoke(HttpContext context)
         {

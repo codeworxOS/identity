@@ -17,9 +17,9 @@ namespace Codeworx.Identity.Mvc
     {
         private readonly RequestDelegate _next;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly IdentityService _service;
+        private readonly Configuration.IdentityService _service;
 
-        public WindowsLoginMiddleware(RequestDelegate next, IdentityService service, IAuthenticationSchemeProvider schemeProvider)
+        public WindowsLoginMiddleware(RequestDelegate next, Configuration.IdentityService service, IAuthenticationSchemeProvider schemeProvider)
         {
             _next = next;
             _service = service;

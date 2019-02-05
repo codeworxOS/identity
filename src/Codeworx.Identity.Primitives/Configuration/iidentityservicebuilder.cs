@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Configuration
         IdentityService ToService(IdentityOptions options, IEnumerable<IContentTypeProvider> contentTypeProviders = null);
 
         IIdentityServiceBuilder UserProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IUserProvider;
+            where TImplementation : class, IUserService;
 
         IIdentityServiceBuilder View<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IViewTemplate;

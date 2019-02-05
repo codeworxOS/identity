@@ -14,9 +14,9 @@ namespace Codeworx.Identity.Mvc
     public class OAuthAuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IdentityService _service;
+        private readonly Configuration.IdentityService _service;
 
-        public OAuthAuthorizationMiddleware(RequestDelegate next, IdentityService service)
+        public OAuthAuthorizationMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
             _next = next;
             _service = service;

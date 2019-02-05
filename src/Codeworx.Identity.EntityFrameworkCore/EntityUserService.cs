@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public class EntityUserProvider<TContext> : IUserProvider
+    public class EntityUserService<TContext> : IUserService
         where TContext : DbContext
     {
         private readonly TContext _context;
 
-        public EntityUserProvider(TContext context)
+        public EntityUserService(TContext context)
         {
             _context = context;
         }

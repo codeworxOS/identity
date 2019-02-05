@@ -16,9 +16,9 @@ namespace Codeworx.Identity.Mvc
     public class EmbeddedResourceMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IdentityService _service;
+        private readonly Configuration.IdentityService _service;
 
-        public EmbeddedResourceMiddleware(RequestDelegate next, IdentityService service)
+        public EmbeddedResourceMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
             _next = next;
             _service = service;
@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Mvc
         {
             var prefix = _service.Assets.Keys.OrderByDescending(p => p.Length).FirstOrDefault(p => context.Request.Path.StartsWithSegments(p));
 
-            IdentityService.AssemblyAsset asset;
+            Configuration.IdentityService.AssemblyAsset asset;
             if (_service.Assets.TryGetValue(prefix, out asset))
             {
                 PathString remaining;
@@ -70,7 +70,7 @@ namespace Codeworx.Identity.Mvc
 
         internal static bool Condition(HttpContext ctx)
         {
-            var service = ctx.RequestServices.GetRequiredService<IdentityService>();
+            var service = ctx.RequestServices.GetRequiredService<Configuration.IdentityService>();
 
             return service.Assets.Keys.Any(p => ctx.Request.Path.StartsWithSegments(p));
         }

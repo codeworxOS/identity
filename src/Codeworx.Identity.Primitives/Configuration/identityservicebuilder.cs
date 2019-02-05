@@ -24,10 +24,10 @@ namespace Codeworx.Identity.Configuration
             OptionsDelegate = p => { };
 
             _collection.AddScoped<IProviderSetup, EmptyProviderSetup>();
-            _collection.AddScoped<IIdentityProvider, IdentityProvider>();
-            _collection.AddScoped<IUserProvider, DummyUserProvider>();
+            _collection.AddScoped<IIdentityService, Identity.IdentityService>();
+            _collection.AddScoped<IUserService, DummyUserService>();
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
-            _collection.AddScoped<ITenantProvider, DummyTenantProvider>();
+            _collection.AddScoped<ITenantService, DummyTenantService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -82,9 +82,9 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder UserProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IUserProvider
+            where TImplementation : class, IUserService
         {
-            RegisterScoped<IUserProvider, TImplementation>(factory);
+            RegisterScoped<IUserService, TImplementation>(factory);
             return this;
         }
 
@@ -146,7 +146,7 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyTenantProvider : ITenantProvider
+        private class DummyTenantService : ITenantService
         {
             public Task<IEnumerable<TenantInfo>> GetTenantsAsync(IUser user)
             {
@@ -157,7 +157,7 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyUserProvider : IUserProvider
+        private class DummyUserService : IUserService
         {
             public Task<IUser> GetUserByIdentifierAsync(string identifier)
             {

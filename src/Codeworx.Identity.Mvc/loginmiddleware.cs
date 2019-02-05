@@ -16,10 +16,10 @@ namespace Codeworx.Identity.Mvc
     public class LoginMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IdentityService _service;
+        private readonly Configuration.IdentityService _service;
         private readonly IViewTemplate _template;
 
-        public LoginMiddleware(RequestDelegate next, IdentityService service, IViewTemplate template)
+        public LoginMiddleware(RequestDelegate next, Configuration.IdentityService service, IViewTemplate template)
         {
             _next = next;
             _service = service;
@@ -54,7 +54,7 @@ namespace Codeworx.Identity.Mvc
                 var userName = request.UserName;
                 try
                 {
-                    var identityProvider = context.RequestServices.GetService<IIdentityProvider>();
+                    var identityProvider = context.RequestServices.GetService<IIdentityService>();
                     var identityData = await identityProvider.LoginAsync(request.UserName, request.Password);
                     var principal = identityData.ToClaimsPrincipal();
 

@@ -19,7 +19,7 @@ namespace Codeworx.Identity.Mvc
 {
     public class ProfileEnpointMiddleware : AuthenticatedMiddleware
     {
-        public ProfileEnpointMiddleware(RequestDelegate next, IdentityService service)
+        public ProfileEnpointMiddleware(RequestDelegate next, Configuration.IdentityService service)
             : base(next, service)
         {
         }

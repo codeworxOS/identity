@@ -3,7 +3,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
-    public interface IUserProvider
+    public interface IUserService
     {
         Task<IUser> GetUserByIdentifierAsync(string identifier);
 
