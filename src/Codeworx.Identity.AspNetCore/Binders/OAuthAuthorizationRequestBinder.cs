@@ -40,14 +40,11 @@ namespace Codeworx.Identity.AspNetCore.Binders
                 throw new StateDuplicatedException(state?.FirstOrDefault());
             }
 
-            return new AuthorizationRequest
-                   {
-                       ClientId = clientId?.FirstOrDefault(),
-                       ResponseType = responseType?.FirstOrDefault(),
-                       RedirectUri = redirectUri?.FirstOrDefault(),
-                       Scope = scope?.FirstOrDefault(),
-                       State = state?.FirstOrDefault()
-                   };
+            return new AuthorizationRequest(clientId?.FirstOrDefault(),
+                                            redirectUri?.FirstOrDefault(),
+                                            responseType?.FirstOrDefault(),
+                                            scope?.FirstOrDefault(),
+                                            state?.FirstOrDefault());
         }
     }
 }

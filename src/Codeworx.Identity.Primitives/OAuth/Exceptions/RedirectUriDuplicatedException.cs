@@ -9,12 +9,11 @@
 
         public override AuthorizationErrorResponse GetError()
         {
-            return new AuthorizationErrorResponse
-                   {
-                       Error = Constants.Error.InvalidRequest,
-                       ErrorDescription = Constants.RedirectUriName,
-                       State = this.State
-                   };
+            return new AuthorizationErrorResponse(
+                Constants.Error.InvalidRequest,
+                Constants.RedirectUriName,
+                null,
+                this.State);
         }
     }
 }
