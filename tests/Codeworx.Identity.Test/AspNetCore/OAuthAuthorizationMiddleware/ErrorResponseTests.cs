@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.ContentType;
-using Codeworx.Identity.Mvc;
+using Codeworx.Identity.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Codeworx.Identity.Test.Mvc.OAuthAuthorizationMiddlewareTests
+namespace Codeworx.Identity.Test.AspNetCore.OAuthAuthorizationMiddlewareTests
 {
     public class ErrorResponseTests : IDisposable
     {

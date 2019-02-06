@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Configuration
     public class IdentityConfigurationException : Exception
     {
         public IdentityConfigurationException()
-            : this(Constants.ConfigrationExceptionMessage)
+            : this(Constants.ConfigurationExceptionMessage)
         {
         }
 

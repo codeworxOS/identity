@@ -6,7 +6,7 @@ namespace Codeworx.Identity
     {
         Task<string> GetConsentTemplate();
 
-        Task<string> GetLoggedinTemplate(string returnUrl);
+        Task<string> GetLoggedInTemplate(string returnUrl);
 
         Task<string> GetLoginTemplate(string returnUrl);
     }

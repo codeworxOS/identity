@@ -12,18 +12,18 @@ namespace Codeworx.Identity
             Tenants = ImmutableList.CreateRange(tenants);
         }
 
-        private IdentityData(string identifyer, string login, string tenantKey, IEnumerable<AssignedClaim> claims)
+        private IdentityData(string identifier, string login, string tenantKey, IEnumerable<AssignedClaim> claims)
         {
             Tenants = Enumerable.Empty<TenantInfo>();
             TenantKey = tenantKey;
-            Identifyer = identifyer;
+            Identifier = identifier;
             Login = login;
             Claims = ImmutableList.CreateRange(claims);
         }
 
         public IEnumerable<AssignedClaim> Claims { get; }
 
-        public string Identifyer { get; }
+        public string Identifier { get; }
 
         public string Login { get; }
 

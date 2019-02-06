@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace Codeworx.Identity
 {
-    public static class CodeworxIdenittyIdentityDataExtensions
+    public static class IdentityDataExtensions
     {
         public static string GetClaimTargetUrl(this ClaimTarget target)
         {
@@ -59,7 +59,7 @@ namespace Codeworx.Identity
 
         public static IEnumerable<Claim> ToIdentityClaims(this IdentityData data)
         {
-            yield return new Claim(Constants.IdClaimType, data.Identifyer);
+            yield return new Claim(Constants.IdClaimType, data.Identifier);
             yield return new Claim(Constants.NameClaimType, data.Login);
         }
 

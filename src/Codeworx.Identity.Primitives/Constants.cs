@@ -6,9 +6,9 @@
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string ConfigrationExceptionMessage = "Identity Configuration Incomplete.";
-        public const string ConfigrationIdentityProviderMissingExceptionMessage = "No IIdentityProvider configured";
-        public const string ConfigrationViewMissingExceptionMessage = "No IViewTemplate configured.";
+        public const string ConfigurationExceptionMessage = "Identity Configuration Incomplete.";
+        public const string ConfigurationIdentityProviderMissingExceptionMessage = "No IIdentityProvider configured";
+        public const string ConfigurationViewMissingExceptionMessage = "No IViewTemplate configured.";
         public const string CurrentTenantClaimType = "currenttenant";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";

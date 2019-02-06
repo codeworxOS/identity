@@ -4,6 +4,6 @@
     {
         UseOnce = 0x00,
         SlidingExpiration = 0x01,
-        RecreatAfterHalfLifetime = 0x02
+        RecreateAfterHalfLifetime = 0x02
     }
 }

@@ -4,7 +4,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
-    public interface IClaimsProvider
+    public interface IClaimsService
     {
         Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IUser user, string tenantKey = null);
     }

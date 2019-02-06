@@ -6,26 +6,26 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
-    public class IdentityProvider : IIdentityProvider
+    public class IdentityService : IIdentityService
     {
-        private readonly ImmutableList<IClaimsProvider> _claimsProviders;
+        private readonly ImmutableList<IClaimsService> _claimsProviders;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IProviderSetup _providerSetup;
-        private readonly ITenantProvider _tenantProvider;
-        private readonly IUserProvider _userProvider;
+        private readonly ITenantService _tenantService;
+        private readonly IUserService _userService;
 
-        public IdentityProvider(IUserProvider userProvider, IProviderSetup providerSetup, IPasswordValidator passwordValidator, ITenantProvider tenantProvider, IEnumerable<IClaimsProvider> claimsProvider)
+        public IdentityService(IUserService userService, IProviderSetup providerSetup, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
         {
-            _userProvider = userProvider;
+            _userService = userService;
             _providerSetup = providerSetup;
             _passwordValidator = passwordValidator;
-            _tenantProvider = tenantProvider;
+            _tenantService = tenantService;
             _claimsProviders = ImmutableList.CreateRange(claimsProvider);
         }
 
         public async Task<IdentityData> GetIdentityAsync(string identity, string tenantKey)
         {
-            var user = await _userProvider.GetUserByIdentifierAsync(identity);
+            var user = await _userService.GetUserByIdentifierAsync(identity);
 
             if (user == null)
             {
@@ -39,7 +39,7 @@ namespace Codeworx.Identity
 
         public async Task<IdentityData> LoginAsync(string username, string password)
         {
-            var user = await _userProvider.GetUserByNameAsync(username);
+            var user = await _userService.GetUserByNameAsync(username);
             if (user == null)
             {
                 throw new AuthenticationException();
@@ -56,7 +56,7 @@ namespace Codeworx.Identity
         public async Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
         {
             var identity = await _providerSetup.GetUserIdentity(provider, nameIdentifier);
-            var user = await _userProvider.GetUserByIdentifierAsync(identity);
+            var user = await _userService.GetUserByIdentifierAsync(identity);
 
             if (user == null)
             {
@@ -69,14 +69,14 @@ namespace Codeworx.Identity
 
         protected virtual async Task<IdentityData> GetIdentityAsync(IUser user, string tenantKey = null)
         {
-            var tenants = await _tenantProvider.GetTenantsAsync(user);
+            var tenants = await _tenantService.GetTenantsAsync(user);
 
-            var teanantKey = tenantKey ?? user.DefaultTenantKey ?? tenants.SingleOrDefault()?.Key;
+            tenantKey = tenantKey ?? user.DefaultTenantKey ?? tenants.SingleOrDefault()?.Key;
 
             var claims = new List<AssignedClaim>();
             foreach (var cp in _claimsProviders)
             {
-                var c = await cp.GetClaimsAsync(user, teanantKey);
+                var c = await cp.GetClaimsAsync(user, tenantKey);
                 claims.AddRange(c);
             }
 

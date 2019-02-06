@@ -19,9 +19,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
-namespace Codeworx.Identity.Mvc
+namespace Codeworx.Identity.AspNetCore
 {
-    public static class CodeworxIdentityMvcExtensions
+    public static class AspNetCoreExtensions
     {
         public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, string authenticationScheme = null)
         {
@@ -118,7 +118,7 @@ namespace Codeworx.Identity.Mvc
                         p => p.UseMiddleware<LoginMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
-                        p => p.UseMiddleware<ProfileEnpointMiddleware>())
+                        p => p.UseMiddleware<ProfileMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
                         p => p.UseMiddleware<WindowsLoginMiddleware>())

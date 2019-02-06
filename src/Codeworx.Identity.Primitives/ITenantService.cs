@@ -4,7 +4,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
-    public interface ITenantProvider
+    public interface ITenantService
     {
         Task<IEnumerable<TenantInfo>> GetTenantsAsync(IUser user);
     }

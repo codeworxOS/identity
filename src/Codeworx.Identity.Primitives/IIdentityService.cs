@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity
 {
-    public interface IIdentityProvider
+    public interface IIdentityService
     {
         Task<IdentityData> GetIdentityAsync(string identity, string tenantKey);
 

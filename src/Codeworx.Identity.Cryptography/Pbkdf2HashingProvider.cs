@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace Codeworx.Identity.Cryptography
 {
-    public class Pbkdf2HasingProvider : IHashingProvider
+    public class Pbkdf2HashingProvider : IHashingProvider
     {
         private readonly Pbkdf2Options _options;
 
-        public Pbkdf2HasingProvider(Pbkdf2Options options)
+        public Pbkdf2HashingProvider(Pbkdf2Options options)
         {
             _options = options;
         }
