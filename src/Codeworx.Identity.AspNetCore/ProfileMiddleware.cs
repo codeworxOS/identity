@@ -17,9 +17,9 @@ using System.Security.Principal;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class ProfileEnpointMiddleware : AuthenticatedMiddleware
+    public class ProfileMiddleware : AuthenticatedMiddleware
     {
-        public ProfileEnpointMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public ProfileMiddleware(RequestDelegate next, Configuration.IdentityService service)
             : base(next, service)
         {
         }
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore
                     await jw.WriteStartObjectAsync();
 
                     await jw.WritePropertyNameAsync(Constants.IdClaimType);
-                    await jw.WriteValueAsync(data.Identifyer);
+                    await jw.WriteValueAsync(data.Identifier);
 
                     await jw.WritePropertyNameAsync(Constants.NameClaimType);
                     await jw.WriteValueAsync(data.Login);

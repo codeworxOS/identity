@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
+    public static class IdentityServiceBuilderExtensions
     {
         public static IIdentityServiceBuilder UseDbContext<TContext>(this IIdentityServiceBuilder builder, Action<DbContextOptionsBuilder> contextBuilder)
             where TContext : DbContext
@@ -24,7 +24,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var result = builder.UserProvider<EntityUserService<TContext>>()
                         .PasswordValidator<EntityPasswordValidator<TContext>>();
 
-            if (!result.ServiceCollection.Any(p => p.ServiceType == typeof(Pbkdf2Options)))
+            if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {
                 result = result.Pbkdf2();
             }

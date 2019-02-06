@@ -37,7 +37,7 @@ namespace Codeworx.Identity.Configuration
             var first = result.FirstOrDefault(p => p.Info.Count > 1);
             if (first != null)
             {
-                throw new ArgumentException($"Multiple EmbeddedAssets registerd with the same PrefixUri ({first.Prefix}).", nameof(parts));
+                throw new ArgumentException($"Multiple EmbeddedAssets registered with the same PrefixUri ({first.Prefix}).", nameof(parts));
             }
 
             Assets = result.ToImmutableDictionary(p => p.Prefix, p => new AssemblyAsset(p.Info.First().Assembly, p.Info.First().AssetsFolder));
@@ -56,11 +56,11 @@ namespace Codeworx.Identity.Configuration
 
         public bool WindowsAuthentication { get; }
 
-        public bool TryGetContentType(string subpath, out string contentType)
+        public bool TryGetContentType(string subPath, out string contentType)
         {
             foreach (var item in this.ContentTypeProviders)
             {
-                if (item.TryGetContentType(subpath, out contentType))
+                if (item.TryGetContentType(subPath, out contentType))
                 {
                     return true;
                 }

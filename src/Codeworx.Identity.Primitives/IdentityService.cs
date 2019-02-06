@@ -71,12 +71,12 @@ namespace Codeworx.Identity
         {
             var tenants = await _tenantService.GetTenantsAsync(user);
 
-            var teanantKey = tenantKey ?? user.DefaultTenantKey ?? tenants.SingleOrDefault()?.Key;
+            tenantKey = tenantKey ?? user.DefaultTenantKey ?? tenants.SingleOrDefault()?.Key;
 
             var claims = new List<AssignedClaim>();
             foreach (var cp in _claimsProviders)
             {
-                var c = await cp.GetClaimsAsync(user, teanantKey);
+                var c = await cp.GetClaimsAsync(user, tenantKey);
                 claims.AddRange(c);
             }
 

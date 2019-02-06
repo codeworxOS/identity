@@ -391,25 +391,20 @@ namespace Codeworx.Identity.ContentType
 
         public DefaultContentTypeProvider(IDictionary<string, string> mapping)
         {
-            if (mapping == null)
-            {
-                throw new ArgumentNullException(nameof(mapping));
-            }
-
-            Mappings = mapping;
+            Mappings = mapping ?? throw new ArgumentNullException(nameof(mapping));
         }
 
-        public IDictionary<string, string> Mappings { get; private set; }
+        public IDictionary<string, string> Mappings { get; }
 
         /// <summary>
         /// Given a file path, determine the MIME type
         /// </summary>
-        /// <param name="subpath">A file path</param>
+        /// <param name="subPath">A file path</param>
         /// <param name="contentType">The resulting MIME type</param>
         /// <returns>True if MIME type could be determined</returns>
-        public bool TryGetContentType(string subpath, out string contentType)
+        public bool TryGetContentType(string subPath, out string contentType)
         {
-            string extension = GetExtension(subpath);
+            string extension = GetExtension(subPath);
             if (extension == null)
             {
                 contentType = null;

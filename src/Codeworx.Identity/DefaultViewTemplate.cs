@@ -11,7 +11,7 @@ namespace Codeworx.Identity
             return Task.FromResult(string.Empty);
         }
 
-        public async Task<string> GetLoggedinTemplate(string returnUrl)
+        public async Task<string> GetLoggedInTemplate(string returnUrl)
         {
             using (var stream = typeof(DefaultViewTemplate).GetTypeInfo().Assembly
                 .GetManifestResourceStream("Codeworx.Identity.assets.loggedin.html"))

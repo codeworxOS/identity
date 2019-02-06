@@ -36,7 +36,7 @@ namespace Codeworx.Identity.AspNetCore
 
             if (result.Succeeded)
             {
-                body = await _template.GetLoggedinTemplate(returnUrl);
+                body = await _template.GetLoggedInTemplate(returnUrl);
             }
             else
             {
@@ -74,7 +74,7 @@ namespace Codeworx.Identity.AspNetCore
                         context.Response.Redirect(returnUrl);
                         return;
                     }
-                    body = await _template.GetLoggedinTemplate(returnUrl);
+                    body = await _template.GetLoggedInTemplate(returnUrl);
                 }
                 catch (AuthenticationException)
                 {
