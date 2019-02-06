@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.Cryptography
 {
-    public static class IdentityBuilderExtensions
+    public static class CodeworxIdentityCryptographyIdentityBuilderExtensions
     {
         public static IIdentityServiceBuilder Pbkdf2(this IIdentityServiceBuilder builder, KeyDerivationPrf algorithm = KeyDerivationPrf.HMACSHA256, int iterations = 10000, byte saltLength = 32, byte outputLength = 32)
         {

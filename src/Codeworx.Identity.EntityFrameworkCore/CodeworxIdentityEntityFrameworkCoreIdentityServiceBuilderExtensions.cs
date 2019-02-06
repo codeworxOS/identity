@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public static class IdentityServiceBuilderExtensions
+    public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
     {
         public static IIdentityServiceBuilder UseDbContext<TContext>(this IIdentityServiceBuilder builder, Action<DbContextOptionsBuilder> contextBuilder)
             where TContext : DbContext

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Linq;
 using Codeworx.Identity.ContentType;
-using System.Collections;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using System.IO;
@@ -17,14 +15,11 @@ using Codeworx.Identity.AspNetCore.Binders;
 using Codeworx.Identity.AspNetCore.Validators;
 using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public static class AspNetCoreExtensions
+    public static class CodeworxIdentityAspNetCoreAspNetCoreExtensions
     {
         public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, string authenticationScheme = null)
         {
