@@ -44,12 +44,12 @@ namespace Codeworx.Identity.AspNetCore
                 ICollection<ValidationResult> validationResults = new List<ValidationResult>();
                 if (!Validator.TryValidateObject(request, new ValidationContext(request), validationResults))
                 {
-                    errorResponse = new AuthorizationErrorResponse
-                                    {
-                                        Error = OAuth.Constants.Error.InvalidRequest,
-                                        State = request.State,
-                                        ErrorDescription = string.Join("\n", validationResults.Select(p => $"{string.Join(",", p.MemberNames)}: {p.ErrorMessage}"))
-                                    };
+                    //errorResponse = new AuthorizationErrorResponse
+                    //                {
+                    //                    Error = OAuth.Constants.Error.InvalidRequest,
+                    //                    State = request.State,
+                    //                    ErrorDescription = string.Join("\n", validationResults.Select(p => $"{string.Join(",", p.MemberNames)}: {p.ErrorMessage}"))
+                    //                };
                 }
 
                 if (errorResponse?.Error == OAuth.Constants.Error.InvalidRequest)
