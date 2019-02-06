@@ -1,12 +1,12 @@
-﻿using System;
-
-namespace Codeworx.Identity.OAuth.Validation
+﻿namespace Codeworx.Identity.OAuth.Validation
 {
-    public class ScopeInvalidResult : ValidationResult<AuthorizationErrorResponse>
+    public class ScopeInvalidResult : IValidationResult<AuthorizationErrorResponse>
     {
-        public override AuthorizationErrorResponse GetError()
+        public ScopeInvalidResult(string redirectUri, string state = null)
         {
-            throw new NotImplementedException();
+            this.Error = new AuthorizationErrorResponse(Constants.Error.InvalidScope, Constants.ScopeName, null, state, redirectUri);
         }
+
+        public AuthorizationErrorResponse Error { get; }
     }
 }

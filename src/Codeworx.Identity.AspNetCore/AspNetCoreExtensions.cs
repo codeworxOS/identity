@@ -13,6 +13,9 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.Binders;
+using Codeworx.Identity.AspNetCore.Validators;
+using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -36,19 +39,23 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddOptions();
             collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(builder.OptionsDelegate));
 
-            collection.AddAuthentication(authOptions =>
-            {
-                authOptions.DefaultScheme = authenticationScheme;
-            })
-                .AddCookie(authenticationScheme, p =>
-                {
-                    var options = new IdentityOptions();
-                    builder.OptionsDelegate(options);
+            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = authenticationScheme; })
+                      .AddCookie(authenticationScheme,
+                                 p =>
+                                 {
+                                     var options = new IdentityOptions();
+                                     builder.OptionsDelegate(options);
 
-                    p.Cookie.Name = options.AuthenticationCookie;
-                    p.LoginPath = "/account/login";
-                    p.ExpireTimeSpan = options.CookieExpiration;
-                });
+                                     p.Cookie.Name = options.AuthenticationCookie;
+                                     p.LoginPath = "/account/login";
+                                     p.ExpireTimeSpan = options.CookieExpiration;
+                                 });
+
+            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, OAuthAuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, OAuthAuthorizationCodeResponseBinder>();
+            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
+            collection.AddTransient<OAuth.IAuthorizationService, AuthorizationService>();
 
             return builder;
         }

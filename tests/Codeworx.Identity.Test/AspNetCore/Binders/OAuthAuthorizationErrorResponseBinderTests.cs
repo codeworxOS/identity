@@ -69,9 +69,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
         }
 
         [Fact]
@@ -94,9 +94,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
             Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
         }
 
@@ -120,9 +120,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
             Assert.Equal($"{OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[1]);
         }
 
@@ -146,9 +146,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
             Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
         }
 
@@ -174,9 +174,9 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
-            var queryParts = locationHeader.Query.Split("&");
+            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(4, queryParts.Length);
-            Assert.Equal($"?{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
             Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
             Assert.Equal($"{OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[2]);
             Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[3]);
