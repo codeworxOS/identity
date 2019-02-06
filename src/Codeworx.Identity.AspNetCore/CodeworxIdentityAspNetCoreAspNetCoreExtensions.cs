@@ -11,8 +11,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.Binders;
-using Codeworx.Identity.AspNetCore.Validators;
+using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -46,11 +45,11 @@ namespace Codeworx.Identity.AspNetCore
                                      p.ExpireTimeSpan = options.CookieExpiration;
                                  });
 
-            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, OAuthAuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, OAuthAuthorizationCodeResponseBinder>();
-            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
-            collection.AddTransient<OAuth.IAuthorizationService, AuthorizationService>();
+            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
+            collection.AddTransient<IAuthorizationService, AuthorizationService>();
 
             return builder;
         }
@@ -114,7 +113,7 @@ namespace Codeworx.Identity.AspNetCore
                         p => p.UseMiddleware<OAuthTokenMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.OauthEndpoint),
-                        p => p.UseMiddleware<OAuthAuthorizationMiddleware>())
+                        p => p.UseMiddleware<AuthorizationMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                         p => p.UseMiddleware<LoginMiddleware>())

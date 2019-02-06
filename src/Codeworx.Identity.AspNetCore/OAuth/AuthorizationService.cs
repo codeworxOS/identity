@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.OAuth;
 
-namespace Codeworx.Identity.OAuth
+namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationService : IAuthorizationService
     {

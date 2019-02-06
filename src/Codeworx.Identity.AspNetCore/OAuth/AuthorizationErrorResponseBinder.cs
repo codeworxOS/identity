@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.Binders
+namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationErrorResponseBinder : IResponseBinder<AuthorizationErrorResponse>
+    public class AuthorizationErrorResponseBinder : IResponseBinder<AuthorizationErrorResponse>
     {
         public async Task RespondAsync(AuthorizationErrorResponse response, HttpContext context)
         {
@@ -28,22 +28,22 @@ namespace Codeworx.Identity.AspNetCore.Binders
             {
                 var redirectUriBuilder = new UriBuilder(response.RedirectUri)
                                          {
-                                             Query = $"?{OAuth.Constants.ErrorName}={response.Error}"
+                                             Query = $"?{Identity.OAuth.Constants.ErrorName}={response.Error}"
                                          };
 
                 if (!string.IsNullOrWhiteSpace(response.ErrorDescription))
                 {
-                    redirectUriBuilder.Query += $"&{OAuth.Constants.ErrorDescriptionName}={response.ErrorDescription}";
+                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.ErrorDescriptionName}={response.ErrorDescription}";
                 }
 
                 if (!string.IsNullOrWhiteSpace(response.ErrorUri))
                 {
-                    redirectUriBuilder.Query += $"&{OAuth.Constants.ErrorUriName}={response.ErrorUri}";
+                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.ErrorUriName}={response.ErrorUri}";
                 }
 
                 if (!string.IsNullOrWhiteSpace(response.State))
                 {
-                    redirectUriBuilder.Query += $"&{OAuth.Constants.StateName}={response.State}";
+                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.StateName}={response.State}";
                 }
 
                 context.Response.Redirect(redirectUriBuilder.Uri.ToString());

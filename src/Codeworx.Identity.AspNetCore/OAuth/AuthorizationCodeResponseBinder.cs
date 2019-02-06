@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.Binders
+namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationCodeResponseBinder : IResponseBinder<AuthorizationCodeResponse>
+    public class AuthorizationCodeResponseBinder : IResponseBinder<AuthorizationCodeResponse>
     {
         public Task RespondAsync(AuthorizationCodeResponse response, HttpContext context)
         {
@@ -21,12 +21,12 @@ namespace Codeworx.Identity.AspNetCore.Binders
 
             var redirectUriBuilder = new UriBuilder(response.RedirectUri)
                                      {
-                                         Query = $"?{OAuth.Constants.CodeName}={response.Code}"
+                                         Query = $"?{Identity.OAuth.Constants.CodeName}={response.Code}"
                                      };
 
             if (!string.IsNullOrWhiteSpace(response.State))
             {
-                redirectUriBuilder.Query += $"&{OAuth.Constants.StateName}={response.State}";
+                redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.StateName}={response.State}";
             }
 
             context.Response.Redirect(redirectUriBuilder.Uri.ToString());

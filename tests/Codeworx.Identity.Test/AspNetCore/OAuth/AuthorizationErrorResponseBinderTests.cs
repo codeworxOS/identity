@@ -2,19 +2,19 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.Binders;
+using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Codeworx.Identity.Test.AspNetCore.Binders
+namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationErrorResponseBinderTests
+    public class AuthorizationErrorResponseBinderTests
     {
         [Fact]
         public async Task RespondAsync_NullResponse_ExceptionThrown()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
         }
@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         [Fact]
         public async Task RespondAsync_NullContext_ExceptionThrown()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new AuthorizationErrorResponse(null, null, null, null), null));
         }
@@ -30,10 +30,10 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         [Fact]
         public async Task RespondAsync_NoRedirect_WritesMessage()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
-            const string ExpectedDescription = OAuth.Constants.ClientIdName;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedDescription = Identity.OAuth.Constants.ClientIdName;
 
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
@@ -53,10 +53,10 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         [Fact]
         public async Task RespondAsync_Redirect_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
 
             var context = new DefaultHttpContext();
 
@@ -71,17 +71,17 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
         }
 
         [Fact]
         public async Task RespondAsync_RedirectWithErrorDescription_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
-            const string ExpectedDescription = OAuth.Constants.ClientIdName;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedDescription = Identity.OAuth.Constants.ClientIdName;
 
             var context = new DefaultHttpContext();
 
@@ -96,17 +96,17 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
         }
 
         [Fact]
         public async Task RespondAsync_RedirectWithErrorUri_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
             const string ExpectedUri = "http://mySite.com/error";
 
             var context = new DefaultHttpContext();
@@ -122,17 +122,17 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[1]);
         }
 
         [Fact]
         public async Task RespondAsync_RedirectWithState_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
             const string ExpectedState = "state";
 
             var context = new DefaultHttpContext();
@@ -148,18 +148,18 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
         }
 
         [Fact]
         public async Task RespondAsync_RedirectWithAllFieldsSet_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationErrorResponseBinder();
+            var instance = new AuthorizationErrorResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
-            const string ExpectedError = OAuth.Constants.Error.InvalidRequest;
-            const string ExpectedDescription = OAuth.Constants.ClientIdName;
+            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidRequest;
+            const string ExpectedDescription = Identity.OAuth.Constants.ClientIdName;
             const string ExpectedUri = "http://mySite.com/error";
             const string ExpectedState = "state";
 
@@ -176,10 +176,10 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(4, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
-            Assert.Equal($"{OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[2]);
-            Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[3]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[2]);
+            Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[3]);
         }
     }
 }

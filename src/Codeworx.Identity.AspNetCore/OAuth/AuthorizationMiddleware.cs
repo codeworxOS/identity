@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore
+namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationMiddleware : AuthenticatedMiddleware
+    public class AuthorizationMiddleware : AuthenticatedMiddleware
     {
         private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly IResponseBinder<AuthorizationErrorResponse> _authorizationErrorResponseBinder;
         private readonly IResponseBinder<AuthorizationCodeResponse> _authorizationCodeResponseBinder;
         private readonly IAuthorizationService _authorizationService;
 
-        public OAuthAuthorizationMiddleware(RequestDelegate next,
+        public AuthorizationMiddleware(RequestDelegate next,
                                             Configuration.IdentityService service,
                                             IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
                                             IResponseBinder<AuthorizationErrorResponse> authorizationErrorResponseBinder,

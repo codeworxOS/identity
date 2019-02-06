@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Codeworx.Identity.Test.AspNetCore
+namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationMiddlewareTests : IntegrationTestBase
+    public class AuthorizationMiddlewareTests : IntegrationTestBase
     {
         [Fact]
         public async Task Invoke_RedirectUriMissing_InformUserNoRedirect()
@@ -16,7 +16,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var emptyUri = string.Empty;
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={emptyUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={emptyUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -24,8 +24,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(OAuth.Constants.RedirectUriName, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             const string InvalidUri = "x:invalidUri";
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={InvalidUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={InvalidUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -42,8 +42,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(OAuth.Constants.RedirectUriName, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var invalidRedirect = "/invalidRedirect";
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={invalidRedirect}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={invalidRedirect}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -60,8 +60,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(OAuth.Constants.RedirectUriName, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var emptyClientId = string.Empty;
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={emptyClientId}&{OAuth.Constants.RedirectUriName}={request.RedirectUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={emptyClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -78,8 +78,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(OAuth.Constants.ClientIdName, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.ClientIdName, responseHtml);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var invalidClientId = "\u0019";
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={invalidClientId}&{OAuth.Constants.RedirectUriName}={request.RedirectUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={invalidClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -96,8 +96,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(OAuth.Constants.ClientIdName, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.ClientIdName, responseHtml);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Codeworx.Identity.Test.AspNetCore
         {
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={request.RedirectUri}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -127,8 +127,8 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={OAuth.Constants.ResponseTypeName}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.ResponseTypeName}", queryParts[1]);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             const string InvalidState = "ä";
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={request.RedirectUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}&{OAuth.Constants.StateName}={InvalidState}";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}&{Identity.OAuth.Constants.StateName}={InvalidState}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
@@ -147,9 +147,9 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(3, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.ErrorName}={OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.ErrorDescriptionName}={OAuth.Constants.StateName}", queryParts[1]);
-            Assert.Equal($"{OAuth.Constants.StateName}={InvalidState}", queryParts[2]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.StateName}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.StateName}={InvalidState}", queryParts[2]);
         }
 
         [Fact]
@@ -184,13 +184,13 @@ namespace Codeworx.Identity.Test.AspNetCore
         {
             var request = new AuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{OAuth.Constants.ClientIdName}={request.ClientId}&{OAuth.Constants.RedirectUriName}={request.RedirectUri}&{OAuth.Constants.ResponseTypeName}={request.ResponseType}&{OAuth.Constants.ScopeName}=ä";
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}&{Identity.OAuth.Constants.ScopeName}=ä";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
 
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-            Assert.Equal(new Uri($"{request.RedirectUri}?{OAuth.Constants.ErrorName}={OAuth.Constants.Error.InvalidScope}&{OAuth.Constants.ErrorDescriptionName}={OAuth.Constants.ScopeName}"), response.Headers.Location);
+            Assert.Equal(new Uri($"{request.RedirectUri}?{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidScope}&{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.ScopeName}"), response.Headers.Location);
         }
 
         [Fact]

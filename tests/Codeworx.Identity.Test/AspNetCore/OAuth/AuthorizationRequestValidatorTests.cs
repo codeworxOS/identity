@@ -1,17 +1,17 @@
-﻿using Codeworx.Identity.AspNetCore.Validators;
+﻿using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth.Validation;
 using Xunit;
 
-namespace Codeworx.Identity.Test.AspNetCore.Validators
+namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationRequestValidatorTests
+    public class AuthorizationRequestValidatorTests
     {
         [Fact]
         public void IsValid_ValidRequest_ReturnsNoError()
         {
             var request = new AuthorizationRequestBuilder().Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithClientId(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -39,7 +39,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithClientId(string.Empty)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -53,7 +53,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithClientId("\u0020\u007e\u0019")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                          .WithRedirectUri(null)
                          .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -81,7 +81,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithRedirectUri(string.Empty)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -95,7 +95,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithRedirectUri("x:invalidUri")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -109,7 +109,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithRedirectUri("/redirect")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -123,7 +123,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -137,7 +137,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType(string.Empty)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -151,7 +151,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType("-")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -165,7 +165,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType("type1 type2")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -179,7 +179,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithScope(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -193,7 +193,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithScope(string.Empty)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -207,7 +207,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithScope("\u0020")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -221,7 +221,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithScope("scope1 scope2")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -235,7 +235,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithState(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -249,7 +249,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithState(string.Empty)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -263,7 +263,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithState("\u0019")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -278,7 +278,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithClientId(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -293,7 +293,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType(null)
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -308,7 +308,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithResponseType("-")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 
@@ -323,7 +323,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Validators
                           .WithState("\u0019")
                           .Build();
 
-            var instance = new OAuthAuthorizationRequestValidator();
+            var instance = new AuthorizationRequestValidator();
 
             var result = instance.IsValid(request);
 

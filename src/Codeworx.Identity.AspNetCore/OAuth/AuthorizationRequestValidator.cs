@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Validation;
 
-namespace Codeworx.Identity.AspNetCore.Validators
+namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationRequestValidator : IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>
+    public class AuthorizationRequestValidator : IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>
     {
         public IValidationResult<AuthorizationErrorResponse> IsValid(AuthorizationRequest request)
         {

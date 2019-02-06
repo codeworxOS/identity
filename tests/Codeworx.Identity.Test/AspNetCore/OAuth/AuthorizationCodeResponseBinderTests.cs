@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.Binders;
+using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 using Xunit;
 
-namespace Codeworx.Identity.Test.AspNetCore.Binders
+namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationCodeResponseBinderTests
+    public class AuthorizationCodeResponseBinderTests
     {
         [Fact]
         public async Task RespondAsync_NullResponse_ExceptionThrown()
         {
-            var instance = new OAuthAuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
         }
@@ -21,7 +21,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         [Fact]
         public async Task RespondAsync_NullContext_ExceptionThrown()
         {
-            var instance = new OAuthAuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new AuthorizationCodeResponse(null, null, null), null));
         }
@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
         [Fact]
         public async Task RespondAsync_Redirect_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
             const string ExpectedCode = "asdf";
@@ -47,13 +47,13 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
         }
 
         [Fact]
         public async Task RespondAsync_RedirectWithState_RedirectsToLocationWithQueryString()
         {
-            var instance = new OAuthAuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder();
 
             const string RedirectUri = "http://example.org/redirect";
             const string ExpectedCode = "asdf";
@@ -72,8 +72,8 @@ namespace Codeworx.Identity.Test.AspNetCore.Binders
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
-            Assert.Equal($"{OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
         }
     }
 }

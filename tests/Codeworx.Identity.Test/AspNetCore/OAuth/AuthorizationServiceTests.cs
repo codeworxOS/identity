@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Validation;
 using Moq;
 using Xunit;
 
-namespace Codeworx.Identity.Test.Primitives.OAuth
+namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class AuthorizationServiceTests
     {
