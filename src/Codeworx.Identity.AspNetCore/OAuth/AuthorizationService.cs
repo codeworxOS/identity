@@ -13,7 +13,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _requestValidator = requestValidator;
         }
 
-        public async Task<AuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
+        public async Task<AuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
         {
             if (request == null)
             {
@@ -26,6 +26,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new AuthorizationResult(validationError.Error);
             }
 
+            if (string.IsNullOrWhiteSpace(userIdentifier))
+            {
+                return new AuthorizationResult(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.AccessDenied, "", "", request.State, request.RedirectUri));
+            }
+            
             await Task.Yield();
 
             return new AuthorizationResult(new AuthorizationCodeResponse(request.State, "HARDCODED TEST CODE", request.RedirectUri));

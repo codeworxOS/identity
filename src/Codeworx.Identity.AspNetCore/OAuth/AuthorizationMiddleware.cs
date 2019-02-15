@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
@@ -38,7 +39,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if(bindingResult.Result != null)
             {
-                var result = await _authorizationService.AuthorizeRequest(bindingResult.Result);
+                var claimsPrincipal = principal as ClaimsPrincipal;
+                var idClaim = claimsPrincipal?.Claims.FirstOrDefault(p => p.Type == Constants.IdClaimType);
+                
+                var result = await _authorizationService.AuthorizeRequest(bindingResult.Result, idClaim?.Value);
 
                 if (result.Error != null)
                 {
