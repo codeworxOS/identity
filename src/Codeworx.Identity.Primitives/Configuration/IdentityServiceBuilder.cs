@@ -188,9 +188,21 @@ namespace Codeworx.Identity.Configuration
 
                 public string Name => Constants.DefaultAdminUserName;
 
+                public ICollection<IOAuthClientRegistration> OAuthClientRegistrations => new List<IOAuthClientRegistration>
+                                                                                         {
+                                                                                             new DummyOAuthAuthorizationCodeClientRegistration()
+                                                                                         };
+
                 public byte[] PasswordHash => null;
 
                 public byte[] PasswordSalt => null;
+            }
+
+            private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
+            {
+                public string Identifier => Constants.DefaultClientId;
+
+                public string SupportedOAuthMode => OAuth.Constants.GrantType.AuthorizationCode;
             }
         }
 
