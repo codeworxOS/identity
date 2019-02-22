@@ -45,10 +45,16 @@ namespace Codeworx.Identity.AspNetCore
                                      p.ExpireTimeSpan = options.CookieExpiration;
                                  });
 
+            collection.AddDistributedMemoryCache();
+
+            collection.AddSingleton(p => new AuthorizationCodeOptions());
+
+            collection.AddTransient<IAuthorizationCodeCacheKeyBuilder, AuthorizationCodeCacheKeyBuilder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
+            collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IAuthorizationService, AuthorizationService>();
 
             return builder;

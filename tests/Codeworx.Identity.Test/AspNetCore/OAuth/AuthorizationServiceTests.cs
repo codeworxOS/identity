@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.CodeGenerationResults;
 using Codeworx.Identity.OAuth.Validation;
 using Moq;
 using Xunit;
@@ -13,7 +14,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_RequestNull_ThrowsException()
         {
-            var instance = new AuthorizationService(null);
+            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
+                         .Returns(() => null);
+
+            var codeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+
+            var instance = new AuthorizationService(validatorStub.Object, codeGeneratorStub.Object);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null, "abc"));
         }
@@ -25,9 +32,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
                          .Returns(new ClientIdInvalidResult());
 
-            var instance = new AuthorizationService(validatorStub.Object);
+            var codeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
 
-            var result = await instance.AuthorizeRequest(new AuthorizationRequest(null, null, null, null, null), "aaaa");
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var instance = new AuthorizationService(validatorStub.Object, codeGeneratorStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, "aaaa");
 
             Assert.Null(result.Response);
             Assert.NotNull(result.Error);
@@ -36,16 +47,26 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_ValidRequest_ReturnsResponse()
         {
+            const string AuthorizationCode = "AuthorizationCode";
+
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
                          .Returns(() => null);
 
-            var instance = new AuthorizationService(validatorStub.Object);
+            var codeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            codeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), It.IsAny<string>()))
+                             .ReturnsAsync(new SuccessfulGenerationResult(AuthorizationCode));
 
-            var result = await instance.AuthorizeRequest(new AuthorizationRequest(null, null, null, null, null), "bbbb");
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var instance = new AuthorizationService(validatorStub.Object, codeGeneratorStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, "bbbb");
 
             Assert.NotNull(result.Response);
             Assert.Null(result.Error);
+
+            Assert.Equal(AuthorizationCode, result.Response.Code);
         }
 
         [Fact]
@@ -55,9 +76,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
                          .Returns(() => null);
 
-            var instance = new AuthorizationService(validatorStub.Object);
+            var codeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
 
-            var result = await instance.AuthorizeRequest(new AuthorizationRequest(null, null, null, null, null), null);
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var instance = new AuthorizationService(validatorStub.Object, codeGeneratorStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, null);
 
             Assert.Null(result.Response);
             Assert.NotNull(result.Error);
@@ -72,9 +97,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
                          .Returns(() => null);
 
-            var instance = new AuthorizationService(validatorStub.Object);
+            var codeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
 
-            var result = await instance.AuthorizeRequest(new AuthorizationRequest(null, null, null, null, null), string.Empty);
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var instance = new AuthorizationService(validatorStub.Object, codeGeneratorStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
             Assert.Null(result.Response);
             Assert.NotNull(result.Error);

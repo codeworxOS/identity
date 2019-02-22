@@ -37,7 +37,8 @@ namespace Codeworx.Identity.Test
     {
         public virtual ClaimsIdentity Identity { get; } = new ClaimsIdentity(new[]
                                                                              {
-                                                                                 new Claim(Constants.NameClaimType, Guid.NewGuid().ToString()),
+                                                                                 new Claim(Constants.NameClaimType, "UnitTest User"),
+                                                                                 new Claim(Constants.IdClaimType, Constants.DefaultAdminUserId),
                                                                              },
                                                                              "test");
     }

@@ -153,10 +153,21 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public void Invoke_ClientNotAuthorized_RedirectWithError()
+        public async Task Invoke_ClientNotAuthorized_RedirectWithError()
         {
-            // ToDo: The client is not authorized to request an authorization code using this method.
-            throw new NotImplementedException();
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}&{Identity.OAuth.Constants.StateName}={request.State}";
+
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
+
+            var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
+            Assert.Equal(1, queryParts.Length);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.UnauthorizedClient}", queryParts[0]);
         }
 
         [Fact]
