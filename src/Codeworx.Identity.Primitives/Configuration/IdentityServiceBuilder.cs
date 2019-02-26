@@ -202,7 +202,7 @@ namespace Codeworx.Identity.Configuration
             {
                 public string Identifier => Constants.DefaultClientId;
 
-                public string SupportedOAuthMode => OAuth.Constants.GrantType.AuthorizationCode;
+                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
             }
         }
 
