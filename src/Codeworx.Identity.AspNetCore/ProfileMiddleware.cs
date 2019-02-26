@@ -24,7 +24,17 @@ namespace Codeworx.Identity.AspNetCore
         {
         }
 
-        protected override async Task OnInvokeAsync(HttpContext context, IPrincipal principal)
+        public async Task Invoke(HttpContext context)
+        {
+            var principal = await this.Authenticate(context);
+
+            if (principal != null)
+            {
+                await this.OnInvokeAsync(context, principal);
+            }
+        }
+
+        protected async Task OnInvokeAsync(HttpContext context, IPrincipal principal)
         {
             var ci = principal.Identity as ClaimsIdentity;
 

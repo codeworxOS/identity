@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,25 +23,23 @@ namespace Codeworx.Identity.AspNetCore
 
         protected Configuration.IdentityService Service { get; }
 
-        public async Task Invoke(HttpContext context)
+        protected async Task<ClaimsPrincipal> Authenticate(HttpContext context)
         {
             var result = await context.AuthenticateAsync(Service.AuthenticationScheme);
 
             if (result.Succeeded)
             {
-                await OnInvokeAsync(context, result.Principal);
-                return;
+                return result.Principal;
             }
-            else if (result.Failure == null)
+
+            if (result.Failure == null)
             {
                 await context.ChallengeAsync(Service.AuthenticationScheme);
-                return;
+                return null;
             }
 
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
+            return null;
         }
-
-        protected abstract Task OnInvokeAsync(HttpContext context, IPrincipal principal);
     }
 }
