@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth

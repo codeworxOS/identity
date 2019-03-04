@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.BindingResults;
+using Codeworx.Identity.OAuth.Binding;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {

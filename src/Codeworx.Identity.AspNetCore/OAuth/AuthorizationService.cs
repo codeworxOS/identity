@@ -1,24 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
-        private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
+        private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
         private readonly IUserService _userService;
 
-        public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IAuthorizationCodeGenerator authorizationCodeGenerator, IUserService userService)
+        public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
         {
             _requestValidator = requestValidator;
-            _authorizationCodeGenerator = authorizationCodeGenerator;
+            _authorizationFlowServices = authorizationFlowServices;
             _userService = userService;
         }
 
-        public async Task<AuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
         {
             if (request == null)
             {
@@ -28,7 +30,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var validationError = _requestValidator.IsValid(request);
             if (validationError != null)
             {
-                return new AuthorizationResult(validationError.Error);
+                return new InvalidRequestResult(validationError);
             }
 
             var user = await _userService.GetUserByIdentifierAsync(userIdentifier)
@@ -36,18 +38,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (user == null)
             {
-                return new AuthorizationResult(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.AccessDenied, "", "", request.State, request.RedirectUri));
+                return new UserNotFoundResult(request.State, request.RedirectUri);
             }
 
-            if (!user.OAuthClientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
+            var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.SupportedAuthorizationResponseType == request.ResponseType);
+            if (authorizationFlowService == null)
             {
-                return new AuthorizationResult(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.UnauthorizedClient, string.Empty, string.Empty, request.State, request.RedirectUri));
+                return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
             }
 
-            var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, user)
-                                                                     .ConfigureAwait(false);
-
-            return new AuthorizationResult(new AuthorizationCodeResponse(request.State, authorizationCode, request.RedirectUri));
+            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, user)
+                                                                    .ConfigureAwait(false);
+            
+            return authorizationResult;
         }
     }
 }
