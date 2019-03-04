@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth
 {
     public interface IAuthorizationCodeGenerator
     {
-        Task<IAuthorizationCodeGenerationResult> GenerateCode(AuthorizationRequest request, string userIdentifier);
+        Task<string> GenerateCode(AuthorizationRequest request, IUser user);
     }
 }

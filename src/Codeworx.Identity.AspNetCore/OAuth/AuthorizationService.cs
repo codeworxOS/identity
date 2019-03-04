@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 
@@ -8,11 +9,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
+        private readonly IUserService _userService;
 
-        public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IAuthorizationCodeGenerator authorizationCodeGenerator)
+        public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IAuthorizationCodeGenerator authorizationCodeGenerator, IUserService userService)
         {
             _requestValidator = requestValidator;
             _authorizationCodeGenerator = authorizationCodeGenerator;
+            _userService = userService;
         }
 
         public async Task<AuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
@@ -28,20 +31,23 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new AuthorizationResult(validationError.Error);
             }
 
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            var user = await _userService.GetUserByIdentifierAsync(userIdentifier)
+                                         .ConfigureAwait(false);
+
+            if (user == null)
             {
                 return new AuthorizationResult(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.AccessDenied, "", "", request.State, request.RedirectUri));
             }
 
-            var authorizationCodeGenerationResult = await _authorizationCodeGenerator.GenerateCode(request, userIdentifier)
-                                                                     .ConfigureAwait(false);
-
-            if (authorizationCodeGenerationResult.Error != null)
+            if (!user.OAuthClientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
             {
-                return new AuthorizationResult(authorizationCodeGenerationResult.Error);
+                return new AuthorizationResult(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.UnauthorizedClient, string.Empty, string.Empty, request.State, request.RedirectUri));
             }
 
-            return new AuthorizationResult(new AuthorizationCodeResponse(request.State, authorizationCodeGenerationResult.AuthorizationCode, request.RedirectUri));
+            var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, user)
+                                                                     .ConfigureAwait(false);
+
+            return new AuthorizationResult(new AuthorizationCodeResponse(request.State, authorizationCode, request.RedirectUri));
         }
     }
 }

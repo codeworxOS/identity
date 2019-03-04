@@ -4,8 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.CodeGenerationResults;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
@@ -16,7 +16,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IDistributedCache _cache;
         private readonly IAuthorizationCodeCacheKeyBuilder _cacheKeyBuilder;
-        private readonly IUserService _userService;
         private static readonly IReadOnlyCollection<char> _allowedCharacters;
 
         static AuthorizationCodeGenerator()
@@ -31,41 +30,27 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _allowedCharacters = allowedCharacters;
         }
 
-        public AuthorizationCodeGenerator(IOptions<AuthorizationCodeOptions> options, IDistributedCache cache, IAuthorizationCodeCacheKeyBuilder cacheKeyBuilder, IUserService userService)
+        public AuthorizationCodeGenerator(IOptions<AuthorizationCodeOptions> options, IDistributedCache cache, IAuthorizationCodeCacheKeyBuilder cacheKeyBuilder)
         {
             this._options = options;
             _cache = cache;
             _cacheKeyBuilder = cacheKeyBuilder;
-            _userService = userService;
         }
 
         #region Public Methods
 
-        public async Task<IAuthorizationCodeGenerationResult> GenerateCode(AuthorizationRequest request, string userIdentifier)
+        public async Task<string> GenerateCode(AuthorizationRequest request, IUser user)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            if (string.IsNullOrWhiteSpace(userIdentifier))
-            {
-                throw new ArgumentNullException(nameof(userIdentifier));
-            }
-
-            var user = await _userService.GetUserByIdentifierAsync(userIdentifier)
-                                         .ConfigureAwait(false);
-
             if (user == null)
             {
-                return new AccessDeniedResult(request.RedirectUri, request.State);
+                throw new ArgumentNullException(nameof(user));
             }
-
-            if (!user.OAuthClientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
-            {
-                return new ClientNotAuthorizedResult(request.RedirectUri, request.State);
-            }
-
+            
             var authorizationCodeBuilder = new StringBuilder();
 
             using (var rng = RandomNumberGenerator.Create())
@@ -83,7 +68,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var authorizationCode = authorizationCodeBuilder.ToString();
 
-            await _cache.SetStringAsync(_cacheKeyBuilder.Get(request, userIdentifier),
+            await _cache.SetStringAsync(_cacheKeyBuilder.Get(request, user.Identity),
                                         authorizationCode,
                                         new DistributedCacheEntryOptions
                                         {
@@ -91,7 +76,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                         })
                         .ConfigureAwait(false);
 
-            return new SuccessfulGenerationResult(authorizationCode);
+            return authorizationCode;
         }
 
         #endregion
