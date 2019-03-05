@@ -6,11 +6,12 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public abstract class TokenRequest
     {
-        protected TokenRequest(string clientId, string redirectUri, string grantType)
+        protected TokenRequest(string clientId, string redirectUri, string grantType, string clientSecret)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;
             this.GrantType = grantType;
+            this.ClientSecret = clientSecret;
         }
 
         [RegularExpression(Constants.ClientIdValidation)]
@@ -25,5 +26,9 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.RedirectUriValidation)]
         [DataMember(Order = 3, Name = Constants.RedirectUriName)]
         public string RedirectUri { get; }
+
+        [RegularExpression(Constants.ClientSecretValidation)]
+        [DataMember(Order = 3, Name = Constants.ClientSecretName)]
+        public string ClientSecret { get; }
     }
 }

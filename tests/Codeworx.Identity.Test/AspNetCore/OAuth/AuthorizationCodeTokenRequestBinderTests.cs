@@ -12,7 +12,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                                                       {Identity.OAuth.Constants.ClientIdName, new[] {"SomeId"}},
                                                                                       {Identity.OAuth.Constants.RedirectUriName, new[] {"http://example.org/redirect"}},
                                                                                       {Identity.OAuth.Constants.GrantTypeName, new[] {Identity.OAuth.Constants.GrantType.AuthorizationCode}},
-                                                                                      {Identity.OAuth.Constants.CodeName, new[] {"Some_auth_code"}}
+                                                                                      {Identity.OAuth.Constants.CodeName, new[] {"Some_auth_code"}},
+                                                                                      {Identity.OAuth.Constants.ClientSecretValidation, new[] {"someClientSecret"}}
                                                                                   };
 
         [Fact]
@@ -94,6 +95,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public void FromQuery_ClientSecretDuplicated_ReturnsErrorObject()
+        {
+            var instance = new AuthorizationCodeTokenRequestBinder();
+
+            _query[Identity.OAuth.Constants.ClientSecretName] = new[] { "secret1", "secret2" };
+
+            var result = instance.FromQuery(_query);
+
+            Assert.IsType<ClientSecretDuplicatedResult>(result);
+        }
+
+        [Fact]
         public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
         {
             var instance = new AuthorizationCodeTokenRequestBinder();
@@ -142,6 +155,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public void FromQuery_ClientSecretNull_ReturnsBoundRequest()
+        {
+            var instance = new AuthorizationCodeTokenRequestBinder();
+
+            _query.Remove(Identity.OAuth.Constants.ClientSecretName);
+
+            var request = instance.FromQuery(_query);
+
+            Assert.IsType<SuccessfulBindingResult>(request);
+        }
+
+        [Fact]
         public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
         {
             var instance = new AuthorizationCodeTokenRequestBinder();
@@ -183,6 +208,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var instance = new AuthorizationCodeTokenRequestBinder();
 
             _query[Identity.OAuth.Constants.CodeName] = new string[0];
+
+            var request = instance.FromQuery(_query);
+
+            Assert.IsType<SuccessfulBindingResult>(request);
+        }
+
+        [Fact]
+        public void FromQuery_ClientSecretEmpty_ReturnsBoundRequest()
+        {
+            var instance = new AuthorizationCodeTokenRequestBinder();
+
+            _query[Identity.OAuth.Constants.ClientSecretName] = new string[0];
 
             var request = instance.FromQuery(_query);
 

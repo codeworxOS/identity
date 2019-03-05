@@ -7,6 +7,7 @@
         public const string AdditionalParameterValidation = GrantTypeValidation;
         public const string ClientIdName = "client_id";
         public const string ClientIdValidation = VsChars;
+        public const string ClientSecretName = "client_secret";
         public const string ClientSecretValidation = VsChars;
         public const string CodeName = "code";
         public const string CodeValidation = VsChars;

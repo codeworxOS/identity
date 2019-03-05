@@ -13,11 +13,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             IReadOnlyCollection<string> redirectUri = null;
             IReadOnlyCollection<string> code = null;
             IReadOnlyCollection<string> grantType = null;
+            IReadOnlyCollection<string> clientSecret = null;
 
             query?.TryGetValue(Identity.OAuth.Constants.ClientIdName, out clientId);
             query?.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out redirectUri);
             query?.TryGetValue(Identity.OAuth.Constants.CodeName, out code);
             query?.TryGetValue(Identity.OAuth.Constants.GrantTypeName, out grantType);
+            query?.TryGetValue(Identity.OAuth.Constants.ClientSecretName, out clientSecret);
 
             if (clientId?.Count > 1)
             {
@@ -39,10 +41,16 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new GrantTypeDuplicatedResult();
             }
 
+            if (clientSecret?.Count > 1)
+            {
+                return new ClientSecretDuplicatedResult();
+            }
+
             var request = new AuthorizationCodeTokenRequest(clientId?.FirstOrDefault(),
                                                             redirectUri?.FirstOrDefault(),
                                                             code?.FirstOrDefault(),
-                                                            grantType?.FirstOrDefault());
+                                                            grantType?.FirstOrDefault(),
+                                                            clientSecret?.FirstOrDefault());
 
             return new SuccessfulBindingResult(request);
         }

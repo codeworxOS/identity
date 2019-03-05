@@ -6,8 +6,8 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationCodeTokenRequest : TokenRequest
     {
-        public AuthorizationCodeTokenRequest(string clientId, string redirectUri, string code, string grantType)
-            : base(clientId, redirectUri, grantType)
+        public AuthorizationCodeTokenRequest(string clientId, string redirectUri, string code, string grantType, string clientSecret)
+            : base(clientId, redirectUri, grantType, clientSecret)
         {
             this.Code = code;
         }
