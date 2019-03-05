@@ -17,4 +17,7 @@
 		<PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
 		<PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="OAuth\Binding\Authorization\" />
+	</ItemGroup>
 </Project>
