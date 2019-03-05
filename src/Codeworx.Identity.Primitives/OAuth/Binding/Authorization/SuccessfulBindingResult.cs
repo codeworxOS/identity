@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.OAuth.Binding
+﻿namespace Codeworx.Identity.OAuth.Binding.Authorization
 {
     public class SuccessfulBindingResult : IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse>
     {

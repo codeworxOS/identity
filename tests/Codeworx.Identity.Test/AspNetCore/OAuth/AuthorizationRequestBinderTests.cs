@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth.Binding;
+using Codeworx.Identity.OAuth.Binding.Authorization;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth

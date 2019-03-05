@@ -2,6 +2,7 @@
 using System.Linq;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Binding;
+using Codeworx.Identity.OAuth.Binding.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
