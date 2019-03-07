@@ -11,35 +11,31 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public abstract class AuthenticatedMiddleware
+    public class AuthenticatedMiddleware
     {
-        protected RequestDelegate Next;
+        private readonly RequestDelegate _next;
+        private readonly Configuration.IdentityService _service;
 
-        protected AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
-            Next = next;
-            Service = service;
+            _next = next;
+            _service = service;
         }
 
-        protected Configuration.IdentityService Service { get; }
-
-        protected async Task<ClaimsPrincipal> Authenticate(HttpContext context)
+        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
         {
-            var result = await context.AuthenticateAsync(Service.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(_service.AuthenticationScheme);
 
             if (result.Succeeded)
             {
-                return result.Principal;
+                authenticatedUserInformation.Principal = result.Principal;
+                await _next(context);
             }
 
             if (result.Failure == null)
             {
-                await context.ChallengeAsync(Service.AuthenticationScheme);
-                return null;
+                await context.ChallengeAsync(_service.AuthenticationScheme);
             }
-
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return null;
         }
     }
 }

@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationMiddleware : AuthenticatedMiddleware
+    public class AuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly Configuration.IdentityService _service;
@@ -21,7 +20,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                        IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
                                        IResponseBinder<AuthorizationErrorResponse> authorizationErrorResponseBinder,
                                        IResponseBinder<AuthorizationCodeResponse> authorizationCodeResponseBinder)
-            : base(next, service)
         {
             _next = next;
             _service = service;
@@ -30,18 +28,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _authorizationCodeResponseBinder = authorizationCodeResponseBinder;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService)
+        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation, IAuthorizationService authorizationService)
         {
-            var principal = await this.Authenticate(context);
-
-            if (principal != null)
+            if (authenticatedUserInformation?.Principal == null)
             {
-                await this.OnInvokeAsync(context, principal, authorizationService);
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
             }
-        }
 
-        private async Task OnInvokeAsync(HttpContext context, IPrincipal principal, IAuthorizationService authorizationService)
-        {
             var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
 
             if (bindingResult.Error != null)
@@ -50,7 +44,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if (bindingResult.Result != null)
             {
-                var claimsPrincipal = principal as ClaimsPrincipal;
+                var claimsPrincipal = authenticatedUserInformation.Principal as ClaimsPrincipal;
                 var idClaim = claimsPrincipal?.Claims.FirstOrDefault(p => p.Type == Constants.IdClaimType);
 
                 var result = await authorizationService.AuthorizeRequest(bindingResult.Result, idClaim?.Value);

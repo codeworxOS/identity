@@ -17,30 +17,30 @@ using System.Security.Principal;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class ProfileMiddleware : AuthenticatedMiddleware
+    public class ProfileMiddleware
     {
+        private readonly RequestDelegate _next;
+        private readonly Configuration.IdentityService _service;
+
         public ProfileMiddleware(RequestDelegate next, Configuration.IdentityService service)
-            : base(next, service)
         {
+            _next = next;
+            _service = service;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
         {
-            var principal = await this.Authenticate(context);
-
-            if (principal != null)
+            if (authenticatedUserInformation?.Principal == null)
             {
-                await this.OnInvokeAsync(context, principal);
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
             }
-        }
 
-        protected async Task OnInvokeAsync(HttpContext context, IPrincipal principal)
-        {
-            var ci = principal.Identity as ClaimsIdentity;
+            var ci = authenticatedUserInformation.Principal.Identity as ClaimsIdentity;
 
             var data = ci.ToIdentityData();
 
-            if (Service.TryGetContentType(Constants.JsonExtension, out string contentType))
+            if (_service.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
                 context.Response.ContentType = contentType;
             }

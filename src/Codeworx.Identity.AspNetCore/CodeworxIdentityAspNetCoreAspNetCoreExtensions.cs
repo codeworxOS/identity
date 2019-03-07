@@ -59,6 +59,8 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
 
+            collection.AddScoped<AuthenticatedUserInformation>();
+
             return builder;
         }
 
@@ -115,28 +117,30 @@ namespace Codeworx.Identity.AspNetCore
         public static IApplicationBuilder UseCodeworxIdentity(this IApplicationBuilder app, IdentityOptions options)
         {
             return app
-                    .UseAuthentication()
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
-                        p => p.UseMiddleware<OAuthTokenMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.OauthEndpoint),
-                        p => p.UseMiddleware<AuthorizationMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
-                        p => p.UseMiddleware<LoginMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
-                        p => p.UseMiddleware<ProfileMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
-                        p => p.UseMiddleware<WindowsLoginMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
-                        p => p.UseMiddleware<ProvidersMiddleware>())
-                    .MapWhen(
-                        EmbeddedResourceMiddleware.Condition,
-                        p => p.UseMiddleware<EmbeddedResourceMiddleware>());
+                   .UseAuthentication()
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
+                       p => p.UseMiddleware<OAuthTokenMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthEndpoint),
+                       p => p.UseMiddleware<AuthenticatedMiddleware>()
+                             .UseMiddleware<AuthorizationMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
+                       p => p.UseMiddleware<LoginMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
+                       p => p.UseMiddleware<AuthenticatedMiddleware>()
+                             .UseMiddleware<ProfileMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
+                       p => p.UseMiddleware<WindowsLoginMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
+                       p => p.UseMiddleware<ProvidersMiddleware>())
+                   .MapWhen(
+                       EmbeddedResourceMiddleware.Condition,
+                       p => p.UseMiddleware<EmbeddedResourceMiddleware>());
         }
 
         private static string GetFormKeyName(PropertyInfo item)
