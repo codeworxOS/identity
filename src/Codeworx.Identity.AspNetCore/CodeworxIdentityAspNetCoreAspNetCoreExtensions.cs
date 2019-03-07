@@ -13,6 +13,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
@@ -20,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore
 {
     public static class CodeworxIdentityAspNetCoreAspNetCoreExtensions
     {
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, string authenticationScheme = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration, string authenticationScheme = null)
         {
             authenticationScheme = authenticationScheme ?? Constants.DefaultAuthenticationScheme;
 
@@ -47,7 +48,7 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddDistributedMemoryCache();
 
-            collection.AddSingleton(p => new AuthorizationCodeOptions());
+            collection.Configure<AuthorizationCodeOptions>(configuration.GetSection("AuthorizationCode"));
 
             collection.AddTransient<IAuthorizationCodeCacheKeyBuilder, AuthorizationCodeCacheKeyBuilder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
