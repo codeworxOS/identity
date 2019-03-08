@@ -37,9 +37,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 .Select(s => s.ScopeKey)
                 .ToList();
 
-            if (request.Scope?
-                       .Split(' ')
-                       .Any(p => !scopeKeys.Contains(p)) == true)
+            if (!string.IsNullOrEmpty(request.Scope)
+                && request.Scope
+                          .Split(' ')
+                          .Any(p => !scopeKeys.Contains(p)) == true)
             {
                 return new UnknownScopeResult(request.State, request.RedirectUri);
             }
