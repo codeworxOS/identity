@@ -19,9 +19,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _oAuthClientService = oAuthClientService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user, string currentTenantIdentifier)
         {
-            var clientRegistrations = await _oAuthClientService.GetForTenantByIdentifier(user.DefaultTenantKey);
+            var clientRegistrations = await _oAuthClientService.GetForTenantByIdentifier(currentTenantIdentifier);
 
             if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
             {

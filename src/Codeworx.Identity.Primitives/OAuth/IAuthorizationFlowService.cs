@@ -7,6 +7,6 @@ namespace Codeworx.Identity.OAuth
     {
         string SupportedAuthorizationResponseType { get; }
 
-        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user);
+        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user, string currentTenantIdentifier);
     }
 }

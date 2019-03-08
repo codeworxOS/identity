@@ -30,15 +30,13 @@ namespace Codeworx.Identity.AspNetCore
 
         public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
         {
-            if (authenticatedUserInformation?.Principal == null)
+            if (authenticatedUserInformation?.IdentityData == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
-
-            var ci = authenticatedUserInformation.Principal.Identity as ClaimsIdentity;
-
-            var data = ci.ToIdentityData();
+            
+            var data = authenticatedUserInformation.IdentityData;
 
             if (_service.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
