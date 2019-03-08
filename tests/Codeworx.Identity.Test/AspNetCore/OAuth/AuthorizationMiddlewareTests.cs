@@ -3,9 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -288,6 +288,33 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             // ToDo: The authorization server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
             // (This error code is needed because a 503 Service Unavailable HTTP status code cannot be returned to the client via an HTTP redirect.)
             throw new NotImplementedException();
+        }
+
+        [Fact]
+        public async Task Invoke_ValidRequest_RedirectWithAuthorizationCode()
+        {
+            await this.Authenticate();
+
+            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultClientId)
+                                                           .Build();
+
+            var requestString = this.ToRequestString(request);
+
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
+
+            var cache = this.TestServer.Host.Services.GetRequiredService<IDistributedCache>();
+            var cacheKeyBuilder = this.TestServer.Host.Services.GetRequiredService<IAuthorizationCodeCacheKeyBuilder>();
+
+            var cacheKey = cacheKeyBuilder.Get(request, Constants.DefaultAdminUserId);
+            var code = await cache.GetStringAsync(cacheKey);
+
+            var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
+            Assert.Equal(1, queryParts.Length);
+            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={code}", queryParts[0]);
         }
     }
 }
