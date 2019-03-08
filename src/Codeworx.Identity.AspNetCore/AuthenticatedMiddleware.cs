@@ -30,6 +30,7 @@ namespace Codeworx.Identity.AspNetCore
             {
                 authenticatedUserInformation.Principal = result.Principal;
                 await _next(context);
+                return;
             }
 
             if (result.Failure == null)

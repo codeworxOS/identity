@@ -9,7 +9,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public User()
         {
             this.Tenants = new HashSet<TenantUser>();
-            this.OAuthClientRegistrations = new HashSet<IOAuthClientRegistration>();
         }
 
         public Tenant DefaultTenant { get; set; }
@@ -19,8 +18,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public string DefaultTenantKey => DefaultTenantId?.ToString("N");
 
         public string Identity => Id.ToString("N");
-
-        public ICollection<IOAuthClientRegistration> OAuthClientRegistrations { get; set; }
 
         public bool IsDisabled { get; set; }
 

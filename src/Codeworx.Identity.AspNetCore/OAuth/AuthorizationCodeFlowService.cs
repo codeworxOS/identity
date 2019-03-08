@@ -9,17 +9,21 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationCodeFlowService : IAuthorizationFlowService
     {
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
+        private readonly IOAuthClientService _oAuthClientService;
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IOAuthClientService oAuthClientService)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
+            _oAuthClientService = oAuthClientService;
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user)
         {
-            if (!user.OAuthClientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
+            var clientRegistrations = await _oAuthClientService.GetForTenantByIdentifier(user.DefaultTenantKey);
+
+            if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
             {
                 return new UnauthorizedClientResult(request.State, request.RedirectUri);
             }

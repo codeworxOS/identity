@@ -77,8 +77,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var userStub = new Mock<IUser>();
             userStub.SetupGet(p => p.Identity)
                     .Returns(UserIdentifier);
-            userStub.SetupGet(p => p.OAuthClientRegistrations)
-                    .Returns(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
 
             var userServiceStub = new Mock<IUserService>();
             userServiceStub.Setup(p => p.GetUserByIdentifierAsync(It.IsAny<string>()))
@@ -142,8 +140,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var userStub = new Mock<IUser>();
             userStub.SetupGet(p => p.Identity)
                     .Returns(UserIdentifier);
-            userStub.SetupGet(p => p.OAuthClientRegistrations)
-                    .Returns(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
 
             var userServiceStub = new Mock<IUserService>();
             userServiceStub.Setup(p => p.GetUserByIdentifierAsync(It.IsAny<string>()))

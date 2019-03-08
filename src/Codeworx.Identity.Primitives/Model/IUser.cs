@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Codeworx.Identity.Model
+﻿namespace Codeworx.Identity.Model
 {
     public interface IUser
     {
@@ -9,7 +7,5 @@ namespace Codeworx.Identity.Model
         string Identity { get; }
 
         string Name { get; }
-
-        ICollection<IOAuthClientRegistration> OAuthClientRegistrations { get; }
     }
 }

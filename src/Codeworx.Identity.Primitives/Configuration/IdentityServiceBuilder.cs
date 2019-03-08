@@ -28,6 +28,7 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IUserService, DummyUserService>();
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
+            _collection.AddScoped<IOAuthClientService, DummyOAuthClientService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -182,24 +183,32 @@ namespace Codeworx.Identity.Configuration
 
             private class DummyUser : IUser
             {
-                public string DefaultTenantKey => null;
+                public string DefaultTenantKey => Constants.DefaultTenantId;
 
                 public string Identity => Constants.DefaultAdminUserId;
 
                 public string Name => Constants.DefaultAdminUserName;
 
-                public ICollection<IOAuthClientRegistration> OAuthClientRegistrations => new List<IOAuthClientRegistration>
-                                                                                         {
-                                                                                             new DummyOAuthAuthorizationCodeClientRegistration()
-                                                                                         };
-
                 public byte[] PasswordHash => null;
 
                 public byte[] PasswordSalt => null;
             }
+        }
+
+        private class DummyOAuthClientService : IOAuthClientService
+        {
+            public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
+            {
+                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(new List<IOAuthClientRegistration>
+                                                                              {
+                                                                                  new DummyOAuthAuthorizationCodeClientRegistration()
+                                                                              });
+            }
 
             private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
             {
+                public string TenantIdentifier => Constants.DefaultTenantId;
+
                 public string Identifier => Constants.DefaultClientId;
 
                 public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;

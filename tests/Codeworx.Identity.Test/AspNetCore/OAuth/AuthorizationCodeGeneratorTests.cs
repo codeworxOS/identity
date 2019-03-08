@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
@@ -21,8 +20,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cacheKeyBuilder = new AuthorizationCodeCacheKeyBuilder();
 
             var user = new Mock<IUser>();
-            user.SetupGet(p => p.OAuthClientRegistrations)
-                .Returns(new List<IOAuthClientRegistration>());
 
             var instance = new AuthorizationCodeGenerator(options, cache, cacheKeyBuilder);
 
