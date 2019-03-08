@@ -5,6 +5,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -23,6 +24,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_RedirectUriMissing_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithRedirectUri(string.Empty)
                                                            .Build();
 
@@ -41,6 +44,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_RedirectUriInvalid_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithRedirectUri("x:invalidUri")
                                                            .Build();
 
@@ -59,6 +64,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_RedirectUriRelative_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithRedirectUri("/invalidRedirect")
                                                            .Build();
 
@@ -77,6 +84,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_ClientIdentifierMissing_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithClientId(string.Empty)
                                                            .Build();
 
@@ -95,11 +104,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_ClientIdentifierInvalid_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithClientId("\u0019")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
-
+            
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
 
@@ -113,6 +124,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_EmptyQuery_InformUserNoRedirect()
         {
+            await this.Authenticate();
+
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint);
 
@@ -125,6 +138,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_RequiredParameterMissing_RedirectWithError()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().Build();
 
             var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}";
@@ -144,6 +159,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_InvalidParameter_RedirectWithError()
         {
+            await this.Authenticate();
+
             const string InvalidState = "ä";
             var request = new AuthorizationRequestBuilder().WithState(InvalidState)
                                                            .Build();
@@ -166,6 +183,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_ClientNotAuthorized_RedirectWithError()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().Build();
 
             var requestString = this.ToRequestString(request);
@@ -191,6 +210,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_UnsupportedResponseType_RedirectWithError()
         {
+            await this.Authenticate();
+            
             var request = new AuthorizationRequestBuilder()
                           .WithClientId(Constants.DefaultClientId)
                           .WithResponseType("unsupported")
@@ -218,6 +239,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task Invoke_ScopeWithInvalidCharacter_RedirectWithError()
         {
+            await this.Authenticate();
+
             var request = new AuthorizationRequestBuilder().WithScope("ä")
                                                            .Build();
 
