@@ -29,6 +29,7 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
             _collection.AddScoped<IOAuthClientService, DummyOAuthClientService>();
+            _collection.AddScoped<IScopeService, DummyScopeService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -212,6 +213,22 @@ namespace Codeworx.Identity.Configuration
                 public string Identifier => Constants.DefaultClientId;
 
                 public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+            }
+        }
+
+        private class DummyScopeService : IScopeService
+        {
+            public Task<IEnumerable<IScope>> GetScopes()
+            {
+                return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
+                                                            {
+                                                                new DummyScope()
+                                                            });
+            }
+
+            private class DummyScope : IScope
+            {
+                public string ScopeKey => Constants.DefaultScopeKey;
             }
         }
 

@@ -10,13 +10,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
         private readonly IOAuthClientService _oAuthClientService;
+        private readonly IScopeService _scopeService;
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IOAuthClientService oAuthClientService)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IOAuthClientService oAuthClientService, IScopeService scopeService)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _oAuthClientService = oAuthClientService;
+            _scopeService = scopeService;
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IUser user, string currentTenantIdentifier)
@@ -26,6 +28,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
             {
                 return new UnauthorizedClientResult(request.State, request.RedirectUri);
+            }
+
+            var scopes = await _scopeService.GetScopes()
+                                            .ConfigureAwait(false);
+
+            var scopeKeys = scopes
+                .Select(s => s.ScopeKey)
+                .ToList();
+
+            if (request.Scope?
+                       .Split(' ')
+                       .Any(p => !scopeKeys.Contains(p)) == true)
+            {
+                return new UnknownScopeResult(request.State, request.RedirectUri);
             }
 
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, user)

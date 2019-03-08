@@ -231,9 +231,25 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public void Invoke_ScopeUnknown_RedirectWithError()
+        public async Task Invoke_ScopeUnknown_RedirectWithError()
         {
-            throw new NotImplementedException();
+            await this.Authenticate();
+
+            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultClientId)
+                                                           .WithScope("unknown")
+                                                           .Build();
+
+            var requestString = this.ToRequestString(request);
+
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
+
+            var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
+            Assert.Equal(1, queryParts.Length);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidScope}", queryParts[0]);
         }
 
         [Fact]
