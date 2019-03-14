@@ -5,9 +5,9 @@ using Codeworx.Identity.OAuth.Binding.AuthorizationCodeToken;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeTokenRequestBinder : IRequestBinder<AuthorizationCodeTokenRequest, object>
+    public class AuthorizationCodeTokenRequestBinder : IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>
     {
-        public IRequestBindingResult<AuthorizationCodeTokenRequest, object> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
+        public IRequestBindingResult<AuthorizationCodeTokenRequest, TokenErrorResponse> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
         {
             IReadOnlyCollection<string> clientId = null;
             IReadOnlyCollection<string> redirectUri = null;

@@ -52,9 +52,10 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddTransient<IAuthorizationCodeCacheKeyBuilder, AuthorizationCodeCacheKeyBuilder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, object>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
 
