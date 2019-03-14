@@ -15,14 +15,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly RequestDelegate _next;
         private readonly IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> _tokenRequestBinder;
         private readonly IResponseBinder<TokenErrorResponse> _tokenErrorResponseBinder;
+        private readonly IResponseBinder<TokenResponse> _tokenResponseBinder;
 
         public TokenMiddleware(RequestDelegate next,
                                IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> tokenRequestBinder,
-                               IResponseBinder<TokenErrorResponse> tokenErrorResponseBinder)
+                               IResponseBinder<TokenErrorResponse> tokenErrorResponseBinder,
+                               IResponseBinder<TokenResponse> tokenResponseBinder)
         {
             _next = next;
             _tokenRequestBinder = tokenRequestBinder;
             _tokenErrorResponseBinder = tokenErrorResponseBinder;
+            _tokenResponseBinder = tokenResponseBinder;
         }
 
         public async Task Invoke(HttpContext context, ITokenService tokenService)
@@ -51,7 +54,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 }
                 else if (result.Response != null)
                 {
-                    await context.Response.WriteAsync("Token endpoint");
+                    await _tokenResponseBinder.RespondAsync(result.Response, context);
                 }
             }
         }
