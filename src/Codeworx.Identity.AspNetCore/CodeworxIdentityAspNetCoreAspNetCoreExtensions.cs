@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -28,6 +29,7 @@ namespace Codeworx.Identity.AspNetCore
             var builder = new IdentityServiceBuilder(collection, authenticationScheme);
             builder.AddPart(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
             builder.View<DefaultViewTemplate>();
+            builder.Pbkdf2();
 
             collection.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
             collection.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));

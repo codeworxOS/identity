@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
+using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -198,21 +199,43 @@ namespace Codeworx.Identity.Configuration
 
         private class DummyOAuthClientService : IOAuthClientService
         {
+            private readonly IHashingProvider _hashingProvider;
+
+            public DummyOAuthClientService(IHashingProvider hashingProvider)
+            {
+                _hashingProvider = hashingProvider;
+            }
+
             public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
             {
+                var salt = _hashingProvider.CrateSalt();
+                var hash = _hashingProvider.Hash("clientSecret", salt);
+
                 return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(new List<IOAuthClientRegistration>
                                                                               {
-                                                                                  new DummyOAuthAuthorizationCodeClientRegistration()
+                                                                                  new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
                                                                               });
             }
 
             private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
             {
+                public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+                {
+                    this.ClientSecretHash = clientSecretHash;
+                    this.ClientSecretSalt = clientSecretSalt;
+                }
+
                 public string TenantIdentifier => Constants.DefaultTenantId;
 
                 public string Identifier => Constants.DefaultClientId;
 
                 public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+
+                public byte[] ClientSecretHash { get; }
+
+                public byte[] ClientSecretSalt { get; }
+
+                public bool IsConfidential => true;
             }
         }
 
