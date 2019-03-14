@@ -64,6 +64,8 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
+            collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
+            collection.AddScoped<ITokenService, TokenService>();
 
             collection.AddScoped<AuthenticatedUserInformation>();
 
