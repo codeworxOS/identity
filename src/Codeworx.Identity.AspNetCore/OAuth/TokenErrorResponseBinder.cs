@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            if (response.Error == Identity.OAuth.Constants.Error.InvalidClient)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+                if (AuthenticationHeaderValue.TryParse(context.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
+                {
+                    context.Response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
+                }
+            }
+            else
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            }
             
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
             context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");

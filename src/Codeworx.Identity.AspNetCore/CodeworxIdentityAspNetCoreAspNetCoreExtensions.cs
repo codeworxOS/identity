@@ -62,6 +62,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
+            collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();

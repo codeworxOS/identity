@@ -199,22 +199,27 @@ namespace Codeworx.Identity.Configuration
 
         private class DummyOAuthClientService : IOAuthClientService
         {
-            private readonly IHashingProvider _hashingProvider;
+            private readonly List<IOAuthClientRegistration> _oAuthClientRegistrations;
 
             public DummyOAuthClientService(IHashingProvider hashingProvider)
             {
-                _hashingProvider = hashingProvider;
+                var salt = hashingProvider.CrateSalt();
+                var hash = hashingProvider.Hash("clientSecret", salt);
+
+                _oAuthClientRegistrations = new List<IOAuthClientRegistration>
+                                            {
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
+                                            };
             }
 
             public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
             {
-                var salt = _hashingProvider.CrateSalt();
-                var hash = _hashingProvider.Hash("clientSecret", salt);
+                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(_oAuthClientRegistrations);
+            }
 
-                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(new List<IOAuthClientRegistration>
-                                                                              {
-                                                                                  new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
-                                                                              });
+            public Task<IOAuthClientRegistration> GetById(string clientIdentifier)
+            {
+                return Task.FromResult(_oAuthClientRegistrations.First());
             }
 
             private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration

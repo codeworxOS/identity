@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.OAuth
 {
-    public interface IClientAuthenticator
+    public interface IClientAuthenticationService
     {
 #pragma warning disable SA1009 //Justification: ValueTuple
 #pragma warning disable SA1008 //Justification: ValueTuple

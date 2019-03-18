@@ -11,13 +11,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IEnumerable<ITokenFlowService> _tokenFlowServices;
         private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
-        private readonly IClientAuthenticator _clientAuthenticator;
+        private readonly IClientAuthenticationService _clientAuthenticationService;
 
-        public TokenService(IEnumerable<ITokenFlowService> tokenFlowServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticator clientAuthenticator)
+        public TokenService(IEnumerable<ITokenFlowService> tokenFlowServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
         {
             _tokenFlowServices = tokenFlowServices;
             _requestValidator = requestValidator;
-            _clientAuthenticator = clientAuthenticator;
+            _clientAuthenticationService = clientAuthenticationService;
         }
 
         public async Task<ITokenResult> AuthorizeRequest(TokenRequest request, (string ClientId, string ClientSecret)? authorizationHeader)
@@ -39,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedGrantTypeResult();
             }
 
-            var clientAuthorizationResult = await _clientAuthenticator.AuthenticateClient(request, authorizationHeader)
+            var clientAuthorizationResult = await _clientAuthenticationService.AuthenticateClient(request, authorizationHeader)
                                                                 .ConfigureAwait(false);
             if (clientAuthorizationResult != null)
             {
