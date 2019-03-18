@@ -20,9 +20,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 throw new ArgumentNullException(nameof(context));
             }
-
-            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-
+            
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
             context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
             context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");

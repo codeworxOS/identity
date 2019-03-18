@@ -45,7 +45,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
-            Assert.Equal(StatusCodes.Status400BadRequest, context.Response.StatusCode);
+            Assert.Equal(200, context.Response.StatusCode);
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
