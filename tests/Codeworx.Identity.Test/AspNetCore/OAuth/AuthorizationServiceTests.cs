@@ -5,7 +5,7 @@ using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
-using Codeworx.Identity.OAuth.Validation;
+using Codeworx.Identity.OAuth.Validation.Authorization;
 using Moq;
 using Xunit;
 
