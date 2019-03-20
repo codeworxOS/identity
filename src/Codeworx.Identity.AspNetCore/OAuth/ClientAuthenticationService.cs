@@ -25,7 +25,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                                                                                                            !string.IsNullOrEmpty(authorizationHeader?.ClientId),
                                                                                                                            !string.IsNullOrEmpty(authorizationHeader?.ClientSecret));
 
-            if (requestClientSecretHasValue && headerClientSecretHasValue)
+            if (requestClientSecretHasValue && headerClientSecretHasValue
+                || requestClientIdHasValue && headerClientIdHasValue && request?.ClientId != authorizationHeader?.ClientId)
             {
                 return (new InvalidRequestResult(), null);
             }

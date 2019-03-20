@@ -138,12 +138,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task AuthorizeRequest_InvalidGrant_ReturnsError()
-        {
-            throw new NotImplementedException();
-        }
-
-        [Fact]
         public async Task AuthorizeRequest_UnauthorizedClient_ReturnsError()
         {
             var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("unAuthorized")

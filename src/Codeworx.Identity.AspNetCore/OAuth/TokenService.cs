@@ -55,10 +55,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 return new UnauthorizedClientResult();
             }
-
-            //ToDo: Check grant
-
-            //ToDo: Check scopes
+            
+            //ToDo: Check scopes (invalid_scope)
 
             var tokenResult = await tokenFlowService.AuthorizeRequest(request, authorizationHeader)
                                                     .ConfigureAwait(false);

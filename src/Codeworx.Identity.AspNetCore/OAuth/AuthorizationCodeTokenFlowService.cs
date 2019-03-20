@@ -16,6 +16,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(request));
             }
             
+            //ToDo: Check grant (invalid_grant)
+
             return new SuccessfulTokenResult(null, null);
         }
     }
