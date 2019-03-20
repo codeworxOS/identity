@@ -24,9 +24,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, header);
 
-            Assert.IsType<InvalidRequestResult>(result);
+            Assert.IsType<InvalidRequestResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -41,9 +42,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, null);
 
-            Assert.IsType<InvalidClientResult>(result);
+            Assert.IsType<InvalidClientResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -60,9 +62,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, header);
 
-            Assert.IsType<InvalidClientResult>(result);
+            Assert.IsType<InvalidClientResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -77,9 +80,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, null);
 
-            Assert.IsType<InvalidClientResult>(result);
+            Assert.IsType<InvalidClientResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -105,9 +109,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, header);
 
-            Assert.IsType<InvalidClientResult>(result);
+            Assert.IsType<InvalidClientResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -132,9 +137,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, null);
 
-            Assert.IsType<InvalidClientResult>(result);
+            Assert.IsType<InvalidClientResult>(tokenResult);
+            Assert.Null(clientRegistration);
         }
 
         [Fact]
@@ -160,9 +166,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, header);
 
-            Assert.Null(result);
+            Assert.Null(tokenResult);
+            Assert.Same(clientRegistrationStub.Object, clientRegistration);
         }
 
         [Fact]
@@ -186,9 +193,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null);
+            var (tokenResult, clientRegistration) = await instance.AuthenticateClient(request, null);
 
-            Assert.Null(result);
+            Assert.Null(tokenResult);
+            Assert.Same(clientRegistrationStub.Object, clientRegistration);
         }
     }
 }

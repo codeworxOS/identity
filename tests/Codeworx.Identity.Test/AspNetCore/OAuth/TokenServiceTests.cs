@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 using Moq;
@@ -55,7 +56,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
                                 .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
+            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
+                                  .Returns(request.GrantType);
+
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
+            clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
+                                    .ReturnsAsync((null, clientRegistrationStub.Object));
 
             var instance = new TokenService(new List<ITokenFlowService> {tokenFlowServiceStub.Object}, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
@@ -99,7 +106,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
-                                           .ReturnsAsync(new InvalidClientResult());
+                                           .ReturnsAsync((new InvalidClientResult(), null));
 
             var instance = new TokenService(new List<ITokenFlowService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
@@ -121,7 +128,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
-                                           .ReturnsAsync(new InvalidRequestResult());
+                                    .ReturnsAsync((new InvalidRequestResult(), null));
 
             var instance = new TokenService(new List<ITokenFlowService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
@@ -139,7 +146,30 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_UnauthorizedClient_ReturnsError()
         {
-            throw new NotImplementedException();
+            var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("unAuthorized")
+                                                                    .Build();
+
+            var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, TokenErrorResponse>>();
+
+            var tokenFlowServiceStub = new Mock<ITokenFlowService>();
+            tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
+                                .Returns(request.GrantType);
+            tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
+                                .ReturnsAsync(new SuccessfulTokenResult(null, null));
+
+            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
+                                  .Returns("Authorized");
+
+            var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
+            clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
+                                    .ReturnsAsync((null, clientRegistrationStub.Object));
+
+            var instance = new TokenService(new List<ITokenFlowService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, null);
+
+            Assert.IsType<UnauthorizedClientResult>(result);
         }
 
         [Fact]

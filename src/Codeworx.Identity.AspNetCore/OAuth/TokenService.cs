@@ -39,14 +39,22 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedGrantTypeResult();
             }
 
-            var clientAuthorizationResult = await _clientAuthenticationService.AuthenticateClient(request, authorizationHeader)
-                                                                .ConfigureAwait(false);
-            if (clientAuthorizationResult != null)
+            var (clientAuthenticationResult, clientRegistration) = await _clientAuthenticationService.AuthenticateClient(request, authorizationHeader)
+                                                                                 .ConfigureAwait(false);
+            if (clientAuthenticationResult != null)
             {
-                return clientAuthorizationResult;
+                return clientAuthenticationResult;
             }
 
-            //ToDo: Check if client may use grantType
+            if (clientRegistration == null)
+            {
+                return new InvalidClientResult();
+            }
+
+            if (clientRegistration.SupportedOAuthMode != request.GrantType)
+            {
+                return new UnauthorizedClientResult();
+            }
 
             //ToDo: Check grant
 
