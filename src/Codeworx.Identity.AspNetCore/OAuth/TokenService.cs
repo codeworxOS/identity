@@ -58,7 +58,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             
             //ToDo: Check scopes (invalid_scope)
 
-            var tokenResult = await tokenFlowService.AuthorizeRequest(request, authorizationHeader)
+            var tokenResult = await tokenFlowService.AuthorizeRequest(request)
                                                     .ConfigureAwait(false);
 
             return tokenResult;

@@ -53,7 +53,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var tokenFlowServiceStub = new Mock<ITokenFlowService>();
             tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
                                 .Returns(request.GrantType);
-            tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
+            tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>()))
                                 .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
             var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
@@ -148,7 +148,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var tokenFlowServiceStub = new Mock<ITokenFlowService>();
             tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
                                 .Returns(request.GrantType);
-            tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
+            tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>()))
                                 .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
             var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
