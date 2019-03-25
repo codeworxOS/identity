@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -23,11 +25,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 throw new ArgumentNullException(nameof(request));
             }
-            
-            //ToDo: Check grant (invalid_grant)
-            var grantInformation = await _cache.GetStringAsync(authorizationCodeTokenRequest.Code)
+
+            var cachedGrantInformation = await _cache.GetStringAsync(authorizationCodeTokenRequest.Code)
                                                      .ConfigureAwait(false);
-            if (string.IsNullOrWhiteSpace(grantInformation))
+            if (string.IsNullOrWhiteSpace(cachedGrantInformation))
+            {
+                return new InvalidGrantResult();
+            }
+
+            var deserializedGrantInformation = JsonConvert.DeserializeObject<Dictionary<string, string>>(cachedGrantInformation);
+            if (deserializedGrantInformation == null
+                || !deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out var redirectUri)
+                || redirectUri != request.RedirectUri
+                || !deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ClientIdName, out var clientId)
+                || clientId != request.ClientId)
             {
                 return new InvalidGrantResult();
             }
