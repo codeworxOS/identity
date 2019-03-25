@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -54,8 +56,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request)
                                                                      .ConfigureAwait(false);
 
+            var grantInformation = new Dictionary<string, string>
+                                   {
+                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
+                                       {Identity.OAuth.Constants.ClientIdName, request.ClientId}
+                                   };
+
             await _cache.SetStringAsync(authorizationCode,
-                                        "ToDo:SomeFurtherToBeDefinedValue", //ToDo: Define value which needs to be cached
+                                        JsonConvert.SerializeObject(grantInformation),
                                         new DistributedCacheEntryOptions
                                         {
                                             AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds)
