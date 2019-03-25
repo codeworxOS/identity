@@ -307,14 +307,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
 
             var cache = this.TestServer.Host.Services.GetRequiredService<IDistributedCache>();
-            var cacheKeyBuilder = this.TestServer.Host.Services.GetRequiredService<IAuthorizationCodeCacheKeyBuilder>();
-
-            var cacheKey = cacheKeyBuilder.Get(request, Constants.DefaultAdminUserId);
-            var code = await cache.GetStringAsync(cacheKey);
-
+            
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={code}", queryParts[0]);
+
+            var grantInformation = await cache.GetStringAsync(queryParts[0].Split("=")[1]);
+            Assert.False(string.IsNullOrWhiteSpace(grantInformation));
         }
     }
 }

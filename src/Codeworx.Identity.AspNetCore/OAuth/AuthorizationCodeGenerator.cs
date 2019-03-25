@@ -4,9 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
@@ -14,8 +12,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationCodeGenerator : IAuthorizationCodeGenerator
     {
         private readonly IOptions<AuthorizationCodeOptions> _options;
-        private readonly IDistributedCache _cache;
-        private readonly IAuthorizationCodeCacheKeyBuilder _cacheKeyBuilder;
         private static readonly IReadOnlyCollection<char> _allowedCharacters;
 
         static AuthorizationCodeGenerator()
@@ -30,25 +26,18 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _allowedCharacters = allowedCharacters;
         }
 
-        public AuthorizationCodeGenerator(IOptions<AuthorizationCodeOptions> options, IDistributedCache cache, IAuthorizationCodeCacheKeyBuilder cacheKeyBuilder)
+        public AuthorizationCodeGenerator(IOptions<AuthorizationCodeOptions> options)
         {
-            this._options = options;
-            _cache = cache;
-            _cacheKeyBuilder = cacheKeyBuilder;
+            _options = options;
         }
 
         #region Public Methods
 
-        public async Task<string> GenerateCode(AuthorizationRequest request, IUser user)
+        public Task<string> GenerateCode(AuthorizationRequest request)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
-            }
-
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
             }
             
             var authorizationCodeBuilder = new StringBuilder();
@@ -68,15 +57,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var authorizationCode = authorizationCodeBuilder.ToString();
 
-            await _cache.SetStringAsync(_cacheKeyBuilder.Get(request, user.Identity),
-                                        authorizationCode,
-                                        new DistributedCacheEntryOptions
-                                        {
-                                            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds)
-                                        })
-                        .ConfigureAwait(false);
-
-            return authorizationCode;
+            return Task.FromResult(authorizationCode);
         }
 
         #endregion

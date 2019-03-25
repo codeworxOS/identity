@@ -52,7 +52,6 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.Configure<AuthorizationCodeOptions>(configuration.GetSection("AuthorizationCode"));
 
-            collection.AddTransient<IAuthorizationCodeCacheKeyBuilder, AuthorizationCodeCacheKeyBuilder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
