@@ -123,7 +123,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
             Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[1]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", WebUtility.UrlDecode(queryParts[1]));
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(4, queryParts.Length);
             Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={ExpectedError}", queryParts[0]);
             Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={ExpectedDescription}", queryParts[1]);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", queryParts[2]);
+            Assert.Equal($"{Identity.OAuth.Constants.ErrorUriName}={ExpectedUri}", WebUtility.UrlDecode(queryParts[2]));
             Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[3]);
         }
     }

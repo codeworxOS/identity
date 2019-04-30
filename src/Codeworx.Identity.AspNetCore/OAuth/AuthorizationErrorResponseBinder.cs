@@ -26,24 +26,22 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else
             {
-                var redirectUriBuilder = new UriBuilder(response.RedirectUri)
-                                         {
-                                             Query = $"?{Identity.OAuth.Constants.ErrorName}={response.Error}"
-                                         };
+                var redirectUriBuilder = new UriBuilder(response.RedirectUri);
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, response.Error);
 
                 if (!string.IsNullOrWhiteSpace(response.ErrorDescription))
                 {
-                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.ErrorDescriptionName}={response.ErrorDescription}";
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, response.ErrorDescription);
                 }
 
                 if (!string.IsNullOrWhiteSpace(response.ErrorUri))
                 {
-                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.ErrorUriName}={response.ErrorUri}";
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, response.ErrorUri);
                 }
 
                 if (!string.IsNullOrWhiteSpace(response.State))
                 {
-                    redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.StateName}={response.State}";
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, response.State);
                 }
 
                 context.Response.Redirect(redirectUriBuilder.Uri.ToString());

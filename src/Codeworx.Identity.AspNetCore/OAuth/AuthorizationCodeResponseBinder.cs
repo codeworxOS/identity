@@ -19,14 +19,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var redirectUriBuilder = new UriBuilder(response.RedirectUri)
-                                     {
-                                         Query = $"?{Identity.OAuth.Constants.CodeName}={response.Code}"
-                                     };
+            var redirectUriBuilder = new UriBuilder(response.RedirectUri);
+            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName,response.Code);
 
             if (!string.IsNullOrWhiteSpace(response.State))
             {
-                redirectUriBuilder.Query += $"&{Identity.OAuth.Constants.StateName}={response.State}";
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName,response.State);
             }
 
             context.Response.Redirect(redirectUriBuilder.Uri.ToString());
