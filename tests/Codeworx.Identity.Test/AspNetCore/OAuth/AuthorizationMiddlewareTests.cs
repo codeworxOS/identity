@@ -311,7 +311,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
 
-            var grantInformation = await cache.GetStringAsync(queryParts[0].Split("=")[1]);
+            var grantInformation = await cache.GetStringAsync(WebUtility.UrlDecode(queryParts[0].Split("=")[1]));
             Assert.False(string.IsNullOrWhiteSpace(grantInformation));
         }
     }
