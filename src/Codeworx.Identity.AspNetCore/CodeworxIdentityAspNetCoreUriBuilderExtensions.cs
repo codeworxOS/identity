@@ -9,6 +9,11 @@ namespace System
             parameterName = WebUtility.UrlEncode(parameterName.Trim('&', '?'));
             parameterValue = WebUtility.UrlEncode(parameterValue);
 
+            if (string.IsNullOrWhiteSpace(parameterName))
+            {
+                throw new ArgumentNullException(nameof(parameterName));
+            }
+
             var queryPart = $"{parameterName}={parameterValue}";
 
             if (uriBuilder.Query.Length > 1)
@@ -17,7 +22,7 @@ namespace System
             }
             else
             {
-                uriBuilder.Query = queryPart ?? string.Empty;
+                uriBuilder.Query = queryPart;
             }
         }
     }
