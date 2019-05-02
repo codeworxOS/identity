@@ -28,6 +28,8 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IUserService, DummyUserService>();
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
+            _collection.AddScoped<IOAuthClientService, DummyOAuthClientService>();
+            _collection.AddScoped<IScopeService, DummyScopeService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -191,6 +193,42 @@ namespace Codeworx.Identity.Configuration
                 public byte[] PasswordHash => null;
 
                 public byte[] PasswordSalt => null;
+            }
+        }
+
+        private class DummyOAuthClientService : IOAuthClientService
+        {
+            public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
+            {
+                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(new List<IOAuthClientRegistration>
+                                                                              {
+                                                                                  new DummyOAuthAuthorizationCodeClientRegistration()
+                                                                              });
+            }
+
+            private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
+            {
+                public string TenantIdentifier => Constants.DefaultTenantId;
+
+                public string Identifier => Constants.DefaultClientId;
+
+                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+            }
+        }
+
+        private class DummyScopeService : IScopeService
+        {
+            public Task<IEnumerable<IScope>> GetScopes()
+            {
+                return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
+                                                            {
+                                                                new DummyScope()
+                                                            });
+            }
+
+            private class DummyScope : IScope
+            {
+                public string ScopeKey => Constants.DefaultScopeKey;
             }
         }
 

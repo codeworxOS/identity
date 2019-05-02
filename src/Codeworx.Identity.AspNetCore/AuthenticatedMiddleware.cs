@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,37 +11,32 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public abstract class AuthenticatedMiddleware
+    public class AuthenticatedMiddleware
     {
-        protected RequestDelegate Next;
+        private readonly RequestDelegate _next;
+        private readonly Configuration.IdentityService _service;
 
-        protected AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
-            Next = next;
-            Service = service;
+            _next = next;
+            _service = service;
         }
 
-        protected Configuration.IdentityService Service { get; }
-
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
         {
-            var result = await context.AuthenticateAsync(Service.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(_service.AuthenticationScheme);
 
             if (result.Succeeded)
             {
-                await OnInvokeAsync(context, result.Principal);
+                authenticatedUserInformation.Principal = result.Principal;
+                await _next(context);
                 return;
             }
-            else if (result.Failure == null)
+
+            if (result.Failure == null)
             {
-                await context.ChallengeAsync(Service.AuthenticationScheme);
-                return;
+                await context.ChallengeAsync(_service.AuthenticationScheme);
             }
-
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return;
         }
-
-        protected abstract Task OnInvokeAsync(HttpContext context, IPrincipal principal);
     }
 }
