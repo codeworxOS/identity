@@ -6,7 +6,7 @@ using Codeworx.Identity.OAuth.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationTokenFlowService: IAuthorizationFlowService
+    public class AuthorizationTokenFlowService : IAuthorizationFlowService
     {
         private readonly IOAuthClientService _oAuthClientService;
         private readonly IScopeService _scopeService;
@@ -38,12 +38,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             if (!string.IsNullOrEmpty(request.Scope)
                 && request.Scope
                           .Split(' ')
-                          .Any(p => !scopeKeys.Contains(p)) == true)
+                          .Any(p => scopeKeys.Contains(p) == false))
             {
                 return new UnknownScopeResult(request.State, request.RedirectUri);
             }
 
-            throw new NotImplementedException();
+            return new SuccessfulTokenAuthorizationResult(request.State, "AuthorizationToken", request.RedirectUri);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
@@ -36,7 +37,81 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope("unknownScope")
                                                            .Build();
 
+            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.Identifier)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
+                                  .Returns(Identity.OAuth.Constants.ResponseType.Token);
 
+            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
+                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
+
+            var scopeStub = new Mock<IScope>();
+            scopeStub.SetupGet(p => p.ScopeKey)
+                     .Returns(KnownScope);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+            scopeServiceStub.Setup(p => p.GetScopes())
+                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
+
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, string.Empty);
+
+            Assert.IsType<UnknownScopeResult>(result);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequestWithoutScope_ReturnsResponse()
+        {
+            const string AuthorizationToken = "AuthorizationToken";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            const string KnownScope = "knownScope";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithScope(null)
+                                                           .Build();
+
+            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
+            var scopeStub = new Mock<IScope>();
+            var scopeServiceStub = new Mock<IScopeService>();
+
+            clientRegistrationStub.SetupGet(p => p.Identifier)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
+                                  .Returns(Identity.OAuth.Constants.ResponseType.Token);
+
+            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
+                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
+
+            scopeStub.SetupGet(p => p.ScopeKey)
+                     .Returns(KnownScope);
+
+            scopeServiceStub.Setup(p => p.GetScopes())
+                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
+
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, string.Empty);
+
+            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
+            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequestWithEmptyScope_ReturnsResponse()
+        {
+            const string AuthorizationToken = "AuthorizationToken";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            const string KnownScope = "knownScope";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithScope(string.Empty)
+                                                           .Build();
 
             var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.Identifier)
@@ -46,7 +121,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var oAuthClientServiceStub = new Mock<IOAuthClientService>();
             oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -54,13 +129,52 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var scopeServiceStub = new Mock<IScopeService>();
             scopeServiceStub.Setup(p => p.GetScopes())
-                            .ReturnsAsync(new List<IScope> { scopeStub.Object });
+                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
 
             var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request, String.Empty);
 
-            Assert.IsType<UnknownScopeResult>(result);
+            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
+            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequestWithScope_ReturnsResponse()
+        {
+            const string AuthorizationToken = "AuthorizationToken";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            const string KnownScope = "knownScope";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithScope(KnownScope)
+                                                           .Build();
+
+            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.Identifier)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
+                                  .Returns(Identity.OAuth.Constants.ResponseType.Token);
+
+            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
+                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
+
+            var scopeStub = new Mock<IScope>();
+            scopeStub.SetupGet(p => p.ScopeKey)
+                     .Returns(KnownScope);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+            scopeServiceStub.Setup(p => p.GetScopes())
+                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
+
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+
+            var result = await instance.AuthorizeRequest(request, String.Empty);
+
+            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
+            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
         }
     }
 }
