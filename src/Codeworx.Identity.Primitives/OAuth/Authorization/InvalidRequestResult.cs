@@ -11,8 +11,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             _validationResult = validationResult ?? throw new ArgumentNullException(nameof(validationResult));
         }
 
-        public AuthorizationErrorResponse Error => _validationResult.Error;
-
-        public AuthorizationCodeResponse Response => null;
+        public AuthorizationResponse Response => _validationResult.Error;
     }
 }

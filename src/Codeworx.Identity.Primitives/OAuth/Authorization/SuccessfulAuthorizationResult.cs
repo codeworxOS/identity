@@ -7,8 +7,6 @@
             this.Response = new AuthorizationCodeResponse(state, authorizationCode, redirectUri);
         }
 
-        public AuthorizationErrorResponse Error => null;
-
-        public AuthorizationCodeResponse Response { get; }
+        public AuthorizationResponse Response { get; }
     }
 }

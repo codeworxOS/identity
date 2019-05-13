@@ -42,13 +42,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 var result = await authorizationService.AuthorizeRequest(bindingResult.Result, authenticatedUserInformation.IdentityData.Identifier, authenticatedUserInformation.IdentityData.TenantKey);
 
-                if (result.Error != null)
+                if (result.Response is AuthorizationErrorResponse errorResponse)
                 {
-                    await _authorizationErrorResponseBinder.RespondAsync(result.Error, context);
+                    await _authorizationErrorResponseBinder.RespondAsync(errorResponse, context);
                 }
-                else if (result.Response != null)
+                else if (result.Response is AuthorizationCodeResponse codeResponse)
                 {
-                    await _authorizationCodeResponseBinder.RespondAsync(result.Response, context);
+                    await _authorizationCodeResponseBinder.RespondAsync(codeResponse, context);
                 }
             }
         }

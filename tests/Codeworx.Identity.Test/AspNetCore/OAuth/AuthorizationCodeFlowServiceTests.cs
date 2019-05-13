@@ -80,7 +80,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.AuthorizeRequest(request, TenantIdentifier);
 
             Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.AuthorizeRequest(request, TenantIdentifier);
 
             Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.AuthorizeRequest(request, TenantIdentifier);
 
             Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
         [Fact]
@@ -258,7 +258,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.AuthorizeRequest(request, TenantIdentifier);
 
-            var cachedResult = await cache.GetStringAsync(result.Response.Code)
+            var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
 
             Assert.False(string.IsNullOrWhiteSpace(cachedResult));
@@ -305,7 +305,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.AuthorizeRequest(request, TenantIdentifier);
 
-            var cachedResult = await cache.GetStringAsync(result.Response.Code)
+            var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
 
             var grantInformation = JsonConvert.DeserializeObject<Dictionary<string, string>>(cachedResult);

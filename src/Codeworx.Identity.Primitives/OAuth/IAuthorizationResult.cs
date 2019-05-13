@@ -2,8 +2,6 @@
 {
     public interface IAuthorizationResult
     {
-        AuthorizationErrorResponse Error { get; }
-
-        AuthorizationCodeResponse Response { get; }
+        AuthorizationResponse Response { get; }
     }
 }
