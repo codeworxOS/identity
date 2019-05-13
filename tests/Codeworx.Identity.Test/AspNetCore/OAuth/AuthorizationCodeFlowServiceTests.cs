@@ -18,8 +18,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
         {
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
-            
             var request = new AuthorizationRequestBuilder().Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
@@ -33,7 +31,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
             Assert.IsType<UnauthorizedClientResult>(result);
         }
@@ -43,7 +41,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -77,9 +74,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
@@ -88,7 +85,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -122,9 +118,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
@@ -133,7 +129,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -152,7 +147,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var oAuthClientServiceStub = new Mock<IOAuthClientService>();
             oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
+                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -160,16 +155,16 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var scopeServiceStub = new Mock<IScopeService>();
             scopeServiceStub.Setup(p => p.GetScopes())
-                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
+                            .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var options = Options.Create(new AuthorizationCodeOptions());
             var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
@@ -178,7 +173,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -212,7 +206,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
             Assert.IsType<UnknownScopeResult>(result);
         }
@@ -222,7 +216,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -256,7 +249,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
             var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
@@ -269,7 +262,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -303,7 +295,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, string.Empty);
 
             var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);

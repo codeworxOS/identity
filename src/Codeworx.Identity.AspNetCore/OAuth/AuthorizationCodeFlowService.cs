@@ -70,7 +70,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                         })
                         .ConfigureAwait(false);
 
-            return new SuccessfulAuthorizationResult(request.State, authorizationCode, request.RedirectUri);
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectUri);
         }
     }
 }
