@@ -56,6 +56,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationTokenResponse>, AuthorizationTokenResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
@@ -64,6 +65,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();
