@@ -12,16 +12,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly IResponseBinder<AuthorizationErrorResponse> _authorizationErrorResponseBinder;
         private readonly IResponseBinder<AuthorizationCodeResponse> _authorizationCodeResponseBinder;
+        private readonly IResponseBinder<AuthorizationTokenResponse> _authorizationTokenResponseBinder;
 
         public AuthorizationMiddleware(RequestDelegate next,
                                        IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
                                        IResponseBinder<AuthorizationErrorResponse> authorizationErrorResponseBinder,
-                                       IResponseBinder<AuthorizationCodeResponse> authorizationCodeResponseBinder)
+                                       IResponseBinder<AuthorizationCodeResponse> authorizationCodeResponseBinder,
+                                       IResponseBinder<AuthorizationTokenResponse> authorizationTokenResponseBinder)
         {
             _next = next;
             _authorizationRequestBinder = authorizationRequestBinder;
             _authorizationErrorResponseBinder = authorizationErrorResponseBinder;
             _authorizationCodeResponseBinder = authorizationCodeResponseBinder;
+            _authorizationTokenResponseBinder = authorizationTokenResponseBinder;
         }
 
         public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation, IAuthorizationService authorizationService)
@@ -49,6 +52,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 else if (result.Response is AuthorizationCodeResponse codeResponse)
                 {
                     await _authorizationCodeResponseBinder.RespondAsync(codeResponse, context);
+                }
+                else if (result.Response is AuthorizationTokenResponse tokenResponse)
+                {
+                    await _authorizationTokenResponseBinder.RespondAsync(tokenResponse, context);
                 }
             }
         }
