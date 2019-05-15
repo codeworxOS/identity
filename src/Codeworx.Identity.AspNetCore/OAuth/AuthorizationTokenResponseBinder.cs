@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationTokenResponseBinder : IResponseBinder<AuthorizationTokenResponse>
+    public class AuthorizationTokenResponseBinder : IResponseBinder
     {
-        public Task RespondAsync(AuthorizationTokenResponse response, HttpContext context)
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(AuthorizationTokenResponse);
+        }
+
+        public Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
             {
@@ -19,12 +24,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            var redirectUriBuilder = new UriBuilder(response.RedirectUri);
-            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName,response.Token);
-
-            if (!string.IsNullOrWhiteSpace(response.State))
+            if (!(response is AuthorizationTokenResponse authorizationTokenResponse))
             {
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName,response.State);
+                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationTokenResponse)}");
+            }
+
+            var redirectUriBuilder = new UriBuilder(authorizationTokenResponse.RedirectUri);
+            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, authorizationTokenResponse.Token);
+
+            if (!string.IsNullOrWhiteSpace(authorizationTokenResponse.State))
+            {
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationTokenResponse.State);
             }
 
             context.Response.Redirect(redirectUriBuilder.Uri.ToString());

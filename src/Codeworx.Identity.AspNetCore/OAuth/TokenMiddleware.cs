@@ -14,18 +14,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly RequestDelegate _next;
         private readonly IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> _tokenRequestBinder;
-        private readonly IResponseBinder<TokenErrorResponse> _tokenErrorResponseBinder;
-        private readonly IResponseBinder<TokenResponse> _tokenResponseBinder;
+        private readonly IEnumerable<IResponseBinder> _responseBinders;
 
         public TokenMiddleware(RequestDelegate next,
                                IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> tokenRequestBinder,
-                               IResponseBinder<TokenErrorResponse> tokenErrorResponseBinder,
-                               IResponseBinder<TokenResponse> tokenResponseBinder)
+                               IEnumerable<IResponseBinder> responseBinders)
         {
             _next = next;
             _tokenRequestBinder = tokenRequestBinder;
-            _tokenErrorResponseBinder = tokenErrorResponseBinder;
-            _tokenResponseBinder = tokenResponseBinder;
+            _responseBinders = responseBinders;
         }
 
         public async Task Invoke(HttpContext context, ITokenService tokenService)
@@ -34,7 +31,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (bindingResult.Error != null)
             {
-                await _tokenErrorResponseBinder.RespondAsync(bindingResult.Error, context);
+                await _responseBinders.First(p => p.Supports(bindingResult.Error.GetType()))
+                                      .RespondAsync(bindingResult.Error, context);
             }
             else if (bindingResult.Result != null)
             {
@@ -50,11 +48,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
                 if (result.Error != null)
                 {
-                    await _tokenErrorResponseBinder.RespondAsync(result.Error, context);
+                    await _responseBinders.First(p => p.Supports(result.Error.GetType()))
+                                          .RespondAsync(result.Error, context);
                 }
                 else if (result.Response != null)
                 {
-                    await _tokenResponseBinder.RespondAsync(result.Response, context);
+                    await _responseBinders.First(p => p.Supports(result.Response.GetType()))
+                                          .RespondAsync(result.Response, context);
                 }
             }
         }
