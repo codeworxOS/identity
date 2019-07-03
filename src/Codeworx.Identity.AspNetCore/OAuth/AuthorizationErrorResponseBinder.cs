@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationErrorResponseBinder : IResponseBinder<AuthorizationErrorResponse>
+    public class AuthorizationErrorResponseBinder : IResponseBinder
     {
-        public async Task RespondAsync(AuthorizationErrorResponse response, HttpContext context)
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(AuthorizationErrorResponse);
+        }
+
+        public async Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
             {
@@ -19,29 +24,34 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (string.IsNullOrWhiteSpace(response.RedirectUri))
+            if (!(response is AuthorizationErrorResponse authorizationErrorResponse))
             {
-                await context.Response.WriteAsync($"{response.Error}\n{response.ErrorDescription}")
+                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationErrorResponse)}");
+            }
+
+            if (string.IsNullOrWhiteSpace(authorizationErrorResponse.RedirectUri))
+            {
+                await context.Response.WriteAsync($"{authorizationErrorResponse.Error}\n{authorizationErrorResponse.ErrorDescription}")
                              .ConfigureAwait(false);
             }
             else
             {
-                var redirectUriBuilder = new UriBuilder(response.RedirectUri);
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, response.Error);
+                var redirectUriBuilder = new UriBuilder(authorizationErrorResponse.RedirectUri);
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, authorizationErrorResponse.Error);
 
-                if (!string.IsNullOrWhiteSpace(response.ErrorDescription))
+                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.ErrorDescription))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, response.ErrorDescription);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, authorizationErrorResponse.ErrorDescription);
                 }
 
-                if (!string.IsNullOrWhiteSpace(response.ErrorUri))
+                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.ErrorUri))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, response.ErrorUri);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, authorizationErrorResponse.ErrorUri);
                 }
 
-                if (!string.IsNullOrWhiteSpace(response.State))
+                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.State))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, response.State);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationErrorResponse.State);
                 }
 
                 context.Response.Redirect(redirectUriBuilder.Uri.ToString());

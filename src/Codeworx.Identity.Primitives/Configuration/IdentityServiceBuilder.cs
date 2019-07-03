@@ -208,7 +208,8 @@ namespace Codeworx.Identity.Configuration
 
                 _oAuthClientRegistrations = new List<IOAuthClientRegistration>
                                             {
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationTokenClientRegistration(hash, salt),
                                             };
             }
 
@@ -235,6 +236,27 @@ namespace Codeworx.Identity.Configuration
                 public string Identifier => Constants.DefaultClientId;
 
                 public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+
+                public byte[] ClientSecretHash { get; }
+
+                public byte[] ClientSecretSalt { get; }
+
+                public bool IsConfidential => true;
+            }
+
+            private class DummyOAuthAuthorizationTokenClientRegistration : IOAuthClientRegistration
+            {
+                public DummyOAuthAuthorizationTokenClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+                {
+                    this.ClientSecretHash = clientSecretHash;
+                    this.ClientSecretSalt = clientSecretSalt;
+                }
+
+                public string TenantIdentifier => Constants.DefaultTenantId;
+
+                public string Identifier => Constants.DefaultClientId;
+
+                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Token;
 
                 public byte[] ClientSecretHash { get; }
 

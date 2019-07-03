@@ -54,16 +54,18 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationTokenResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenResponseBinder>();
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();

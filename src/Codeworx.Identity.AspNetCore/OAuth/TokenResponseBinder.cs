@@ -7,9 +7,14 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenResponseBinder : IResponseBinder<TokenResponse>
+    public class TokenResponseBinder : IResponseBinder
     {
-        public async Task RespondAsync(TokenResponse response, HttpContext context)
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(TokenResponse);
+        }
+
+        public async Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
             {
@@ -20,12 +25,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 throw new ArgumentNullException(nameof(context));
             }
-            
+
+            if (!(response is TokenResponse tokenResponse))
+            {
+                throw new NotSupportedException($"This binder only supports {typeof(TokenResponse)}");
+            }
+
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
             context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
             context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            var responseString = JsonConvert.SerializeObject(response);
+            var responseString = JsonConvert.SerializeObject(tokenResponse);
 
             await context.Response.WriteAsync(responseString)
                          .ConfigureAwait(false);

@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             flowServiceStub.SetupGet(p => p.SupportedAuthorizationResponseType)
                            .Returns(request.ResponseType);
             flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>(), It.IsAny<string>()))
-                           .ReturnsAsync(new SuccessfulAuthorizationResult("", "", ""));
+                           .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.Identifier)
@@ -86,7 +86,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.AuthorizeRequest(request, UserIdentifier, null);
 
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             flowServiceStub.SetupGet(p => p.SupportedAuthorizationResponseType)
                            .Returns(Identity.OAuth.Constants.ResponseType.Code);
             flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>(), It.IsAny<string>()))
-                           .ReturnsAsync(new SuccessfulAuthorizationResult("", "", ""));
+                           .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.Identifier)

@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeResponseBinder : IResponseBinder
+    public class AuthorizationTokenResponseBinder : IResponseBinder
     {
         public bool Supports(Type responseType)
         {
-            return responseType == typeof(AuthorizationCodeResponse);
+            return responseType == typeof(AuthorizationTokenResponse);
         }
 
         public Task RespondAsync(object response, HttpContext context)
@@ -24,17 +24,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (!(response is AuthorizationCodeResponse authorizationCodeResponse))
+            if (!(response is AuthorizationTokenResponse authorizationTokenResponse))
             {
-                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationCodeResponse)}");
+                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationTokenResponse)}");
             }
 
-            var redirectUriBuilder = new UriBuilder(authorizationCodeResponse.RedirectUri);
-            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName, authorizationCodeResponse.Code);
+            var redirectUriBuilder = new UriBuilder(authorizationTokenResponse.RedirectUri);
+            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, authorizationTokenResponse.Token);
 
-            if (!string.IsNullOrWhiteSpace(authorizationCodeResponse.State))
+            if (!string.IsNullOrWhiteSpace(authorizationTokenResponse.State))
             {
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationCodeResponse.State);
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationTokenResponse.State);
             }
 
             context.Response.Redirect(redirectUriBuilder.Uri.ToString());
