@@ -1,5 +1,5 @@
 ﻿using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.OAuth.Validation;
+using Codeworx.Identity.OAuth.Validation.Authorization;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth

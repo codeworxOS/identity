@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, user, currentTenantIdentifier)
+            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, currentTenantIdentifier)
                                                                     .ConfigureAwait(false);
             
             return authorizationResult;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Validation;
+using Codeworx.Identity.OAuth.Validation.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {

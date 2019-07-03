@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.OAuth.Validation
+﻿namespace Codeworx.Identity.OAuth.Validation.Authorization
 {
     public class RedirectUriInvalidResult : IValidationResult<AuthorizationErrorResponse>
     {

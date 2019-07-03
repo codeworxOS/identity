@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
+using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -198,21 +199,48 @@ namespace Codeworx.Identity.Configuration
 
         private class DummyOAuthClientService : IOAuthClientService
         {
+            private readonly List<IOAuthClientRegistration> _oAuthClientRegistrations;
+
+            public DummyOAuthClientService(IHashingProvider hashingProvider)
+            {
+                var salt = hashingProvider.CrateSalt();
+                var hash = hashingProvider.Hash("clientSecret", salt);
+
+                _oAuthClientRegistrations = new List<IOAuthClientRegistration>
+                                            {
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
+                                            };
+            }
+
             public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
             {
-                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(new List<IOAuthClientRegistration>
-                                                                              {
-                                                                                  new DummyOAuthAuthorizationCodeClientRegistration()
-                                                                              });
+                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(_oAuthClientRegistrations);
+            }
+
+            public Task<IOAuthClientRegistration> GetById(string clientIdentifier)
+            {
+                return Task.FromResult(_oAuthClientRegistrations.First());
             }
 
             private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
             {
+                public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+                {
+                    this.ClientSecretHash = clientSecretHash;
+                    this.ClientSecretSalt = clientSecretSalt;
+                }
+
                 public string TenantIdentifier => Constants.DefaultTenantId;
 
                 public string Identifier => Constants.DefaultClientId;
 
                 public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+
+                public byte[] ClientSecretHash { get; }
+
+                public byte[] ClientSecretSalt { get; }
+
+                public bool IsConfidential => true;
             }
         }
 

@@ -7,5 +7,7 @@ namespace Codeworx.Identity
     public interface IOAuthClientService
     {
         Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier);
+
+        Task<IOAuthClientRegistration> GetById(string clientIdentifier);
     }
 }
