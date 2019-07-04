@@ -51,11 +51,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidClientResult();
             }
 
-            if (clientRegistration.SupportedOAuthMode != request.GrantType)
+            if (!clientRegistration.SupportedFlow.Contains(request.GrantType))
             {
                 return new UnauthorizedClientResult();
             }
-            
+
             //ToDo: Check scopes (invalid_scope)
 
             var tokenResult = await tokenFlowService.AuthorizeRequest(request)

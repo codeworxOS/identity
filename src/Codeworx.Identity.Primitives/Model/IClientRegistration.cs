@@ -1,0 +1,17 @@
+﻿using System.Collections.Generic;
+
+namespace Codeworx.Identity.Model
+{
+    public interface IClientRegistration
+    {
+        string ClientId { get; }
+
+        byte[] ClientSecretHash { get; }
+
+        byte[] ClientSecretSalt { get; }
+
+        IReadOnlyList<string> SupportedFlow { get; }
+
+        IReadOnlyList<string> ValidRedirectUrls { get; }
+    }
+}

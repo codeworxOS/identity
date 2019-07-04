@@ -9,16 +9,16 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class ClientAuthenticationService : IClientAuthenticationService
     {
-        private readonly IOAuthClientService _clientService;
+        private readonly IClientService _clientService;
         private readonly IHashingProvider _hashingProvider;
 
-        public ClientAuthenticationService(IOAuthClientService clientService, IHashingProvider hashingProvider)
+        public ClientAuthenticationService(IClientService clientService, IHashingProvider hashingProvider)
         {
             _clientService = clientService;
             _hashingProvider = hashingProvider;
         }
 
-        public async Task<(ITokenResult TokenResult, IOAuthClientRegistration ClientRegistration)> AuthenticateClient(TokenRequest request, (string ClientId, string ClientSecret)? authorizationHeader)
+        public async Task<(ITokenResult TokenResult, IClientRegistration ClientRegistration)> AuthenticateClient(TokenRequest request, (string ClientId, string ClientSecret)? authorizationHeader)
         {
             var (requestClientIdHasValue, requestClientSecretHasValue, headerClientIdHasValue, headerClientSecretHasValue) = (!string.IsNullOrEmpty(request?.ClientId),
                                                                                                                            !string.IsNullOrEmpty(request?.ClientSecret),

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
@@ -22,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
+            var oAuthClientServiceStub = new Mock<IClientService>();
 
             var scopeServiceStub = new Mock<IScopeService>();
 
@@ -31,7 +32,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<UnauthorizedClientResult>(result);
         }
@@ -51,15 +52,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -74,7 +75,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
@@ -95,15 +96,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -118,7 +119,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
@@ -139,15 +140,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -162,7 +163,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
@@ -183,15 +184,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -206,7 +207,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<UnknownScopeResult>(result);
         }
@@ -226,15 +227,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -249,7 +250,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
@@ -272,15 +273,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -295,7 +296,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, string.Empty);
+            var result = await instance.AuthorizeRequest(request);
 
             var cachedResult = await cache.GetStringAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);

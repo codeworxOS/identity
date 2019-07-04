@@ -4,6 +4,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -18,15 +19,15 @@ namespace Codeworx.Identity.AspNetCore
             _service = service;
         }
 
-        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
+        public async Task Invoke(HttpContext context)
         {
-            if (authenticatedUserInformation?.IdentityData == null)
+            if (context.User == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
-            
-            var data = authenticatedUserInformation.IdentityData;
+
+            var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
 
             if (_service.TryGetContentType(Constants.JsonExtension, out var contentType))
             {
@@ -35,9 +36,9 @@ namespace Codeworx.Identity.AspNetCore
             context.Response.StatusCode = StatusCodes.Status200OK;
 
             var setting = new JsonSerializerSettings
-                          {
-                              ContractResolver = new CamelCasePropertyNamesContractResolver()
-                          };
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
             var ser = JsonSerializer.Create(setting);
 
             using (var streamWriter = new StreamWriter(context.Response.Body))

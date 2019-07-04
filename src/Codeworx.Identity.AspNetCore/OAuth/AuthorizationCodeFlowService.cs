@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
+using Codeworx.Identity.OAuth.Validation.Authorization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -13,14 +14,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationCodeFlowService : IAuthorizationFlowService
     {
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
-        private readonly IOAuthClientService _oAuthClientService;
+        private readonly IClientService _oAuthClientService;
         private readonly IScopeService _scopeService;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IDistributedCache _cache;
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IOAuthClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IDistributedCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IDistributedCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _oAuthClientService = oAuthClientService;
@@ -29,14 +30,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string currentTenantIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
         {
-            var clientRegistrations = await _oAuthClientService.GetForTenantByIdentifier(currentTenantIdentifier);
+            var client = await _oAuthClientService.GetById(request.ClientId);
 
-            if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
-            {
-                return new UnauthorizedClientResult(request.State, request.RedirectUri);
+            if (client == null) {
+                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));/* (request.State, request.RedirectUri);*/
             }
+
+            // TODO Check ResponseType allowed.
+            ////if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
+            ////{
+            ////    return new UnauthorizedClientResult(request.State, request.RedirectUri);
+            ////}
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);

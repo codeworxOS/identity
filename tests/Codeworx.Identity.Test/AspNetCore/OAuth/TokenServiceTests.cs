@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
@@ -56,9 +57,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>()))
                                 .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(request.GrantType);
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>(request.GrantType));
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))
@@ -151,9 +152,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenFlowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<TokenRequest>()))
                                 .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns("Authorized");
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create<string>("Authorized"));
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<(string, string)?>()))

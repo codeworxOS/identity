@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
@@ -21,12 +22,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation, IAuthorizationService authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService)
         {
-            if (authenticatedUserInformation?.IdentityData == null)
+            if (context.User == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
+            }
+
+            IdentityData identity = null;
+
+            if (context.User.Identity is ClaimsIdentity claimsIdentity)
+            {
+                identity = claimsIdentity.ToIdentityData();
             }
 
             var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
@@ -38,7 +46,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if (bindingResult.Result != null)
             {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, authenticatedUserInformation.IdentityData.Identifier, authenticatedUserInformation.IdentityData.TenantKey);
+                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, identity.Identifier);
 
                 await _responseBinders.First(p => p.Supports(result.Response.GetType()))
                                       .RespondAsync(result.Response, context);

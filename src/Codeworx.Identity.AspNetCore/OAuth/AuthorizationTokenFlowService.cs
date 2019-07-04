@@ -3,30 +3,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
+using Codeworx.Identity.OAuth.Validation.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationTokenFlowService : IAuthorizationFlowService
     {
-        private readonly IOAuthClientService _oAuthClientService;
+        private readonly IClientService _oAuthClientService;
         private readonly IScopeService _scopeService;
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Token;
 
-        public AuthorizationTokenFlowService(IOAuthClientService oAuthClientService, IScopeService scopeService)
+        public AuthorizationTokenFlowService(IClientService oAuthClientService, IScopeService scopeService)
         {
             _oAuthClientService = oAuthClientService;
             _scopeService = scopeService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string currentTenantIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
         {
-            var clientRegistrations = await _oAuthClientService.GetForTenantByIdentifier(currentTenantIdentifier);
+            var client = await _oAuthClientService.GetById(request.ClientId);
 
-            if (clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType) == false)
+            if (client == null)
             {
-                return new UnauthorizedClientResult(request.State, request.RedirectUri);
+                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
             }
+
+            // TODO check if response type is allowed
+            ////if (clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType) == false)
+            ////{
+            ////    return new UnauthorizedClientResult(request.State, request.RedirectUri);
+            ////}
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);

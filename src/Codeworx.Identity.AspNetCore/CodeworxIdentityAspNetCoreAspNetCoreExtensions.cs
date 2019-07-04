@@ -70,8 +70,6 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();
 
-            collection.AddScoped<AuthenticatedUserInformation>();
-
             return builder;
         }
 
@@ -134,15 +132,15 @@ namespace Codeworx.Identity.AspNetCore
                         p => p.UseMiddleware<TokenMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.OauthEndpoint),
-                       p => p.UseMiddleware<AuthenticatedMiddleware>()
-                             .UseMiddleware<AuthorizationMiddleware>())
+                       p => p
+                            .UseMiddleware<AuthenticatedMiddleware>()
+                            .UseMiddleware<AuthorizationMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                         p => p.UseMiddleware<LoginMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
-                       p => p.UseMiddleware<AuthenticatedMiddleware>()
-                             .UseMiddleware<ProfileMiddleware>())
+                       p => p.UseMiddleware<ProfileMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
                         p => p.UseMiddleware<WindowsLoginMiddleware>())

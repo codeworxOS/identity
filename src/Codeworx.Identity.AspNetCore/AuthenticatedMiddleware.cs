@@ -22,21 +22,16 @@ namespace Codeworx.Identity.AspNetCore
             _service = service;
         }
 
-        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation)
+        public async Task Invoke(HttpContext context)
         {
             var result = await context.AuthenticateAsync(_service.AuthenticationScheme);
 
             if (result.Succeeded)
             {
-                authenticatedUserInformation.Principal = result.Principal;
                 await _next(context);
                 return;
             }
-
-            if (result.Failure == null)
-            {
-                await context.ChallengeAsync(_service.AuthenticationScheme);
-            }
+            await context.ChallengeAsync(_service.AuthenticationScheme);
         }
     }
 }

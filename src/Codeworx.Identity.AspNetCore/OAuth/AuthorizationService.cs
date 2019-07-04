@@ -20,7 +20,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier, string currentTenantIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
         {
             if (request == null)
             {
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, currentTenantIdentifier)
+            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request)
                                                                     .ConfigureAwait(false);
             
             return authorizationResult;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IUserService, DummyUserService>();
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
-            _collection.AddScoped<IOAuthClientService, DummyOAuthClientService>();
+            _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
         }
 
@@ -197,72 +198,71 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyOAuthClientService : IOAuthClientService
+        private class DummyOAuthClientService : IClientService
         {
-            private readonly List<IOAuthClientRegistration> _oAuthClientRegistrations;
+            private readonly List<IClientRegistration> _oAuthClientRegistrations;
 
             public DummyOAuthClientService(IHashingProvider hashingProvider)
             {
                 var salt = hashingProvider.CrateSalt();
                 var hash = hashingProvider.Hash("clientSecret", salt);
 
-                _oAuthClientRegistrations = new List<IOAuthClientRegistration>
+                _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
-                                                new DummyOAuthAuthorizationTokenClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
             }
 
-            public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
+            public Task<IEnumerable<IClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
             {
-                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(_oAuthClientRegistrations);
+                return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
             }
 
-            public Task<IOAuthClientRegistration> GetById(string clientIdentifier)
+            public Task<IClientRegistration> GetById(string clientIdentifier)
             {
                 return Task.FromResult(_oAuthClientRegistrations.First());
             }
 
-            private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
+            private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
             {
                 public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
                 {
                     this.ClientSecretHash = clientSecretHash;
                     this.ClientSecretSalt = clientSecretSalt;
+
+                    this.SupportedFlow = ImmutableList.Create<string>(OAuth.Constants.ResponseType.Code);
+                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
                 }
-
-                public string TenantIdentifier => Constants.DefaultTenantId;
-
-                public string Identifier => Constants.DefaultClientId;
-
-                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
 
                 public byte[] ClientSecretHash { get; }
 
                 public byte[] ClientSecretSalt { get; }
 
-                public bool IsConfidential => true;
+                public string ClientId => Constants.DefaultClientId;
+
+                public IReadOnlyList<string> SupportedFlow { get; }
+
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
             }
 
-            private class DummyOAuthAuthorizationTokenClientRegistration : IOAuthClientRegistration
+            private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
             {
-                public DummyOAuthAuthorizationTokenClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+                public DummyOAuthAuthorizationTokenClientRegistration()
                 {
-                    this.ClientSecretHash = clientSecretHash;
-                    this.ClientSecretSalt = clientSecretSalt;
+                    this.SupportedFlow = ImmutableList.CreateRange(new[] { OAuth.Constants.ResponseType.Code, OAuth.Constants.ResponseType.Token });
+                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
                 }
 
-                public string TenantIdentifier => Constants.DefaultTenantId;
+                public byte[] ClientSecretHash => null;
 
-                public string Identifier => Constants.DefaultClientId;
+                public byte[] ClientSecretSalt => null;
 
-                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Token;
+                public IReadOnlyList<string> SupportedFlow { get; }
 
-                public byte[] ClientSecretHash { get; }
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
 
-                public byte[] ClientSecretSalt { get; }
-
-                public bool IsConfidential => true;
+                public string ClientId => Constants.DefaultTokenFlowClientId;
             }
         }
 
