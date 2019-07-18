@@ -221,7 +221,7 @@ namespace Codeworx.Identity.Configuration
 
             public Task<IClientRegistration> GetById(string clientIdentifier)
             {
-                return Task.FromResult(_oAuthClientRegistrations.First());
+                return Task.FromResult(_oAuthClientRegistrations.FirstOrDefault(p => p.ClientId == clientIdentifier));
             }
 
             private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration

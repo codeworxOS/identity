@@ -17,6 +17,9 @@ using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Codeworx.Identity.Cryptography.Internal;
+using Codeworx.Identity.Token;
+using Codeworx.Identity.Cryptography.Json;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -63,6 +66,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
+            collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
+            collection.AddSingleton<ITokenProvider, JwtProvider>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
             collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();

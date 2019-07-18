@@ -31,5 +31,10 @@
         public const string TenantNameProperty = "tenantName";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
+
+        public class Token
+        {
+            public const string Jwt = "jwt";
+        }
     }
 }

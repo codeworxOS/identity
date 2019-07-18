@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Validation.Authorization;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -11,13 +13,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IClientService _oAuthClientService;
         private readonly IScopeService _scopeService;
+        private readonly IEnumerable<ITokenProvider> _tokenProviders;
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Token;
 
-        public AuthorizationTokenFlowService(IClientService oAuthClientService, IScopeService scopeService)
+        public AuthorizationTokenFlowService(IClientService oAuthClientService, IScopeService scopeService, IEnumerable<ITokenProvider> tokenProviders)
         {
             _oAuthClientService = oAuthClientService;
             _scopeService = scopeService;
+            _tokenProviders = tokenProviders;
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
@@ -50,7 +54,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnknownScopeResult(request.State, request.RedirectUri);
             }
 
-            return new SuccessfulTokenAuthorizationResult(request.State, "AuthorizationToken", request.RedirectUri);
+            var provider = _tokenProviders.First(p => p.TokenType == "jwt");
+            var token = await provider.CreateAsync(null, DateTime.Now.AddHours(1));
+            token.SetPayload(new IdentityData("asdf", "admin", Enumerable.Empty<TenantInfo>(), Enumerable.Empty<AssignedClaim>(), "abcd"), TokenType.AccessToken);
+            var accessToken = token.Serialize();
+
+            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectUri);
         }
     }
 }
