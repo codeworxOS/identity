@@ -10,7 +10,7 @@ namespace Codeworx.Identity.Model
 
         byte[] ClientSecretSalt { get; }
 
-        IReadOnlyList<string> SupportedFlow { get; }
+        IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
         IReadOnlyList<string> ValidRedirectUrls { get; }
     }

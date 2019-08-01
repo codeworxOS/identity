@@ -69,11 +69,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>()))
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
+
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             var userStub = new Mock<IUser>();
             userStub.SetupGet(p => p.Identity)
@@ -132,11 +136,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>()))
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
+
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Code));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             var userStub = new Mock<IUser>();
             userStub.SetupGet(p => p.Identity)

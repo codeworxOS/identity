@@ -231,7 +231,7 @@ namespace Codeworx.Identity.Configuration
                     this.ClientSecretHash = clientSecretHash;
                     this.ClientSecretSalt = clientSecretSalt;
 
-                    this.SupportedFlow = ImmutableList.Create<string>(OAuth.Constants.ResponseType.Code);
+                    this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
                     this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
                 }
 
@@ -241,7 +241,7 @@ namespace Codeworx.Identity.Configuration
 
                 public string ClientId => Constants.DefaultClientId;
 
-                public IReadOnlyList<string> SupportedFlow { get; }
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
             }
@@ -250,7 +250,7 @@ namespace Codeworx.Identity.Configuration
             {
                 public DummyOAuthAuthorizationTokenClientRegistration()
                 {
-                    this.SupportedFlow = ImmutableList.CreateRange(new[] { OAuth.Constants.ResponseType.Code, OAuth.Constants.ResponseType.Token });
+                    this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
                     this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
                 }
 
@@ -258,11 +258,27 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] ClientSecretSalt => null;
 
-                public IReadOnlyList<string> SupportedFlow { get; }
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
 
                 public string ClientId => Constants.DefaultTokenFlowClientId;
+            }
+
+            private class AuthorizationCodeSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
+                }
+            }
+
+            private class TokenSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Token;
+                }
             }
         }
 

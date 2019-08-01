@@ -51,7 +51,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidClientResult();
             }
 
-            if (!clientRegistration.SupportedFlow.Contains(request.GrantType))
+            if (!clientRegistration.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
             {
                 return new UnauthorizedClientResult();
             }

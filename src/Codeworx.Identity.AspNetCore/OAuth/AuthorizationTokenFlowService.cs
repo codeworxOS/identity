@@ -27,17 +27,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
-
             if (client == null)
             {
                 return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
             }
 
-            // TODO check if response type is allowed
-            ////if (clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType) == false)
-            ////{
-            ////    return new UnauthorizedClientResult(request.State, request.RedirectUri);
-            ////}
+            if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            {
+                return new UnauthorizedClientResult(request.State, request.RedirectUri);
+            }
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);
