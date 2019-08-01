@@ -27,7 +27,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var validationResult = _requestValidator.IsValid(request);
+            var validationResult = await _requestValidator.IsValid(request)
+                                                          .ConfigureAwait(false);
             if (validationResult != null)
             {
                 return new InvalidRequestResult(validationResult);

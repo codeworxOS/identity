@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Validation.Token;
 
@@ -7,7 +8,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class TokenRequestValidator : IRequestValidator<TokenRequest, TokenErrorResponse>
     {
-        public IValidationResult<TokenErrorResponse> IsValid(TokenRequest request)
+        public async Task<IValidationResult<TokenErrorResponse>> IsValid(TokenRequest request)
         {
             if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) {MemberName = nameof(request.ClientId)}, new List<ValidationResult>()))
             {

@@ -19,7 +19,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .Returns(() => null);
+                         .ReturnsAsync(() => null);
 
             var flowServiceStub = new Mock<IAuthorizationFlowService>();
 
@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .Returns(new ClientIdInvalidResult());
+                         .ReturnsAsync(new ClientIdInvalidResult());
 
             var flowServiceStub = new Mock<IAuthorizationFlowService>();
 
@@ -58,7 +58,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .Returns(() => null);
+                         .ReturnsAsync(() => null);
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .Build();
@@ -99,7 +99,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .Returns(() => null);
+                         .ReturnsAsync(() => null);
 
             var flowServiceStub = new Mock<IAuthorizationFlowService>();
 
@@ -124,7 +124,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
             validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .Returns(() => null);
+                         .ReturnsAsync(() => null);
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType("unsupported")

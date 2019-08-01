@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Validation.Authorization;
 
@@ -7,7 +8,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationRequestValidator : IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>
     {
-        public IValidationResult<AuthorizationErrorResponse> IsValid(AuthorizationRequest request)
+        public async Task<IValidationResult<AuthorizationErrorResponse>> IsValid(AuthorizationRequest request)
         {
             if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) {MemberName = nameof(request.ClientId)}, new List<ValidationResult>()))
             {

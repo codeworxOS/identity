@@ -85,7 +85,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, TokenErrorResponse>>();
             requestValidatorStub.Setup(p => p.IsValid(It.IsAny<TokenRequest>()))
-                                .Returns(validationResultStub.Object);
+                                .ReturnsAsync(validationResultStub.Object);
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
 
