@@ -239,7 +239,7 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] ClientSecretSalt { get; }
 
-                public string ClientId => Constants.DefaultClientId;
+                public string ClientId => Constants.DefaultCodeFlowClientId;
 
                 public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 

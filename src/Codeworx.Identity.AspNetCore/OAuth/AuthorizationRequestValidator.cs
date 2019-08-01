@@ -8,9 +8,23 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationRequestValidator : IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>
     {
+        private readonly IClientService _clientService;
+
+        public AuthorizationRequestValidator(IClientService clientService)
+        {
+            _clientService = clientService;
+        }
+
         public async Task<IValidationResult<AuthorizationErrorResponse>> IsValid(AuthorizationRequest request)
         {
             if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) {MemberName = nameof(request.ClientId)}, new List<ValidationResult>()))
+            {
+                return new ClientIdInvalidResult(request.State);
+            }
+
+            var client = await _clientService.GetById(request.ClientId)
+                                             .ConfigureAwait(false);
+            if (client == null)
             {
                 return new ClientIdInvalidResult(request.State);
             }

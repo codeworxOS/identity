@@ -32,7 +32,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request)
         {
-            var client = await _oAuthClientService.GetById(request.ClientId);
+            var client = await _oAuthClientService.GetById(request.ClientId)
+                                                  .ConfigureAwait(false);
             if (client == null)
             {
                 return new InvalidRequestResult(new ClientIdInvalidResult(request.State));

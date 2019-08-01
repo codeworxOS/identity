@@ -15,7 +15,7 @@
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
-        public const string DefaultClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
+        public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         public const string DefaultScopeKey = "all";
         public const string ExternalWindowsProviderId = "D740E319BBC44AB0B815136CB1F96D2E";

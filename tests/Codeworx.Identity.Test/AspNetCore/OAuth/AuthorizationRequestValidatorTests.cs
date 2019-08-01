@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth.Validation.Authorization;
+using Moq;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -12,7 +14,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var request = new AuthorizationRequestBuilder().Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -26,7 +34,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithClientId(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -40,7 +54,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithClientId(string.Empty)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -54,7 +74,33 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithClientId("\u0020\u007e\u0019")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<ClientIdInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ClientIdNotRegistered_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithClientId("notRegistered")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == "registered")))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -68,7 +114,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                          .WithRedirectUri(null)
                          .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -82,7 +134,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithRedirectUri(string.Empty)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -96,7 +154,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithRedirectUri("x:invalidUri")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -110,7 +174,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithRedirectUri("/redirect")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -124,7 +194,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -138,7 +214,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType(string.Empty)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -152,7 +234,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType("-")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -166,7 +254,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType("type1 type2")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -180,7 +274,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithScope(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -194,7 +294,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithScope(string.Empty)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -208,7 +314,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithScope("\u0020")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -222,7 +334,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithScope("scope1 scope2")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -236,7 +354,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithState(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -250,7 +374,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithState(string.Empty)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -264,7 +394,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithState("\u0019")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -279,7 +415,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithClientId(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -294,7 +436,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType(null)
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -309,7 +457,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithResponseType("-")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -324,7 +478,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .WithState("\u0019")
                           .Build();
 
-            var instance = new AuthorizationRequestValidator();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 

@@ -185,8 +185,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().Build();
-            //ToDo: Use client ID which is not allowed to use request type
+            var request = new AuthorizationRequestBuilder().WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .Build();
 
             var requestString = this.ToRequestString(request);
             
@@ -214,7 +214,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
             
             var request = new AuthorizationRequestBuilder()
-                          .WithClientId(Constants.DefaultClientId)
+                          .WithClientId(Constants.DefaultCodeFlowClientId)
                           .WithResponseType("unsupported")
                           .Build();
 
@@ -236,7 +236,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultClientId)
+            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
                                                            .WithScope("unknown")
                                                            .Build();
 
@@ -296,7 +296,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultClientId)
+            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);

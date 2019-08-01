@@ -4,7 +4,7 @@ namespace Codeworx.Identity.Test
 {
     public class AuthorizationRequestBuilder
     {
-        private string _clientId = "SomeClientId";
+        private string _clientId = Constants.DefaultCodeFlowClientId;
         private string _redirectUri = "http://example.org/redirect";
         private string _responseType = OAuth.Constants.ResponseType.Code;
         private string _scope;
