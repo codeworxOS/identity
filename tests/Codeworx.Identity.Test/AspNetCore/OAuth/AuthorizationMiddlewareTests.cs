@@ -186,9 +186,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new AuthorizationRequestBuilder().Build();
+            //ToDo: Use client ID which is not allowed to use request type
 
             var requestString = this.ToRequestString(request);
-
+            
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
 

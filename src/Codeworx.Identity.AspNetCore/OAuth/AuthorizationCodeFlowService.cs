@@ -34,8 +34,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
 
-            if (client == null) {
-                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));/* (request.State, request.RedirectUri);*/
+            if (client == null)
+            {
+                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
             }
 
             // TODO Check ResponseType allowed.

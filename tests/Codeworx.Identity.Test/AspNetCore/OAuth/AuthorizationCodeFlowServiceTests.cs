@@ -34,7 +34,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.AuthorizeRequest(request);
 
-            Assert.IsType<UnauthorizedClientResult>(result);
+            Assert.IsType<InvalidRequestResult>(result);
+            Assert.Null(result.Response.RedirectUri);
         }
 
         [Fact]

@@ -20,11 +20,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var oAuthClientServiceStub = new Mock<IClientService>();
             var scopeServiceStub = new Mock<IScopeService>();
 
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
-            Assert.IsType<UnauthorizedClientResult>(result);
+            Assert.IsType<InvalidRequestResult>(result);
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
@@ -94,7 +94,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
@@ -132,7 +132,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
@@ -170,7 +170,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
