@@ -34,7 +34,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
             {
-                return new UnauthorizedClientResult(request.State, request.RedirectUri);
+                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
             }
 
             var scopes = await _scopeService.GetScopes()
@@ -49,7 +49,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                           .Split(' ')
                           .Any(p => scopeKeys.Contains(p) == false))
             {
-                return new UnknownScopeResult(request.State, request.RedirectUri);
+                return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
@@ -57,7 +57,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             token.SetPayload(new IdentityData("asdf", "admin", Enumerable.Empty<TenantInfo>(), Enumerable.Empty<AssignedClaim>(), "abcd"), TokenType.AccessToken);
             var accessToken = token.Serialize();
 
-            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectUri);
+            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectionTarget);
         }
     }
 }

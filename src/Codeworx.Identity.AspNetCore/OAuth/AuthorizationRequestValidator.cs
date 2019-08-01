@@ -34,19 +34,29 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new RedirectUriInvalidResult(request.State);
             }
 
+            if (string.IsNullOrWhiteSpace(request.RedirectUri))
+            {
+                if (client.DefaultRedirectUri == null)
+                {
+                    return new RedirectUriInvalidResult(request.State);
+                }
+
+                request.RedirectionTarget = client.DefaultRedirectUri.ToString();
+            }
+
             if (!Validator.TryValidateProperty(request.ResponseType, new ValidationContext(request) {MemberName = nameof(request.ResponseType)}, new List<ValidationResult>()))
             {
-                return new ResponseTypeInvalidResult(request.RedirectUri, request.State);
+                return new ResponseTypeInvalidResult(request.RedirectionTarget, request.State);
             }
 
             if (!Validator.TryValidateProperty(request.Scope, new ValidationContext(request) {MemberName = nameof(request.Scope)}, new List<ValidationResult>()))
             {
-                return new ScopeInvalidResult(request.RedirectUri, request.State);
+                return new ScopeInvalidResult(request.RedirectionTarget, request.State);
             }
 
             if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) {MemberName = nameof(request.State)}, new List<ValidationResult>()))
             {
-                return new StateInvalidResult(request.RedirectUri, request.State);
+                return new StateInvalidResult(request.RedirectionTarget, request.State);
             }
 
             return null;

@@ -232,7 +232,8 @@ namespace Codeworx.Identity.Configuration
                     this.ClientSecretSalt = clientSecretSalt;
 
                     this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
                 public byte[] ClientSecretHash { get; }
@@ -244,6 +245,8 @@ namespace Codeworx.Identity.Configuration
                 public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
+
+                public Uri DefaultRedirectUri { get; }
             }
 
             private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
@@ -251,7 +254,8 @@ namespace Codeworx.Identity.Configuration
                 public DummyOAuthAuthorizationTokenClientRegistration()
                 {
                     this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
                 public byte[] ClientSecretHash => null;
@@ -261,6 +265,8 @@ namespace Codeworx.Identity.Configuration
                 public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
+
+                public Uri DefaultRedirectUri { get; }
 
                 public string ClientId => Constants.DefaultTokenFlowClientId;
             }

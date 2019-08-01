@@ -39,13 +39,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (user == null)
             {
-                return new UserNotFoundResult(request.State, request.RedirectUri);
+                return new UserNotFoundResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.SupportedAuthorizationResponseType == request.ResponseType);
             if (authorizationFlowService == null)
             {
-                return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
+                return new UnsupportedResponseTypeResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationResult = await authorizationFlowService.AuthorizeRequest(request)

@@ -41,7 +41,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
             {
-                return new UnauthorizedClientResult(request.State, request.RedirectUri);
+                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
             }
 
             var scopes = await _scopeService.GetScopes()
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                           .Split(' ')
                           .Any(p => !scopeKeys.Contains(p)) == true)
             {
-                return new UnknownScopeResult(request.State, request.RedirectUri);
+                return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request)
@@ -76,7 +76,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                         })
                         .ConfigureAwait(false);
 
-            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectUri);
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth.Validation.Authorization;
@@ -108,7 +109,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_RedirectUriNull_ReturnsError()
+        public async Task IsValid_RedirectUriNullAndDefaultUriNull_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
                          .WithRedirectUri(null)
@@ -128,7 +129,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_RedirectUriEmpty_ReturnsError()
+        public async Task IsValid_RedirectUriEmptyAndDefaultUriNull_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
                           .WithRedirectUri(string.Empty)
@@ -145,6 +146,54 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.IsType<RedirectUriInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_RedirectUriNullAndDefaultUriSet_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithRedirectUri(null)
+                          .Build();
+
+            const string DefaultRedirectUri = "http://example.org/redirect";
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
+                                  .Returns(new Uri(DefaultRedirectUri));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task IsValid_RedirectUriEmptyAndDefaultUriSet_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithRedirectUri(string.Empty)
+                          .Build();
+
+            const string DefaultRedirectUri = "http://example.org/redirect";
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
+                                  .Returns(new Uri(DefaultRedirectUri));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
         }
 
         [Fact]

@@ -20,27 +20,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                    $"&{Identity.OAuth.Constants.ScopeName}={request.Scope}" +
                    $"&{Identity.OAuth.Constants.StateName}={request.State}";
         }
-
-        [Fact]
-        public async Task Invoke_RedirectUriMissing_InformUserNoRedirect()
-        {
-            await this.Authenticate();
-
-            var request = new AuthorizationRequestBuilder().WithRedirectUri(string.Empty)
-                                                           .Build();
-
-            var requestString = this.ToRequestString(request);
-
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
-
-            response.EnsureSuccessStatusCode();
-            var responseHtml = await response.Content.ReadAsStringAsync();
-
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
-        }
-
+        
         [Fact]
         public async Task Invoke_RedirectUriInvalid_InformUserNoRedirect()
         {
@@ -314,6 +294,24 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var grantInformation = await cache.GetStringAsync(WebUtility.UrlDecode(queryParts[0].Split("=")[1]));
             Assert.False(string.IsNullOrWhiteSpace(grantInformation));
+        }
+
+        [Fact]
+        public async Task Invoke_ValidRequestWithoutRedirectUri_RedirectWithAuthorizationCodeToDefaultRedirectUri()
+        {
+            await this.Authenticate();
+
+            var request = new AuthorizationRequestBuilder().WithRedirectUri(string.Empty)
+                                                           .WithClientId(Constants.DefaultCodeFlowClientId)
+                                                           .Build();
+
+            var requestString = this.ToRequestString(request);
+
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var response = await this.TestClient.GetAsync(options.Value.OauthEndpoint + requestString);
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal("https://example.org/redirect", $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
         }
     }
 }

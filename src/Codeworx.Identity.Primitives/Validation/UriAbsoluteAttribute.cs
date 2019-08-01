@@ -7,14 +7,23 @@ namespace Codeworx.Identity.Validation
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if (value is null)
+            var validationResult = new ValidationResult($"{OAuth.Constants.RedirectUriName} not URI or relative.", new[] { validationContext.MemberName });
+
+            if (value is string uriString)
             {
-                return ValidationResult.Success;
+                if (string.IsNullOrWhiteSpace(uriString))
+                {
+                    return ValidationResult.Success;
+                }
+
+                return Uri.TryCreate(uriString, UriKind.Absolute, out _)
+                           ? ValidationResult.Success
+                           : validationResult;
             }
 
-            return Uri.TryCreate(value as string, UriKind.Absolute, out _)
+            return value is null
                        ? ValidationResult.Success
-                       : new ValidationResult($"{OAuth.Constants.RedirectUriName} not URI or relative.", new[] { validationContext.MemberName });
+                       : validationResult;
         }
     }
 }
