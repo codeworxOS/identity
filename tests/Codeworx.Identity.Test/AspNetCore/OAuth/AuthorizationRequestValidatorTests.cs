@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
@@ -16,6 +17,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var request = new AuthorizationRequestBuilder().Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -36,6 +39,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -160,6 +165,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
                                   .Returns(new Uri(DefaultRedirectUri));
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(DefaultRedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -184,6 +191,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
                                   .Returns(new Uri(DefaultRedirectUri));
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(DefaultRedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -237,6 +246,28 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public async Task IsValid_RedirectUriNotInValidList_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithRedirectUri("http://notValid.org/redirect")
+                          .Build();
+            
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create("https://example.org/redirect"));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<RedirectUriInvalidResult>(result);
+        }
+
+        [Fact]
         public async Task IsValid_ResponseTypeNull_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
@@ -244,6 +275,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -264,6 +297,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -284,6 +319,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -304,6 +341,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -324,6 +363,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -344,6 +385,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -364,6 +407,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -384,6 +429,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -404,6 +451,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -424,6 +473,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -444,6 +495,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))

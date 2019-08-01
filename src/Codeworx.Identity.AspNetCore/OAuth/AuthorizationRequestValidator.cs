@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Validation.Authorization;
@@ -42,6 +43,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 }
 
                 request.RedirectionTarget = client.DefaultRedirectUri.ToString();
+            }
+
+            if (!client.ValidRedirectUrls.Contains(request.RedirectionTarget))
+            {
+                return new RedirectUriInvalidResult(request.State);
             }
 
             if (!Validator.TryValidateProperty(request.ResponseType, new ValidationContext(request) {MemberName = nameof(request.ResponseType)}, new List<ValidationResult>()))
