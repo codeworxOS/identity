@@ -168,6 +168,14 @@ namespace Codeworx.Identity.Configuration
                 return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
             }
 
+            private class AuthorizationCodeSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
+                }
+            }
+
             private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
             {
                 public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
@@ -181,21 +189,19 @@ namespace Codeworx.Identity.Configuration
                     this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
-                public string ClientId => Constants.DefaultClientId;
+                public string ClientId => Constants.DefaultCodeFlowClientId;
 
                 public byte[] ClientSecretHash { get; }
 
                 public byte[] ClientSecretSalt { get; }
 
-                public string ClientId => Constants.DefaultCodeFlowClientId;
+                public Uri DefaultRedirectUri { get; }
 
                 public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public TimeSpan TokenExpiration { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
-
-                public Uri DefaultRedirectUri { get; }
             }
 
             private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
@@ -213,32 +219,13 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] ClientSecretSalt => null;
 
+                public Uri DefaultRedirectUri { get; }
+
                 public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public TimeSpan TokenExpiration { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
-            }
-        }
-
-                public Uri DefaultRedirectUri { get; }
-
-                public string ClientId => Constants.DefaultTokenFlowClientId;
-        private class DummyPasswordValidator : IPasswordValidator
-        {
-            public Task<bool> Validate(IUser user, string password)
-            {
-                return Task.FromResult(
-                        (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
-                        (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
-            }
-
-            private class AuthorizationCodeSupportedFlow : ISupportedFlow
-            {
-                public bool IsSupported(string flowKey)
-                {
-                    return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
-                }
             }
 
             private class TokenSupportedFlow : ISupportedFlow
@@ -247,6 +234,16 @@ namespace Codeworx.Identity.Configuration
                 {
                     return flowKey == OAuth.Constants.ResponseType.Token;
                 }
+            }
+        }
+
+        private class DummyPasswordValidator : IPasswordValidator
+        {
+            public Task<bool> Validate(IUser user, string password)
+            {
+                return Task.FromResult(
+                        (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
+                        (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
             }
         }
 

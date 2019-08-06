@@ -18,6 +18,47 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeFlowServiceTests
     {
         [Fact]
+        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
+        {
+            const string AuthorizationCode = "AuthorizationCode";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .Build();
+
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+                                          .ReturnsAsync(AuthorizationCode);
+
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "Authorized")))
+                             .Returns(true);
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+
+            var options = Options.Create(new AuthorizationCodeOptions());
+            var cache = new DistributedAuthorizationCodeCache(new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions())));
+
+            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+
+            IdentityData identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
+
+            Assert.IsType<UnauthorizedClientResult>(result);
+        }
+
+        [Fact]
         public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder().Build();
@@ -33,8 +74,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            IdentityData identity = GetIdentity();
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<InvalidRequestResult>(result);
             Assert.Null(result.Response.RedirectUri);
@@ -83,7 +125,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request);
+            var identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
 
             var grantInformation = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
@@ -134,8 +178,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<UnknownScopeResult>(result);
         }
@@ -183,7 +228,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request);
+            var identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
 
             var cachedResult = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
@@ -233,8 +280,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
-
-            var result = await instance.AuthorizeRequest(request);
+            var identity = GetIdentity();
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
@@ -282,8 +329,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
@@ -331,50 +379,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
-        [Fact]
-        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
+        private static IdentityData GetIdentity()
         {
-            const string AuthorizationCode = "AuthorizationCode";
-            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .Build();
-
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
-                                          .ReturnsAsync(AuthorizationCode);
-
-            var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "Authorized")))
-                             .Returns(true);
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ClientId)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
-
-            var oAuthClientServiceStub = new Mock<IClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
-                                  .ReturnsAsync(clientRegistrationStub.Object);
-
-            var scopeServiceStub = new Mock<IScopeService>();
-
-            var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-
-            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
-
-            var result = await instance.AuthorizeRequest(request);
-
-            Assert.IsType<UnauthorizedClientResult>(result);
+            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } });
         }
     }
 }
