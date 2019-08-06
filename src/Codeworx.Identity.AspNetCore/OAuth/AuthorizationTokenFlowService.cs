@@ -30,17 +30,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
-
             if (client == null)
             {
                 return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
             }
 
-            // TODO check if response type is allowed
-            ////if (clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType) == false)
-            ////{
-            ////    return new UnauthorizedClientResult(request.State, request.RedirectUri);
-            ////}
+            if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            {
+                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
+            }
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);
@@ -54,7 +52,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                           .Split(' ')
                           .Any(p => scopeKeys.Contains(p) == false))
             {
-                return new UnknownScopeResult(request.State, request.RedirectUri);
+                return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
@@ -72,7 +70,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             // TODO cach accessToken = Key value = identityData.
 
-            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectUri);
+            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectionTarget);
         }
     }
 }

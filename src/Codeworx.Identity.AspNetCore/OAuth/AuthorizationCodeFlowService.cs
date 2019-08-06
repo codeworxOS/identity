@@ -33,18 +33,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
         {
-            var client = await _oAuthClientService.GetById(request.ClientId);
-
+            var client = await _oAuthClientService.GetById(request.ClientId)
+                                                  .ConfigureAwait(false);
             if (client == null)
             {
-                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));/* (request.State, request.RedirectUri);*/
+                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
             }
 
-            // TODO Check ResponseType allowed.
-            ////if (!clientRegistrations.Any(p => p.Identifier == request.ClientId && p.SupportedOAuthMode == request.ResponseType))
-            ////{
-            ////    return new UnauthorizedClientResult(request.State, request.RedirectUri);
-            ////}
+            if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            {
+                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
+            }
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);
@@ -58,7 +57,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                           .Split(' ')
                           .Any(p => !scopeKeys.Contains(p)) == true)
             {
-                return new UnknownScopeResult(request.State, request.RedirectUri);
+                return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, _options.Value.Length)
@@ -73,7 +72,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
                     .ConfigureAwait(false);
 
-            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectUri);
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
         }
     }
 }

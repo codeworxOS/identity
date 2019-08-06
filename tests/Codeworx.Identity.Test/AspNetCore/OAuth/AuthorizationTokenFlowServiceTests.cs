@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.AuthorizeRequest(request);
 
-            Assert.IsType<UnauthorizedClientResult>(result);
+            Assert.IsType<InvalidRequestResult>(result);
         }
 
         [Fact]
@@ -41,11 +41,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope("unknownScope")
                                                            .Build();
 
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+                             .Returns(true);
+
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Token));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             var oAuthClientServiceStub = new Mock<IClientService>();
             oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
@@ -81,10 +85,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            var scopeStub = new Mock<IScope>();
+            var scopeServiceStub = new Mock<IScopeService>();
+
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Token));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             var oAuthClientServiceStub = new Mock<IClientService>();
             oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
@@ -98,9 +106,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var tokenStub = new Mock<IToken>();
-            tokenStub.Setup(p => p.Serialize())
-                .Returns(AuthorizationToken);
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object);
 
             var tokenProviderStub = new Mock<ITokenProvider>();
             tokenProviderStub.SetupGet(p => p.ConfigurationType)
@@ -130,6 +136,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(null)
                                                            .Build();
 
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+                             .Returns(true);
+
             var clientRegistrationStub = new Mock<IClientRegistration>();
             var oAuthClientServiceStub = new Mock<IClientService>();
             var scopeStub = new Mock<IScope>();
@@ -138,7 +148,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Token));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
                                   .ReturnsAsync(clientRegistrationStub.Object);
@@ -181,11 +191,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(KnownScope)
                                                            .Build();
 
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+                             .Returns(true);
+
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientId)
                                   .Returns(ClientIdentifier);
             clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create<string>(Identity.OAuth.Constants.ResponseType.Token));
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
 
             var oAuthClientServiceStub = new Mock<IClientService>();
             oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
@@ -199,24 +213,44 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             scopeServiceStub.Setup(p => p.GetScopes())
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
-            var tokenStub = new Mock<IToken>();
-            tokenStub.Setup(p => p.Serialize())
-                .Returns(AuthorizationToken);
-
-            var tokenProviderStub = new Mock<ITokenProvider>();
-            tokenProviderStub.SetupGet(p => p.ConfigurationType)
-                .Returns(typeof(JwtConfiguration));
-            tokenProviderStub.SetupGet(p => p.TokenType)
-                .Returns("jwt");
-            tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<JwtConfiguration>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(tokenStub.Object);
-
-            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
 
             var result = await instance.AuthorizeRequest(request);
 
             Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
             Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
+        {
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .Build();
+
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "Authorized")))
+                             .Returns(true);
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+
+            var instance = new AuthorizationTokenFlowService(oAuthClientServiceStub.Object, scopeServiceStub.Object, null);
+
+            var result = await instance.AuthorizeRequest(request);
+
+            Assert.IsType<UnauthorizedClientResult>(result);
         }
     }
 }

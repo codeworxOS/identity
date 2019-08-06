@@ -176,8 +176,9 @@ namespace Codeworx.Identity.Configuration
                     this.ClientSecretSalt = clientSecretSalt;
                     this.TokenExpiration = TimeSpan.FromHours(1);
 
-                    this.SupportedFlow = ImmutableList.Create<string>(OAuth.Constants.ResponseType.Code);
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
+                    this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
                 public string ClientId => Constants.DefaultClientId;
@@ -186,21 +187,24 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] ClientSecretSalt { get; }
 
-                public IReadOnlyList<string> SupportedFlow { get; }
+                public string ClientId => Constants.DefaultCodeFlowClientId;
+
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public TimeSpan TokenExpiration { get; }
 
                 public IReadOnlyList<string> ValidRedirectUrls { get; }
+
+                public Uri DefaultRedirectUri { get; }
             }
 
             private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
             {
                 public DummyOAuthAuthorizationTokenClientRegistration()
                 {
-                    this.SupportedFlow = ImmutableList.CreateRange(new[] { OAuth.Constants.ResponseType.Code, OAuth.Constants.ResponseType.Token });
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
-
-                    TokenExpiration = TimeSpan.FromHours(1);
+                    this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
                 public string ClientId => Constants.DefaultTokenFlowClientId;
@@ -209,7 +213,7 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] ClientSecretSalt => null;
 
-                public IReadOnlyList<string> SupportedFlow { get; }
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
                 public TimeSpan TokenExpiration { get; }
 
@@ -217,6 +221,9 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
+                public Uri DefaultRedirectUri { get; }
+
+                public string ClientId => Constants.DefaultTokenFlowClientId;
         private class DummyPasswordValidator : IPasswordValidator
         {
             public Task<bool> Validate(IUser user, string password)
@@ -224,6 +231,22 @@ namespace Codeworx.Identity.Configuration
                 return Task.FromResult(
                         (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
                         (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
+            }
+
+            private class AuthorizationCodeSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
+                }
+            }
+
+            private class TokenSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Token;
+                }
             }
         }
 

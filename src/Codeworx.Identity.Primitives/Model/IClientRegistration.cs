@@ -11,10 +11,12 @@ namespace Codeworx.Identity.Model
 
         byte[] ClientSecretSalt { get; }
 
-        IReadOnlyList<string> SupportedFlow { get; }
+        IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
         TimeSpan TokenExpiration { get; }
 
         IReadOnlyList<string> ValidRedirectUrls { get; }
+
+        Uri DefaultRedirectUri { get; }
     }
 }

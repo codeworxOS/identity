@@ -27,7 +27,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException();
             }
 
-            var validationError = _requestValidator.IsValid(request);
+            var validationError = await _requestValidator.IsValid(request)
+                                                         .ConfigureAwait(false);
             if (validationError != null)
             {
                 return new InvalidRequestResult(validationError);
@@ -38,13 +39,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (currentUser == null)
             {
-                return new UserNotFoundResult(request.State, request.RedirectUri);
+                return new UserNotFoundResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.SupportedAuthorizationResponseType == request.ResponseType);
             if (authorizationFlowService == null)
             {
-                return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
+                return new UnsupportedResponseTypeResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, user)
