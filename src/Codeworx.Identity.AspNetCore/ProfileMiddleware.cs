@@ -50,7 +50,7 @@ namespace Codeworx.Identity.AspNetCore
                     await jsonTextWriter.WritePropertyNameAsync(Constants.IdClaimType);
                     await jsonTextWriter.WriteValueAsync(data.Identifier);
 
-                    await jsonTextWriter.WritePropertyNameAsync(Constants.NameClaimType);
+                    await jsonTextWriter.WritePropertyNameAsync(Constants.LoginClaimType);
                     await jsonTextWriter.WriteValueAsync(data.Login);
 
                     if (data.TenantKey != null)

@@ -9,8 +9,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
+        private readonly RequestDelegate _next;
         private readonly IEnumerable<IResponseBinder> _responseBinders;
 
         public AuthorizationMiddleware(RequestDelegate next,
@@ -46,7 +46,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if (bindingResult.Result != null)
             {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, identity.Identifier);
+                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, identity);
 
                 await _responseBinders.First(p => p.Supports(result.Response.GetType()))
                                       .RespondAsync(result.Response, context);

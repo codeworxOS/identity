@@ -1,15 +1,19 @@
-﻿namespace Codeworx.Identity.Token
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Codeworx.Identity.Token
 {
     public interface IToken
     {
-        void Parse(string value);
+        Task<IDictionary<string, object>> GetPayloadAsync();
 
-        string Serialize();
+        Task ParseAsync(string value);
 
-        bool Validate();
+        Task<string> SerializeAsync();
 
-        void SetPayload(IdentityData data, TokenType tokenType);
+        Task SetPayloadAsync(IDictionary<string, object> claims, TimeSpan expiration);
 
-        IdentityData GetPayload();
+        Task<bool> ValidateAsync();
     }
 }

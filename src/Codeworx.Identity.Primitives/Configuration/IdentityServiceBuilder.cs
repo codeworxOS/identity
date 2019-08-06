@@ -142,11 +142,104 @@ namespace Codeworx.Identity.Configuration
             Register<TService, TImplementation>(factory, ServiceLifetime.Singleton);
         }
 
+        private class DummyOAuthClientService : IClientService
+        {
+            private readonly List<IClientRegistration> _oAuthClientRegistrations;
+
+            public DummyOAuthClientService(IHashingProvider hashingProvider)
+            {
+                var salt = hashingProvider.CrateSalt();
+                var hash = hashingProvider.Hash("clientSecret", salt);
+
+                _oAuthClientRegistrations = new List<IClientRegistration>
+                                            {
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationTokenClientRegistration(),
+                                            };
+            }
+
+            public Task<IClientRegistration> GetById(string clientIdentifier)
+            {
+                return Task.FromResult(_oAuthClientRegistrations.FirstOrDefault(p => p.ClientId == clientIdentifier));
+            }
+
+            public Task<IEnumerable<IClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
+            {
+                return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
+            }
+
+            private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
+            {
+                public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+                {
+                    this.ClientSecretHash = clientSecretHash;
+                    this.ClientSecretSalt = clientSecretSalt;
+                    this.TokenExpiration = TimeSpan.FromHours(1);
+
+                    this.SupportedFlow = ImmutableList.Create<string>(OAuth.Constants.ResponseType.Code);
+                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
+                }
+
+                public string ClientId => Constants.DefaultClientId;
+
+                public byte[] ClientSecretHash { get; }
+
+                public byte[] ClientSecretSalt { get; }
+
+                public IReadOnlyList<string> SupportedFlow { get; }
+
+                public TimeSpan TokenExpiration { get; }
+
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
+            }
+
+            private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
+            {
+                public DummyOAuthAuthorizationTokenClientRegistration()
+                {
+                    this.SupportedFlow = ImmutableList.CreateRange(new[] { OAuth.Constants.ResponseType.Code, OAuth.Constants.ResponseType.Token });
+                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
+
+                    TokenExpiration = TimeSpan.FromHours(1);
+                }
+
+                public string ClientId => Constants.DefaultTokenFlowClientId;
+
+                public byte[] ClientSecretHash => null;
+
+                public byte[] ClientSecretSalt => null;
+
+                public IReadOnlyList<string> SupportedFlow { get; }
+
+                public TimeSpan TokenExpiration { get; }
+
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
+            }
+        }
+
         private class DummyPasswordValidator : IPasswordValidator
         {
             public Task<bool> Validate(IUser user, string password)
             {
-                return Task.FromResult(user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName);
+                return Task.FromResult(
+                        (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
+                        (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
+            }
+        }
+
+        private class DummyScopeService : IScopeService
+        {
+            public Task<IEnumerable<IScope>> GetScopes()
+            {
+                return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
+                                                            {
+                                                                new DummyScope()
+                                                            });
+            }
+
+            private class DummyScope : IScope
+            {
+                public string ScopeKey => Constants.DefaultScopeKey;
             }
         }
 
@@ -154,10 +247,25 @@ namespace Codeworx.Identity.Configuration
         {
             public Task<IEnumerable<TenantInfo>> GetTenantsAsync(IUser user)
             {
-                return Task.FromResult<IEnumerable<TenantInfo>>(new[]
+                IEnumerable<TenantInfo> tenants;
+
+                if (user.Identity == Constants.MultiTenantUserId)
                 {
-                    new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
-                });
+                    tenants = new[]
+                    {
+                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
+                        new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
+                    };
+                }
+                else
+                {
+                    tenants = new[]
+                {
+                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
+                    };
+                }
+
+                return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
             }
         }
 
@@ -170,6 +278,10 @@ namespace Codeworx.Identity.Configuration
                 {
                     return Task.FromResult<IUser>(new DummyUser());
                 }
+                else if (id == Guid.Parse(Constants.MultiTenantUserId))
+                {
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
+                }
 
                 return Task.FromResult<IUser>(null);
             }
@@ -179,6 +291,10 @@ namespace Codeworx.Identity.Configuration
                 if (userName.Equals(Constants.DefaultAdminUserName, StringComparison.OrdinalIgnoreCase))
                 {
                     return Task.FromResult<IUser>(new DummyUser());
+                }
+                else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
                 }
 
                 return Task.FromResult<IUser>(null);
@@ -196,89 +312,18 @@ namespace Codeworx.Identity.Configuration
 
                 public byte[] PasswordSalt => null;
             }
-        }
 
-        private class DummyOAuthClientService : IClientService
-        {
-            private readonly List<IClientRegistration> _oAuthClientRegistrations;
-
-            public DummyOAuthClientService(IHashingProvider hashingProvider)
+            private class MultiTenantDummyUser : IUser
             {
-                var salt = hashingProvider.CrateSalt();
-                var hash = hashingProvider.Hash("clientSecret", salt);
+                public string DefaultTenantKey => null;
 
-                _oAuthClientRegistrations = new List<IClientRegistration>
-                                            {
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
-                                                new DummyOAuthAuthorizationTokenClientRegistration(),
-                                            };
-            }
+                public string Identity => Constants.MultiTenantUserId;
 
-            public Task<IEnumerable<IClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
-            {
-                return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
-            }
+                public string Name => Constants.MultiTenantUserName;
 
-            public Task<IClientRegistration> GetById(string clientIdentifier)
-            {
-                return Task.FromResult(_oAuthClientRegistrations.FirstOrDefault(p => p.ClientId == clientIdentifier));
-            }
+                public byte[] PasswordHash => null;
 
-            private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
-            {
-                public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
-                {
-                    this.ClientSecretHash = clientSecretHash;
-                    this.ClientSecretSalt = clientSecretSalt;
-
-                    this.SupportedFlow = ImmutableList.Create<string>(OAuth.Constants.ResponseType.Code);
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
-                }
-
-                public byte[] ClientSecretHash { get; }
-
-                public byte[] ClientSecretSalt { get; }
-
-                public string ClientId => Constants.DefaultClientId;
-
-                public IReadOnlyList<string> SupportedFlow { get; }
-
-                public IReadOnlyList<string> ValidRedirectUrls { get; }
-            }
-
-            private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
-            {
-                public DummyOAuthAuthorizationTokenClientRegistration()
-                {
-                    this.SupportedFlow = ImmutableList.CreateRange(new[] { OAuth.Constants.ResponseType.Code, OAuth.Constants.ResponseType.Token });
-                    this.ValidRedirectUrls = ImmutableList.Create<string>("https://example.org/redirect");
-                }
-
-                public byte[] ClientSecretHash => null;
-
-                public byte[] ClientSecretSalt => null;
-
-                public IReadOnlyList<string> SupportedFlow { get; }
-
-                public IReadOnlyList<string> ValidRedirectUrls { get; }
-
-                public string ClientId => Constants.DefaultTokenFlowClientId;
-            }
-        }
-
-        private class DummyScopeService : IScopeService
-        {
-            public Task<IEnumerable<IScope>> GetScopes()
-            {
-                return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
-                                                            {
-                                                                new DummyScope()
-                                                            });
-            }
-
-            private class DummyScope : IScope
-            {
-                public string ScopeKey => Constants.DefaultScopeKey;
+                public byte[] PasswordSalt => null;
             }
         }
 

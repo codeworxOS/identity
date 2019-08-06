@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.Cryptography.Json
 {
@@ -11,7 +15,8 @@ namespace Codeworx.Identity.Cryptography.Json
         private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
         private readonly JsonWebTokenHandler _handler;
         private readonly SecurityKey _signingKey;
-        private string _payload;
+        private TimeSpan _expiration;
+        private IDictionary<string, object> _payload;
 
         public Jwt(IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
@@ -22,29 +27,98 @@ namespace Codeworx.Identity.Cryptography.Json
             _handler = new JsonWebTokenHandler();
         }
 
-        public IdentityData GetPayload()
+        public async Task<IDictionary<string, object>> GetPayloadAsync()
+        {
+            await Task.Yield();
+            return null;
+        }
+
+        public Task ParseAsync(string value)
         {
             throw new NotImplementedException();
         }
 
-        public void Parse(string value)
+        public Task<string> SerializeAsync()
+        {
+            var descriptor = new SecurityTokenDescriptor
+            {
+                SigningCredentials = GetSigningCredentials(),
+                Claims = _payload,
+                Expires = DateTime.Now + _expiration,
+                IssuedAt = DateTime.Now
+            };
+
+            return Task.FromResult(_handler.CreateToken(descriptor));
+        }
+
+        public async Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
+        {
+            await Task.Yield();
+
+            _payload = data;
+            _expiration = expiration;
+
+            ////using (var stringWriter = new StringWriter())
+            ////using (var writer = new JsonTextWriter(stringWriter))
+            ////{
+            ////    await WriterObjectAsync(data, writer);
+
+            ////    _payload = stringWriter.ToString();
+            ////}
+        }
+
+        public Task<bool> ValidateAsync()
         {
             throw new NotImplementedException();
         }
 
-        public string Serialize()
+        private static async Task WriterObjectAsync(IDictionary<string, object> data, JsonTextWriter writer)
         {
-            return _handler.CreateToken(_payload, GetSigningCredentials());
+            await writer.WriteStartObjectAsync().ConfigureAwait(false);
+
+            foreach (var item in data)
+            {
+                await WriteValueAsync(writer, item).ConfigureAwait(false);
+            }
+
+            await writer.WriteEndObjectAsync().ConfigureAwait(false);
         }
 
-        public void SetPayload(IdentityData data, TokenType tokenType)
+        private static async Task WriteValueAsync(JsonTextWriter writer, KeyValuePair<string, object> item)
         {
-            _payload = "{ \"sub\": \"whatever\"}";
-        }
+            await writer.WritePropertyNameAsync(item.Key).ConfigureAwait(false);
 
-        public bool Validate()
-        {
-            throw new NotImplementedException();
+            switch (item.Value)
+            {
+                case string[] arrayValue:
+                    if (arrayValue.Length > 1)
+                    {
+                        await writer.WriteStartArrayAsync().ConfigureAwait(false);
+                    }
+
+                    foreach (var value in arrayValue)
+                    {
+                        await writer.WriteValueAsync(value).ConfigureAwait(false);
+                    }
+
+                    if (arrayValue.Length > 1)
+                    {
+                        await writer.WriteEndArrayAsync().ConfigureAwait(false);
+                    }
+
+                    break;
+
+                case string stringValue:
+                    await writer.WriteValueAsync(stringValue).ConfigureAwait(false);
+                    break;
+
+                case IDictionary<string, object> subObject:
+                    await WriterObjectAsync(subObject, writer);
+                    break;
+
+                default:
+                    throw new NotSupportedException($"Type {item.Value?.GetType()} not supported as Payload Value. Allowed Value Types are (string, string[], IDictionary<string,object>).");
+            }
         }
 
         private SigningCredentials GetSigningCredentials()
@@ -60,6 +134,7 @@ namespace Codeworx.Identity.Cryptography.Json
                 case RsaSecurityKey rsa:
                     algorithm = $"RS256";
                     break;
+
                 default:
                     throw new NotSupportedException("provided Signing Key is not supported!");
             }

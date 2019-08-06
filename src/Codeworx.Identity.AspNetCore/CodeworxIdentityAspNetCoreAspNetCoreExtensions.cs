@@ -20,6 +20,8 @@ using Microsoft.Extensions.Primitives;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Token;
 using Codeworx.Identity.Cryptography.Json;
+using Codeworx.Identity.Cache;
+using System;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -49,7 +51,17 @@ namespace Codeworx.Identity.AspNetCore
                                      p.Cookie.Name = options.AuthenticationCookie;
                                      p.LoginPath = "/account/login";
                                      p.ExpireTimeSpan = options.CookieExpiration;
-                                 });
+                                 })
+                      .AddCookie(Constants.MissingTenantAuthenticationScheme,
+                                p =>
+                                {
+                                    var options = new IdentityOptions();
+                                    builder.OptionsDelegate(options);
+
+                                    p.Cookie.Name = Constants.MissingTenantCookieName;
+                                    p.LoginPath = "/account/login";
+                                    p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                                });
 
             collection.AddDistributedMemoryCache();
 
@@ -68,6 +80,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
+            collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
             collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
@@ -143,6 +156,9 @@ namespace Codeworx.Identity.AspNetCore
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                         p => p.UseMiddleware<LoginMiddleware>())
+                    .MapWhen(
+                        p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
+                        p => p.UseMiddleware<LogoutMiddleware>())
                     .MapWhen(
                         p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p.UseMiddleware<ProfileMiddleware>())

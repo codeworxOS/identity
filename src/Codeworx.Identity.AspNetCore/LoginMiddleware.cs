@@ -40,6 +40,9 @@ namespace Codeworx.Identity.AspNetCore
             }
             else
             {
+                // TODO var missingTenant = context.AuthenticateAsync(Constants.MissingTenant....);
+                // TODO missingTenant.Success -> new Template Select Tenant.
+
                 body = await _template.GetLoginTemplate(returnUrl);
             }
 
@@ -60,7 +63,17 @@ namespace Codeworx.Identity.AspNetCore
 
                     if (identityData.TenantKey != null)
                     {
-                        await context.SignInAsync(_service.AuthenticationScheme, principal);
+                        var authProperties = new AuthenticationProperties();
+
+                        //var test = false;
+
+                        //if (test)
+                        //{
+                        //    authProperties.IsPersistent = true;
+                        //    authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1);
+                        //}
+
+                        await context.SignInAsync(_service.AuthenticationScheme, principal, authProperties);
                     }
                     else
                     {

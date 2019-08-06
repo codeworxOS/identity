@@ -13,11 +13,11 @@ namespace Codeworx.Identity.Cryptography.Json
             _defaultSigningKeyProvider = defaultSigningKeyProvider;
         }
 
-        public string TokenType => Constants.Token.Jwt;
-
         public Type ConfigurationType { get; } = typeof(JwtConfiguration);
 
-        public Task<IToken> CreateAsync(object configuration, DateTime expiration)
+        public string TokenType => Constants.Token.Jwt;
+
+        public Task<IToken> CreateAsync(object configuration)
         {
             return Task.FromResult<IToken>(new Jwt(_defaultSigningKeyProvider, configuration as JwtConfiguration));
         }

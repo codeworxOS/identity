@@ -9,8 +9,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
+        private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IUserService _userService;
 
         public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
@@ -20,7 +20,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
         {
             if (request == null)
             {
@@ -33,10 +33,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidRequestResult(validationError);
             }
 
-            var user = await _userService.GetUserByIdentifierAsync(userIdentifier)
+            var currentUser = await _userService.GetUserByIdentifierAsync(user.Identifier)
                                          .ConfigureAwait(false);
 
-            if (user == null)
+            if (currentUser == null)
             {
                 return new UserNotFoundResult(request.State, request.RedirectUri);
             }
@@ -47,9 +47,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request)
+            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, user)
                                                                     .ConfigureAwait(false);
-            
+
             return authorizationResult;
         }
     }

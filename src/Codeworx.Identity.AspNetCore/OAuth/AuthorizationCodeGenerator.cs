@@ -11,7 +11,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationCodeGenerator : IAuthorizationCodeGenerator
     {
-        private readonly IOptions<AuthorizationCodeOptions> _options;
         private static readonly IReadOnlyCollection<char> _allowedCharacters;
 
         static AuthorizationCodeGenerator()
@@ -26,25 +25,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _allowedCharacters = allowedCharacters;
         }
 
-        public AuthorizationCodeGenerator(IOptions<AuthorizationCodeOptions> options)
-        {
-            _options = options;
-        }
-
         #region Public Methods
 
-        public Task<string> GenerateCode(AuthorizationRequest request)
+        public Task<string> GenerateCode(AuthorizationRequest request, int length)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
-            
+
             var authorizationCodeBuilder = new StringBuilder();
 
             using (var rng = RandomNumberGenerator.Create())
             {
-                for (int i = 0; i < _options.Value.Length; i++)
+                for (int i = 0; i < length; i++)
                 {
                     var randomByte = new byte[1];
                     rng.GetNonZeroBytes(randomByte);
@@ -60,6 +54,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             return Task.FromResult(authorizationCode);
         }
 
-        #endregion
+        #endregion Public Methods
     }
 }

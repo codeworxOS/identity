@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Codeworx.Identity.Model
 {
@@ -11,6 +12,8 @@ namespace Codeworx.Identity.Model
         byte[] ClientSecretSalt { get; }
 
         IReadOnlyList<string> SupportedFlow { get; }
+
+        TimeSpan TokenExpiration { get; }
 
         IReadOnlyList<string> ValidRedirectUrls { get; }
     }

@@ -1,3 +1,5 @@
+import { HttpClient } from "./http-client";
+
 interface ExternalProvider {
     id: string;
     name: string;
@@ -23,6 +25,8 @@ class LoginForm {
     private returnUrl?: string;
 
     constructor() {
+        //let httpclient = new HttpClient();
+
         this.userNameControl = document.getElementById('username');
         this.passwordControl = document.getElementById('password');
         this.externalProvidersControl = document.getElementById('external');
