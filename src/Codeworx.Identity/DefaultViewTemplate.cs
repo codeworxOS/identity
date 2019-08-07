@@ -6,11 +6,6 @@ namespace Codeworx.Identity
 {
     public class DefaultViewTemplate : IViewTemplate
     {
-        public Task<string> GetConsentTemplate()
-        {
-            return Task.FromResult(string.Empty);
-        }
-
         public async Task<string> GetLoggedInTemplate(string returnUrl)
         {
             using (var stream = typeof(DefaultViewTemplate).GetTypeInfo().Assembly

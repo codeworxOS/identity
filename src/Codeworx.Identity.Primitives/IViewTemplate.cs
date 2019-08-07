@@ -4,8 +4,6 @@ namespace Codeworx.Identity
 {
     public interface IViewTemplate
     {
-        Task<string> GetConsentTemplate();
-
         Task<string> GetLoggedInTemplate(string returnUrl);
 
         Task<string> GetLoginTemplate(string returnUrl);
