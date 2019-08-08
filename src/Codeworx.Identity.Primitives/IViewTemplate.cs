@@ -7,5 +7,7 @@ namespace Codeworx.Identity
         Task<string> GetLoggedInTemplate(string returnUrl);
 
         Task<string> GetLoginTemplate(string returnUrl);
+
+        Task<string> GetTenantSelectionTemplate(string returnUrl);
     }
 }
