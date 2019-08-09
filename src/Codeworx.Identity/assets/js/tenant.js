@@ -2,7 +2,7 @@ var TenantForm = /** @class */ (function () {
     function TenantForm() {
         this.DONE = 4;
         this.OK = 200;
-        this.tenantDropDown = document.getElementById('tenants');
+        this.tenantDropDown = document.getElementById('tenantSelection');
         if (this.tenantDropDown) {
             this.form = this.tenantDropDown.form;
         }
@@ -19,6 +19,7 @@ var TenantForm = /** @class */ (function () {
         for (var idx in tenants) {
             var element = document.createElement('option');
             element.text = tenants[idx].name;
+            element.value = tenants[idx].key;
             this.tenantDropDown.add(element);
         }
     };

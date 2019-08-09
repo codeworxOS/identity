@@ -12,7 +12,7 @@ class TenantForm {
     private tenantDropDown: HTMLSelectElement;
 
     constructor() {
-        this.tenantDropDown = <HTMLSelectElement>document.getElementById('tenants');
+        this.tenantDropDown = <HTMLSelectElement>document.getElementById('tenantSelection');
 
         if (this.tenantDropDown) {
             this.form = this.tenantDropDown.form;
@@ -34,6 +34,7 @@ class TenantForm {
             let element = document.createElement('option');
 
             element.text = tenants[idx].name;
+            element.value = tenants[idx].key;
 
             this.tenantDropDown.add(element);
         }

@@ -95,14 +95,13 @@ namespace Codeworx.Identity.AspNetCore
                     }
                     catch (AuthenticationException) { }
                 }
-                else if (tenantSelectionRequest.Tenant != null && tenantAuthenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
+                else if (tenantSelectionRequest.TenantKey != null && tenantAuthenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
                 {
                     try
                     {
                         var identity = claimsIdentity.ToIdentityData();
 
-                        var tenantKey = identity.Tenants.FirstOrDefault(p => p.Name.Equals(tenantSelectionRequest.Tenant))?.Key;
-                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantKey)
+                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey)
                             .ToClaimsPrincipal();
 
                         await context.SignInAsync(_service.AuthenticationScheme, principal, new AuthenticationProperties());
