@@ -153,7 +153,7 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.Equals(options.OauthEndpoint),
                        p => p
-                            .UseMiddleware<AuthenticatedMiddleware>()
+                            .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<AuthorizationMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
@@ -164,7 +164,7 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
-                            .UseMiddleware<AuthenticatedMiddleware>()
+                            .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<ProfileMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
