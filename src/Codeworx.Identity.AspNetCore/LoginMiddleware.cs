@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore
             _template = template;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IUserService userService)
         {
             string body = null;
             var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
@@ -42,7 +42,9 @@ namespace Codeworx.Identity.AspNetCore
                 {
                     if (tenantAuthenticateResult.Succeeded)
                     {
-                        body = await _template.GetTenantSelectionTemplate(returnUrl);
+                        var canHandleDefault = userService is IWriteableUserService;
+
+                        body = await _template.GetTenantSelectionTemplate(returnUrl, canHandleDefault);
                     }
                     else
                     {
