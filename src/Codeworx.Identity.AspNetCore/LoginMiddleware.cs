@@ -1,11 +1,11 @@
-﻿using Codeworx.Identity.Model;
+﻿using Codeworx.Identity.Converter;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore
             _template = template;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService)
+        public async Task Invoke(HttpContext context)
         {
             string body = null;
             var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
@@ -43,6 +43,7 @@ namespace Codeworx.Identity.AspNetCore
 
                     if (tenantAuthenticateResult.Succeeded)
                     {
+                        var userService = context.RequestServices.GetService<IUserService>();
                         var canHandleDefault = userService is IWriteableUserService;
 
                         body = await _template.GetTenantSelectionTemplate(returnUrl, canHandleDefault);
@@ -59,7 +60,11 @@ namespace Codeworx.Identity.AspNetCore
 
                 var setting = new JsonSerializerSettings
                               {
-                                  ContractResolver = new CamelCasePropertyNamesContractResolver()
+                                  ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                                  Converters =
+                                  {
+                                      new StringToBooleanJsonConverter()
+                                  }
                               };
 
                 var loginRequest = await context.Request.BindAsync<LoginRequest>(setting);
@@ -110,6 +115,16 @@ namespace Codeworx.Identity.AspNetCore
                             .ToClaimsPrincipal();
 
                         await context.SignInAsync(_service.AuthenticationScheme, principal, new AuthenticationProperties());
+
+                        if (tenantSelectionRequest.SetDefault)
+                        {
+                            var userService = context.RequestServices.GetService<IUserService>();
+
+                            if (userService is IWriteableUserService writeableUserService)
+                            {
+                                await writeableUserService.SetDefaultTenantAsync(identity.Identifier, tenantSelectionRequest.TenantKey);
+                            }
+                        }
                     }
                     catch (AuthenticationException) { }
                 }

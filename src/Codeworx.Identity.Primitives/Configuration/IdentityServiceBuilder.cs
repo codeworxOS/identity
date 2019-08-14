@@ -291,7 +291,7 @@ namespace Codeworx.Identity.Configuration
 
         private class DummyUserService : IUserService, IWriteableUserService
         {
-            private string _defaultTenantMultiTenantCache;
+            private static string _defaultTenantMultiTenantCache;
 
             public Task<IUser> GetUserByIdentifierAsync(string identifier)
             {
