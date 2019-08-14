@@ -289,8 +289,10 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyUserService : IUserService
+        private class DummyUserService : IUserService, IWriteableUserService
         {
+            private string _defaultTenantMultiTenantCache;
+
             public Task<IUser> GetUserByIdentifierAsync(string identifier)
             {
                 var id = Guid.Parse(identifier);
@@ -300,7 +302,7 @@ namespace Codeworx.Identity.Configuration
                 }
                 else if (id == Guid.Parse(Constants.MultiTenantUserId))
                 {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
                 }
 
                 return Task.FromResult<IUser>(null);
@@ -314,10 +316,25 @@ namespace Codeworx.Identity.Configuration
                 }
                 else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
                 {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
                 }
 
                 return Task.FromResult<IUser>(null);
+            }
+
+            public Task SetDefaultTenantAsync(string identifier, string tenantKey)
+            {
+                var id = Guid.Parse(identifier);
+                if (id == Guid.Parse(Constants.DefaultAdminUserId))
+                {
+                    throw new KeyNotFoundException();
+                }
+                else if (id == Guid.Parse(Constants.MultiTenantUserId))
+                {
+                    _defaultTenantMultiTenantCache = tenantKey;
+                }
+
+                return Task.CompletedTask;
             }
 
             private class DummyUser : IUser
@@ -335,7 +352,12 @@ namespace Codeworx.Identity.Configuration
 
             private class MultiTenantDummyUser : IUser
             {
-                public string DefaultTenantKey => null;
+                public MultiTenantDummyUser(string defaultTenantKey = null)
+                {
+                    this.DefaultTenantKey = defaultTenantKey;
+                }
+
+                public string DefaultTenantKey { get; }
 
                 public string Identity => Constants.MultiTenantUserId;
 
