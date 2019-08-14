@@ -43,8 +43,7 @@ namespace Codeworx.Identity.AspNetCore
 
                     if (tenantAuthenticateResult.Succeeded)
                     {
-                        var userService = context.RequestServices.GetService<IUserService>();
-                        var canHandleDefault = userService is IWriteableUserService;
+                        var canHandleDefault = context.RequestServices.GetService<IDefaultTenantService>() != null;
 
                         body = await _template.GetTenantSelectionTemplate(returnUrl, canHandleDefault);
                     }
@@ -118,11 +117,11 @@ namespace Codeworx.Identity.AspNetCore
 
                         if (tenantSelectionRequest.SetDefault)
                         {
-                            var userService = context.RequestServices.GetService<IUserService>();
+                            var defaultTenantService = context.RequestServices.GetService<IDefaultTenantService>();
 
-                            if (userService is IWriteableUserService writeableUserService)
+                            if (defaultTenantService != null)
                             {
-                                await writeableUserService.SetDefaultTenantAsync(identity.Identifier, tenantSelectionRequest.TenantKey);
+                                await defaultTenantService.SetDefaultTenantAsync(identity.Identifier, tenantSelectionRequest.TenantKey);
                             }
                         }
                     }

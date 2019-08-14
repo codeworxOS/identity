@@ -32,6 +32,7 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<ITenantService, DummyTenantService>();
             _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
+            _collection.AddScoped<IDefaultTenantService, DummyUserService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -289,7 +290,7 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyUserService : IUserService, IWriteableUserService
+        private class DummyUserService : IUserService, IDefaultTenantService
         {
             private static string _defaultTenantMultiTenantCache;
 

@@ -9,9 +9,4 @@ namespace Codeworx.Identity
 
         Task<IUser> GetUserByNameAsync(string userName);
     }
-
-    public interface IWriteableUserService : IUserService
-    {
-        Task SetDefaultTenantAsync(string identifier, string tenantKey);
-    }
 }
