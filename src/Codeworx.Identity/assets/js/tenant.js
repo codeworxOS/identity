@@ -11,14 +11,14 @@ var TenantForm = /** @class */ (function () {
         this.returnUrl = returnUrl;
         if (showDefault === 'True') {
             var div = document.createElement('div');
-            var isDefaultElement = document.createElement('input');
-            isDefaultElement.id = 'isDefault';
-            isDefaultElement.type = 'checkbox';
-            isDefaultElement.name = 'isdefault';
+            var checkbox = document.createElement('input');
+            checkbox.id = 'isDefault';
+            checkbox.type = 'checkbox';
+            checkbox.name = 'isdefault';
             var label = document.createElement('label');
             label.htmlFor = 'isDefault';
             label.innerText = 'Use as default';
-            div.append(isDefaultElement);
+            div.append(checkbox);
             div.append(label);
             this.form.append(div);
         }

@@ -25,16 +25,16 @@ class TenantForm {
         if (showDefault === 'True') {
             let div = document.createElement('div');
 
-            let isDefaultElement = document.createElement('input');
-            isDefaultElement.id = 'isDefault';
-            isDefaultElement.type = 'checkbox';
-            isDefaultElement.name = 'isdefault';
+            let checkbox = document.createElement('input');
+            checkbox.id = 'isDefault';
+            checkbox.type = 'checkbox';
+            checkbox.name = 'isdefault';
 
             let label = document.createElement('label');
             label.htmlFor = 'isDefault';
-            label.innerText = 'Use as default';
+            label.innerText = 'Set as default';
 
-            div.append(isDefaultElement);
+            div.append(checkbox);
             div.append(label);
 
             this.form.append(div);
