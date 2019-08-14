@@ -21,14 +21,12 @@ namespace Codeworx.Identity.AspNetCore
             _identityService = identityService;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService)
         {
             IUser user = null;
 
-            var userService = context.RequestServices.GetService<IUserService>();
-            var tenantService = context.RequestServices.GetService<ITenantService>();
-
             var authenticationResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+
             if (!authenticationResult.Succeeded)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
