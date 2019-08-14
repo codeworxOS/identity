@@ -7,8 +7,21 @@ var TenantForm = /** @class */ (function () {
             this.form = this.tenantDropDown.form;
         }
     }
-    TenantForm.prototype.initialize = function (returnUrl) {
+    TenantForm.prototype.initialize = function (showDefault, returnUrl) {
         this.returnUrl = returnUrl;
+        if (showDefault === 'True') {
+            var div = document.createElement('div');
+            var isDefaultElement = document.createElement('input');
+            isDefaultElement.id = 'isDefault';
+            isDefaultElement.type = 'checkbox';
+            isDefaultElement.name = 'isdefault';
+            var label = document.createElement('label');
+            label.htmlFor = 'isDefault';
+            label.innerText = 'Use as default';
+            div.append(isDefaultElement);
+            div.append(label);
+            this.form.append(div);
+        }
         this.loadTenants();
     };
     TenantForm.prototype.loadTenants = function () {

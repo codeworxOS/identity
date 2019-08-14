@@ -8,6 +8,6 @@ namespace Codeworx.Identity
 
         Task<string> GetLoginTemplate(string returnUrl);
 
-        Task<string> GetTenantSelectionTemplate(string returnUrl);
+        Task<string> GetTenantSelectionTemplate(string returnUrl, bool showDefault);
     }
 }

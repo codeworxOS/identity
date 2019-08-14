@@ -18,10 +18,11 @@ namespace Codeworx.Identity
                 .Replace("{{returnUrl}}", returnUrl);
         }
 
-        public async Task<string> GetTenantSelectionTemplate(string returnUrl)
+        public async Task<string> GetTenantSelectionTemplate(string returnUrl, bool showDefault)
         {
             return (await GetTemplateAsString("Codeworx.Identity.assets.tenant.html"))
-                .Replace("{{returnUrl}}", returnUrl);
+                .Replace("{{returnUrl}}", returnUrl)
+                .Replace("{{showDefault}}", showDefault.ToString());
         }
 
         private static async Task<string> GetTemplateAsString(string resourceName)

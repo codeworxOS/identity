@@ -19,8 +19,26 @@ class TenantForm {
         }
     }
 
-    public initialize(returnUrl?: string): void {
+    public initialize(showDefault: string, returnUrl?: string): void {
         this.returnUrl = returnUrl;
+
+        if (showDefault === 'True') {
+            let div = document.createElement('div');
+
+            let isDefaultElement = document.createElement('input');
+            isDefaultElement.id = 'isDefault';
+            isDefaultElement.type = 'checkbox';
+            isDefaultElement.name = 'isdefault';
+
+            let label = document.createElement('label');
+            label.htmlFor = 'isDefault';
+            label.innerText = 'Use as default';
+
+            div.append(isDefaultElement);
+            div.append(label);
+
+            this.form.append(div);
+        }
 
         this.loadTenants();
     }
