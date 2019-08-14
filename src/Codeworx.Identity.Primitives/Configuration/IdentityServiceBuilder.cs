@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder Provider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                            where TImplementation : class, IProviderSetup
+            where TImplementation : class, IProviderSetup
         {
             RegisterScoped<IProviderSetup, TImplementation>(factory);
             return this;
@@ -93,7 +93,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder View<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                    where TImplementation : class, IViewTemplate
+            where TImplementation : class, IViewTemplate
         {
             RegisterSingleton<IViewTemplate, TImplementation>(factory);
             return this;
@@ -129,14 +129,14 @@ namespace Codeworx.Identity.Configuration
         }
 
         private void RegisterScoped<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                                where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Scoped);
         }
 
         private void RegisterSingleton<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                        where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Singleton);
@@ -242,8 +242,8 @@ namespace Codeworx.Identity.Configuration
             public Task<bool> Validate(IUser user, string password)
             {
                 return Task.FromResult(
-                        (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
-                        (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
+                    (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
+                    (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
             }
         }
 
@@ -272,17 +272,17 @@ namespace Codeworx.Identity.Configuration
                 if (user.Identity == Constants.MultiTenantUserId)
                 {
                     tenants = new[]
-                    {
-                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
-                        new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
-                    };
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
+                                  new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
+                              };
                 }
                 else
                 {
                     tenants = new[]
-                {
-                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
-                    };
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
+                              };
                 }
 
                 return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
