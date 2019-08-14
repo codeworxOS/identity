@@ -17,7 +17,7 @@ var TenantForm = /** @class */ (function () {
             checkbox.name = 'isdefault';
             var label = document.createElement('label');
             label.htmlFor = 'isDefault';
-            label.innerText = 'Use as default';
+            label.innerText = 'Set as default';
             div.append(checkbox);
             div.append(label);
             this.form.append(div);
