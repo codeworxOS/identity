@@ -29,17 +29,18 @@ namespace Codeworx.Identity.AspNetCore
             string body = null;
             var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
 
-            var authenticateResult = await context.AuthenticateAsync(_service.AuthenticationScheme);
-            var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
-
             if (context.Request.Method.Equals(HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
             {
+                var authenticateResult = await context.AuthenticateAsync(_service.AuthenticationScheme);
+
                 if (authenticateResult.Succeeded)
                 {
                     body = await _template.GetLoggedInTemplate(returnUrl);
                 }
                 else
                 {
+                    var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+
                     if (tenantAuthenticateResult.Succeeded)
                     {
                         var canHandleDefault = userService is IWriteableUserService;
@@ -54,6 +55,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             else if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
             {
+                var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+
                 var setting = new JsonSerializerSettings
                               {
                                   ContractResolver = new CamelCasePropertyNamesContractResolver()
