@@ -19,10 +19,10 @@ steps:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: 'identity_signkey.snk'
     TargetFolder: './private'
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'test'
+    projects: './tests/**/*Test.csproj'
 - task: PowerShell@2
   env:
     BUILD_PRERELEASE: '$(Build.Prerelease)'
