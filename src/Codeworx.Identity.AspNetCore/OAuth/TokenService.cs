@@ -9,9 +9,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class TokenService : ITokenService
     {
-        private readonly IEnumerable<ITokenFlowService> _tokenFlowServices;
-        private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
         private readonly IClientAuthenticationService _clientAuthenticationService;
+        private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
+        private readonly IEnumerable<ITokenFlowService> _tokenFlowServices;
 
         public TokenService(IEnumerable<ITokenFlowService> tokenFlowServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
         {
@@ -20,7 +20,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _clientAuthenticationService = clientAuthenticationService;
         }
 
-        public async Task<ITokenResult> AuthorizeRequest(TokenRequest request, (string ClientId, string ClientSecret)? authorizationHeader)
+        public async Task<ITokenResult> AuthorizeRequest(
+            TokenRequest request,
+            string clientId,
+            string clientSecret)
         {
             if (request == null)
             {
@@ -40,25 +43,24 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnsupportedGrantTypeResult();
             }
 
-            var (clientAuthenticationResult, clientRegistration) = await _clientAuthenticationService.AuthenticateClient(request, authorizationHeader)
+            var clientAuthenticationResult = await _clientAuthenticationService.AuthenticateClient(request, clientId, clientSecret)
                                                                                  .ConfigureAwait(false);
-            if (clientAuthenticationResult != null)
+            if (clientAuthenticationResult.TokenResult != null)
             {
-                return clientAuthenticationResult;
+                return clientAuthenticationResult.TokenResult;
             }
 
-            if (clientRegistration == null)
+            if (clientAuthenticationResult.ClientRegistration == null)
             {
                 return new InvalidClientResult();
             }
 
-            if (!clientRegistration.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
+            if (!clientAuthenticationResult.ClientRegistration.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
             {
                 return new UnauthorizedClientResult();
             }
 
-            //ToDo: Check scopes (invalid_scope)
-
+            // ToDo: Check scopes (invalid_scope)
             var tokenResult = await tokenFlowService.AuthorizeRequest(request)
                                                     .ConfigureAwait(false);
 

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -22,7 +19,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task<ITokenResult> AuthorizeRequest(TokenRequest request)
         {
-            if (request == null || !(request is AuthorizationCodeTokenRequest authorizationCodeTokenRequest))
+            var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
+
+            if (request == null || authorizationCodeTokenRequest == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }

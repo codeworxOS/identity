@@ -13,10 +13,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class TokenMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> _tokenRequestBinder;
         private readonly IEnumerable<IResponseBinder> _responseBinders;
+        private readonly IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> _tokenRequestBinder;
 
-        public TokenMiddleware(RequestDelegate next,
+        public TokenMiddleware(
+                               RequestDelegate next,
                                IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> tokenRequestBinder,
                                IEnumerable<IResponseBinder> responseBinders)
         {
@@ -36,15 +37,16 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if (bindingResult.Result != null)
             {
-                (string, string)? authorizationHeader = null;
+                string clientId = null, clientSecret = null;
                 if (AuthenticationHeaderValue.TryParse(context.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
                 {
                     var credentialBytes = Convert.FromBase64String(authenticationHeaderValue.Parameter);
                     var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
-                    authorizationHeader = (credentials[0], credentials[1]);
+                    clientId = credentials[0];
+                    clientSecret = credentials[1];
                 }
 
-                var result = await tokenService.AuthorizeRequest(bindingResult.Result, authorizationHeader);
+                var result = await tokenService.AuthorizeRequest(bindingResult.Result, clientId, clientSecret);
 
                 if (result.Error != null)
                 {

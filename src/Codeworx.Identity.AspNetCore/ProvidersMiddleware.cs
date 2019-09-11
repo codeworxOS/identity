@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Authentication;
-using System.Text.Encodings.Web;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -63,6 +62,7 @@ namespace Codeworx.Identity.AspNetCore
             {
                 context.Response.ContentType = contentType;
             }
+
             context.Response.StatusCode = StatusCodes.Status200OK;
 
             var setting = new JsonSerializerSettings();

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -33,6 +33,7 @@ namespace Codeworx.Identity.AspNetCore
             {
                 context.Response.ContentType = contentType;
             }
+
             context.Response.StatusCode = StatusCodes.Status200OK;
 
             var setting = new JsonSerializerSettings

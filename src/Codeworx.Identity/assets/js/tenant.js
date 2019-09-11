@@ -1,4 +1,4 @@
-var TenantForm = /** @class */ (function () {
+var TenantForm = (function () {
     function TenantForm() {
         this.DONE = 4;
         this.OK = 200;
@@ -18,8 +18,8 @@ var TenantForm = /** @class */ (function () {
             var label = document.createElement('label');
             label.htmlFor = 'isDefault';
             label.innerText = 'Set as default';
-            div.append(checkbox);
-            div.append(label);
+            div.appendChild(checkbox);
+            div.appendChild(label);
             this.form.append(div);
         }
         this.loadTenants();

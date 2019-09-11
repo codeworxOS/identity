@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -24,8 +23,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             _allowedCharacters = allowedCharacters;
         }
-
-        #region Public Methods
 
         public Task<string> GenerateCode(AuthorizationRequest request, int length)
         {
@@ -53,7 +50,5 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             return Task.FromResult(authorizationCode);
         }
-
-        #endregion Public Methods
     }
 }

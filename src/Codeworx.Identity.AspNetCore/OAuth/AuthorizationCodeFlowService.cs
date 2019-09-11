@@ -6,9 +6,7 @@ using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Validation.Authorization;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -65,8 +63,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var grantInformation = new Dictionary<string, string>
                                    {
-                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
-                                       {Identity.OAuth.Constants.ClientIdName, request.ClientId}
+                                       { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
+                                       { Identity.OAuth.Constants.ClientIdName, request.ClientId },
                                    };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

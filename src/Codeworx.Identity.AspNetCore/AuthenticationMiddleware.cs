@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace Codeworx.Identity.AspNetCore
 {

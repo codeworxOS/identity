@@ -46,7 +46,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new ClientSecretDuplicatedResult();
             }
 
-            var request = new AuthorizationCodeTokenRequest(clientId?.FirstOrDefault(),
+            var request = new AuthorizationCodeTokenRequest(
+                                                            clientId?.FirstOrDefault(),
                                                             redirectUri?.FirstOrDefault(),
                                                             code?.FirstOrDefault(),
                                                             grantType?.FirstOrDefault(),

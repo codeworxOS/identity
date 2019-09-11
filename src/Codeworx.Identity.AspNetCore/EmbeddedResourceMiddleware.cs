@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.Extensions.Primitives;
-using Codeworx.Identity.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Net;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -55,6 +48,7 @@ namespace Codeworx.Identity.AspNetCore
                             context.Response.StatusCode = StatusCodes.Status200OK;
                             await stream.CopyToAsync(context.Response.Body);
                         }
+
                         return;
                     }
                     else

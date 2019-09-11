@@ -46,7 +46,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new StateDuplicatedResult(state?.FirstOrDefault());
             }
 
-            var request = new AuthorizationRequest(clientId?.FirstOrDefault(),
+            var request = new AuthorizationRequest(
+                                                   clientId?.FirstOrDefault(),
                                                    redirectUri?.FirstOrDefault(),
                                                    responseType?.FirstOrDefault(),
                                                    scope?.FirstOrDefault(),

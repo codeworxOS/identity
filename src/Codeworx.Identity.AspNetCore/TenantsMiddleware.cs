@@ -1,19 +1,18 @@
-﻿using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Codeworx.Identity.Model;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class TenantsMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly Configuration.IdentityService _identityService;
+        private readonly RequestDelegate _next;
 
         public TenantsMiddleware(RequestDelegate next, Configuration.IdentityService identityService)
         {
@@ -50,9 +49,9 @@ namespace Codeworx.Identity.AspNetCore
             context.Response.StatusCode = StatusCodes.Status200OK;
 
             var setting = new JsonSerializerSettings
-                          {
-                              ContractResolver = new CamelCasePropertyNamesContractResolver()
-                          };
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
             var json = JsonSerializer.Create(setting);
 
@@ -60,7 +59,6 @@ namespace Codeworx.Identity.AspNetCore
             {
                 json.Serialize(responseWriter, tenants);
             }
-
         }
     }
 }

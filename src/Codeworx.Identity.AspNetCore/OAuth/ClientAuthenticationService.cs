@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
-using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 
@@ -18,40 +17,37 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _hashingProvider = hashingProvider;
         }
 
-        public async Task<(ITokenResult TokenResult, IClientRegistration ClientRegistration)> AuthenticateClient(TokenRequest request, (string ClientId, string ClientSecret)? authorizationHeader)
+        public async Task<AuthenticateClientResult> AuthenticateClient(TokenRequest request, string clientId, string clientSecret)
         {
-            var (requestClientIdHasValue, requestClientSecretHasValue, headerClientIdHasValue, headerClientSecretHasValue) = (!string.IsNullOrEmpty(request?.ClientId),
-                                                                                                                           !string.IsNullOrEmpty(request?.ClientSecret),
-                                                                                                                           !string.IsNullOrEmpty(authorizationHeader?.ClientId),
-                                                                                                                           !string.IsNullOrEmpty(authorizationHeader?.ClientSecret));
+            var requestClientIdHasValue = !string.IsNullOrEmpty(request?.ClientId);
+            var requestClientSecretHasValue = !string.IsNullOrEmpty(request?.ClientSecret);
+            var headerClientIdHasValue = !string.IsNullOrEmpty(clientId);
+            var headerClientSecretHasValue = !string.IsNullOrEmpty(clientSecret);
 
-            if (requestClientSecretHasValue && headerClientSecretHasValue
-                || requestClientIdHasValue && headerClientIdHasValue && request?.ClientId != authorizationHeader?.ClientId)
+            var result = new AuthenticateClientResult();
+
+            if (((requestClientSecretHasValue && headerClientSecretHasValue) ||
+                (requestClientIdHasValue && headerClientIdHasValue)) && request?.ClientId != clientId)
             {
-                return (new InvalidRequestResult(), null);
+                result.TokenResult = new InvalidRequestResult();
+                return result;
             }
-
-            string clientId;
-            string clientSecret;
 
             if (requestClientIdHasValue && requestClientSecretHasValue && !headerClientIdHasValue && !headerClientSecretHasValue)
             {
                 clientId = request?.ClientId;
                 clientSecret = request?.ClientSecret;
             }
-            else if (!requestClientSecretHasValue && headerClientIdHasValue && headerClientSecretHasValue)
+            else if (!headerClientIdHasValue || !headerClientSecretHasValue)
             {
-                clientId = authorizationHeader?.ClientId;
-                clientSecret = authorizationHeader?.ClientSecret;
-            }
-            else
-            {
-                return (new InvalidClientResult(), null);
+                result.TokenResult = new InvalidClientResult();
+                return result;
             }
 
             if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
             {
-                return (new InvalidClientResult(), null);
+                result.TokenResult = new InvalidClientResult();
+                return result;
             }
 
             var client = await _clientService.GetById(clientId)
@@ -59,16 +55,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (client == null)
             {
-                return (new InvalidClientResult(), null);
+                result.TokenResult = new InvalidClientResult();
+                return result;
             }
 
             var secretHash = _hashingProvider.Hash(clientSecret, client.ClientSecretSalt);
             if (!secretHash.SequenceEqual(client.ClientSecretHash))
             {
-                return (new InvalidClientResult(), null);
+                result.TokenResult = new InvalidClientResult();
+                return result;
             }
 
-            return (null, client);
+            result.ClientRegistration = client;
+            return result;
         }
     }
 }

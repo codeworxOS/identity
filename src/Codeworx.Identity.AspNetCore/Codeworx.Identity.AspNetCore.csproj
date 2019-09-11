@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
-
+  <Import Project="..\..\global\GlobalInfo.targets" />
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="2.0.1" />
@@ -14,12 +14,10 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
-
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>
-
 </Project>

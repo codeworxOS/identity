@@ -34,8 +34,8 @@ class TenantForm {
             label.htmlFor = 'isDefault';
             label.innerText = 'Set as default';
 
-            div.append(checkbox);
-            div.append(label);
+            div.appendChild(checkbox);
+            div.appendChild(label);
 
             this.form.append(div);
         }

@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class LogoutMiddleware
     {
+        private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
         private readonly RequestDelegate _next;
         private readonly IViewTemplate _template;
-        private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
 
         public LogoutMiddleware(RequestDelegate next, IViewTemplate template, IAuthenticationSchemeProvider authenticationSchemeProvider)
         {

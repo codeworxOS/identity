@@ -160,6 +160,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<JwtConfiguration>()))
                 .ReturnsAsync(tokenStub.Object);
 
+            identityServiceStub.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
+
             var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
             var identity = GetIdentity();
 
@@ -205,6 +208,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var identityServiceStup = new Mock<IIdentityService>();
+
+            identityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+              .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
             var tokenStub = new Mock<IToken>();
             tokenStub.Setup(p => p.SerializeAsync())
@@ -266,6 +272,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 .ReturnsAsync(AuthorizationToken);
 
             var oauthIdentityServiceStup = new Mock<IIdentityService>();
+
+            oauthIdentityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+              .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
             var tokenProviderStub = new Mock<ITokenProvider>();
             tokenProviderStub.SetupGet(p => p.TokenType).Returns("jwt");

@@ -7,11 +7,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationErrorResponseBinder : IResponseBinder
     {
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(AuthorizationErrorResponse);
-        }
-
         public async Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
@@ -24,7 +19,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (!(response is AuthorizationErrorResponse authorizationErrorResponse))
+            var authorizationErrorResponse = response as AuthorizationErrorResponse;
+
+            if (authorizationErrorResponse == null)
             {
                 throw new NotSupportedException($"This binder only supports {typeof(AuthorizationErrorResponse)}");
             }
@@ -56,6 +53,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
                 context.Response.Redirect(redirectUriBuilder.Uri.ToString());
             }
+        }
+
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(AuthorizationErrorResponse);
         }
     }
 }

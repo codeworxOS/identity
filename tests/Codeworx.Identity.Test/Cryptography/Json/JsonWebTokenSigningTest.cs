@@ -14,8 +14,22 @@ namespace Codeworx.Identity.Test.Cryptography.Json
 {
     public class JsonWebTokenSigningTest
     {
-        [Fact]
-        async Task SimpleRsaSigningKeyTest()
+        private static ECDsa LoadPrivateKey(string privateKey)
+        {
+            var ecDsaCng = new ECDsaCng(CngKey.Import(Convert.FromBase64String(privateKey), CngKeyBlobFormat.EccPrivateBlob));
+            ecDsaCng.HashAlgorithm = CngAlgorithm.ECDsaP256;
+            return ecDsaCng;
+        }
+
+        private static ECDsa LoadPublicKey(string publicKey)
+        {
+            var ecDsaCng = new ECDsaCng(CngKey.Import(Convert.FromBase64String(publicKey), CngKeyBlobFormat.EccPublicBlob));
+            ecDsaCng.HashAlgorithm = CngAlgorithm.ECDsaP256;
+            return ecDsaCng;
+        }
+
+        [Fact(Skip = "For local use only")]
+        private async Task SimpleRsaSigningKeyTest()
         {
             var test = new JsonWebTokenHandler();
 
@@ -55,7 +69,6 @@ namespace Codeworx.Identity.Test.Cryptography.Json
             var a = selfSigned.GetECDsaPrivateKey();
             var b = selfSigned.GetECDsaPublicKey();
 
-
             var pubKey = x.GetECDsaPublicKey();
             var privateKey = x.GetECDsaPrivateKey();
 
@@ -68,22 +81,6 @@ namespace Codeworx.Identity.Test.Cryptography.Json
             privateKey = y.GetECDsaPrivateKey();
 
             var token = test.CreateToken("{ sub: 'abc' }", new SigningCredentials(new ECDsaSecurityKey(blobPrivateKey), "ES256"));
-
-        }
-
-
-        private static ECDsa LoadPrivateKey(string privateKey)
-        {
-            var ecDsaCng = new ECDsaCng(CngKey.Import(Convert.FromBase64String(privateKey), CngKeyBlobFormat.EccPrivateBlob));
-            ecDsaCng.HashAlgorithm = CngAlgorithm.ECDsaP256;
-            return ecDsaCng;
-        }
-
-        private static ECDsa LoadPublicKey(string publicKey)
-        {
-            var ecDsaCng = new ECDsaCng(CngKey.Import(Convert.FromBase64String(publicKey), CngKeyBlobFormat.EccPublicBlob));
-            ecDsaCng.HashAlgorithm = CngAlgorithm.ECDsaP256;
-            return ecDsaCng;
         }
     }
 }

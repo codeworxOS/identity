@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -69,7 +67,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 
             // TODO cach accessToken = Key value = identityData.
-
             return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectionTarget);
         }
     }

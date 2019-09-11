@@ -1,13 +1,13 @@
-﻿using Codeworx.Identity.Converter;
+﻿using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Codeworx.Identity.Converter;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -58,13 +58,13 @@ namespace Codeworx.Identity.AspNetCore
                 var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
 
                 var setting = new JsonSerializerSettings
-                              {
-                                  ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                                  Converters =
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    Converters =
                                   {
                                       new StringToBooleanJsonConverter()
                                   }
-                              };
+                };
 
                 var loginRequest = await context.Request.BindAsync<LoginRequest>(setting);
                 var tenantSelectionRequest = await context.Request.BindAsync<TenantSelectionRequest>(setting);
@@ -81,14 +81,6 @@ namespace Codeworx.Identity.AspNetCore
                         {
                             var authProperties = new AuthenticationProperties();
 
-                            //var test = false;
-
-                            //if (test)
-                            //{
-                            //    authProperties.IsPersistent = true;
-                            //    authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1);
-                            //}
-
                             await context.SignInAsync(_service.AuthenticationScheme, principal, authProperties);
                         }
                         else
@@ -102,7 +94,9 @@ namespace Codeworx.Identity.AspNetCore
                             return;
                         }
                     }
-                    catch (AuthenticationException) { }
+                    catch (AuthenticationException)
+                    {
+                    }
                 }
                 else if (tenantSelectionRequest.TenantKey != null && tenantAuthenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
                 {
@@ -125,7 +119,9 @@ namespace Codeworx.Identity.AspNetCore
                             }
                         }
                     }
-                    catch (AuthenticationException) { }
+                    catch (AuthenticationException)
+                    {
+                    }
                 }
 
                 if (hasReturnUrl)

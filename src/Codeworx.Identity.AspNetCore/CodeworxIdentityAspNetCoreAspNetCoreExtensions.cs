@@ -1,27 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Codeworx.Identity.Configuration;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Linq;
-using Codeworx.Identity.ContentType;
-using System.Runtime.Serialization;
-using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Cache;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Cryptography.Internal;
+using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Token;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Codeworx.Identity.Cryptography.Internal;
-using Codeworx.Identity.Token;
-using Codeworx.Identity.Cryptography.Json;
-using Codeworx.Identity.Cache;
-using System;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -42,7 +42,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(builder.OptionsDelegate));
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = authenticationScheme; })
-                      .AddCookie(authenticationScheme,
+                      .AddCookie(
+                                 authenticationScheme,
                                  p =>
                                  {
                                      var options = new IdentityOptions();
@@ -52,7 +53,8 @@ namespace Codeworx.Identity.AspNetCore
                                      p.LoginPath = "/account/login";
                                      p.ExpireTimeSpan = options.CookieExpiration;
                                  })
-                      .AddCookie(Constants.MissingTenantAuthenticationScheme,
+                      .AddCookie(
+                                 Constants.MissingTenantAuthenticationScheme,
                                  p =>
                                  {
                                      var options = new IdentityOptions();

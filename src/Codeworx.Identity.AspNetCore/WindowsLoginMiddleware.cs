@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.Extensions.Primitives;
-using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -57,17 +52,17 @@ namespace Codeworx.Identity.AspNetCore
                 var identity = new ClaimsIdentity();
                 identity.AddClaim(new Claim(ClaimTypes.Name, "Windows blabla"));
 
+                var properties = new AuthenticationProperties()
+                {
+                    IsPersistent = false,
+                    ExpiresUtc = DateTime.UtcNow.Add(_service.Options.CookieExpiration),
+                    RedirectUri = returnUrl,
+                };
+
                 await context.SignInAsync(
                     _service.AuthenticationScheme,
-                    new System.Security.Claims.ClaimsPrincipal(
-                       identity
-                    ),
-                    new Microsoft.AspNetCore.Authentication.AuthenticationProperties
-                    {
-                        IsPersistent = false,
-                        ExpiresUtc = DateTime.UtcNow.Add(_service.Options.CookieExpiration),
-                        RedirectUri = returnUrl
-                    });
+                    new ClaimsPrincipal(identity),
+                    properties);
 
                 context.Response.Redirect(returnUrl);
                 return;

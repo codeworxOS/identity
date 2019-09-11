@@ -13,7 +13,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly RequestDelegate _next;
         private readonly IEnumerable<IResponseBinder> _responseBinders;
 
-        public AuthorizationMiddleware(RequestDelegate next,
+        public AuthorizationMiddleware(
+                                       RequestDelegate next,
                                        IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
                                        IEnumerable<IResponseBinder> responseBinders)
         {

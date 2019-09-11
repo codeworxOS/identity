@@ -10,11 +10,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class TokenErrorResponseBinder : IResponseBinder
     {
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(TokenErrorResponse);
-        }
-
         public async Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
@@ -27,7 +22,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (!(response is TokenErrorResponse tokenErrorResponse))
+            var tokenErrorResponse = response as TokenErrorResponse;
+
+            if (tokenErrorResponse == null)
             {
                 throw new NotSupportedException($"This binder only supports {typeof(TokenErrorResponse)}");
             }
@@ -45,7 +42,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
-            
+
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
             context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
             context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
@@ -54,6 +51,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             await context.Response.WriteAsync(responseString)
                          .ConfigureAwait(false);
+        }
+
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(TokenErrorResponse);
         }
     }
 }
