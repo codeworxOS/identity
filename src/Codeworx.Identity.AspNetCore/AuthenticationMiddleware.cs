@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class AuthenticatedMiddleware
+    public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly Configuration.IdentityService _service;
 
-        public AuthenticatedMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public AuthenticationMiddleware(RequestDelegate next, Configuration.IdentityService service)
         {
             _next = next;
             _service = service;
@@ -31,6 +24,7 @@ namespace Codeworx.Identity.AspNetCore
                 await _next(context);
                 return;
             }
+
             await context.ChallengeAsync(_service.AuthenticationScheme);
         }
     }

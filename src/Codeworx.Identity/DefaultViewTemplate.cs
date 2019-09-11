@@ -6,32 +6,35 @@ namespace Codeworx.Identity
 {
     public class DefaultViewTemplate : IViewTemplate
     {
-        public Task<string> GetConsentTemplate()
-        {
-            return Task.FromResult(string.Empty);
-        }
-
         public async Task<string> GetLoggedInTemplate(string returnUrl)
         {
-            using (var stream = typeof(DefaultViewTemplate).GetTypeInfo().Assembly
-                .GetManifestResourceStream("Codeworx.Identity.assets.loggedin.html"))
-            {
-                byte[] buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                return Encoding.UTF8.GetString(buffer).Replace("{{returnUrl}}", returnUrl);
-            }
+            return (await GetTemplateAsString("Codeworx.Identity.assets.loggedin.html"))
+                .Replace("{{returnUrl}}", returnUrl);
         }
 
         public async Task<string> GetLoginTemplate(string returnUrl)
         {
-            using (var stream = typeof(DefaultViewTemplate).GetTypeInfo().Assembly
-                .GetManifestResourceStream("Codeworx.Identity.assets.login.html"))
+            return (await GetTemplateAsString("Codeworx.Identity.assets.login.html"))
+                .Replace("{{returnUrl}}", returnUrl);
+        }
+
+        public async Task<string> GetTenantSelectionTemplate(string returnUrl, bool showDefault)
+        {
+            return (await GetTemplateAsString("Codeworx.Identity.assets.tenant.html"))
+                .Replace("{{returnUrl}}", returnUrl)
+                .Replace("{{showDefault}}", showDefault.ToString());
+        }
+
+        private static async Task<string> GetTemplateAsString(string resourceName)
+        {
+            using (var stream = typeof(DefaultViewTemplate)
+                                .GetTypeInfo().Assembly
+                                .GetManifestResourceStream(resourceName))
             {
                 byte[] buffer = new byte[stream.Length];
                 await stream.ReadAsync(buffer, 0, buffer.Length);
 
-                return Encoding.UTF8.GetString(buffer).Replace("{{returnUrl}}", returnUrl);
+                return Encoding.UTF8.GetString(buffer);
             }
         }
     }

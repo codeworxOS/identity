@@ -1,41 +1,32 @@
-﻿using System;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
-using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class LogoutMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
         private readonly IViewTemplate _template;
+        private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider;
 
-        public LogoutMiddleware(RequestDelegate next, Configuration.IdentityService service, IViewTemplate template)
+        public LogoutMiddleware(RequestDelegate next, IViewTemplate template, IAuthenticationSchemeProvider authenticationSchemeProvider)
         {
             _next = next;
-            _service = service;
             _template = template;
+            _authenticationSchemeProvider = authenticationSchemeProvider;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            string body = null;
+            var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
 
-            var result = await context.AuthenticateAsync();
-            var hasReturnUrl = context.Request.Query.TryGetValue("returnurl", out StringValues returnUrl);
+            var authenticationSchemes = await _authenticationSchemeProvider.GetAllSchemesAsync();
 
-            if (result.Succeeded)
+            foreach (AuthenticationScheme authenticationScheme in authenticationSchemes)
             {
-                await context.SignOutAsync(_service.AuthenticationScheme);
+                await context.SignOutAsync(authenticationScheme.Name);
             }
 
             context.Response.Redirect(hasReturnUrl ? returnUrl.First() : "login");

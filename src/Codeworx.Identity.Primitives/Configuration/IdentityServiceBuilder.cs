@@ -32,6 +32,7 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<ITenantService, DummyTenantService>();
             _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
+            _collection.AddScoped<IDefaultTenantService, DummyUserService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -66,7 +67,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder Provider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                            where TImplementation : class, IProviderSetup
+            where TImplementation : class, IProviderSetup
         {
             RegisterScoped<IProviderSetup, TImplementation>(factory);
             return this;
@@ -93,7 +94,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder View<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                    where TImplementation : class, IViewTemplate
+            where TImplementation : class, IViewTemplate
         {
             RegisterSingleton<IViewTemplate, TImplementation>(factory);
             return this;
@@ -129,14 +130,14 @@ namespace Codeworx.Identity.Configuration
         }
 
         private void RegisterScoped<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                                where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Scoped);
         }
 
         private void RegisterSingleton<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                        where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Singleton);
@@ -242,8 +243,8 @@ namespace Codeworx.Identity.Configuration
             public Task<bool> Validate(IUser user, string password)
             {
                 return Task.FromResult(
-                        (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
-                        (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
+                    (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
+                    (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
             }
         }
 
@@ -272,25 +273,27 @@ namespace Codeworx.Identity.Configuration
                 if (user.Identity == Constants.MultiTenantUserId)
                 {
                     tenants = new[]
-                    {
-                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
-                        new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
-                    };
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
+                                  new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
+                              };
                 }
                 else
                 {
                     tenants = new[]
-                {
-                        new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
-                    };
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
+                              };
                 }
 
                 return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
             }
         }
 
-        private class DummyUserService : IUserService
+        private class DummyUserService : IUserService, IDefaultTenantService
         {
+            private static string _defaultTenantMultiTenantCache;
+
             public Task<IUser> GetUserByIdentifierAsync(string identifier)
             {
                 var id = Guid.Parse(identifier);
@@ -300,7 +303,7 @@ namespace Codeworx.Identity.Configuration
                 }
                 else if (id == Guid.Parse(Constants.MultiTenantUserId))
                 {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
                 }
 
                 return Task.FromResult<IUser>(null);
@@ -314,10 +317,25 @@ namespace Codeworx.Identity.Configuration
                 }
                 else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
                 {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser());
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
                 }
 
                 return Task.FromResult<IUser>(null);
+            }
+
+            public Task SetDefaultTenantAsync(string identifier, string tenantKey)
+            {
+                var id = Guid.Parse(identifier);
+                if (id == Guid.Parse(Constants.DefaultAdminUserId))
+                {
+                    throw new KeyNotFoundException();
+                }
+                else if (id == Guid.Parse(Constants.MultiTenantUserId))
+                {
+                    _defaultTenantMultiTenantCache = tenantKey;
+                }
+
+                return Task.CompletedTask;
             }
 
             private class DummyUser : IUser
@@ -335,7 +353,12 @@ namespace Codeworx.Identity.Configuration
 
             private class MultiTenantDummyUser : IUser
             {
-                public string DefaultTenantKey => null;
+                public MultiTenantDummyUser(string defaultTenantKey = null)
+                {
+                    this.DefaultTenantKey = defaultTenantKey;
+                }
+
+                public string DefaultTenantKey { get; }
 
                 public string Identity => Constants.MultiTenantUserId;
 

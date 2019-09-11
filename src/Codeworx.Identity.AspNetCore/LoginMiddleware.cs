@@ -1,15 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+﻿using Codeworx.Identity.Converter;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -29,69 +27,114 @@ namespace Codeworx.Identity.AspNetCore
         public async Task Invoke(HttpContext context)
         {
             string body = null;
+            var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
 
-            var result = await context.AuthenticateAsync();
-
-            var hasReturnUrl = context.Request.Query.TryGetValue("returnurl", out StringValues returnUrl);
-
-            if (result.Succeeded)
+            if (context.Request.Method.Equals(HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
             {
-                body = await _template.GetLoggedInTemplate(returnUrl);
-            }
-            else
-            {
-                // TODO var missingTenant = context.AuthenticateAsync(Constants.MissingTenant....);
-                // TODO missingTenant.Success -> new Template Select Tenant.
+                var authenticateResult = await context.AuthenticateAsync(_service.AuthenticationScheme);
 
-                body = await _template.GetLoginTemplate(returnUrl);
-            }
-
-            if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
-            {
-                var setting = new JsonSerializerSettings
+                if (authenticateResult.Succeeded)
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
-
-                var request = await context.Request.BindAsync<LoginRequest>(setting);
-                var userName = request.UserName;
-                try
+                    body = await _template.GetLoggedInTemplate(returnUrl);
+                }
+                else
                 {
-                    var identityProvider = context.RequestServices.GetService<IIdentityService>();
-                    var identityData = await identityProvider.LoginAsync(request.UserName, request.Password);
-                    var principal = identityData.ToClaimsPrincipal();
+                    var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
 
-                    if (identityData.TenantKey != null)
+                    if (tenantAuthenticateResult.Succeeded)
                     {
-                        var authProperties = new AuthenticationProperties();
+                        var canHandleDefault = context.RequestServices.GetService<IDefaultTenantService>() != null;
 
-                        //var test = false;
-
-                        //if (test)
-                        //{
-                        //    authProperties.IsPersistent = true;
-                        //    authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1);
-                        //}
-
-                        await context.SignInAsync(_service.AuthenticationScheme, principal, authProperties);
+                        body = await _template.GetTenantSelectionTemplate(returnUrl, canHandleDefault);
                     }
                     else
                     {
-                        await context.SignInAsync(Constants.MissingTenantAuthenticationScheme, principal);
-                        context.Response.Redirect(_service.Options.OauthEndpoint);
-                        return;
+                        body = await _template.GetLoginTemplate(returnUrl);
                     }
+                }
+            }
+            else if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
+            {
+                var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
 
-                    if (hasReturnUrl)
-                    {
-                        context.Response.Redirect(returnUrl);
-                        return;
-                    }
-                    body = await _template.GetLoggedInTemplate(returnUrl);
-                }
-                catch (AuthenticationException)
+                var setting = new JsonSerializerSettings
+                              {
+                                  ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                                  Converters =
+                                  {
+                                      new StringToBooleanJsonConverter()
+                                  }
+                              };
+
+                var loginRequest = await context.Request.BindAsync<LoginRequest>(setting);
+                var tenantSelectionRequest = await context.Request.BindAsync<TenantSelectionRequest>(setting);
+
+                if (loginRequest.UserName != null)
                 {
+                    try
+                    {
+                        var identityProvider = context.RequestServices.GetService<IIdentityService>();
+                        var identityData = await identityProvider.LoginAsync(loginRequest.UserName, loginRequest.Password);
+                        var principal = identityData.ToClaimsPrincipal();
+
+                        if (identityData.TenantKey != null)
+                        {
+                            var authProperties = new AuthenticationProperties();
+
+                            //var test = false;
+
+                            //if (test)
+                            //{
+                            //    authProperties.IsPersistent = true;
+                            //    authProperties.ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(1);
+                            //}
+
+                            await context.SignInAsync(_service.AuthenticationScheme, principal, authProperties);
+                        }
+                        else
+                        {
+                            await context.SignInAsync(Constants.MissingTenantAuthenticationScheme, principal);
+
+                            var redirectLocation = hasReturnUrl ? $"login?{Constants.ReturnUrlParameter}={returnUrl}" : "login";
+
+                            context.Response.Redirect(redirectLocation);
+
+                            return;
+                        }
+                    }
+                    catch (AuthenticationException) { }
                 }
+                else if (tenantSelectionRequest.TenantKey != null && tenantAuthenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
+                {
+                    try
+                    {
+                        var identity = claimsIdentity.ToIdentityData();
+
+                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey)
+                            .ToClaimsPrincipal();
+
+                        await context.SignInAsync(_service.AuthenticationScheme, principal, new AuthenticationProperties());
+
+                        if (tenantSelectionRequest.SetDefault)
+                        {
+                            var defaultTenantService = context.RequestServices.GetService<IDefaultTenantService>();
+
+                            if (defaultTenantService != null)
+                            {
+                                await defaultTenantService.SetDefaultTenantAsync(identity.Identifier, tenantSelectionRequest.TenantKey);
+                            }
+                        }
+                    }
+                    catch (AuthenticationException) { }
+                }
+
+                if (hasReturnUrl)
+                {
+                    context.Response.Redirect(returnUrl);
+                    return;
+                }
+
+                body = await _template.GetLoggedInTemplate(returnUrl);
             }
 
             if (_service.TryGetContentType(".html", out string contentType))
@@ -100,8 +143,6 @@ namespace Codeworx.Identity.AspNetCore
             }
 
             await context.Response.WriteAsync(body);
-
-            return;
         }
     }
 }
