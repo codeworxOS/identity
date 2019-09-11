@@ -7,10 +7,6 @@
 trigger:
 - development
 
-variables:
-- name: Build.Prerelease
-- group: Version Number
-
 pool:
   name: Hosted Windows 2019 with VS2019
 
@@ -44,9 +40,3 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
-
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
