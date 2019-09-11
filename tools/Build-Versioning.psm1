@@ -112,16 +112,17 @@ function New-NugetPackages {
         
         Write-Host "##vso[build.updatebuildnumber]$($nextVersion.NugetVersion)"
         
-        $params = "Configuration=Release;Version=$($nextVersion.NugetVersion);AssemblyVersion=$($nextVersion.Major).0.0.0;FileVersion=$($nextVersion.Major).$($nextVersion.Minor).$($nextVersion.Build).$($nextVersion.Release)"
+        $params = "PackageOutputPath=$($output);Configuration=Release;Version=$($nextVersion.NugetVersion);AssemblyVersion=$($nextVersion.Major).0.0.0;FileVersion=$($nextVersion.Major).$($nextVersion.Minor).$($nextVersion.Build).$($nextVersion.Release)"
         
         if ( -not [string]::IsNullOrWhiteSpace($MsBuildParams)) {
             $params = "$params;$MsBuildParams"
         }
         
         $projects | foreach { 
-            dotnet pack $_  -o "$output" -p:"$params" 
-            if ($lastexitcode -ne 0) {
-                throw ("Exec: " + $errorMessage)
+            $buildresult = Invoke-MsBuild -Path $_ -MsBuildParameters "/t:pack /p:$params" -ShowBuildOutputInCurrentWindow 
+            
+            if ( -not $buildresult.BuildSucceeded) {
+                Write-Error -Message $buildresult.Message
             }
         }
     }
