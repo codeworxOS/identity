@@ -7,10 +7,6 @@
 trigger:
 - master
 
-variables:
-- name: Build.Prerelease
-- group: Version Number
-
 pool:
   name: Hosted Windows 2019 with VS2019
 
