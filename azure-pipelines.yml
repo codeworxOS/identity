@@ -5,11 +5,7 @@
 # https://aka.ms/yaml
 
 trigger:
-- master
-
-variables:
-- name: Build.Prerelease
-- group: Version Number
+- development
 
 pool:
   name: Hosted Windows 2019 with VS2019
@@ -23,10 +19,10 @@ steps:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: 'identity_signkey.snk'
     TargetFolder: './private'
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'test'
+    projects: './tests/**/*Test.csproj'
 - task: PowerShell@2
   env:
     BUILD_PRERELEASE: '$(Build.Prerelease)'
@@ -44,9 +40,3 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
-
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
