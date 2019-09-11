@@ -117,7 +117,15 @@ function New-NugetPackages {
         if ( -not [string]::IsNullOrWhiteSpace($MsBuildParams)) {
             $params = "$params;$MsBuildParams"
         }
-        
+      
+        $projects | foreach { 
+            $buildresult = Invoke-MsBuild -Path $_ -MsBuildParameters "/t:restore /p:$params" -ShowBuildOutputInCurrentWindow 
+            
+            if ( -not $buildresult.BuildSucceeded) {
+                Write-Error -Message $buildresult.Message
+            }
+        }
+
         $projects | foreach { 
             $buildresult = Invoke-MsBuild -Path $_ -MsBuildParameters "/t:pack /p:$params" -ShowBuildOutputInCurrentWindow 
             
