@@ -323,3 +323,4 @@ ASALocalRun/
 *.binlog
 /private
 /dist
+/tools/publish-local.cmd
