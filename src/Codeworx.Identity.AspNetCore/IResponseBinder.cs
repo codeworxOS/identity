@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public interface IResponseBinder<in TResponse>
+    public interface IResponseBinder
     {
-        Task RespondAsync(TResponse response, HttpContext context);
+        bool Supports(Type responseType);
+        Task RespondAsync(object response, HttpContext context);
     }
 }

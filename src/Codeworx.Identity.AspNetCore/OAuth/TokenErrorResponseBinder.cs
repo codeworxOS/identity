@@ -8,9 +8,14 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenErrorResponseBinder : IResponseBinder<TokenErrorResponse>
+    public class TokenErrorResponseBinder : IResponseBinder
     {
-        public async Task RespondAsync(TokenErrorResponse response, HttpContext context)
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(TokenErrorResponse);
+        }
+
+        public async Task RespondAsync(object response, HttpContext context)
         {
             if (response == null)
             {
@@ -22,7 +27,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (response.Error == Identity.OAuth.Constants.Error.InvalidClient)
+            if (!(response is TokenErrorResponse tokenErrorResponse))
+            {
+                throw new NotSupportedException($"This binder only supports {typeof(TokenErrorResponse)}");
+            }
+
+            if (tokenErrorResponse.Error == Identity.OAuth.Constants.Error.InvalidClient)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
@@ -40,7 +50,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
             context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            var responseString = JsonConvert.SerializeObject(response);
+            var responseString = JsonConvert.SerializeObject(tokenErrorResponse);
 
             await context.Response.WriteAsync(responseString)
                          .ConfigureAwait(false);

@@ -17,6 +17,11 @@ using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Codeworx.Identity.Cryptography.Internal;
+using Codeworx.Identity.Token;
+using Codeworx.Identity.Cryptography.Json;
+using Codeworx.Identity.Cache;
+using System;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -46,6 +51,16 @@ namespace Codeworx.Identity.AspNetCore
                                      p.Cookie.Name = options.AuthenticationCookie;
                                      p.LoginPath = "/account/login";
                                      p.ExpireTimeSpan = options.CookieExpiration;
+                                 })
+                      .AddCookie(Constants.MissingTenantAuthenticationScheme,
+                                 p =>
+                                 {
+                                     var options = new IdentityOptions();
+                                     builder.OptionsDelegate(options);
+
+                                     p.Cookie.Name = Constants.MissingTenantCookieName;
+                                     p.LoginPath = "/account/login";
+                                     p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                                  });
 
             collection.AddDistributedMemoryCache();
@@ -54,21 +69,24 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationTokenResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenResponseBinder>();
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
+            collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
+            collection.AddSingleton<ITokenProvider, JwtProvider>();
+            collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
 
             collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();
-
-            collection.AddScoped<AuthenticatedUserInformation>();
 
             return builder;
         }
@@ -89,6 +107,7 @@ namespace Codeworx.Identity.AspNetCore
                             await WriteJsonObjectAsync(writer, request.Query);
                         }
                     }
+
                     jsonStream.Seek(0, SeekOrigin.Begin);
                 }
                 else if (request.HasFormContentType)
@@ -101,6 +120,7 @@ namespace Codeworx.Identity.AspNetCore
                             await WriteJsonObjectAsync(writer, request.Form, request.Form.Keys);
                         }
                     }
+
                     jsonStream.Seek(0, SeekOrigin.Begin);
                 }
                 else
@@ -126,30 +146,38 @@ namespace Codeworx.Identity.AspNetCore
         public static IApplicationBuilder UseCodeworxIdentity(this IApplicationBuilder app, IdentityOptions options)
         {
             return app
-                    .UseAuthentication()
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
-                        p => p.UseMiddleware<TokenMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.OauthEndpoint),
-                       p => p.UseMiddleware<AuthenticatedMiddleware>()
-                             .UseMiddleware<AuthorizationMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
-                        p => p.UseMiddleware<LoginMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
-                       p => p.UseMiddleware<AuthenticatedMiddleware>()
-                             .UseMiddleware<ProfileMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
-                        p => p.UseMiddleware<WindowsLoginMiddleware>())
-                    .MapWhen(
-                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
-                        p => p.UseMiddleware<ProvidersMiddleware>())
-                    .MapWhen(
-                        EmbeddedResourceMiddleware.Condition,
-                        p => p.UseMiddleware<EmbeddedResourceMiddleware>());
+                   .UseAuthentication()
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
+                       p => p.UseMiddleware<TokenMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthEndpoint),
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<AuthorizationMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
+                       p => p.UseMiddleware<LoginMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
+                       p => p.UseMiddleware<LogoutMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<ProfileMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
+                       p => p.UseMiddleware<WindowsLoginMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
+                       p => p.UseMiddleware<ProvidersMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/tenants"),
+                       p => p.UseMiddleware<TenantsMiddleware>())
+                   .MapWhen(
+                       EmbeddedResourceMiddleware.Condition,
+                       p => p.UseMiddleware<EmbeddedResourceMiddleware>());
         }
 
         private static string GetFormKeyName(PropertyInfo item)
@@ -161,10 +189,10 @@ namespace Codeworx.Identity.AspNetCore
         private static async Task WriteJsonObjectAsync(JsonTextWriter writer, IFormCollection form, IEnumerable<string> formKeys, string parentPath = null)
         {
             var keys = formKeys.GroupBy(p => p.Split('_').First()).ToDictionary(
-                                 p => p.Key,
-                                 p => p.Select(x => string.Join("_", x.Split('_').Skip(1)))
-                                         .Where(y => !string.IsNullOrWhiteSpace(y))
-                                         .ToList());
+                p => p.Key,
+                p => p.Select(x => string.Join("_", x.Split('_').Skip(1)))
+                      .Where(y => !string.IsNullOrWhiteSpace(y))
+                      .ToList());
 
             await writer.WriteStartObjectAsync();
             foreach (var item in keys)
@@ -195,6 +223,7 @@ namespace Codeworx.Identity.AspNetCore
                     }
                 }
             }
+
             await writer.WriteEndObjectAsync();
         }
 

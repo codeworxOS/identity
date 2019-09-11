@@ -9,8 +9,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
+        private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IUserService _userService;
 
         public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
@@ -20,36 +20,37 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, string userIdentifier, string currentTenantIdentifier)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
         {
             if (request == null)
             {
                 throw new ArgumentNullException();
             }
 
-            var validationError = _requestValidator.IsValid(request);
+            var validationError = await _requestValidator.IsValid(request)
+                                                         .ConfigureAwait(false);
             if (validationError != null)
             {
                 return new InvalidRequestResult(validationError);
             }
 
-            var user = await _userService.GetUserByIdentifierAsync(userIdentifier)
+            var currentUser = await _userService.GetUserByIdentifierAsync(user.Identifier)
                                          .ConfigureAwait(false);
 
-            if (user == null)
+            if (currentUser == null)
             {
-                return new UserNotFoundResult(request.State, request.RedirectUri);
+                return new UserNotFoundResult(request.State, request.RedirectionTarget);
             }
 
             var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.SupportedAuthorizationResponseType == request.ResponseType);
             if (authorizationFlowService == null)
             {
-                return new UnsupportedResponseTypeResult(request.State, request.RedirectUri);
+                return new UnsupportedResponseTypeResult(request.State, request.RedirectionTarget);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, currentTenantIdentifier)
+            var authorizationResult = await authorizationFlowService.AuthorizeRequest(request, user)
                                                                     .ConfigureAwait(false);
-            
+
             return authorizationResult;
         }
     }

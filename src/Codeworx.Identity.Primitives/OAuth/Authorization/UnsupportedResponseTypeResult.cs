@@ -4,11 +4,9 @@
     {
         public UnsupportedResponseTypeResult(string state, string redirectUri)
         {
-            this.Error = new AuthorizationErrorResponse(Constants.Error.UnsupportedResponseType, string.Empty, string.Empty, state, redirectUri);
+            this.Response = new AuthorizationErrorResponse(Constants.Error.UnsupportedResponseType, string.Empty, string.Empty, state, redirectUri);
         }
 
-        public AuthorizationErrorResponse Error { get; }
-
-        public AuthorizationCodeResponse Response => null;
+        public AuthorizationResponse Response { get; }
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace Codeworx.Identity
+﻿using System.Threading.Tasks;
+
+namespace Codeworx.Identity
 {
-    public interface IRequestValidator<in TRequest, out TResult>
+    public interface IRequestValidator<in TRequest, TResult>
     {
-        IValidationResult<TResult> IsValid(TRequest request);
+        Task<IValidationResult<TResult>> IsValid(TRequest request);
     }
 }

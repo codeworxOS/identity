@@ -46,6 +46,7 @@ namespace Codeworx.Identity.Web.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCodeworxIdentity(_configuration);
+            services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()
                 .AddAuthorization()

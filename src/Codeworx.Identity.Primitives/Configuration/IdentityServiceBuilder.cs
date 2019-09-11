@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -29,8 +30,9 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IUserService, DummyUserService>();
             _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
-            _collection.AddScoped<IOAuthClientService, DummyOAuthClientService>();
+            _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
+            _collection.AddScoped<IDefaultTenantService, DummyUserService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -65,7 +67,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder Provider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                            where TImplementation : class, IProviderSetup
+            where TImplementation : class, IProviderSetup
         {
             RegisterScoped<IProviderSetup, TImplementation>(factory);
             return this;
@@ -92,7 +94,7 @@ namespace Codeworx.Identity.Configuration
         }
 
         public IIdentityServiceBuilder View<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
-                    where TImplementation : class, IViewTemplate
+            where TImplementation : class, IViewTemplate
         {
             RegisterSingleton<IViewTemplate, TImplementation>(factory);
             return this;
@@ -128,119 +130,121 @@ namespace Codeworx.Identity.Configuration
         }
 
         private void RegisterScoped<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                                where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Scoped);
         }
 
         private void RegisterSingleton<TService, TImplementation>(Func<IServiceProvider, TImplementation> factory)
-                        where TService : class
+            where TService : class
             where TImplementation : class, TService
         {
             Register<TService, TImplementation>(factory, ServiceLifetime.Singleton);
         }
 
-        private class DummyPasswordValidator : IPasswordValidator
+        private class DummyOAuthClientService : IClientService
         {
-            public Task<bool> Validate(IUser user, string password)
-            {
-                return Task.FromResult(user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName);
-            }
-        }
-
-        private class DummyTenantService : ITenantService
-        {
-            public Task<IEnumerable<TenantInfo>> GetTenantsAsync(IUser user)
-            {
-                return Task.FromResult<IEnumerable<TenantInfo>>(new[]
-                {
-                    new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
-                });
-            }
-        }
-
-        private class DummyUserService : IUserService
-        {
-            public Task<IUser> GetUserByIdentifierAsync(string identifier)
-            {
-                var id = Guid.Parse(identifier);
-                if (id == Guid.Parse(Constants.DefaultAdminUserId))
-                {
-                    return Task.FromResult<IUser>(new DummyUser());
-                }
-
-                return Task.FromResult<IUser>(null);
-            }
-
-            public Task<IUser> GetUserByNameAsync(string userName)
-            {
-                if (userName.Equals(Constants.DefaultAdminUserName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return Task.FromResult<IUser>(new DummyUser());
-                }
-
-                return Task.FromResult<IUser>(null);
-            }
-
-            private class DummyUser : IUser
-            {
-                public string DefaultTenantKey => null;
-
-                public string Identity => Constants.DefaultAdminUserId;
-
-                public string Name => Constants.DefaultAdminUserName;
-
-                public byte[] PasswordHash => null;
-
-                public byte[] PasswordSalt => null;
-            }
-        }
-
-        private class DummyOAuthClientService : IOAuthClientService
-        {
-            private readonly List<IOAuthClientRegistration> _oAuthClientRegistrations;
+            private readonly List<IClientRegistration> _oAuthClientRegistrations;
 
             public DummyOAuthClientService(IHashingProvider hashingProvider)
             {
                 var salt = hashingProvider.CrateSalt();
                 var hash = hashingProvider.Hash("clientSecret", salt);
 
-                _oAuthClientRegistrations = new List<IOAuthClientRegistration>
+                _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt)
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
             }
 
-            public Task<IEnumerable<IOAuthClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
+            public Task<IClientRegistration> GetById(string clientIdentifier)
             {
-                return Task.FromResult<IEnumerable<IOAuthClientRegistration>>(_oAuthClientRegistrations);
+                return Task.FromResult(_oAuthClientRegistrations.FirstOrDefault(p => p.ClientId == clientIdentifier));
             }
 
-            public Task<IOAuthClientRegistration> GetById(string clientIdentifier)
+            public Task<IEnumerable<IClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
             {
-                return Task.FromResult(_oAuthClientRegistrations.First());
+                return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
             }
 
-            private class DummyOAuthAuthorizationCodeClientRegistration : IOAuthClientRegistration
+            private class AuthorizationCodeSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
+                }
+            }
+
+            private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
             {
                 public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
                 {
                     this.ClientSecretHash = clientSecretHash;
                     this.ClientSecretSalt = clientSecretSalt;
+                    this.TokenExpiration = TimeSpan.FromHours(1);
+
+                    this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
                 }
 
-                public string TenantIdentifier => Constants.DefaultTenantId;
-
-                public string Identifier => Constants.DefaultClientId;
-
-                public string SupportedOAuthMode => OAuth.Constants.ResponseType.Code;
+                public string ClientId => Constants.DefaultCodeFlowClientId;
 
                 public byte[] ClientSecretHash { get; }
 
                 public byte[] ClientSecretSalt { get; }
 
-                public bool IsConfidential => true;
+                public Uri DefaultRedirectUri { get; }
+
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
+
+                public TimeSpan TokenExpiration { get; }
+
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
+            }
+
+            private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
+            {
+                public DummyOAuthAuthorizationTokenClientRegistration()
+                {
+                    this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
+                    this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
+                    this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
+                }
+
+                public string ClientId => Constants.DefaultTokenFlowClientId;
+
+                public byte[] ClientSecretHash => null;
+
+                public byte[] ClientSecretSalt => null;
+
+                public Uri DefaultRedirectUri { get; }
+
+                public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
+
+                public TimeSpan TokenExpiration { get; }
+
+                public IReadOnlyList<string> ValidRedirectUrls { get; }
+            }
+
+            private class TokenSupportedFlow : ISupportedFlow
+            {
+                public bool IsSupported(string flowKey)
+                {
+                    return flowKey == OAuth.Constants.ResponseType.Token;
+                }
+            }
+        }
+
+        private class DummyPasswordValidator : IPasswordValidator
+        {
+            public Task<bool> Validate(IUser user, string password)
+            {
+                return Task.FromResult(
+                    (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
+                    (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
             }
         }
 
@@ -257,6 +261,112 @@ namespace Codeworx.Identity.Configuration
             private class DummyScope : IScope
             {
                 public string ScopeKey => Constants.DefaultScopeKey;
+            }
+        }
+
+        private class DummyTenantService : ITenantService
+        {
+            public Task<IEnumerable<TenantInfo>> GetTenantsAsync(IUser user)
+            {
+                IEnumerable<TenantInfo> tenants;
+
+                if (user.Identity == Constants.MultiTenantUserId)
+                {
+                    tenants = new[]
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
+                                  new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
+                              };
+                }
+                else
+                {
+                    tenants = new[]
+                              {
+                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
+                              };
+                }
+
+                return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
+            }
+        }
+
+        private class DummyUserService : IUserService, IDefaultTenantService
+        {
+            private static string _defaultTenantMultiTenantCache;
+
+            public Task<IUser> GetUserByIdentifierAsync(string identifier)
+            {
+                var id = Guid.Parse(identifier);
+                if (id == Guid.Parse(Constants.DefaultAdminUserId))
+                {
+                    return Task.FromResult<IUser>(new DummyUser());
+                }
+                else if (id == Guid.Parse(Constants.MultiTenantUserId))
+                {
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
+                }
+
+                return Task.FromResult<IUser>(null);
+            }
+
+            public Task<IUser> GetUserByNameAsync(string userName)
+            {
+                if (userName.Equals(Constants.DefaultAdminUserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Task.FromResult<IUser>(new DummyUser());
+                }
+                else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
+                }
+
+                return Task.FromResult<IUser>(null);
+            }
+
+            public Task SetDefaultTenantAsync(string identifier, string tenantKey)
+            {
+                var id = Guid.Parse(identifier);
+                if (id == Guid.Parse(Constants.DefaultAdminUserId))
+                {
+                    throw new KeyNotFoundException();
+                }
+                else if (id == Guid.Parse(Constants.MultiTenantUserId))
+                {
+                    _defaultTenantMultiTenantCache = tenantKey;
+                }
+
+                return Task.CompletedTask;
+            }
+
+            private class DummyUser : IUser
+            {
+                public string DefaultTenantKey => null;
+
+                public string Identity => Constants.DefaultAdminUserId;
+
+                public string Name => Constants.DefaultAdminUserName;
+
+                public byte[] PasswordHash => null;
+
+                public byte[] PasswordSalt => null;
+            }
+
+            private class MultiTenantDummyUser : IUser
+            {
+                public MultiTenantDummyUser(string defaultTenantKey = null)
+                {
+                    this.DefaultTenantKey = defaultTenantKey;
+                }
+
+                public string DefaultTenantKey { get; }
+
+                public string Identity => Constants.MultiTenantUserId;
+
+                public string Name => Constants.MultiTenantUserName;
+
+                public byte[] PasswordHash => null;
+
+                public byte[] PasswordSalt => null;
             }
         }
 

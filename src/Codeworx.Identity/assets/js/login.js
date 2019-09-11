@@ -1,4 +1,4 @@
-var LoginForm = (function () {
+var LoginForm = /** @class */ (function () {
     function LoginForm() {
         this.DONE = 4;
         this.OK = 200;

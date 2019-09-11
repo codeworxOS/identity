@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -16,34 +18,75 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeFlowServiceTests
     {
         [Fact]
-        public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
+        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
         {
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
-            
-            var request = new AuthorizationRequestBuilder().Build();
+            const string AuthorizationCode = "AuthorizationCode";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+                                          .ReturnsAsync(AuthorizationCode);
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "Authorized")))
+                             .Returns(true);
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeServiceStub = new Mock<IScopeService>();
 
             var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions())));
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            IdentityData identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<UnauthorizedClientResult>(result);
         }
 
         [Fact]
-        public async Task AuthorizeRequest_ValidRequestWithoutScope_ReturnsResponse()
+        public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+
+            var scopeServiceStub = new Mock<IScopeService>();
+
+            var options = Options.Create(new AuthorizationCodeOptions());
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
+
+            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            IdentityData identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
+
+            Assert.IsType<InvalidRequestResult>(result);
+            Assert.Null(result.Response.RedirectUri);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ReadCachedGrantInformation_ContainsRedirectUriAndClientIdFromRequest()
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -51,18 +94,22 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -73,104 +120,20 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var identity = GetIdentity();
 
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
-        }
+            var result = await instance.AuthorizeRequest(request, identity);
 
-        [Fact]
-        public async Task AuthorizeRequest_ValidRequestWithEmptyScope_ReturnsResponse()
-        {
-            const string AuthorizationCode = "AuthorizationCode";
-            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
-            const string KnownScope = "knownScope";
+            var grantInformation = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
+                                          .ConfigureAwait(false);
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithScope(string.Empty)
-                                                           .Build();
-
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
-                                          .ReturnsAsync(AuthorizationCode);
-
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
-
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
-
-            var scopeStub = new Mock<IScope>();
-            scopeStub.SetupGet(p => p.ScopeKey)
-                     .Returns(KnownScope);
-
-            var scopeServiceStub = new Mock<IScopeService>();
-            scopeServiceStub.Setup(p => p.GetScopes())
-                            .ReturnsAsync(new List<IScope> { scopeStub.Object });
-
-            var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-
-            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
-
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
-
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
-        }
-
-        [Fact]
-        public async Task AuthorizeRequest_ValidRequestWithScope_ReturnsResponse()
-        {
-            const string AuthorizationCode = "AuthorizationCode";
-            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
-            const string KnownScope = "knownScope";
-
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithScope(KnownScope)
-                                                           .Build();
-
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
-                                          .ReturnsAsync(AuthorizationCode);
-
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
-
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> {clientRegistrationStub.Object});
-
-            var scopeStub = new Mock<IScope>();
-            scopeStub.SetupGet(p => p.ScopeKey)
-                     .Returns(KnownScope);
-
-            var scopeServiceStub = new Mock<IScopeService>();
-            scopeServiceStub.Setup(p => p.GetScopes())
-                            .ReturnsAsync(new List<IScope> {scopeStub.Object});
-
-            var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-
-            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
-
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
-
-            Assert.IsType<SuccessfulAuthorizationResult>(result);
-            Assert.Equal(AuthorizationCode, result.Response.Code);
+            Assert.Equal(request.ClientId, grantInformation[Identity.OAuth.Constants.ClientIdName]);
+            Assert.Equal(request.RedirectUri, grantInformation[Identity.OAuth.Constants.RedirectUriName]);
         }
 
         [Fact]
@@ -178,7 +141,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -186,18 +148,22 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -208,11 +174,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var result = await instance.AuthorizeRequest(request, identity);
 
             Assert.IsType<UnknownScopeResult>(result);
         }
@@ -222,7 +190,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
@@ -230,18 +197,22 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -252,43 +223,49 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            var identity = GetIdentity();
 
-            var cachedResult = await cache.GetStringAsync(result.Response.Code)
+            var result = await instance.AuthorizeRequest(request, identity);
+
+            var cachedResult = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
 
-            Assert.False(string.IsNullOrWhiteSpace(cachedResult));
+            Assert.NotEmpty(cachedResult);
         }
 
         [Fact]
-        public async Task AuthorizeRequest_ReadCachedGrantInformation_ContainsRedirectUriAndClientIdFromRequest()
+        public async Task AuthorizeRequest_ValidRequestWithEmptyScope_ReturnsResponse()
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
-            const string TenantIdentifier = "2AECD68A-8966-42E8-8353-55DFD2466532";
             const string KnownScope = "knownScope";
 
             var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithScope(null)
+                                                           .WithScope(string.Empty)
                                                            .Build();
 
             var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>()))
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.Identifier)
-                                  .Returns(ClientIdentifier);
-            clientRegistrationStub.SetupGet(p => p.SupportedOAuthMode)
-                                  .Returns(Identity.OAuth.Constants.ResponseType.Code);
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
 
-            var oAuthClientServiceStub = new Mock<IOAuthClientService>();
-            oAuthClientServiceStub.Setup(p => p.GetForTenantByIdentifier(It.IsAny<string>()))
-                                  .ReturnsAsync(new List<IOAuthClientRegistration> { clientRegistrationStub.Object });
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
 
             var scopeStub = new Mock<IScope>();
             scopeStub.SetupGet(p => p.ScopeKey)
@@ -299,19 +276,120 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                             .ReturnsAsync(new List<IScope> { scopeStub.Object });
 
             var options = Options.Create(new AuthorizationCodeOptions());
-            var cache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
+            var result = await instance.AuthorizeRequest(request, identity);
 
-            var result = await instance.AuthorizeRequest(request, TenantIdentifier);
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+        }
 
-            var cachedResult = await cache.GetStringAsync(result.Response.Code)
-                                          .ConfigureAwait(false);
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequestWithoutScope_ReturnsResponse()
+        {
+            const string AuthorizationCode = "AuthorizationCode";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            const string KnownScope = "knownScope";
 
-            var grantInformation = JsonConvert.DeserializeObject<Dictionary<string, string>>(cachedResult);
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithScope(null)
+                                                           .Build();
 
-            Assert.Equal(request.ClientId, grantInformation[Identity.OAuth.Constants.ClientIdName]);
-            Assert.Equal(request.RedirectUri, grantInformation[Identity.OAuth.Constants.RedirectUriName]);
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+                                          .ReturnsAsync(AuthorizationCode);
+
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
+
+            var scopeStub = new Mock<IScope>();
+            scopeStub.SetupGet(p => p.ScopeKey)
+                     .Returns(KnownScope);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+            scopeServiceStub.Setup(p => p.GetScopes())
+                            .ReturnsAsync(new List<IScope> { scopeStub.Object });
+
+            var options = Options.Create(new AuthorizationCodeOptions());
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
+
+            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
+
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequestWithScope_ReturnsResponse()
+        {
+            const string AuthorizationCode = "AuthorizationCode";
+            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            const string KnownScope = "knownScope";
+
+            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+                                                           .WithScope(KnownScope)
+                                                           .Build();
+
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+                                          .ReturnsAsync(AuthorizationCode);
+
+            var supportedFlowStub = new Mock<ISupportedFlow>();
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+                             .Returns(true);
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ClientId)
+                                  .Returns(ClientIdentifier);
+            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
+                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+
+            var oAuthClientServiceStub = new Mock<IClientService>();
+            oAuthClientServiceStub.Setup(p => p.GetById(It.Is<string>(x => x == ClientIdentifier)))
+                                  .ReturnsAsync(clientRegistrationStub.Object);
+
+            var scopeStub = new Mock<IScope>();
+            scopeStub.SetupGet(p => p.ScopeKey)
+                     .Returns(KnownScope);
+
+            var scopeServiceStub = new Mock<IScopeService>();
+            scopeServiceStub.Setup(p => p.GetScopes())
+                            .ReturnsAsync(new List<IScope> { scopeStub.Object });
+
+            var options = Options.Create(new AuthorizationCodeOptions());
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
+
+            var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
+            var identity = GetIdentity();
+
+            var result = await instance.AuthorizeRequest(request, identity);
+
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
+            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+        }
+
+        private static IdentityData GetIdentity()
+        {
+            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } });
         }
     }
 }

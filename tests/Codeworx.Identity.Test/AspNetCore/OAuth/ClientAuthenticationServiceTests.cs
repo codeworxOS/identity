@@ -19,7 +19,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var header = ("clientId", "clientSecret");
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             var hashingProviderStub = new Mock<IHashingProvider>();
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
@@ -37,7 +37,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             var hashingProviderStub = new Mock<IHashingProvider>();
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
@@ -57,7 +57,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var header = ("clientId", "clientSecret");
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             var hashingProviderStub = new Mock<IHashingProvider>();
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
@@ -75,7 +75,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                    .WithClientSecret(string.Empty)
                                                    .Build();
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             var hashingProviderStub = new Mock<IHashingProvider>();
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
@@ -95,11 +95,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var header = ("clientId", "clientSecret");
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
                                   .Returns(new byte[] {1, 2, 3});
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
@@ -122,12 +122,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
 
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
                                   .Returns(new byte[] {1, 2, 3});
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
@@ -152,11 +152,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var header = ("clientId", "clientSecret");
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
                                   .Returns(new byte[] {1, 2, 3});
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
@@ -179,11 +179,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
                                   .Returns(new byte[] {1, 2, 3});
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
@@ -207,11 +207,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var header = ("clientId", "clientSecret");
 
-            var clientRegistrationStub = new Mock<IOAuthClientRegistration>();
+            var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
                                   .Returns(new byte[] { 1, 2, 3 });
 
-            var clientServiceStub = new Mock<IOAuthClientService>();
+            var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 

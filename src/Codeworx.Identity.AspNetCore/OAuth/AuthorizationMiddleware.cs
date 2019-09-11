@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
@@ -8,48 +9,47 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
-        private readonly IResponseBinder<AuthorizationErrorResponse> _authorizationErrorResponseBinder;
-        private readonly IResponseBinder<AuthorizationCodeResponse> _authorizationCodeResponseBinder;
+        private readonly RequestDelegate _next;
+        private readonly IEnumerable<IResponseBinder> _responseBinders;
 
         public AuthorizationMiddleware(RequestDelegate next,
                                        IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
-                                       IResponseBinder<AuthorizationErrorResponse> authorizationErrorResponseBinder,
-                                       IResponseBinder<AuthorizationCodeResponse> authorizationCodeResponseBinder)
+                                       IEnumerable<IResponseBinder> responseBinders)
         {
             _next = next;
             _authorizationRequestBinder = authorizationRequestBinder;
-            _authorizationErrorResponseBinder = authorizationErrorResponseBinder;
-            _authorizationCodeResponseBinder = authorizationCodeResponseBinder;
+            _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, AuthenticatedUserInformation authenticatedUserInformation, IAuthorizationService authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService)
         {
-            if (authenticatedUserInformation?.IdentityData == null)
+            if (context.User == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
+            }
+
+            IdentityData identity = null;
+
+            if (context.User.Identity is ClaimsIdentity claimsIdentity)
+            {
+                identity = claimsIdentity.ToIdentityData();
             }
 
             var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
 
             if (bindingResult.Error != null)
             {
-                await _authorizationErrorResponseBinder.RespondAsync(bindingResult.Error, context);
+                await _responseBinders.First(p => p.Supports(bindingResult.Error.GetType()))
+                                      .RespondAsync(bindingResult.Error, context);
             }
             else if (bindingResult.Result != null)
             {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, authenticatedUserInformation.IdentityData.Identifier, authenticatedUserInformation.IdentityData.TenantKey);
+                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, identity);
 
-                if (result.Error != null)
-                {
-                    await _authorizationErrorResponseBinder.RespondAsync(result.Error, context);
-                }
-                else if (result.Response != null)
-                {
-                    await _authorizationCodeResponseBinder.RespondAsync(result.Response, context);
-                }
+                await _responseBinders.First(p => p.Supports(result.Response.GetType()))
+                                      .RespondAsync(result.Response, context);
             }
         }
     }

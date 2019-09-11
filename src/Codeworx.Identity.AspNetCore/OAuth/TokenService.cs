@@ -27,7 +27,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var validationResult = _requestValidator.IsValid(request);
+            var validationResult = await _requestValidator.IsValid(request)
+                                                          .ConfigureAwait(false);
             if (validationResult != null)
             {
                 return new InvalidRequestResult(validationResult);
@@ -51,11 +52,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidClientResult();
             }
 
-            if (clientRegistration.SupportedOAuthMode != request.GrantType)
+            if (!clientRegistration.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
             {
                 return new UnauthorizedClientResult();
             }
-            
+
             //ToDo: Check scopes (invalid_scope)
 
             var tokenResult = await tokenFlowService.AuthorizeRequest(request)

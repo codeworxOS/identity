@@ -11,27 +11,22 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeGeneratorTests
     {
         [Fact]
-        public async Task GenerateCode_RequestNull_ThrowsException()
-        {
-            var options = Options.Create(new AuthorizationCodeOptions());
-            
-            var instance = new AuthorizationCodeGenerator(options);
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.GenerateCode(null));
-        }
-
-        [Fact]
         public async Task GenerateCode_CorrectInput_CodeGenerated()
         {
             var request = new AuthorizationRequestBuilder().Build();
-            var options = Options.Create(new AuthorizationCodeOptions());
-            
-            var instance = new AuthorizationCodeGenerator(options);
+            var instance = new AuthorizationCodeGenerator();
 
-            var result = await instance.GenerateCode(request);
+            var result = await instance.GenerateCode(request, 10);
 
             Assert.False(string.IsNullOrWhiteSpace(result));
-            Assert.Equal(options.Value.Length, result.Length);
+            Assert.Equal(10, result.Length);
+        }
+
+        [Fact]
+        public async Task GenerateCode_RequestNull_ThrowsException()
+        {
+            var instance = new AuthorizationCodeGenerator();
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.GenerateCode(null, 10));
         }
     }
 }
