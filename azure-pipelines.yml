@@ -22,7 +22,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/*Test.csproj'
+    projects: '**/*Identity.Test.csproj'
 - task: PowerShell@2
   env:
     BUILD_PRERELEASE: '$(Build.Prerelease)'
