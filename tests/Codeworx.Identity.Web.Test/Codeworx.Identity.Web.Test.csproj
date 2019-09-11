@@ -12,6 +12,6 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
   </ItemGroup>
 </Project>
