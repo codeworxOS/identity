@@ -69,7 +69,7 @@ namespace Codeworx.Identity
 
         protected virtual async Task<IdentityData> GetIdentityAsync(IUser user, string tenantKey = null)
         {
-            var tenants = await _tenantService.GetTenantsAsync(user);
+            var tenants = await _tenantService.GetTenantsByUserAsync(user);
 
             var claims = new List<AssignedClaim>();
             if (tenantKey != null)

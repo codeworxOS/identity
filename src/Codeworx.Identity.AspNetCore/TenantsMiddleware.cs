@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -22,8 +22,6 @@ namespace Codeworx.Identity.AspNetCore
 
         public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService)
         {
-            IUser user = null;
-
             var authenticationResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
 
             if (!authenticationResult.Succeeded)
@@ -32,14 +30,9 @@ namespace Codeworx.Identity.AspNetCore
                 return;
             }
 
-            var userName = authenticationResult.Principal.Identity.Name;
+            var identity = (ClaimsIdentity)authenticationResult.Principal.Identity;
 
-            if (!string.IsNullOrWhiteSpace(userName))
-            {
-                user = await userService.GetUserByNameAsync(userName);
-            }
-
-            var tenants = user != null ? await tenantService.GetTenantsAsync(user) : Enumerable.Empty<TenantInfo>();
+            var tenants = await tenantService.GetTenantsByIdentityAsync(identity) ?? Enumerable.Empty<TenantInfo>();
 
             if (_identityService.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
