@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -39,13 +40,15 @@ namespace Codeworx.Identity.Web.Test
 
             app.UseCodeworxIdentity(identityOptions.Value);
             app.UseMvc();
+            app.UseStaticFiles();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCodeworxIdentity(_configuration);
+            services.AddCodeworxIdentity(_configuration)
+                .AddPart(Assembly.Load("Codeworx.Identity.Test.Theme"));
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()

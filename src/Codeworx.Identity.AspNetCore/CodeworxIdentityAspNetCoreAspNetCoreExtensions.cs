@@ -29,68 +29,37 @@ namespace Codeworx.Identity.AspNetCore
     {
         public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration, string authenticationScheme = null)
         {
-            authenticationScheme = authenticationScheme ?? Constants.DefaultAuthenticationScheme;
+            return AddCodeworxIdentity(
+                collection,
+                configuration.GetSection("Identity"),
+                configuration.GetSection("AuthorizationCode"),
+                authenticationScheme);
+        }
 
-            var builder = new IdentityServiceBuilder(collection, authenticationScheme);
-            builder.AddPart(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
-            builder.View<DefaultViewTemplate>();
-            builder.Pbkdf2();
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection, string authenticationScheme = null)
+        {
+            collection.Configure<IdentityOptions>(identitySection);
+            collection.Configure<AuthorizationCodeOptions>(authCodeSection);
 
-            collection.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
-            collection.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
+            var options = new IdentityOptions();
+            identitySection.Bind(options);
+
+            return AddCodeworxIdentity(
+                collection,
+                options,
+                authenticationScheme);
+        }
+
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions, string authenticationScheme = null)
+        {
             collection.AddOptions();
-            collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(builder.OptionsDelegate));
+            collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(identityOptions.CopyTo));
+            collection.AddSingleton<IConfigureOptions<AuthorizationCodeOptions>>(sp => new ConfigureOptions<AuthorizationCodeOptions>(authCodeOptions.CopyTo));
 
-            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = authenticationScheme; })
-                      .AddCookie(
-                                 authenticationScheme,
-                                 p =>
-                                 {
-                                     var options = new IdentityOptions();
-                                     builder.OptionsDelegate(options);
-
-                                     p.Cookie.Name = options.AuthenticationCookie;
-                                     p.LoginPath = "/account/login";
-                                     p.ExpireTimeSpan = options.CookieExpiration;
-                                 })
-                      .AddCookie(
-                                 Constants.MissingTenantAuthenticationScheme,
-                                 p =>
-                                 {
-                                     var options = new IdentityOptions();
-                                     builder.OptionsDelegate(options);
-
-                                     p.Cookie.Name = Constants.MissingTenantCookieName;
-                                     p.LoginPath = "/account/login";
-                                     p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                                 });
-
-            collection.AddDistributedMemoryCache();
-
-            collection.Configure<AuthorizationCodeOptions>(configuration.GetSection("AuthorizationCode"));
-
-            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationCodeResponseBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationTokenResponseBinder>();
-            collection.AddTransient<IResponseBinder, TokenErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder, TokenResponseBinder>();
-            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
-            collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
-            collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
-            collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
-            collection.AddSingleton<ITokenProvider, JwtProvider>();
-            collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
-
-            collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
-            collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
-            collection.AddScoped<IAuthorizationService, AuthorizationService>();
-            collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
-            collection.AddScoped<ITokenService, TokenService>();
-
-            return builder;
+            return AddCodeworxIdentity(
+                collection,
+                identityOptions,
+                authenticationScheme);
         }
 
         public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings, bool useQueryStringOnPost = false)
@@ -180,6 +149,65 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        EmbeddedResourceMiddleware.Condition,
                        p => p.UseMiddleware<EmbeddedResourceMiddleware>());
+        }
+
+        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, string authenticationScheme = null)
+        {
+            authenticationScheme = authenticationScheme ?? Constants.DefaultAuthenticationScheme;
+
+            var builder = new IdentityServiceBuilder(collection, authenticationScheme);
+            builder.AddPart(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
+            builder.View<DefaultViewTemplate>();
+            builder.Pbkdf2();
+
+            collection.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
+            collection.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
+
+            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = authenticationScheme; })
+                      .AddCookie(
+                                 authenticationScheme,
+                                 p =>
+                                 {
+                                     p.Cookie.Name = identityOptions.AuthenticationCookie;
+                                     p.LoginPath = "/account/login";
+                                     p.ExpireTimeSpan = identityOptions.CookieExpiration;
+                                 })
+                      .AddCookie(
+                                 Constants.MissingTenantAuthenticationScheme,
+                                 p =>
+                                 {
+                                     var options = new IdentityOptions();
+                                     builder.OptionsDelegate(options);
+
+                                     p.Cookie.Name = Constants.MissingTenantCookieName;
+                                     p.LoginPath = "/account/login";
+                                     p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                                 });
+
+            collection.AddDistributedMemoryCache();
+
+            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder, AuthorizationTokenResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder, TokenResponseBinder>();
+            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
+            collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
+            collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
+            collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
+            collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
+            collection.AddSingleton<ITokenProvider, JwtProvider>();
+            collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
+
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationTokenFlowService>();
+            collection.AddScoped<IAuthorizationService, AuthorizationService>();
+            collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
+            collection.AddScoped<ITokenService, TokenService>();
+
+            return builder;
         }
 
         private static string GetFormKeyName(PropertyInfo item)
