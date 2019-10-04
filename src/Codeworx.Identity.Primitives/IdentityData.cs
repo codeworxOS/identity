@@ -40,7 +40,7 @@ namespace Codeworx.Identity
                          select new
                          {
                              Key = grp.Key,
-                             Value = ((object)values.SingleOrDefault()) ?? values
+                             Value = values.Length > 1 ? (object)values : values.FirstOrDefault()
                          };
 
             var result = claims.ToDictionary(p => p.Key, p => p.Value);
