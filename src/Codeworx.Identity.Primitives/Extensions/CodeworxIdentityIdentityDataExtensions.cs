@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Codeworx.Identity
@@ -14,6 +15,9 @@ namespace Codeworx.Identity
             identity.AddClaims(tenants);
             var identityClaims = data.ToIdentityClaims();
             identity.AddClaims(identityClaims);
+
+            var additionalClaims = data.ToLoginCookieClaims();
+            identity.AddClaims(additionalClaims);
 
             var principal = new ClaimsPrincipal(identity);
 
@@ -87,6 +91,15 @@ namespace Codeworx.Identity
         {
             yield return new Claim(Constants.IdClaimType, data.Identifier);
             yield return new Claim(Constants.LoginClaimType, data.Login);
+        }
+
+        private static IEnumerable<Claim> ToLoginCookieClaims(this IdentityData data)
+        {
+            var claims = from c in data.Claims.Where(p => p.Target.HasFlag(ClaimTarget.LoginCookie))
+                         from v in c.Values
+                         select new Claim(c.Type, v);
+
+            return claims.ToList();
         }
     }
 }
