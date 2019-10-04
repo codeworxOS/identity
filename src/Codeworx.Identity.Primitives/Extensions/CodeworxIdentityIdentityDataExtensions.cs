@@ -59,7 +59,12 @@ namespace Codeworx.Identity
                 }
             }
 
-            return new IdentityData(id, login, tenants, null, currentTenant);
+            var assignedClaims = claims
+                                    .GroupBy(p => p.Type)
+                                    .Select(p => new AssignedClaim(p.Key, p.Select(x => x.Value), ClaimTarget.LoginCookie, AssignedClaim.AssignmentSource.Global))
+                                    .ToList();
+
+            return new IdentityData(id, login, tenants, assignedClaims, currentTenant);
         }
 
         public static IEnumerable<Claim> ToTenantClaims(this IdentityData data)
