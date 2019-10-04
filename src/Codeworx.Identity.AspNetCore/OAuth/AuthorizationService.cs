@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -20,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -34,7 +35,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidRequestResult(validationError);
             }
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(user.Identifier)
+            var currentUser = await _userService.GetUserByIdentifierAsync(user)
                                          .ConfigureAwait(false);
 
             if (currentUser == null)

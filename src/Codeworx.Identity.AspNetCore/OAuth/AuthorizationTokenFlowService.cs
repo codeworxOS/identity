@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -25,7 +26,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Token;
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
             if (client == null)
@@ -56,7 +57,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);
 
-            var identityData = await _identityService.GetIdentityAsync(user.Identifier, user.TenantKey);
+            var identityData = await _identityService.GetIdentityAsync(user);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
 
             var test = Newtonsoft.Json.JsonConvert.SerializeObject(identityData);

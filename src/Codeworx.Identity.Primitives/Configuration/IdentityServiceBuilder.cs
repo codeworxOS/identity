@@ -306,9 +306,11 @@ namespace Codeworx.Identity.Configuration
         {
             private static string _defaultTenantMultiTenantCache;
 
-            public Task<IUser> GetUserByIdentifierAsync(string identifier)
+            public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
             {
-                var id = Guid.Parse(identifier);
+                var user = identity.ToIdentityData();
+
+                var id = Guid.Parse(user.Identifier);
                 if (id == Guid.Parse(Constants.DefaultAdminUserId))
                 {
                     return Task.FromResult<IUser>(new DummyUser());
@@ -389,9 +391,9 @@ namespace Codeworx.Identity.Configuration
                 return Task.FromResult(Enumerable.Empty<ExternalProvider>());
             }
 
-            public Task<string> GetUserIdentity(string providerId, string nameIdentifier)
+            public Task<IUser> GetUserIdentity(string providerId, string nameIdentifier)
             {
-                return Task.FromResult<string>(null);
+                return Task.FromResult<IUser>(null);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             var client = await _oAuthClientService.GetById(request.ClientId)
                                                   .ConfigureAwait(false);

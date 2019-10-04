@@ -8,6 +8,6 @@ namespace Codeworx.Identity
     {
         Task<IEnumerable<ExternalProvider>> GetProvidersAsync(string userName = null);
 
-        Task<string> GetUserIdentity(string providerId, string nameIdentifier);
+        Task<IUser> GetUserIdentity(string providerId, string nameIdentifier);
     }
 }

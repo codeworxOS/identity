@@ -31,12 +31,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return;
             }
 
-            IdentityData identity = null;
-
-            if (context.User.Identity is ClaimsIdentity claimsIdentity)
-            {
-                identity = claimsIdentity.ToIdentityData();
-            }
+            var claimsIdentity = context.User.Identity as ClaimsIdentity;
 
             var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
 
@@ -47,7 +42,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             else if (bindingResult.Result != null)
             {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, identity);
+                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, claimsIdentity);
 
                 await _responseBinders.First(p => p.Supports(result.Response.GetType()))
                                       .RespondAsync(result.Response, context);

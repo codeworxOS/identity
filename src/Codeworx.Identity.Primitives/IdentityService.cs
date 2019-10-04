@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 
@@ -23,16 +24,18 @@ namespace Codeworx.Identity
             _claimsProviders = ImmutableList.CreateRange(claimsProvider);
         }
 
-        public async Task<IdentityData> GetIdentityAsync(string identity, string tenantKey)
+        public async Task<IdentityData> GetIdentityAsync(ClaimsIdentity user)
         {
-            var user = await _userService.GetUserByIdentifierAsync(identity);
+            var identity = user.ToIdentityData();
+
+            var currentUser = await _userService.GetUserByIdentifierAsync(user);
 
             if (user == null)
             {
                 throw new AuthenticationException();
             }
 
-            var result = await GetIdentityAsync(user, tenantKey);
+            var result = await GetIdentityAsync(currentUser, identity.TenantKey);
 
             return result;
         }
@@ -55,8 +58,7 @@ namespace Codeworx.Identity
 
         public async Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
         {
-            var identity = await _providerSetup.GetUserIdentity(provider, nameIdentifier);
-            var user = await _userService.GetUserByIdentifierAsync(identity);
+            var user = await _providerSetup.GetUserIdentity(provider, nameIdentifier);
 
             if (user == null)
             {

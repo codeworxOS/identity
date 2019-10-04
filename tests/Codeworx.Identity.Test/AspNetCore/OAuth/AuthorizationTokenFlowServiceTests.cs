@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cryptography.Json;
@@ -160,7 +161,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<JwtConfiguration>()))
                 .ReturnsAsync(tokenStub.Object);
 
-            identityServiceStub.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+            identityServiceStub.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
                 .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
             var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
@@ -209,7 +210,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var identityServiceStup = new Mock<IIdentityService>();
 
-            identityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+            identityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
               .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
             var tokenStub = new Mock<IToken>();
@@ -273,7 +274,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var oauthIdentityServiceStup = new Mock<IIdentityService>();
 
-            oauthIdentityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<string>(), It.IsAny<string>()))
+            oauthIdentityServiceStup.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
               .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
             var tokenProviderStub = new Mock<ITokenProvider>();
@@ -292,9 +293,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
         }
 
-        private static IdentityData GetIdentity()
+        private static ClaimsIdentity GetIdentity()
         {
-            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } });
+            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
         }
     }
 }

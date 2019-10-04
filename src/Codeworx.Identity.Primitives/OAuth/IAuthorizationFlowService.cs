@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth
 {
@@ -6,6 +7,6 @@ namespace Codeworx.Identity.OAuth
     {
         string SupportedAuthorizationResponseType { get; }
 
-        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, IdentityData user);
+        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user);
     }
 }

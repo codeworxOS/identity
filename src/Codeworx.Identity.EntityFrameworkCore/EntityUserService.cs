@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Model;
@@ -17,10 +18,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public virtual async Task<IUser> GetUserByIdentifierAsync(string identity)
+        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
+            var data = identity.ToIdentityData();
+
             var userSet = _context.Set<User>();
-            var id = Guid.Parse(identity);
+            var id = Guid.Parse(data.Identifier);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 

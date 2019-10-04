@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity
 {
     public interface IIdentityService
     {
-        Task<IdentityData> GetIdentityAsync(string identity, string tenantKey);
+        Task<IdentityData> GetIdentityAsync(ClaimsIdentity user);
 
         Task<IdentityData> LoginAsync(string username, string password);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cache;
@@ -51,7 +52,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            IdentityData identity = GetIdentity();
+            var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
 
@@ -74,7 +75,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
-            IdentityData identity = GetIdentity();
+            var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
 
@@ -387,9 +388,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
         }
 
-        private static IdentityData GetIdentity()
+        private static ClaimsIdentity GetIdentity()
         {
-            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } });
+            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
         }
     }
 }
