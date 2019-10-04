@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 
@@ -27,14 +28,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
 
             var redirectUriBuilder = new UriBuilder(authorizationTokenResponse.RedirectUri);
-            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, authorizationTokenResponse.Token);
+            var paramsBuilder = new UriBuilder();
+
+            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, authorizationTokenResponse.Token);
+            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.TokenTypeName, Identity.OAuth.Constants.TokenType.Bearer);
 
             if (!string.IsNullOrWhiteSpace(authorizationTokenResponse.State))
             {
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationTokenResponse.State);
+                paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationTokenResponse.State);
             }
 
-            context.Response.Redirect(redirectUriBuilder.Uri.ToString());
+            context.Response.Redirect($"{redirectUriBuilder.Uri}#{paramsBuilder.Query.Substring(1)}");
 
             return Task.CompletedTask;
         }

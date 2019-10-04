@@ -83,5 +83,10 @@
 
             public const string Token = "token";
         }
+
+        public class TokenType
+        {
+            public const string Bearer = "BEARER";
+        }
     }
 }
