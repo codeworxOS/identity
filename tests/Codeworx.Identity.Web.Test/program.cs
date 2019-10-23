@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore;
+﻿using Codeworx.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Codeworx.Identity.Web.Test
@@ -12,7 +13,9 @@ namespace Codeworx.Identity.Web.Test
 
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildWebHost(args)
+                .MigrateDatabase()
+                .Run();
         }
     }
 }
