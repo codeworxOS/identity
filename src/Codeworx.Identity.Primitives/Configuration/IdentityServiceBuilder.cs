@@ -28,12 +28,9 @@ namespace Codeworx.Identity.Configuration
 
             _collection.AddScoped<IProviderSetup, EmptyProviderSetup>();
             _collection.AddScoped<IIdentityService, Identity.IdentityService>();
-            _collection.AddScoped<IUserService, DummyUserService>();
-            _collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             _collection.AddScoped<ITenantService, DummyTenantService>();
             _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
-            _collection.AddScoped<IDefaultTenantService, DummyUserService>();
         }
 
         public string AuthenticationScheme { get; }
@@ -246,16 +243,6 @@ namespace Codeworx.Identity.Configuration
             }
         }
 
-        private class DummyPasswordValidator : IPasswordValidator
-        {
-            public Task<bool> Validate(IUser user, string password)
-            {
-                return Task.FromResult(
-                    (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName) ||
-                    (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName));
-            }
-        }
-
         private class DummyScopeService : IScopeService
         {
             public Task<IEnumerable<IScope>> GetScopes()
@@ -306,88 +293,6 @@ namespace Codeworx.Identity.Configuration
                 }
 
                 return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
-            }
-        }
-
-        private class DummyUserService : IUserService, IDefaultTenantService
-        {
-            private static string _defaultTenantMultiTenantCache;
-
-            public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
-            {
-                var user = identity.ToIdentityData();
-
-                var id = Guid.Parse(user.Identifier);
-                if (id == Guid.Parse(Constants.DefaultAdminUserId))
-                {
-                    return Task.FromResult<IUser>(new DummyUser());
-                }
-                else if (id == Guid.Parse(Constants.MultiTenantUserId))
-                {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
-                }
-
-                return Task.FromResult<IUser>(null);
-            }
-
-            public Task<IUser> GetUserByNameAsync(string userName)
-            {
-                if (userName.Equals(Constants.DefaultAdminUserName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return Task.FromResult<IUser>(new DummyUser());
-                }
-                else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
-                }
-
-                return Task.FromResult<IUser>(null);
-            }
-
-            public Task SetDefaultTenantAsync(string identifier, string tenantKey)
-            {
-                var id = Guid.Parse(identifier);
-                if (id == Guid.Parse(Constants.DefaultAdminUserId))
-                {
-                    throw new KeyNotFoundException();
-                }
-                else if (id == Guid.Parse(Constants.MultiTenantUserId))
-                {
-                    _defaultTenantMultiTenantCache = tenantKey;
-                }
-
-                return Task.CompletedTask;
-            }
-
-            private class DummyUser : IUser
-            {
-                public string DefaultTenantKey => null;
-
-                public string Identity => Constants.DefaultAdminUserId;
-
-                public string Name => Constants.DefaultAdminUserName;
-
-                public byte[] PasswordHash => null;
-
-                public byte[] PasswordSalt => null;
-            }
-
-            private class MultiTenantDummyUser : IUser
-            {
-                public MultiTenantDummyUser(string defaultTenantKey = null)
-                {
-                    this.DefaultTenantKey = defaultTenantKey;
-                }
-
-                public string DefaultTenantKey { get; }
-
-                public string Identity => Constants.MultiTenantUserId;
-
-                public string Name => Constants.MultiTenantUserName;
-
-                public byte[] PasswordHash => null;
-
-                public byte[] PasswordSalt => null;
             }
         }
 

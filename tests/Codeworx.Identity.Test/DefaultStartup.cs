@@ -23,13 +23,14 @@ namespace Codeworx.Identity.Test
         public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<IdentityOptions> options, IAuthenticationSchemeProvider schemeProvider)
         {
             app.UseCodeworxIdentity(options.Value);
-            }
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddCodeworxIdentity(_configuration);
+            services.AddCodeworxIdentityTesting();
         }
     }
 }
