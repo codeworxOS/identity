@@ -4,6 +4,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
     public class TenantUser
     {
+        public Guid Id { get; set; }
+
         public Guid RightHolderId { get; set; }
 
         public Tenant Tenant { get; set; }
