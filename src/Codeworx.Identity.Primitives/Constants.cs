@@ -25,8 +25,9 @@
         public const string IdClaimType = "id";
         public const string JsonExtension = ".json";
         public const string LoginClaimType = "name";
-        public const string MissingTenantAuthenticationScheme = "Identity.Missing.Tenant";
-        public const string MissingTenantCookieName = "identity.missingtenant";
+        public const string DefaultMissingTenantAuthenticationScheme = "Identity.Missing.Tenant";
+        public const string DefaultMissingTenantCookieName = "identity.missingtenant";
+        public const string DefaultAuthenticationCookieName = "identity";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
         public const string ProductName = "CodeworxIdentity";

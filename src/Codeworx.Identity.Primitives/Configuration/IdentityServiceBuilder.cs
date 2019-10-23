@@ -18,9 +18,8 @@ namespace Codeworx.Identity.Configuration
         private readonly HashSet<Assembly> _parts;
         private bool _windowsAuthentication;
 
-        public IdentityServiceBuilder(IServiceCollection collection, string authenticationScheme)
+        public IdentityServiceBuilder(IServiceCollection collection)
         {
-            AuthenticationScheme = authenticationScheme;
             _collection = collection;
             _parts = new HashSet<Assembly>();
             _windowsAuthentication = true;
@@ -35,8 +34,6 @@ namespace Codeworx.Identity.Configuration
             _collection.AddScoped<IScopeService, DummyScopeService>();
             _collection.AddScoped<IDefaultTenantService, DummyUserService>();
         }
-
-        public string AuthenticationScheme { get; }
 
         public Action<IdentityOptions> OptionsDelegate { get; private set; }
 
@@ -84,7 +81,7 @@ namespace Codeworx.Identity.Configuration
 
         public IdentityService ToService(IdentityOptions options, IEnumerable<IContentTypeProvider> contentTypeProviders = null)
         {
-            return new IdentityService(AuthenticationScheme, options, _parts, contentTypeProviders, _windowsAuthentication);
+            return new IdentityService(options, _parts, contentTypeProviders, _windowsAuthentication);
         }
 
         public IIdentityServiceBuilder UserProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)

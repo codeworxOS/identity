@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore
 
         public async Task Invoke(HttpContext context)
         {
-            var result = await context.AuthenticateAsync(_service.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(_service.Options.AuthenticationScheme);
 
             if (result.Succeeded)
             {
@@ -25,7 +25,7 @@ namespace Codeworx.Identity.AspNetCore
                 return;
             }
 
-            await context.ChallengeAsync(_service.AuthenticationScheme);
+            await context.ChallengeAsync(_service.Options.AuthenticationScheme);
         }
     }
 }
