@@ -289,7 +289,7 @@ namespace Codeworx.Identity.Configuration
             {
                 IEnumerable<TenantInfo> tenants;
 
-                if (identity == Constants.MultiTenantUserId)
+                if (Guid.Parse(identity) == Guid.Parse(Constants.MultiTenantUserId))
                 {
                     tenants = new[]
                               {
