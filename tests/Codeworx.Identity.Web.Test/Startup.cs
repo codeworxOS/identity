@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+﻿using System.IO;
 using Codeworx.Identity.AspNetCore;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using Codeworx.Identity.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -47,8 +41,16 @@ namespace Codeworx.Identity.Web.Test
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionStringBuilder = new SqliteConnectionStringBuilder
+            {
+                DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
+            };
+
+            services.AddDbContext<CodeworxIdentityDbContext>(options => options.UseSqlite(connectionStringBuilder.ToString()));
+
             services.AddCodeworxIdentity(_configuration)
-                .AddPart(Assembly.Load("Codeworx.Identity.Test.Theme"));
+                    .AddPart(Assembly.Load("Codeworx.Identity.Test.Theme"))
+                    .UseDbContext<CodeworxIdentityDbContext>();
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()
