@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public class EntityUserService<TContext> : IUserService
+    public class EntityUserService<TContext> : IUserService, IDefaultTenantService
         where TContext : DbContext
     {
         private readonly TContext _context;
@@ -37,6 +37,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
 
             return user;
+        }
+
+        public async Task SetDefaultTenantAsync(string identifier, string tenantKey)
+        {
+            var userSet = _context.Set<User>();
+            var userId = Guid.Parse(identifier);
+
+            var user = await userSet.Where(p => p.Id == userId).SingleOrDefaultAsync();
+
+            if (Guid.TryParse(tenantKey, out var tenantGuid))
+            {
+                user.DefaultTenantId = tenantGuid;
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
