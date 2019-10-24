@@ -12,7 +12,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
     {
         public static IWebHost MigrateDatabase(this IWebHost webHost)
         {
-            var serviceScopeFactory = (IServiceScopeFactory)webHost.Services.GetService(typeof(IServiceScopeFactory));
+            var serviceScopeFactory = webHost.Services.GetRequiredService<IServiceScopeFactory>();
 
             using (var scope = serviceScopeFactory.CreateScope())
             {
