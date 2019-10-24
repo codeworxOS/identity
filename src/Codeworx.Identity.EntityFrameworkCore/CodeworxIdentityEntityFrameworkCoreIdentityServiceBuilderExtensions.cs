@@ -1,12 +1,21 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
     public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
     {
+        public static IIdentityServiceBuilder UseDbContext(this IIdentityServiceBuilder builder, Action<DbContextOptionsBuilder> contextBuilder)
+        {
+            builder.ServiceCollection.AddDbContext<CodeworxIdentityDbContext>(contextBuilder);
+
+            return builder.UseDbContext<CodeworxIdentityDbContext>();
+        }
+
         public static IIdentityServiceBuilder UseDbContext<TContext>(this IIdentityServiceBuilder builder)
             where TContext : DbContext
         {

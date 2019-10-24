@@ -46,11 +46,9 @@ namespace Codeworx.Identity.Web.Test
                 DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
             };
 
-            services.AddDbContext<CodeworxIdentityDbContext>(options => options.UseSqlite(connectionStringBuilder.ToString()));
-
             services.AddCodeworxIdentity(_configuration)
                     .AddPart(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                    .UseDbContext<CodeworxIdentityDbContext>();
+                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()
