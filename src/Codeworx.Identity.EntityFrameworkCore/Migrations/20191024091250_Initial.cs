@@ -54,14 +54,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "TenantUser",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
                     RightHolderId = table.Column<Guid>(nullable: false),
                     TenantId = table.Column<Guid>(nullable: false),
                     UserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TenantUser", x => x.Id);
+                    table.PrimaryKey("PK_TenantUser", x => new { x.RightHolderId, x.TenantId });
                     table.ForeignKey(
                         name: "FK_TenantUser_Tenant_TenantId",
                         column: x => x.TenantId,
@@ -80,13 +79,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "UserRole",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    RoleId = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false),
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
+                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
                         name: "FK_UserRole_RightHolder_RoleId",
                         column: x => x.RoleId,
@@ -125,11 +123,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "IX_UserRole_RoleId",
                 table: "UserRole",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId",
-                table: "UserRole",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

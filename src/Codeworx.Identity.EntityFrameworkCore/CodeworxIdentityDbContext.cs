@@ -16,6 +16,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<UserRole>()
+                        .HasKey(p => new { p.UserId, p.RoleId });
+
+            modelBuilder.Entity<TenantUser>()
+                        .HasKey(p => new { p.RightHolderId, p.TenantId });
+
             // Remove this when implementing tenant database service
             modelBuilder.Entity<User>()
                         .Ignore(p => p.DefaultTenant)
