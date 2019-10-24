@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
 

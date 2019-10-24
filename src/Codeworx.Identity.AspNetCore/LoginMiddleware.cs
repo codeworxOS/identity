@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Converter;
@@ -32,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore
 
             if (context.Request.Method.Equals(HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
             {
-                var authenticateResult = await context.AuthenticateAsync(_service.AuthenticationScheme);
+                var authenticateResult = await context.AuthenticateAsync(_service.Options.AuthenticationScheme);
 
                 if (authenticateResult.Succeeded)
                 {
@@ -40,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore
                 }
                 else
                 {
-                    var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+                    var tenantAuthenticateResult = await context.AuthenticateAsync(_service.Options.MissingTenantAuthenticationScheme);
 
                     if (tenantAuthenticateResult.Succeeded)
                     {
@@ -56,7 +55,7 @@ namespace Codeworx.Identity.AspNetCore
             }
             else if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
             {
-                var tenantAuthenticateResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+                var tenantAuthenticateResult = await context.AuthenticateAsync(_service.Options.MissingTenantAuthenticationScheme);
 
                 var setting = new JsonSerializerSettings
                 {
@@ -82,13 +81,13 @@ namespace Codeworx.Identity.AspNetCore
                         {
                             var authProperties = new AuthenticationProperties();
 
-                            await context.SignInAsync(_service.AuthenticationScheme, principal, authProperties);
+                            await context.SignInAsync(_service.Options.AuthenticationScheme, principal, authProperties);
                         }
                         else
                         {
-                            await context.SignInAsync(Constants.MissingTenantAuthenticationScheme, principal);
+                            await context.SignInAsync(_service.Options.MissingTenantAuthenticationScheme, principal);
 
-                            var redirectLocation = hasReturnUrl ? $"login?{Constants.ReturnUrlParameter}={returnUrl}" : "login";
+                            var redirectLocation = hasReturnUrl ? $"login?{Constants.ReturnUrlParameter}={Uri.EscapeUriString(returnUrl)}" : "login";
 
                             context.Response.Redirect(redirectLocation);
 
@@ -108,7 +107,7 @@ namespace Codeworx.Identity.AspNetCore
                         var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey)
                             .ToClaimsPrincipal();
 
-                        await context.SignInAsync(_service.AuthenticationScheme, principal, new AuthenticationProperties());
+                        await context.SignInAsync(_service.Options.AuthenticationScheme, principal, new AuthenticationProperties());
 
                         if (tenantSelectionRequest.SetDefault)
                         {

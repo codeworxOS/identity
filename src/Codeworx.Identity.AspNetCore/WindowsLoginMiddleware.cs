@@ -60,7 +60,7 @@ namespace Codeworx.Identity.AspNetCore
                 };
 
                 await context.SignInAsync(
-                    _service.AuthenticationScheme,
+                    _service.Options.AuthenticationScheme,
                     new ClaimsPrincipal(identity),
                     properties);
 

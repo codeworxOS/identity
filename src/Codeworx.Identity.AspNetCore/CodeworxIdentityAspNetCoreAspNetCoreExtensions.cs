@@ -27,16 +27,15 @@ namespace Codeworx.Identity.AspNetCore
 {
     public static class CodeworxIdentityAspNetCoreAspNetCoreExtensions
     {
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration, string authenticationScheme = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration)
         {
             return AddCodeworxIdentity(
                 collection,
                 configuration.GetSection("Identity"),
-                configuration.GetSection("AuthorizationCode"),
-                authenticationScheme);
+                configuration.GetSection("AuthorizationCode"));
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection, string authenticationScheme = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection)
         {
             collection.Configure<IdentityOptions>(identitySection);
             collection.Configure<AuthorizationCodeOptions>(authCodeSection);
@@ -46,11 +45,10 @@ namespace Codeworx.Identity.AspNetCore
 
             return AddCodeworxIdentity(
                 collection,
-                options,
-                authenticationScheme);
+                options);
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions, string authenticationScheme = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions)
         {
             collection.AddOptions();
             collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(identityOptions.CopyTo));
@@ -58,8 +56,7 @@ namespace Codeworx.Identity.AspNetCore
 
             return AddCodeworxIdentity(
                 collection,
-                identityOptions,
-                authenticationScheme);
+                identityOptions);
         }
 
         public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings, bool useQueryStringOnPost = false)
@@ -151,11 +148,9 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.UseMiddleware<EmbeddedResourceMiddleware>());
         }
 
-        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, string authenticationScheme = null)
+        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions)
         {
-            authenticationScheme = authenticationScheme ?? Constants.DefaultAuthenticationScheme;
-
-            var builder = new IdentityServiceBuilder(collection, authenticationScheme);
+            var builder = new IdentityServiceBuilder(collection);
             builder.AddPart(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
             builder.View<DefaultViewTemplate>();
             builder.Pbkdf2();
@@ -163,9 +158,9 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
             collection.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
 
-            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = authenticationScheme; })
+            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityOptions.AuthenticationScheme; })
                       .AddCookie(
-                                 authenticationScheme,
+                                 identityOptions.AuthenticationScheme,
                                  p =>
                                  {
                                      p.Cookie.Name = identityOptions.AuthenticationCookie;
@@ -173,13 +168,13 @@ namespace Codeworx.Identity.AspNetCore
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
                                  })
                       .AddCookie(
-                                 Constants.MissingTenantAuthenticationScheme,
+                                 identityOptions.MissingTenantAuthenticationScheme,
                                  p =>
                                  {
                                      var options = new IdentityOptions();
                                      builder.OptionsDelegate(options);
 
-                                     p.Cookie.Name = Constants.MissingTenantCookieName;
+                                     p.Cookie.Name = identityOptions.MissingTenantAuthenticationCookie;
                                      p.LoginPath = "/account/login";
                                      p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                                  });

@@ -10,13 +10,11 @@ namespace Codeworx.Identity.Configuration
     public class IdentityService
     {
         internal IdentityService(
-            string authenticationScheme,
             IdentityOptions options,
             IEnumerable<Assembly> parts,
             IEnumerable<IContentTypeProvider> contentTypeProviders,
             bool windowsAuthentication)
         {
-            AuthenticationScheme = authenticationScheme;
             Options = options;
             ContentTypeProviders = contentTypeProviders;
             Parts = ImmutableList.CreateRange(parts);
@@ -45,8 +43,6 @@ namespace Codeworx.Identity.Configuration
         }
 
         public ImmutableDictionary<string, AssemblyAsset> Assets { get; }
-
-        public string AuthenticationScheme { get; }
 
         public IEnumerable<IContentTypeProvider> ContentTypeProviders { get; }
 

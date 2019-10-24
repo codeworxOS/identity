@@ -1,15 +1,15 @@
-﻿using System.IO;
-using Codeworx.Identity.AspNetCore;
+﻿using Codeworx.Identity.AspNetCore;
+using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.IO;
 using System.Reflection;
-using Codeworx.Identity.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.Web.Test
 {

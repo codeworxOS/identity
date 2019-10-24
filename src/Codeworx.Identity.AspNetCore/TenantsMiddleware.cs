@@ -2,8 +2,10 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -20,9 +22,9 @@ namespace Codeworx.Identity.AspNetCore
             _identityService = identityService;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService)
+        public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService, IOptionsSnapshot<IdentityOptions> options)
         {
-            var authenticationResult = await context.AuthenticateAsync(Constants.MissingTenantAuthenticationScheme);
+            var authenticationResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
 
             if (!authenticationResult.Succeeded)
             {
