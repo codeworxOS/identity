@@ -11,7 +11,7 @@ using System;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20191028104249_Initial")]
+    [Migration("20191028105206_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,6 +90,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DefaultTenantId");
+
                     b.ToTable("User");
 
                     b.HasDiscriminator().HasValue("User");
@@ -124,8 +126,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("Tenants")
+                        .HasForeignKey("UserId")
+                        .HasPrincipalKey("Id");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "DefaultTenant")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("DefaultTenantId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRole", b =>

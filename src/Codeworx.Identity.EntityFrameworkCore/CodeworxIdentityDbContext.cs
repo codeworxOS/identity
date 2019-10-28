@@ -12,6 +12,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Tenant> Tenants { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,16 +23,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.Entity<User>()
                         .ToTable("User");
 
+            modelBuilder.Entity<Tenant>()
+                        .ToTable("Tenant");
+
             modelBuilder.Entity<UserRole>()
                         .HasKey(p => new { p.UserId, p.RoleId });
 
             modelBuilder.Entity<TenantUser>()
                         .HasKey(p => new { p.RightHolderId, p.TenantId });
-
-            // Remove this when implementing tenant database service
-            modelBuilder.Entity<User>()
-                        .Ignore(p => p.DefaultTenant)
-                        .Ignore(p => p.Tenants);
         }
     }
 }

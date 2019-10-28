@@ -20,22 +20,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    DefaultTenantId = table.Column<Guid>(nullable: true),
-                    IsDisabled = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(maxLength: 500, nullable: false),
-                    PasswordHash = table.Column<byte[]>(nullable: true),
-                    PasswordSalt = table.Column<byte[]>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_User", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Role",
                 columns: table => new
                 {
@@ -52,6 +36,28 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         principalTable: "Tenant",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    DefaultTenantId = table.Column<Guid>(nullable: true),
+                    IsDisabled = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(maxLength: 500, nullable: false),
+                    PasswordHash = table.Column<byte[]>(nullable: true),
+                    PasswordSalt = table.Column<byte[]>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_User_Tenant_DefaultTenantId",
+                        column: x => x.DefaultTenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -117,6 +123,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "IX_TenantUser_UserId",
                 table: "TenantUser",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_DefaultTenantId",
+                table: "User",
+                column: "DefaultTenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRole_RoleId",
