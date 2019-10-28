@@ -22,6 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var result = builder
                          .UserProvider<EntityUserService<TContext>>()
                          .DefaultTenantProvider<EntityUserService<TContext>>()
+                         .TenantProvider<EntityTenantService<TContext>>()
                          .PasswordValidator<EntityPasswordValidator<TContext>>();
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))

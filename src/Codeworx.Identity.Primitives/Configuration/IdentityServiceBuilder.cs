@@ -86,6 +86,13 @@ namespace Codeworx.Identity.Configuration
             return this;
         }
 
+        public IIdentityServiceBuilder TenantProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, ITenantService
+        {
+            RegisterScoped<ITenantService, TImplementation>(factory);
+            return this;
+        }
+
         public IIdentityServiceBuilder DefaultTenantProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IDefaultTenantService
         {

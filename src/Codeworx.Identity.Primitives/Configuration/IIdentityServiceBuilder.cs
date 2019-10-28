@@ -29,6 +29,9 @@ namespace Codeworx.Identity.Configuration
         IIdentityServiceBuilder UserProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IUserService;
 
+        IIdentityServiceBuilder TenantProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, ITenantService;
+
         IIdentityServiceBuilder DefaultTenantProvider<TImplementation>(Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IDefaultTenantService;
 
