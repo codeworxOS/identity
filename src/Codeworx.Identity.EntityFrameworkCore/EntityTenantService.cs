@@ -19,48 +19,34 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public async Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity identity)
+        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity identity)
         {
             var data = identity.ToIdentityData();
 
-            var tenantSet = _context.Set<TenantUser>();
-            var id = Guid.Parse(data.Identifier);
-
-            var tenants = await tenantSet
-                                .Include(p => p.Tenant)
-                                .Where(p => p.RightHolderId == id)
-                                .ToListAsync();
-
-            var tenantInfos = tenants
-                              .Select(p => new TenantInfo
-                              {
-                                  Key = p.TenantId.ToString("N"),
-                                  Name = p.Tenant.Name
-                              })
-                              .ToList();
-
-            return tenantInfos;
+            return this.GetTenantInfo(Guid.Parse(data.Identifier));
         }
 
-        public async Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
+        public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
+        {
+            return this.GetTenantInfo(Guid.Parse(user.Identity));
+        }
+
+        private async Task<IEnumerable<TenantInfo>> GetTenantInfo(Guid identifier)
         {
             var tenantSet = _context.Set<TenantUser>();
-            var id = Guid.Parse(user.Identity);
 
             var tenants = await tenantSet
                                 .Include(p => p.Tenant)
-                                .Where(p => p.RightHolderId == id)
+                                .Where(p => p.RightHolderId == identifier)
                                 .ToListAsync();
 
-            var tenantInfos = tenants
-                              .Select(p => new TenantInfo
-                              {
-                                  Key = p.TenantId.ToString("N"),
-                                  Name = p.Tenant.Name
-                              })
-                              .ToList();
-
-            return tenantInfos;
+            return tenants
+                   .Select(p => new TenantInfo
+                   {
+                       Key = p.TenantId.ToString("N"),
+                       Name = p.Tenant.Name
+                   })
+                   .ToList();
         }
     }
 }
