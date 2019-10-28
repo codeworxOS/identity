@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Cryptography;
@@ -27,7 +26,6 @@ namespace Codeworx.Identity.Configuration
 
             _collection.AddScoped<IProviderSetup, EmptyProviderSetup>();
             _collection.AddScoped<IIdentityService, Identity.IdentityService>();
-            _collection.AddScoped<ITenantService, DummyTenantService>();
             _collection.AddScoped<IClientService, DummyOAuthClientService>();
             _collection.AddScoped<IScopeService, DummyScopeService>();
         }
@@ -253,43 +251,6 @@ namespace Codeworx.Identity.Configuration
             private class DummyScope : IScope
             {
                 public string ScopeKey => Constants.DefaultScopeKey;
-            }
-        }
-
-        private class DummyTenantService : ITenantService
-        {
-            public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity user)
-            {
-                var identity = user.ToIdentityData();
-                return GetTenants(identity.Identifier);
-            }
-
-            public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
-            {
-                return GetTenants(user.Identity);
-            }
-
-            private Task<IEnumerable<TenantInfo>> GetTenants(string identity)
-            {
-                IEnumerable<TenantInfo> tenants;
-
-                if (Guid.Parse(identity) == Guid.Parse(Constants.MultiTenantUserId))
-                {
-                    tenants = new[]
-                              {
-                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
-                                  new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
-                              };
-                }
-                else
-                {
-                    tenants = new[]
-                              {
-                                  new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
-                              };
-                }
-
-                return Task.FromResult<IEnumerable<TenantInfo>>(tenants);
             }
         }
 

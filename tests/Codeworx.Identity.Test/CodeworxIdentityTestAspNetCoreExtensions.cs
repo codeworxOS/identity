@@ -9,6 +9,7 @@ namespace Codeworx.Identity.Test
             collection.AddScoped<IUserService, DummyUserService>();
             collection.AddScoped<IPasswordValidator, DummyPasswordValidator>();
             collection.AddScoped<IDefaultTenantService, DummyUserService>();
+            collection.AddScoped<ITenantService, DummyTenantService>();
         }
     }
 }
