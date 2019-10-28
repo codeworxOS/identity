@@ -16,6 +16,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Ignore<RightHolder>();
+
+            modelBuilder.Entity<User>()
+                        .ToTable("User");
+
             modelBuilder.Entity<UserRole>()
                         .HasKey(p => new { p.UserId, p.RoleId });
 
