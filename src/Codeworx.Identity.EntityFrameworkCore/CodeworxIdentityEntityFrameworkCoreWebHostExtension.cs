@@ -55,6 +55,46 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    var defaultTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultTenantId));
+
+                    if (defaultTenant == null)
+                    {
+                        context.Tenants.Add(new Tenant
+                        {
+                            Id = Guid.Parse(Constants.DefaultTenantId),
+                            Name = Constants.DefaultTenantName,
+                            Users =
+                            {
+                                new TenantUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId)
+                                },
+                                new TenantUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId)
+                                }
+                            }
+                        });
+                    }
+
+                    var secondTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultSecondTenantId));
+
+                    if (secondTenant == null)
+                    {
+                        context.Tenants.Add(new Tenant
+                        {
+                            Id = Guid.Parse(Constants.DefaultSecondTenantId),
+                            Name = Constants.DefaultSecondTenantName,
+                            Users =
+                            {
+                                new TenantUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId)
+                                }
+                            }
+                        });
+                    }
+
                     context.SaveChanges();
                 }
             }
