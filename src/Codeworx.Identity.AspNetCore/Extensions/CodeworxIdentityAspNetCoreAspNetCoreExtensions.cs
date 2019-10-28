@@ -6,14 +6,18 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.ExternalLogin;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.AspNetCore.Response;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Cryptography.Json;
+using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -155,9 +159,6 @@ namespace Codeworx.Identity.AspNetCore
             builder.View<DefaultViewTemplate>();
             builder.Pbkdf2();
 
-            collection.AddTransient<IContentTypeProvider, DefaultContentTypeProvider>();
-            collection.AddSingleton(p => builder.ToService(p.GetService<IOptions<IdentityOptions>>().Value, p.GetService<IEnumerable<IContentTypeProvider>>()));
-
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityOptions.AuthenticationScheme; })
                       .AddCookie(
                                  identityOptions.AuthenticationScheme,
@@ -171,9 +172,6 @@ namespace Codeworx.Identity.AspNetCore
                                  identityOptions.MissingTenantAuthenticationScheme,
                                  p =>
                                  {
-                                     var options = new IdentityOptions();
-                                     builder.OptionsDelegate(options);
-
                                      p.Cookie.Name = identityOptions.MissingTenantAuthenticationCookie;
                                      p.LoginPath = "/account/login";
                                      p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
@@ -181,13 +179,22 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddDistributedMemoryCache();
 
+            // Request binder
+            collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationCodeResponseBinder>();
-            collection.AddTransient<IResponseBinder, AuthorizationTokenResponseBinder>();
-            collection.AddTransient<IResponseBinder, TokenErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder, TokenResponseBinder>();
+            
+            // Response binder
+            collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
+            collection.AddTransient<IResponseBinder<NotAcceptableResponse>, NotAcceptableResponseBinder>();
+            collection.AddTransient<IResponseBinder<UnauthorizedResponse>, UnauthorizedResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationTokenResponse>, AuthorizationTokenResponseBinder>();
+            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
+            collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
+
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();

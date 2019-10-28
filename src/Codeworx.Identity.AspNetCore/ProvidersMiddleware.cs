@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.ContentType;
+using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -16,17 +18,16 @@ namespace Codeworx.Identity.AspNetCore
     public class ProvidersMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IContentTypeLookup _lookup;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly Configuration.IdentityService _service;
 
-        public ProvidersMiddleware(RequestDelegate next, Configuration.IdentityService service, IAuthenticationSchemeProvider schemeProvider)
+        public ProvidersMiddleware(RequestDelegate next, IContentTypeLookup lookup)
         {
             _next = next;
-            _service = service;
-            _schemeProvider = schemeProvider;
+            _lookup = lookup;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IEnumerable<IExternalLoginProvider> externalLogins)
         {
             StringValues userNameValues;
             context.Request.Query.TryGetValue(Constants.UserNameParameterName, out userNameValues);
@@ -39,26 +40,24 @@ namespace Codeworx.Identity.AspNetCore
             }
 
             var userName = userNameValues.FirstOrDefault();
-            var setup = context.RequestServices.GetService<IProviderSetup>();
-            var providers = await setup.GetProvidersAsync(userName);
 
-            var result = new List<ExternalProvider>();
+            var result = new List<ExternalProviderInfo>();
 
-            var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            if (_service.WindowsAuthentication && schemes.Any(p => p.Name == Constants.WindowsAuthenticationSchema))
+            foreach (var item in externalLogins)
             {
-                result.Add(new ExternalProvider
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(userName))
                 {
-                    Id = Constants.ExternalWindowsProviderId,
-                    Name = Constants.ExternalWindowsProviderName,
-                    Url = $"winlogin?returnUrl={UrlEncoder.Default.Encode(returnUrl ?? string.Empty)}"
-                });
+                    var info = new ExternalProviderInfo
+                    {
+                        Id = externalLogin.Id,
+                        Name = externalLogin.Name,
+                        Url = "whatever"
+                    };
+                    result.Add(info);
+                }
             }
 
-            result.AddRange(providers);
-
-            if (_service.TryGetContentType(Constants.JsonExtension, out string contentType))
+            if (_lookup.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
                 context.Response.ContentType = contentType;
             }

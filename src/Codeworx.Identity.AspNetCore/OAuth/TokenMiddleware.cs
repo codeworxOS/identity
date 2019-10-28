@@ -32,8 +32,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (bindingResult.Error != null)
             {
-                await _responseBinders.First(p => p.Supports(bindingResult.Error.GetType()))
-                                      .RespondAsync(bindingResult.Error, context);
+                var responseBinder = context.GetResponseBinder<TokenErrorResponse>();
+                await responseBinder.BindAsync(bindingResult.Error, context.Response);
+                return;
             }
             else if (bindingResult.Result != null)
             {
@@ -50,13 +51,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
                 if (result.Error != null)
                 {
-                    await _responseBinders.First(p => p.Supports(result.Error.GetType()))
-                                          .RespondAsync(result.Error, context);
+                    var responseBinder = context.GetResponseBinder<TokenErrorResponse>();
+                    await responseBinder.BindAsync(result.Error, context.Response);
+                    return;
                 }
                 else if (result.Response != null)
                 {
-                    await _responseBinders.First(p => p.Supports(result.Response.GetType()))
-                                          .RespondAsync(result.Response, context);
+                    var responseBinder = context.GetResponseBinder<TokenResponse>();
+                    await responseBinder.BindAsync(result.Response, context.Response);
+                    return;
                 }
             }
         }

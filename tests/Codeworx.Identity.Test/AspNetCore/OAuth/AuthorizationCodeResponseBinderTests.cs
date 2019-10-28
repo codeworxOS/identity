@@ -15,7 +15,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new AuthorizationCodeResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
 
         [Fact]
@@ -23,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new AuthorizationCodeResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new AuthorizationCodeResponse(null, null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new AuthorizationCodeResponse(null, null, null), null));
         }
 
         [Fact]
@@ -36,9 +36,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationCodeResponse(null, ExpectedCode, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationCodeResponse(null, ExpectedCode, RedirectUri), context.Response);
 
-            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
             var locationHeader = context.Response.GetTypedHeaders().Location;
             Assert.NotNull(locationHeader);
@@ -61,9 +61,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationCodeResponse(ExpectedState, ExpectedCode, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationCodeResponse(ExpectedState, ExpectedCode, RedirectUri), context.Response);
 
-            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
             var locationHeader = context.Response.GetTypedHeaders().Location;
             Assert.NotNull(locationHeader);

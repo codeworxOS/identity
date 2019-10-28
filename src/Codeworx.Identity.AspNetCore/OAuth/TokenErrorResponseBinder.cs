@@ -8,48 +8,41 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenErrorResponseBinder : IResponseBinder
+    public class TokenErrorResponseBinder : ResponseBinder<TokenErrorResponse>
     {
-        public async Task RespondAsync(object response, HttpContext context)
+        public override async Task BindAsync(TokenErrorResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (context == null)
+            if (responseData == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(responseData));
             }
 
-            var tokenErrorResponse = response as TokenErrorResponse;
-
-            if (tokenErrorResponse == null)
+            if (responseData.Error == Identity.OAuth.Constants.Error.InvalidClient)
             {
-                throw new NotSupportedException($"This binder only supports {typeof(TokenErrorResponse)}");
-            }
+                response.StatusCode = StatusCodes.Status401Unauthorized;
 
-            if (tokenErrorResponse.Error == Identity.OAuth.Constants.Error.InvalidClient)
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-                if (AuthenticationHeaderValue.TryParse(context.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
+                if (AuthenticationHeaderValue.TryParse(response.HttpContext.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
                 {
-                    context.Response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
+                    response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
                 }
             }
             else
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                response.StatusCode = StatusCodes.Status400BadRequest;
             }
 
-            context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
-            context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
-            context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
+            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
+            response.Headers.Add(HeaderNames.CacheControl, "no-store");
+            response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            var responseString = JsonConvert.SerializeObject(tokenErrorResponse);
+            var responseString = JsonConvert.SerializeObject(responseData);
 
-            await context.Response.WriteAsync(responseString)
+            await response.WriteAsync(responseString)
                          .ConfigureAwait(false);
         }
 

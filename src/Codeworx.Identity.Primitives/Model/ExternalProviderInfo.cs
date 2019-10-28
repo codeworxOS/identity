@@ -1,6 +1,6 @@
 ﻿namespace Codeworx.Identity.Model
 {
-    public class ExternalProvider
+    public class ExternalProviderInfo
     {
         public string CallbackUrl { get; set; }
 

@@ -15,6 +15,7 @@ namespace Codeworx.Identity.Configuration
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
             MissingTenantAuthenticationScheme = Constants.DefaultMissingTenantAuthenticationScheme;
             MissingTenantAuthenticationCookie = Constants.DefaultMissingTenantCookieName;
+            WindowsAuthenticationEnabled = false;
         }
 
         public string AccountEndpoint { get; set; }
@@ -22,6 +23,8 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationCookie { get; set; }
 
         public string MissingTenantAuthenticationCookie { get; set; }
+
+        public bool WindowsAuthenticationEnabled { get; }
 
         public TimeSpan CookieExpiration { get; set; }
 

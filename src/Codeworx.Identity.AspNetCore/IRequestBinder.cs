@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public interface IResponseBinder
+    public interface IRequestBinder<TRequest>
     {
-        Task BindAsync(object responseData, HttpResponse response);
+        Task<TRequest> BindAsync(HttpRequest request);
     }
 }
