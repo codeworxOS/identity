@@ -103,9 +103,7 @@ namespace Codeworx.Identity.AspNetCore
                     try
                     {
                         var identity = claimsIdentity.ToIdentityData();
-
-                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey)
-                            .ToClaimsPrincipal();
+                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey).ToClaimsPrincipal();
 
                         await context.SignInAsync(_service.Options.AuthenticationScheme, principal, new AuthenticationProperties());
 
