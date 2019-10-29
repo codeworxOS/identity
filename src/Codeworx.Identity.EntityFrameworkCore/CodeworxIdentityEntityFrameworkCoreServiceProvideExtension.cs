@@ -2,19 +2,16 @@
 using System.Linq;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public static class CodeworxIdentityEntityFrameworkCoreWebHostExtension
+    public static class CodeworxIdentityEntityFrameworkCoreServiceProvideExtension
     {
-        public static IWebHost MigrateDatabase(this IWebHost webHost)
+        public static IServiceProvider MigrateDatabase(this IServiceProvider serviceProvider)
         {
-            var serviceScopeFactory = webHost.Services.GetRequiredService<IServiceScopeFactory>();
-
-            using (var scope = serviceScopeFactory.CreateScope())
+            using (var scope = serviceProvider.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 using (var context = services.GetRequiredService<CodeworxIdentityDbContext>())
@@ -99,7 +96,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 }
             }
 
-            return webHost;
+            return serviceProvider;
         }
     }
 }
