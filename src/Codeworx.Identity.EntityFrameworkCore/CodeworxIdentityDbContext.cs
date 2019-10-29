@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.EntityFrameworkCore.Model;
+﻿using Codeworx.Identity.EntityFrameworkCore.Mappings;
+using Codeworx.Identity.EntityFrameworkCore.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
@@ -20,17 +21,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             modelBuilder.Ignore<RightHolder>();
 
-            modelBuilder.Entity<User>()
-                        .ToTable("User");
-
-            modelBuilder.Entity<Tenant>()
-                        .ToTable("Tenant");
-
-            modelBuilder.Entity<UserRole>()
-                        .HasKey(p => new { p.UserId, p.RoleId });
-
-            modelBuilder.Entity<TenantUser>()
-                        .HasKey(p => new { p.RightHolderId, p.TenantId });
+            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
         }
     }
 }
