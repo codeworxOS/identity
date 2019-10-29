@@ -71,17 +71,11 @@ namespace Codeworx.Identity
         {
             foreach (var item in data.Tenants)
             {
-                var type = Guid.TryParse(item.Key, out var currentTenantGuid) &&
-                           Guid.TryParse(data.TenantKey, out var defaultTenantGuid) &&
-                           currentTenantGuid == defaultTenantGuid
-                               ? Constants.CurrentTenantClaimType
-                               : Constants.TenantClaimType;
-
+                var type = item.Key == data.TenantKey ? Constants.CurrentTenantClaimType : Constants.TenantClaimType;
                 var value = item.Key;
 
                 var claim = new Claim(type, value, item.Name);
                 claim.Properties.Add(Constants.TenantNameProperty, item.Name);
-
                 yield return claim;
             }
         }
