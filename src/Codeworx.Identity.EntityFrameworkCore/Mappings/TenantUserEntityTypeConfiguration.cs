@@ -9,6 +9,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         public void Configure(EntityTypeBuilder<TenantUser> builder)
         {
             builder.HasKey(p => new { p.RightHolderId, p.TenantId });
+
+            builder.HasOne(p => p.User)
+                   .WithMany(p => p.Tenants)
+                   .HasForeignKey(p => p.RightHolderId);
         }
     }
 }

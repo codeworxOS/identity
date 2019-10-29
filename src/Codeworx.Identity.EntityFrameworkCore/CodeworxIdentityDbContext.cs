@@ -13,15 +13,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Role> Roles { get; set; }
+
         public DbSet<Tenant> Tenants { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Ignore<RightHolder>();
-
-            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
