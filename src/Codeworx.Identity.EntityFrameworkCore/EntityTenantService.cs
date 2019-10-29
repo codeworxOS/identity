@@ -36,17 +36,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var tenantSet = _context.Set<TenantUser>();
 
             var tenants = await tenantSet
-                                .Include(p => p.Tenant)
                                 .Where(p => p.RightHolderId == identifier)
+                                .Select(p => new TenantInfo
+                                {
+                                    Key = p.TenantId.ToString("N"),
+                                    Name = p.Tenant.Name
+                                })
                                 .ToListAsync();
 
-            return tenants
-                   .Select(p => new TenantInfo
-                   {
-                       Key = p.TenantId.ToString("N"),
-                       Name = p.Tenant.Name
-                   })
-                   .ToList();
+            return tenants;
         }
     }
 }
