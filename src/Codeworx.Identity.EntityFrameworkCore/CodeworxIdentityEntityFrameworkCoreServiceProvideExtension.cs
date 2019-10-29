@@ -32,7 +32,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Id = Guid.Parse(Constants.DefaultAdminUserId),
                             Name = Constants.DefaultAdminUserName,
                             PasswordHash = defaultUserPasswordHash,
-                            PasswordSalt = defaultUserPasswordSalt
+                            PasswordSalt = defaultUserPasswordSalt,
+                            MemberOf =
+                            {
+                               new UserRole
+                               {
+                                   RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
+                               }
+                            }
                         });
                     }
 
@@ -48,7 +55,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Id = Guid.Parse(Constants.MultiTenantUserId),
                             Name = Constants.MultiTenantUserName,
                             PasswordHash = multiTenantUserPasswordHash,
-                            PasswordSalt = multiTenantUserPasswordSalt
+                            PasswordSalt = multiTenantUserPasswordSalt,
+                            MemberOf =
+                            {
+                               new UserRole
+                               {
+                                   RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
+                               }
+                            }
                         });
                     }
 
@@ -89,6 +103,18 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId)
                                 }
                             }
+                        });
+                    }
+
+                    var adminRole = context.Roles.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminRoleId));
+
+                    if (adminRole == null)
+                    {
+                        context.Roles.Add(new Role
+                        {
+                            Id = Guid.Parse(Constants.DefaultAdminRoleId),
+                            Name = "Admin",
+                            TenantId = Guid.Parse(Constants.DefaultSecondTenantId),
                         });
                     }
 

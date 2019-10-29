@@ -12,6 +12,7 @@
         public const string CurrentTenantClaimType = "currenttenant";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";
+        public const string DefaultAdminRoleId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultScopeKey = "all";
