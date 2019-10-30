@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.ExternalLogin
+namespace Codeworx.Identity.AspNetCore
 {
     public class WindowsLoginMiddleware
     {
@@ -20,6 +18,9 @@ namespace Codeworx.Identity.AspNetCore.ExternalLogin
         {
             try
             {
+                ////var requestType = await externalLogin.GetParameterTypeAsync(Constants.ExternalWindowsProviderId);
+                ////var binder = context.RequestServices.GetService(typeof(IRequestBinder<>).MakeGenericType(requestType));
+
                 var windowsLoginRequest = await requestBinder.BindAsync(context.Request);
                 var signInResonse = await externalLogin.SignInAsync(Constants.ExternalWindowsProviderId, windowsLoginRequest);
                 await signInBinder.BindAsync(signInResonse, context.Response);

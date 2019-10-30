@@ -2,7 +2,7 @@
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.Response
+namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class NotAcceptableResponseBinder : ResponseBinder<NotAcceptableResponse>
     {

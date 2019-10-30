@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.ContentType;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -10,13 +11,13 @@ namespace Codeworx.Identity.AspNetCore
 {
     public class ProfileMiddleware
     {
+        private readonly IContentTypeLookup _contentTypeLookup;
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
 
-        public ProfileMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public ProfileMiddleware(RequestDelegate next, IContentTypeLookup contentTypeLookup)
         {
             _next = next;
-            _service = service;
+            _contentTypeLookup = contentTypeLookup;
         }
 
         public async Task Invoke(HttpContext context)
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.AspNetCore
 
             var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
 
-            if (_service.TryGetContentType(Constants.JsonExtension, out var contentType))
+            if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out var contentType))
             {
                 context.Response.ContentType = contentType;
             }

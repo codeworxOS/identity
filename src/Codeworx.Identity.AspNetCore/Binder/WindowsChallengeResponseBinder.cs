@@ -3,7 +3,7 @@ using Codeworx.Identity.ExternalLogin;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.ExternalLogin
+namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class WindowsChallengeResponseBinder : ResponseBinder<WindowsChallengeResponse>
     {

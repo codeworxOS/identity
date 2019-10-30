@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Codeworx.Identity.AspNetCore.ExternalLogin
+namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class WindowsLoginRequestBinder : IRequestBinder<WindowsLoginRequest>
     {
@@ -43,7 +43,7 @@ namespace Codeworx.Identity.AspNetCore.ExternalLogin
 
             if (result.Succeeded)
             {
-                return new WindowsLoginRequest((ClaimsIdentity)result.Principal.Identity);
+                return new WindowsLoginRequest((ClaimsIdentity)result.Principal.Identity, returnUrl);
             }
             else if (result.Failure == null)
             {

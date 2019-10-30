@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
@@ -14,18 +15,20 @@ namespace Codeworx.Identity.Configuration
 {
     public class IdentityServiceBuilder : IIdentityServiceBuilder
     {
-        private readonly IServiceCollection _collection;
-
         public IdentityServiceBuilder(IServiceCollection collection)
         {
-            _collection = collection;
+            ServiceCollection = collection;
+
             this.ReplaceService<IContentTypeLookup, ContentTypeLookup>(ServiceLifetime.Singleton);
             this.ReplaceService<IContentTypeProvider, DefaultContentTypeProvider>(ServiceLifetime.Singleton);
 
+            this.AddAssets(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
+            this.View<DefaultViewTemplate>();
             this.Provider<WindowsLoginProvider>();
             this.PasswordValidator<DummyPasswordValidator>();
             this.UserProvider<DummyUserService>();
 
+            this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped);
             this.ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped);
@@ -33,7 +36,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
         }
 
-        public IServiceCollection ServiceCollection => _collection;
+        public IServiceCollection ServiceCollection { get; }
 
         private class DummyOAuthClientService : IClientService
         {
@@ -196,6 +199,16 @@ namespace Codeworx.Identity.Configuration
         private class DummyUserService : IUserService, IDefaultTenantService
         {
             private static string _defaultTenantMultiTenantCache;
+
+            public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+            {
+                if (provider == Constants.ExternalWindowsProviderId)
+                {
+                    return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
+                }
+
+                return Task.FromResult<IUser>(null);
+            }
 
             public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
             {

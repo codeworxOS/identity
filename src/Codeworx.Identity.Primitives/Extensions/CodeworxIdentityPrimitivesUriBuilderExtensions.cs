@@ -2,7 +2,7 @@
 
 namespace System
 {
-    public static class CodeworxIdentityAspNetCoreUriBuilderExtensions
+    public static class CodeworxIdentityPrimitivesUriBuilderExtensions
     {
         public static void AppendQueryPart(this UriBuilder uriBuilder, string parameterName, string parameterValue)
         {

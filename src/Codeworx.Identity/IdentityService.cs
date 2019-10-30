@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
@@ -12,14 +11,12 @@ namespace Codeworx.Identity
     {
         private readonly ImmutableList<IClaimsService> _claimsProviders;
         private readonly IPasswordValidator _passwordValidator;
-        private readonly IEnumerable<IExternalLoginProvider> _providers;
         private readonly ITenantService _tenantService;
         private readonly IUserService _userService;
 
-        public IdentityService(IUserService userService, IEnumerable<IExternalLoginProvider> providers, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
+        public IdentityService(IUserService userService, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
         {
             _userService = userService;
-            _providers = providers;
             _passwordValidator = passwordValidator;
             _tenantService = tenantService;
             _claimsProviders = ImmutableList.CreateRange(claimsProvider);
@@ -57,17 +54,18 @@ namespace Codeworx.Identity
             return await GetIdentityAsync(user);
         }
 
-        public Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
+        public async Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
         {
-            ////var user = await _providerSetup.GetUserIdentity(provider, nameIdentifier);
+            var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier);
 
-            ////if (user == null)
-            ////{
-            throw new AuthenticationException();
-            ////}
+            if (user == null)
+            {
+                throw new AuthenticationException();
+            }
 
-            ////var result = await GetIdentityAsync(user);
-            ////return result;
+            var result = await GetIdentityAsync(user);
+
+            return result;
         }
 
         protected virtual async Task<IdentityData> GetIdentityAsync(IUser user, string tenantKey = null)

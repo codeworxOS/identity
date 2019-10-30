@@ -10,6 +10,8 @@ namespace Codeworx.Identity.ExternalLogin
 
         Type RequestParameterType { get; }
 
+        Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration);
+
         Task<ExternalLoginResponse> ProcessAsync(object request);
     }
 }

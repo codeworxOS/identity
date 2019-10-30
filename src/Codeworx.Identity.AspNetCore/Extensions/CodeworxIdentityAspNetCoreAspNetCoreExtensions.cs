@@ -6,9 +6,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.ExternalLogin;
+using Codeworx.Identity.AspNetCore.Binder;
 using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.AspNetCore.Response;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
@@ -155,8 +154,6 @@ namespace Codeworx.Identity.AspNetCore
         private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
-            builder.AddPart(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
-            builder.View<DefaultViewTemplate>();
             builder.Pbkdf2();
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityOptions.AuthenticationScheme; })
@@ -165,7 +162,7 @@ namespace Codeworx.Identity.AspNetCore
                                  p =>
                                  {
                                      p.Cookie.Name = identityOptions.AuthenticationCookie;
-                                     p.LoginPath = "/account/login";
+                                     p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
                                  })
                       .AddCookie(
@@ -173,7 +170,7 @@ namespace Codeworx.Identity.AspNetCore
                                  p =>
                                  {
                                      p.Cookie.Name = identityOptions.MissingTenantAuthenticationCookie;
-                                     p.LoginPath = "/account/login";
+                                     p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                                  });
 
@@ -183,7 +180,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
-            
+            collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
+
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
             collection.AddTransient<IResponseBinder<NotAcceptableResponse>, NotAcceptableResponseBinder>();
@@ -194,6 +192,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
+            collection.AddTransient<IResponseBinder<AssetResponse>, AssetResponseBinder>();
+            collection.AddTransient<IResponseBinder<ProviderInfosResponse>, ProviderInfosResponseBinder>();
 
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();

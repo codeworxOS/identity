@@ -50,7 +50,7 @@ namespace Codeworx.Identity.Web.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCodeworxIdentity(_configuration)
-                .AddPart(Assembly.Load("Codeworx.Identity.Test.Theme"));
+                .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"));
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()

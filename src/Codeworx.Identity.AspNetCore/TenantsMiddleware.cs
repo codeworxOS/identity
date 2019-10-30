@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.ContentType;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -13,13 +14,13 @@ namespace Codeworx.Identity.AspNetCore
 {
     public class TenantsMiddleware
     {
-        private readonly Configuration.IdentityService _identityService;
+        private readonly IContentTypeLookup _contentTypeLookup;
         private readonly RequestDelegate _next;
 
-        public TenantsMiddleware(RequestDelegate next, Configuration.IdentityService identityService)
+        public TenantsMiddleware(RequestDelegate next, IContentTypeLookup contentTypeLookup)
         {
             _next = next;
-            _identityService = identityService;
+            _contentTypeLookup = contentTypeLookup;
         }
 
         public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService, IOptionsSnapshot<IdentityOptions> options)
@@ -36,7 +37,7 @@ namespace Codeworx.Identity.AspNetCore
 
             var tenants = await tenantService.GetTenantsByIdentityAsync(identity) ?? Enumerable.Empty<TenantInfo>();
 
-            if (_identityService.TryGetContentType(Constants.JsonExtension, out string contentType))
+            if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
                 context.Response.ContentType = contentType;
             }
