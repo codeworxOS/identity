@@ -23,7 +23,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .UserProvider<EntityUserService<TContext>>()
                          .PasswordValidator<EntityPasswordValidator<TContext>>()
                          .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped);
+                         .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
+                         .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped);
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {
