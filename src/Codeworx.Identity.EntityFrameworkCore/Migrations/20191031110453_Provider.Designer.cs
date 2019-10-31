@@ -13,9 +13,10 @@ using System;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    partial class CodeworxIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191031110453_Provider")]
+    partial class Provider
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
