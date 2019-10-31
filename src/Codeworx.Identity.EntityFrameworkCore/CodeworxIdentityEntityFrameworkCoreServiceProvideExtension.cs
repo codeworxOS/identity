@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
@@ -160,7 +159,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.ExternalWindowsProviderId),
                             Name = Constants.ExternalWindowsProviderName,
-                            EndpointType = JsonConvert.SerializeObject(typeof(WindowsLoginProcessor)),
+                            EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
                             Users =
                             {

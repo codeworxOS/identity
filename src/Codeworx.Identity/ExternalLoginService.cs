@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
@@ -10,12 +11,14 @@ namespace Codeworx.Identity
     public class ExternalLoginService : IExternalLoginService
     {
         private readonly IEnumerable<IExternalLoginProvider> _providers;
+        private readonly IEnumerable<IProcessorTypeLookup> _processorTypeLookups;
         private readonly IIdentityService _service;
         private readonly IServiceProvider _serviceProvider;
 
-        public ExternalLoginService(IEnumerable<IExternalLoginProvider> providers, IServiceProvider serviceProvider, IIdentityService service)
+        public ExternalLoginService(IEnumerable<IExternalLoginProvider> providers, IEnumerable<IProcessorTypeLookup> processorTypeLookups, IServiceProvider serviceProvider, IIdentityService service)
         {
             _providers = providers;
+            _processorTypeLookups = processorTypeLookups;
             _serviceProvider = serviceProvider;
             _service = service;
         }
@@ -37,7 +40,9 @@ namespace Codeworx.Identity
                 {
                     if (registration.Id == providerId)
                     {
-                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
+                        var processorType = _processorTypeLookups.FirstOrDefault(p => p.Key == registration.ProcessorKey)?.Type;
+                        var processor = _serviceProvider.GetRequiredService(processorType) as IExternalLoginProcessor;
+
                         return processor;
                     }
                 }
@@ -54,7 +59,8 @@ namespace Codeworx.Identity
             {
                 foreach (var externalLogin in await item.GetLoginRegistrationsAsync(request.UserName))
                 {
-                    var processor = _serviceProvider.GetService(externalLogin.ProcessorType) as IExternalLoginProcessor;
+                    var processorType = _processorTypeLookups.FirstOrDefault(p => p.Key == externalLogin.ProcessorKey)?.Type;
+                    var processor = _serviceProvider.GetService(processorType) as IExternalLoginProcessor;
 
                     var info = new ExternalProviderInfo
                     {

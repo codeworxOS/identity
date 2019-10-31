@@ -2,6 +2,8 @@
 using System.Linq;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
+using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +28,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped);
+
+            result.ServiceCollection.AddSingleton<IProcessorTypeLookup, WindowsLoginProcessorLookup>();
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {

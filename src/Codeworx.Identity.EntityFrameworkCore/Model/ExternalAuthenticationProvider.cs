@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.ExternalLogin;
-using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -31,7 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         string IExternalLoginRegistration.Id => this.Id.ToString("N");
 
-        public Type ProcessorType => JsonConvert.DeserializeObject<Type>(this.EndpointType);
+        public string ProcessorKey => this.EndpointType;
 
         public object ProcessorConfiguration => this.EndpointConfiguration;
 
