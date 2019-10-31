@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.ExternalLogin;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ExternalAuthenticationProvider
+    public class ExternalAuthenticationProvider : IExternalLoginRegistration
     {
         public ExternalAuthenticationProvider()
         {
@@ -26,6 +28,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        string IExternalLoginRegistration.Id => this.Id.ToString("N");
+
+        public Type ProcessorType => JsonConvert.DeserializeObject<Type>(this.EndpointType);
+
+        public object ProcessorConfiguration => this.EndpointConfiguration;
 
         public ICollection<AuthenticationProviderUser> Users { get; }
     }
