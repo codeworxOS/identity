@@ -17,6 +17,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<Tenant> Tenants { get; set; }
 
+        public DbSet<ClientConfiguration> ClientConfigurations { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -25,6 +27,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientConfigurationEntityTypeConfiguration());
+
+            modelBuilder.Ignore<ClientScope>();
+            modelBuilder.Ignore<ScopeClaim>();
         }
     }
 }
