@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj" />
     <ProjectReference Include="..\Codeworx.Identity.Test.Theme\Codeworx.Identity.Test.Theme.csproj" />
   </ItemGroup>
 </Project>

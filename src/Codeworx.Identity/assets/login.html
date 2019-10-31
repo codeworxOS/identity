@@ -12,8 +12,9 @@
 
 <body>
     <form method="post" id="loginForm">
-        <input type="text" id="username" name="username" />
+        <input type="text" id="username" name="username" value="{{username}}" />
         <input type="password" id="password" name="password" />
+        <div id="error">{{error}}</div>
         <button type="submit" id="login">login</button>
         <ul id="external"></ul>
     </form>

@@ -4,6 +4,11 @@ namespace System
 {
     public static class CodeworxIdentityPrimitivesUriBuilderExtensions
     {
+        public static void AppendPath(this UriBuilder uriBuilder, string path)
+        {
+            uriBuilder.Path = $"{uriBuilder.Path.TrimEnd('/')}/{path.TrimStart('/')}";
+        }
+
         public static void AppendQueryPart(this UriBuilder uriBuilder, string parameterName, string parameterValue)
         {
             parameterName = WebUtility.UrlEncode(parameterName.Trim('&', '?'));

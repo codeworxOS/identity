@@ -1,14 +1,18 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Security.Claims;
 
 namespace Codeworx.Identity.Model
 {
-    [DataContract]
-    public class TenantSelectionRequest
+    public class TenantSelectionRequest : TenantMissingRequest
     {
-        [DataMember(Order = 1, Name = "tenantKey")]
-        public string TenantKey { get; set; }
+        public TenantSelectionRequest(string returnUrl, ClaimsIdentity identity, string tenantKey, bool setDefault)
+            : base(returnUrl, identity)
+        {
+            SetDefault = setDefault;
+            TenantKey = tenantKey;
+        }
 
-        [DataMember(Order = 2, Name = "isdefault")]
-        public bool SetDefault { get; set; }
+        public bool SetDefault { get; }
+
+        public string TenantKey { get; }
     }
 }

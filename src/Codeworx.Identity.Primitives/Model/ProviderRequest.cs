@@ -2,14 +2,11 @@
 {
     public class ProviderRequest
     {
-        public ProviderRequest(string returnUrl, string userName, string baseUrl)
+        public ProviderRequest(string returnUrl, string userName = null)
         {
             ReturnUrl = returnUrl;
             UserName = userName;
-            BaseUrl = baseUrl;
         }
-
-        public string BaseUrl { get; }
 
         public string ReturnUrl { get; }
 

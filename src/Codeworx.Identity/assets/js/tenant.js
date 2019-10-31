@@ -12,11 +12,11 @@ var TenantForm = (function () {
         if (showDefault === 'True') {
             var div = document.createElement('div');
             var checkbox = document.createElement('input');
-            checkbox.id = 'isDefault';
+            checkbox.id = 'setDefault';
             checkbox.type = 'checkbox';
-            checkbox.name = 'isdefault';
+            checkbox.name = 'setDefault';
             var label = document.createElement('label');
-            label.htmlFor = 'isDefault';
+            label.htmlFor = 'setDefault';
             label.innerText = 'Set as default';
             div.appendChild(checkbox);
             div.appendChild(label);
