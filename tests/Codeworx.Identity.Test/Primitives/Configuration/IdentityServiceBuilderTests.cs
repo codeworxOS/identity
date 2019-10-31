@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             Assert.NotNull(firstService);
             Assert.NotNull(secondService);
 
-            Assert.True(ReferenceEquals(firstService, secondService));
+            Assert.Same(firstService, secondService);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var userService = serviceProvider.GetService<IUserService>();
             var defaultTenantService = serviceProvider.GetService<IDefaultTenantService>();
 
-            Assert.False(ReferenceEquals(userService, defaultTenantService));
+            Assert.NotSame(userService, defaultTenantService);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var userService = serviceProvider.GetService<IUserService>();
             var defaultTenantService = serviceProvider.GetService<IDefaultTenantService>();
 
-            Assert.False(ReferenceEquals(userService, defaultTenantService));
+            Assert.NotSame(userService, defaultTenantService);
         }
     }
 }
