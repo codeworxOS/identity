@@ -50,27 +50,15 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
         }
 
         [Fact]
-        public void TenantProvider_SingleRegistrations_SameInstance()
+        public void ReplaceService_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<ITenantService>(p => p.TenantProvider<DummyTenantService>());
+            this.CheckServiceRegistration<IDefaultTenantService>(p => p.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped));
         }
 
         [Fact]
-        public void TenantProviderFactory_SingleRegistrations_SameInstance()
+        public void ReplaceServiceFactory_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<ITenantService>(p => p.TenantProvider(a => new DummyTenantService()));
-        }
-
-        [Fact]
-        public void DefaultTenantProvider_SingleRegistrations_SameInstance()
-        {
-            this.CheckServiceRegistration<IDefaultTenantService>(p => p.DefaultTenantProvider<DummyUserService>());
-        }
-
-        [Fact]
-        public void DefaultTenantProviderFactory_SingleRegistrations_SameInstance()
-        {
-            this.CheckServiceRegistration<IDefaultTenantService>(p => p.DefaultTenantProvider(a => new DummyUserService()));
+            this.CheckServiceRegistration<IDefaultTenantService>(p => p.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped, a => new DummyUserService()));
         }
 
         [Fact]
@@ -80,7 +68,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
             serviceBuilder.UserProvider<DummyUserService>();
-            serviceBuilder.DefaultTenantProvider<DummyUserService>();
+            serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -97,7 +85,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
             serviceBuilder.UserProvider(p => new DummyUserService());
-            serviceBuilder.DefaultTenantProvider(p => new DummyUserService());
+            serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 

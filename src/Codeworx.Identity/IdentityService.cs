@@ -11,14 +11,12 @@ namespace Codeworx.Identity
     {
         private readonly ImmutableList<IClaimsService> _claimsProviders;
         private readonly IPasswordValidator _passwordValidator;
-        private readonly IProviderSetup _providerSetup;
         private readonly ITenantService _tenantService;
         private readonly IUserService _userService;
 
-        public IdentityService(IUserService userService, IProviderSetup providerSetup, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
+        public IdentityService(IUserService userService, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
         {
             _userService = userService;
-            _providerSetup = providerSetup;
             _passwordValidator = passwordValidator;
             _tenantService = tenantService;
             _claimsProviders = ImmutableList.CreateRange(claimsProvider);
@@ -58,7 +56,7 @@ namespace Codeworx.Identity
 
         public async Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
         {
-            var user = await _providerSetup.GetUserIdentity(provider, nameIdentifier);
+            var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier);
 
             if (user == null)
             {
@@ -66,6 +64,7 @@ namespace Codeworx.Identity
             }
 
             var result = await GetIdentityAsync(user);
+
             return result;
         }
 
@@ -74,16 +73,14 @@ namespace Codeworx.Identity
             var tenants = await _tenantService.GetTenantsByUserAsync(user);
 
             var claims = new List<AssignedClaim>();
-            if (tenantKey != null)
-            {
-                foreach (var cp in _claimsProviders)
-                {
-                    var c = await cp.GetClaimsAsync(user, tenantKey);
-                    claims.AddRange(c);
-                }
-            }
 
             tenantKey = tenantKey ?? user.DefaultTenantKey ?? (tenants?.Count() == 1 ? tenants.First().Key : null);
+
+            foreach (var cp in _claimsProviders)
+            {
+                var c = await cp.GetClaimsAsync(user);
+                claims.AddRange(c);
+            }
 
             var result = new IdentityData(user.Identity, user.Name, tenants, claims, tenantKey);
 

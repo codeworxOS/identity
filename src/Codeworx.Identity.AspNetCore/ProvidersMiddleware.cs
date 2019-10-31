@@ -1,77 +1,39 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.ContentType;
+using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class ProvidersMiddleware
     {
+        private readonly IContentTypeLookup _lookup;
         private readonly RequestDelegate _next;
-        private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly Configuration.IdentityService _service;
 
-        public ProvidersMiddleware(RequestDelegate next, Configuration.IdentityService service, IAuthenticationSchemeProvider schemeProvider)
+        public ProvidersMiddleware(RequestDelegate next, IContentTypeLookup lookup)
         {
             _next = next;
-            _service = service;
-            _schemeProvider = schemeProvider;
+            _lookup = lookup;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<ProviderRequest> requestBinder, IResponseBinder<ProviderInfosResponse> responseBinder, IExternalLoginService service)
         {
-            StringValues userNameValues;
-            context.Request.Query.TryGetValue(Constants.UserNameParameterName, out userNameValues);
-            StringValues returnUrlValues;
-            string returnUrl = null;
-
-            if (context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out returnUrlValues))
+            try
             {
-                returnUrl = returnUrlValues.First();
+                var request = await requestBinder.BindAsync(context.Request);
+                var providerResponse = await service.GetProviderInfosAsync(request);
+
+                await responseBinder.BindAsync(providerResponse, context.Response);
+                return;
             }
-
-            var userName = userNameValues.FirstOrDefault();
-            var setup = context.RequestServices.GetService<IProviderSetup>();
-            var providers = await setup.GetProvidersAsync(userName);
-
-            var result = new List<ExternalProvider>();
-
-            var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            if (_service.WindowsAuthentication && schemes.Any(p => p.Name == Constants.WindowsAuthenticationSchema))
+            catch (ErrorResponseException ex)
             {
-                result.Add(new ExternalProvider
-                {
-                    Id = Constants.ExternalWindowsProviderId,
-                    Name = Constants.ExternalWindowsProviderName,
-                    Url = $"winlogin?returnUrl={UrlEncoder.Default.Encode(returnUrl ?? string.Empty)}"
-                });
-            }
-
-            result.AddRange(providers);
-
-            if (_service.TryGetContentType(Constants.JsonExtension, out string contentType))
-            {
-                context.Response.ContentType = contentType;
-            }
-
-            context.Response.StatusCode = StatusCodes.Status200OK;
-
-            var setting = new JsonSerializerSettings();
-            setting.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            var ser = JsonSerializer.Create(setting);
-
-            using (var sw = new StreamWriter(context.Response.Body))
-            {
-                ser.Serialize(sw, result);
+                var binder = context.GetResponseBinder(ex.ResponseType);
+                await binder.BindAsync(ex.Response, context.Response);
+                return;
             }
         }
     }

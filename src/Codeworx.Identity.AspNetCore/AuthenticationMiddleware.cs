@@ -1,23 +1,23 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class AuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
 
-        public AuthenticationMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public AuthenticationMiddleware(RequestDelegate next)
         {
             _next = next;
-            _service = service;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)
         {
-            var result = await context.AuthenticateAsync(_service.Options.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(options.Value.AuthenticationScheme);
 
             if (result.Succeeded)
             {
@@ -25,7 +25,7 @@ namespace Codeworx.Identity.AspNetCore
                 return;
             }
 
-            await context.ChallengeAsync(_service.Options.AuthenticationScheme);
+            await context.ChallengeAsync(options.Value.AuthenticationScheme);
         }
     }
 }

@@ -18,6 +18,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
+        public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
             var data = identity.ToIdentityData();

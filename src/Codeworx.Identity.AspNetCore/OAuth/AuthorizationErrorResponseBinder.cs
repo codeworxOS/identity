@@ -5,59 +5,47 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationErrorResponseBinder : IResponseBinder
+    public class AuthorizationErrorResponseBinder : ResponseBinder<AuthorizationErrorResponse>
     {
-        public async Task RespondAsync(object response, HttpContext context)
+        public override async Task BindAsync(AuthorizationErrorResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (context == null)
+            if (responseData == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(responseData));
             }
 
-            var authorizationErrorResponse = response as AuthorizationErrorResponse;
-
-            if (authorizationErrorResponse == null)
+            if (string.IsNullOrWhiteSpace(responseData.RedirectUri))
             {
-                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationErrorResponse)}");
-            }
-
-            if (string.IsNullOrWhiteSpace(authorizationErrorResponse.RedirectUri))
-            {
-                await context.Response.WriteAsync($"{authorizationErrorResponse.Error}\n{authorizationErrorResponse.ErrorDescription}")
+                await response.WriteAsync($"{responseData.Error}\n{responseData.ErrorDescription}")
                              .ConfigureAwait(false);
             }
             else
             {
-                var redirectUriBuilder = new UriBuilder(authorizationErrorResponse.RedirectUri);
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, authorizationErrorResponse.Error);
+                var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, responseData.Error);
 
-                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.ErrorDescription))
+                if (!string.IsNullOrWhiteSpace(responseData.ErrorDescription))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, authorizationErrorResponse.ErrorDescription);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, responseData.ErrorDescription);
                 }
 
-                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.ErrorUri))
+                if (!string.IsNullOrWhiteSpace(responseData.ErrorUri))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, authorizationErrorResponse.ErrorUri);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, responseData.ErrorUri);
                 }
 
-                if (!string.IsNullOrWhiteSpace(authorizationErrorResponse.State))
+                if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationErrorResponse.State);
+                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
                 }
 
-                context.Response.Redirect(redirectUriBuilder.Uri.ToString());
+                response.Redirect(redirectUriBuilder.Uri.ToString());
             }
-        }
-
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(AuthorizationErrorResponse);
         }
     }
 }

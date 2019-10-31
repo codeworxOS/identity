@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Converter;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -14,24 +17,24 @@ namespace Codeworx.Identity.AspNetCore
     public class LoginMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
         private readonly IViewTemplate _template;
+        private readonly IContentTypeLookup _contentTypeLookup;
 
-        public LoginMiddleware(RequestDelegate next, Configuration.IdentityService service, IViewTemplate template)
+        public LoginMiddleware(RequestDelegate next, IViewTemplate template, IContentTypeLookup lookup)
         {
             _next = next;
-            _service = service;
             _template = template;
+            _contentTypeLookup = lookup;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)
         {
             string body = null;
             var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
 
             if (context.Request.Method.Equals(HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
             {
-                var authenticateResult = await context.AuthenticateAsync(_service.Options.AuthenticationScheme);
+                var authenticateResult = await context.AuthenticateAsync(options.Value.AuthenticationScheme);
 
                 if (authenticateResult.Succeeded)
                 {
@@ -39,7 +42,7 @@ namespace Codeworx.Identity.AspNetCore
                 }
                 else
                 {
-                    var tenantAuthenticateResult = await context.AuthenticateAsync(_service.Options.MissingTenantAuthenticationScheme);
+                    var tenantAuthenticateResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
 
                     if (tenantAuthenticateResult.Succeeded)
                     {
@@ -55,7 +58,7 @@ namespace Codeworx.Identity.AspNetCore
             }
             else if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
             {
-                var tenantAuthenticateResult = await context.AuthenticateAsync(_service.Options.MissingTenantAuthenticationScheme);
+                var tenantAuthenticateResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
 
                 var setting = new JsonSerializerSettings
                 {
@@ -81,11 +84,11 @@ namespace Codeworx.Identity.AspNetCore
                         {
                             var authProperties = new AuthenticationProperties();
 
-                            await context.SignInAsync(_service.Options.AuthenticationScheme, principal, authProperties);
+                            await context.SignInAsync(options.Value.AuthenticationScheme, principal, authProperties);
                         }
                         else
                         {
-                            await context.SignInAsync(_service.Options.MissingTenantAuthenticationScheme, principal);
+                            await context.SignInAsync(options.Value.MissingTenantAuthenticationScheme, principal);
 
                             var redirectLocation = hasReturnUrl ? $"login?{Constants.ReturnUrlParameter}={Uri.EscapeUriString(returnUrl)}" : "login";
 
@@ -105,7 +108,7 @@ namespace Codeworx.Identity.AspNetCore
                         var identity = claimsIdentity.ToIdentityData();
                         var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey).ToClaimsPrincipal();
 
-                        await context.SignInAsync(_service.Options.AuthenticationScheme, principal, new AuthenticationProperties());
+                        await context.SignInAsync(options.Value.AuthenticationScheme, principal, new AuthenticationProperties());
 
                         if (tenantSelectionRequest.SetDefault)
                         {
@@ -131,7 +134,7 @@ namespace Codeworx.Identity.AspNetCore
                 body = await _template.GetLoggedInTemplate(returnUrl);
             }
 
-            if (_service.TryGetContentType(".html", out string contentType))
+            if (_contentTypeLookup.TryGetContentType(".html", out string contentType))
             {
                 context.Response.ContentType = contentType;
             }

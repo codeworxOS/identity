@@ -7,42 +7,28 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenResponseBinder : IResponseBinder
+    public class TokenResponseBinder : ResponseBinder<TokenResponse>
     {
-        public async Task RespondAsync(object response, HttpContext context)
+        public override async Task BindAsync(TokenResponse responseData, HttpResponse response)
         {
+            if (responseData == null)
+            {
+                throw new ArgumentNullException(nameof(responseData));
+            }
+
             if (response == null)
             {
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
+            response.Headers.Add(HeaderNames.CacheControl, "no-store");
+            response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            TokenResponse tokenResponse = response as TokenResponse;
+            var responseString = JsonConvert.SerializeObject(responseData);
 
-            var isTokenResponse = response != null;
-
-            if (!isTokenResponse)
-            {
-                throw new NotSupportedException($"This binder only supports {typeof(TokenResponse)}");
-            }
-
-            context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
-            context.Response.Headers.Add(HeaderNames.CacheControl, "no-store");
-            context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
-
-            var responseString = JsonConvert.SerializeObject(tokenResponse);
-
-            await context.Response.WriteAsync(responseString)
+            await response.WriteAsync(responseString)
                          .ConfigureAwait(false);
-        }
-
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(TokenResponse);
         }
     }
 }

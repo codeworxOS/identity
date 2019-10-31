@@ -5,46 +5,34 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationTokenResponseBinder : IResponseBinder
+    public class AuthorizationTokenResponseBinder : ResponseBinder<AuthorizationTokenResponse>
     {
-        public Task RespondAsync(object response, HttpContext context)
+        public override Task BindAsync(AuthorizationTokenResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (context == null)
+            if (responseData == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(responseData));
             }
 
-            var authorizationTokenResponse = response as AuthorizationTokenResponse;
-
-            if (authorizationTokenResponse == null)
-            {
-                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationTokenResponse)}");
-            }
-
-            var redirectUriBuilder = new UriBuilder(authorizationTokenResponse.RedirectUri);
+            var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
             var paramsBuilder = new UriBuilder();
 
-            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, authorizationTokenResponse.Token);
+            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, responseData.Token);
             paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.TokenTypeName, Identity.OAuth.Constants.TokenType.Bearer);
 
-            if (!string.IsNullOrWhiteSpace(authorizationTokenResponse.State))
+            if (!string.IsNullOrWhiteSpace(responseData.State))
             {
-                paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationTokenResponse.State);
+                paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
             }
 
-            context.Response.Redirect($"{redirectUriBuilder.Uri}#{paramsBuilder.Query.Substring(1)}");
+            response.Redirect($"{redirectUriBuilder.Uri}#{paramsBuilder.Query.Substring(1)}");
 
             return Task.CompletedTask;
-        }
-
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(AuthorizationTokenResponse);
         }
     }
 }

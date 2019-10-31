@@ -18,7 +18,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new TokenErrorResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new TokenErrorResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new TokenErrorResponse(null, null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new TokenErrorResponse(null, null, null), null));
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenErrorResponseBinder();
 
-            await instance.RespondAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context);
+            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -74,7 +74,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenErrorResponseBinder();
 
-            await instance.RespondAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context);
+            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -108,7 +108,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenErrorResponseBinder();
 
-            await instance.RespondAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context);
+            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 

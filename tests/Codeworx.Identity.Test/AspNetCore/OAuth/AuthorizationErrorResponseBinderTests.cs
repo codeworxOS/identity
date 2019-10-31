@@ -16,7 +16,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new AuthorizationErrorResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new AuthorizationErrorResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new AuthorizationErrorResponse(null, null, null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new AuthorizationErrorResponse(null, null, null, null), null));
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, null, null), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, null, null), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -60,9 +60,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, null, null, null, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, null, null, null, RedirectUri), context.Response);
 
-            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
+            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
             var locationHeader = context.Response.GetTypedHeaders().Location;
             Assert.NotNull(locationHeader);
@@ -85,7 +85,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, null, null, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, null, null, RedirectUri), context.Response);
 
             Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
@@ -111,7 +111,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, null, ExpectedUri, null, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, null, ExpectedUri, null, RedirectUri), context.Response);
 
             Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
@@ -137,7 +137,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, null, null, ExpectedState, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, null, null, ExpectedState, RedirectUri), context.Response);
 
             Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 
@@ -165,7 +165,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var context = new DefaultHttpContext();
 
-            await instance.RespondAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, ExpectedUri, ExpectedState, RedirectUri), context);
+            await instance.BindAsync(new AuthorizationErrorResponse(ExpectedError, ExpectedDescription, ExpectedUri, ExpectedState, RedirectUri), context.Response);
 
             Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
 

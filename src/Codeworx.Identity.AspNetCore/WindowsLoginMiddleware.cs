@@ -1,79 +1,35 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class WindowsLoginMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IAuthenticationSchemeProvider _schemeProvider;
-        private readonly Configuration.IdentityService _service;
 
-        public WindowsLoginMiddleware(RequestDelegate next, Configuration.IdentityService service, IAuthenticationSchemeProvider schemeProvider)
+        public WindowsLoginMiddleware(RequestDelegate next)
         {
             _next = next;
-            _service = service;
-            _schemeProvider = schemeProvider;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
         {
-            var schemes = await _schemeProvider.GetAllSchemesAsync();
-
-            if (!schemes.Any(p => p.Name.Equals(Constants.WindowsAuthenticationSchema, StringComparison.OrdinalIgnoreCase)))
+            try
             {
-                context.Response.StatusCode = StatusCodes.Status406NotAcceptable;
-                await context.Response.WriteAsync("Windows Authentication is disabled!");
-                return;
-            }
+                ////var requestType = await externalLogin.GetParameterTypeAsync(Constants.ExternalWindowsProviderId);
+                ////var binder = context.RequestServices.GetService(typeof(IRequestBinder<>).MakeGenericType(requestType));
 
-            string returnUrl = null;
-            if (context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out StringValues returnUrlValue))
+                var windowsLoginRequest = await requestBinder.BindAsync(context.Request);
+                var signInResonse = await externalLogin.SignInAsync(Constants.ExternalWindowsProviderId, windowsLoginRequest);
+                await signInBinder.BindAsync(signInResonse, context.Response);
+            }
+            catch (ErrorResponseException error)
             {
-                returnUrl = returnUrlValue.FirstOrDefault();
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
             }
-
-            if (string.IsNullOrWhiteSpace(returnUrl))
-            {
-                context.Response.StatusCode = StatusCodes.Status406NotAcceptable;
-                await context.Response.WriteAsync("ReturnUrl parameter missing");
-                return;
-            }
-
-            var result = await context.AuthenticateAsync(Constants.WindowsAuthenticationSchema);
-
-            if (result.Succeeded)
-            {
-                var identity = new ClaimsIdentity();
-                identity.AddClaim(new Claim(ClaimTypes.Name, "Windows blabla"));
-
-                var properties = new AuthenticationProperties()
-                {
-                    IsPersistent = false,
-                    ExpiresUtc = DateTime.UtcNow.Add(_service.Options.CookieExpiration),
-                    RedirectUri = returnUrl,
-                };
-
-                await context.SignInAsync(
-                    _service.Options.AuthenticationScheme,
-                    new ClaimsPrincipal(identity),
-                    properties);
-
-                context.Response.Redirect(returnUrl);
-                return;
-            }
-            else if (result.Failure == null)
-            {
-                await context.ChallengeAsync(Constants.WindowsAuthenticationSchema);
-                return;
-            }
-
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         }
     }
 }

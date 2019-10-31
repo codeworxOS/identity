@@ -15,23 +15,26 @@ namespace Codeworx.Identity.Configuration
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
             MissingTenantAuthenticationScheme = Constants.DefaultMissingTenantAuthenticationScheme;
             MissingTenantAuthenticationCookie = Constants.DefaultMissingTenantCookieName;
+            WindowsAuthenticationEnabled = false;
         }
 
         public string AccountEndpoint { get; set; }
 
         public string AuthenticationCookie { get; set; }
 
-        public string MissingTenantAuthenticationCookie { get; set; }
+        public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
+
+        public string MissingTenantAuthenticationCookie { get; set; }
+
+        public string MissingTenantAuthenticationScheme { get; set; }
 
         public string OauthEndpoint { get; set; }
 
         public HashSet<string> Styles { get; }
 
-        public string AuthenticationScheme { get; set; }
-
-        public string MissingTenantAuthenticationScheme { get; set; }
+        public bool WindowsAuthenticationEnabled { get; set; }
 
         public void CopyTo(IdentityOptions target)
         {

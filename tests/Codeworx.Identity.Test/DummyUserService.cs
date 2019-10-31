@@ -10,6 +10,16 @@ namespace Codeworx.Identity.Test
     {
         private static string _defaultTenantMultiTenantCache;
 
+        public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+        {
+            if (provider == Constants.ExternalWindowsProviderId)
+            {
+                return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
+            }
+
+            return Task.FromResult<IUser>(null);
+        }
+
         public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
             var user = identity.ToIdentityData();

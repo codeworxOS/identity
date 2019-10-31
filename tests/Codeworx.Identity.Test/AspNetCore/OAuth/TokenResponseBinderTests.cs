@@ -16,7 +16,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new TokenResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(null, new DefaultHttpContext()));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
 
         [Fact]
@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var instance = new TokenResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.RespondAsync(new TokenResponse(null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new TokenResponse(null, null), null));
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenResponseBinder();
 
-            await instance.RespondAsync(new TokenResponse(ExpectedAccessToken, ExpectedTokenType, ExpectedExpiresIn, ExpectedRefreshToken, ExpectedScope), context);
+            await instance.BindAsync(new TokenResponse(ExpectedAccessToken, ExpectedTokenType, ExpectedExpiresIn, ExpectedRefreshToken, ExpectedScope), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 

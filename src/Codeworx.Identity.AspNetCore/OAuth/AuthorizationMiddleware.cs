@@ -37,15 +37,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (bindingResult.Error != null)
             {
-                await _responseBinders.First(p => p.Supports(bindingResult.Error.GetType()))
-                                      .RespondAsync(bindingResult.Error, context);
+                var responseBinder = context.GetResponseBinder<AuthorizationErrorResponse>();
+                await responseBinder.BindAsync(bindingResult.Error, context.Response);
             }
             else if (bindingResult.Result != null)
             {
                 var result = await authorizationService.AuthorizeRequest(bindingResult.Result, claimsIdentity);
 
-                await _responseBinders.First(p => p.Supports(result.Response.GetType()))
-                                      .RespondAsync(result.Response, context);
+                var responseBinder = context.GetResponseBinder(result.Response.GetType());
+                await responseBinder.BindAsync(result.Response, context.Response);
             }
         }
     }

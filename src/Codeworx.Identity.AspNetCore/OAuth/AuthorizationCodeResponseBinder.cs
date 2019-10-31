@@ -5,43 +5,31 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeResponseBinder : IResponseBinder
+    public class AuthorizationCodeResponseBinder : ResponseBinder<AuthorizationCodeResponse>
     {
-        public Task RespondAsync(object response, HttpContext context)
+        public override Task BindAsync(AuthorizationCodeResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
                 throw new ArgumentNullException(nameof(response));
             }
 
-            if (context == null)
+            if (responseData == null)
             {
-                throw new ArgumentNullException(nameof(context));
+                throw new ArgumentNullException(nameof(responseData));
             }
 
-            var authorizationCodeResponse = response as AuthorizationCodeResponse;
+            var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
+            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName, responseData.Code);
 
-            if (authorizationCodeResponse == null)
+            if (!string.IsNullOrWhiteSpace(responseData.State))
             {
-                throw new NotSupportedException($"This binder only supports {typeof(AuthorizationCodeResponse)}");
+                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
             }
 
-            var redirectUriBuilder = new UriBuilder(authorizationCodeResponse.RedirectUri);
-            redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName, authorizationCodeResponse.Code);
-
-            if (!string.IsNullOrWhiteSpace(authorizationCodeResponse.State))
-            {
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, authorizationCodeResponse.State);
-            }
-
-            context.Response.Redirect(redirectUriBuilder.Uri.ToString());
+            response.Redirect(redirectUriBuilder.Uri.ToString());
 
             return Task.CompletedTask;
-        }
-
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(AuthorizationCodeResponse);
         }
     }
 }
