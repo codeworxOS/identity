@@ -118,6 +118,38 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    var authCodeClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultCodeFlowClientId));
+
+                    if (authCodeClient == null)
+                    {
+                        var salt = hashingProvider.CrateSalt();
+
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(Constants.DefaultCodeFlowClientId),
+                            ClientSecretSalt = salt,
+                            ClientSecret = hashingProvider.Hash("clientSecret", salt),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            FlowTypes = FlowType.AuthorizationCode,
+                            ValidRedirectUrls = "https://example.org/redirect",
+                            DefaultRedirectUri = "https://example.org/redirect",
+                        });
+                    }
+
+                    var authTokenClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultTokenFlowClientId));
+
+                    if (authTokenClient == null)
+                    {
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(Constants.DefaultTokenFlowClientId),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            FlowTypes = FlowType.Token,
+                            ValidRedirectUrls = "https://example.org/redirect",
+                            DefaultRedirectUri = "https://example.org/redirect",
+                        });
+                    }
+
                     context.SaveChanges();
                 }
             }
