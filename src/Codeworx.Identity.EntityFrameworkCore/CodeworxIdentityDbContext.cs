@@ -32,6 +32,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ClientConfigurationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ExternalAuthenticationProviderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AuthenticationProviderUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
 
             modelBuilder.Ignore<ClientScope>();
             modelBuilder.Ignore<ScopeClaim>();

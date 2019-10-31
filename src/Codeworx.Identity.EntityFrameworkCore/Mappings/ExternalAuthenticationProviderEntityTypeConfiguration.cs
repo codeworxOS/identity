@@ -9,8 +9,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         public void Configure(EntityTypeBuilder<ExternalAuthenticationProvider> builder)
         {
             builder.ToTable("ExternalAuthenticationProvider");
-
-            builder.Ignore(p => p.Filter);
         }
     }
 }

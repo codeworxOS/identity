@@ -77,7 +77,28 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FilterId");
+
                     b.ToTable("ExternalAuthenticationProvider");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Type")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProviderFilter");
+
+                    b.HasDiscriminator<string>("Type").HasValue("ProviderFilter");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
@@ -143,6 +164,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.DomainNameProviderFilter", b =>
+                {
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
+
+                    b.Property<string>("DomainName");
+
+                    b.ToTable("DomainNameProviderFilter");
+
+                    b.HasDiscriminator().HasValue("Domain");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IPv4ProviderFilter", b =>
+                {
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
+
+                    b.Property<byte[]>("RangeEnd")
+                        .IsRequired();
+
+                    b.Property<byte[]>("RangeStart")
+                        .IsRequired();
+
+                    b.ToTable("IPv4ProviderFilter");
+
+                    b.HasDiscriminator().HasValue("IPv4");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
@@ -186,6 +233,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .WithMany("Providers")
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", "Filter")
+                        .WithMany()
+                        .HasForeignKey("FilterId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
