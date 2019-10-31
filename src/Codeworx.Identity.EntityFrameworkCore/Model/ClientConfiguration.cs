@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ClientConfiguration
+    public class ClientConfiguration : IClientRegistration
     {
         public ClientConfiguration()
         {
@@ -16,20 +19,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public byte[] ClientSecretSalt { get; set; }
 
-        public EndpointProtocol EnabledProtocols { get; set; }
-
         public Guid Id { get; set; }
-
-        public bool IsConfidential { get; set; }
-
-        public TimeSpan RefreshTokenExpiration { get; set; }
-
-        public RefreshTokenLifetime RefreshTokenLifetime { get; set; }
 
         public TimeSpan TokenExpiration { get; set; }
 
-        public User User { get; set; }
+        public string ClientId => this.Id.ToString("N");
 
-        public Guid? UserId { get; set; }
+        public byte[] ClientSecretHash => this.ClientSecret;
+
+        public FlowType FlowTypes { get; set; }
+
+        IReadOnlyList<ISupportedFlow> IClientRegistration.SupportedFlow => SupportedFlows.GetFlow(this.FlowTypes);
+
+        public string ValidRedirectUrls { get; set; }
+
+        IReadOnlyList<string> IClientRegistration.ValidRedirectUrls => new ReadOnlyCollection<string>(this.ValidRedirectUrls.Split(',').ToList());
+
+        public string DefaultRedirectUri { get; set; }
+
+        Uri IClientRegistration.DefaultRedirectUri => new Uri(this.DefaultRedirectUri);
     }
 }
