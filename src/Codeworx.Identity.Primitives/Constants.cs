@@ -21,7 +21,7 @@
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
-        public const string ExternalWindowsProviderId = "D740E319BBC44AB0B815136CB1F96D2E";
+        public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
         public const string IdClaimType = "id";
         public const string JsonExtension = ".json";
