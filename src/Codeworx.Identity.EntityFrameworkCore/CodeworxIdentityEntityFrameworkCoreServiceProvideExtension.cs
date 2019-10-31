@@ -2,8 +2,10 @@
 using System.Linq;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
@@ -147,6 +149,27 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             FlowTypes = FlowType.Token,
                             ValidRedirectUrls = "https://example.org/redirect",
                             DefaultRedirectUri = "https://example.org/redirect",
+                        });
+                    }
+
+                    var windowsLoginRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalWindowsProviderId));
+
+                    if (windowsLoginRegistration == null)
+                    {
+                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        {
+                            Id = Guid.Parse(Constants.ExternalWindowsProviderId),
+                            Name = Constants.ExternalWindowsProviderName,
+                            EndpointType = JsonConvert.SerializeObject(typeof(WindowsLoginProcessor)),
+                            EndpointConfiguration = null,
+                            Users =
+                            {
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    ExternalIdentifier = "S-1-5-21-2583907123-3048486745-1937933167-1875",
+                                }
+                            }
                         });
                     }
 

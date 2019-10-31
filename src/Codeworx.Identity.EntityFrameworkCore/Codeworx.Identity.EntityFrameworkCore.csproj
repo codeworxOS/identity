@@ -11,5 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+    <ProjectReference Include="..\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>
 </Project>

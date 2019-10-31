@@ -19,7 +19,6 @@ namespace Codeworx.Identity.Configuration
 
             this.AddAssets(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
             this.View<DefaultViewTemplate>();
-            this.Provider<WindowsLoginProvider>();
 
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
