@@ -132,7 +132,17 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             ClientSecret = hashingProvider.Hash("clientSecret", salt),
                             TokenExpiration = TimeSpan.FromHours(1),
                             FlowTypes = FlowType.AuthorizationCode,
-                            ValidRedirectUrls = "https://example.org/redirect",
+                            ValidRedirectUrls =
+                            {
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect",
+                                },
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect2",
+                                }
+                            },
                             DefaultRedirectUri = "https://example.org/redirect",
                         });
                     }
@@ -146,7 +156,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Id = Guid.Parse(Constants.DefaultTokenFlowClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
                             FlowTypes = FlowType.Token,
-                            ValidRedirectUrls = "https://example.org/redirect",
+                            ValidRedirectUrls =
+                            {
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect",
+                                }
+                            },
                             DefaultRedirectUri = "https://example.org/redirect",
                         });
                     }

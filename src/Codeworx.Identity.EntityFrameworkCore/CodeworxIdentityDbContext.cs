@@ -33,6 +33,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ExternalAuthenticationProviderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AuthenticationProviderUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
 
             modelBuilder.Ignore<ClientScope>();
             modelBuilder.Ignore<ScopeClaim>();

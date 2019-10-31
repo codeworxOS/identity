@@ -37,8 +37,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<TimeSpan>("TokenExpiration");
 
-                    b.Property<string>("ValidRedirectUrls");
-
                     b.HasKey("Id");
 
                     b.ToTable("ClientConfiguration");
@@ -107,6 +105,22 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.ToTable("UserRole");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid?>("ClientConfigurationId");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientConfigurationId");
+
+                    b.ToTable("ValidRedirectUrl");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
@@ -170,6 +184,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .WithMany("MemberOf")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration")
+                        .WithMany("ValidRedirectUrls")
+                        .HasForeignKey("ClientConfigurationId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
