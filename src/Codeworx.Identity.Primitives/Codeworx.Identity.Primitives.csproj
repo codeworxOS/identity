@@ -4,7 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Codeworx.Identity</RootNamespace>
   </PropertyGroup>
-  <Import Project="..\..\global\GlobalInfo.targets" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
