@@ -14,12 +14,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
         where TContext : DbContext
     {
         private readonly TContext _context;
-        private readonly bool _isEnabled;
+        private readonly bool _windowsAuthenticationEnabled;
 
         public EntityExternalLoginProvider(IOptionsSnapshot<IdentityOptions> options, TContext context)
         {
             _context = context;
-            _isEnabled = options.Value.WindowsAuthenticationEnabled;
+            _windowsAuthenticationEnabled = options.Value.WindowsAuthenticationEnabled;
         }
 
         public async Task<IEnumerable<IExternalLoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
@@ -34,7 +34,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 authenticationProviderQuery = authenticationProviderQuery.Where(p => p.RightHolderId == userId);
             }
 
-            if (_isEnabled == false)
+            if (_windowsAuthenticationEnabled == false)
             {
                 authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Provider.Id != Guid.Parse(Constants.ExternalWindowsProviderId));
             }
