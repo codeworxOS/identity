@@ -5,6 +5,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     public partial class Initial : Migration
     {
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "TenantUser");
+
+            migrationBuilder.DropTable(
+                name: "UserRole");
+
+            migrationBuilder.DropTable(
+                name: "RightHolder");
+
+            migrationBuilder.DropTable(
+                name: "Tenant");
+        }
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -128,21 +143,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "IX_UserRole_RoleId",
                 table: "UserRole",
                 column: "RoleId");
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "TenantUser");
-
-            migrationBuilder.DropTable(
-                name: "UserRole");
-
-            migrationBuilder.DropTable(
-                name: "RightHolder");
-
-            migrationBuilder.DropTable(
-                name: "Tenant");
         }
     }
 }

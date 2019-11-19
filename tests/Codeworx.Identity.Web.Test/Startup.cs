@@ -1,5 +1,6 @@
 ﻿using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.EntityFrameworkCore;
+using Codeworx.Identity.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
@@ -48,7 +49,8 @@ namespace Codeworx.Identity.Web.Test
 
             services.AddCodeworxIdentity(_configuration)
                 .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+                .UseTestSetup();
+            ////.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 

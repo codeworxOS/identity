@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Test
                 tenants = new[]
                           {
                               new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
-                              new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantId }
+                              new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
                           };
             }
             else

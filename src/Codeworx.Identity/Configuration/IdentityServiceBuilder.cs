@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,7 @@ namespace Codeworx.Identity.Configuration
             this.View<DefaultViewTemplate>();
             this.Provider<WindowsLoginProvider>();
 
+            this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
             this.ReplaceService<IScopeService, DummyScopeService>(ServiceLifetime.Scoped);
