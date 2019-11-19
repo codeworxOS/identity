@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Primitive
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{E179045A-84CC-4AAC-9E63-69D910CDA8ED}"
 	ProjectSection(SolutionItems) = preProject
-		global\GlobalInfo.targets = global\GlobalInfo.targets
+		Directory.Build.props = Directory.Build.props
 		global\stylecop.json = global\stylecop.json
 		global\Stylecop.ruleset = global\Stylecop.ruleset
 	EndProjectSection
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Cryptogra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Web.Test", "tests\Codeworx.Identity.Web.Test\Codeworx.Identity.Web.Test.csproj", "{224C8DAA-7EF9-485D-A7A3-F0CA4E05FCF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Test.Theme", "tests\Codeworx.Identity.Test.Theme\Codeworx.Identity.Test.Theme.csproj", "{9C4702C2-F96A-4E73-9F8F-6E0A9C9BCA7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Test.Theme", "tests\Codeworx.Identity.Test.Theme\Codeworx.Identity.Test.Theme.csproj", "{9C4702C2-F96A-4E73-9F8F-6E0A9C9BCA7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

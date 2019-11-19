@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\global\GlobalInfo.targets" />
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
