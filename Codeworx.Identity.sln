@@ -8,7 +8,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Primitive
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "global", "global", "{E179045A-84CC-4AAC-9E63-69D910CDA8ED}"
 	ProjectSection(SolutionItems) = preProject
-		global\GlobalInfo.targets = global\GlobalInfo.targets
+		Directory.Build.props = Directory.Build.props
 		global\stylecop.json = global\stylecop.json
 		global\Stylecop.ruleset = global\Stylecop.ruleset
 	EndProjectSection
