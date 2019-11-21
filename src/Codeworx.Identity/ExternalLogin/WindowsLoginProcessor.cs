@@ -18,9 +18,9 @@ namespace Codeworx.Identity.ExternalLogin
             _baseUriAccessor = baseUri;
         }
 
-        public string ProcessorType => Constants.ExternalWindowsProviderName;
-
         public Type RequestParameterType { get; } = typeof(WindowsLoginRequest);
+
+        public Type ConfigurationType { get; } = null;
 
         public Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
         {

@@ -6,9 +6,9 @@ namespace Codeworx.Identity.ExternalLogin
 {
     public interface IExternalLoginProcessor
     {
-        string ProcessorType { get; }
-
         Type RequestParameterType { get; }
+
+        Type ConfigurationType { get; }
 
         Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration);
 
