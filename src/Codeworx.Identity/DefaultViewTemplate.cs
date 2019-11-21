@@ -32,10 +32,12 @@ namespace Codeworx.Identity
                 .Replace("{{styles}}", GetStyles());
         }
 
-        public async Task<string> GetLoginTemplate(string returnUrl)
+        public async Task<string> GetLoginTemplate(string returnUrl, string username = null, string error = null)
         {
             return (await GetTemplateAsString("Codeworx.Identity.assets.login.html"))
                 .Replace("{{returnUrl}}", returnUrl)
+                .Replace("{{username}}", username)
+                .Replace("{{error}}", error)
                 .Replace("{{styles}}", GetStyles());
         }
 

@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Binder;
+using Codeworx.Identity.AspNetCore.Binder.LoginView;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -181,6 +182,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
+            collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -194,6 +196,11 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
             collection.AddTransient<IResponseBinder<AssetResponse>, AssetResponseBinder>();
             collection.AddTransient<IResponseBinder<ProviderInfosResponse>, ProviderInfosResponseBinder>();
+            collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
+            collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
+            collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
+            collection.AddTransient<IResponseBinder<TenantMissingResponse>, TenantMissingResponseBinder>();
+            collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
 
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
@@ -208,6 +215,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();
+            collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 
             return builder;
         }

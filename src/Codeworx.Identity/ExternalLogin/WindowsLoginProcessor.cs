@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
@@ -10,11 +9,13 @@ namespace Codeworx.Identity.ExternalLogin
 {
     public class WindowsLoginProcessor : IExternalLoginProcessor
     {
+        private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IdentityOptions _options;
 
-        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options)
+        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUri)
         {
             _options = options.Value;
+            _baseUriAccessor = baseUri;
         }
 
         public string ProcessorType => Constants.ExternalWindowsProviderName;
@@ -23,8 +24,8 @@ namespace Codeworx.Identity.ExternalLogin
 
         public Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
         {
-            var uriBuilder = new UriBuilder($"{request.BaseUrl}{_options.AccountEndpoint}/winlogin");
-
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin");
             uriBuilder.AppendQueryPart(Constants.ReturnUrlParameter, request.ReturnUrl);
 
             return Task.FromResult(uriBuilder.ToString());

@@ -2,7 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Remove="StyleCop.Analyzers" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
@@ -16,6 +21,7 @@
     <ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
     <ProjectReference Include="..\..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
     <ProjectReference Include="..\..\src\Codeworx.Identity\Codeworx.Identity.csproj" />
+    <ProjectReference Include="..\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj" />
   </ItemGroup>
 
   <ItemGroup>

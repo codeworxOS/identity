@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -23,15 +22,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             var userName = userNameValues.FirstOrDefault();
 
-            var uriBuilder = new UriBuilder(request.Scheme, request.Host.Host);
-            if (request.Host.Port.HasValue)
-            {
-                uriBuilder.Port = request.Host.Port.Value;
-            }
-
-            uriBuilder.Path = request.PathBase;
-
-            return Task.FromResult(new ProviderRequest(returnUrl, userName, uriBuilder.ToString()));
+            return Task.FromResult(new ProviderRequest(returnUrl, userName));
         }
     }
 }

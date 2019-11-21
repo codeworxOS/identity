@@ -29,8 +29,8 @@ namespace Codeworx.Identity.Test
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            services.AddCodeworxIdentity(_configuration);
-            services.AddCodeworxIdentityTesting();
+            services.AddCodeworxIdentity(_configuration)
+                .UseTestSetup();
         }
     }
 }

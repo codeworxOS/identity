@@ -26,12 +26,12 @@ class TenantForm {
             let div = document.createElement('div');
 
             let checkbox = document.createElement('input');
-            checkbox.id = 'isDefault';
+            checkbox.id = 'setDefault';
             checkbox.type = 'checkbox';
-            checkbox.name = 'isdefault';
+            checkbox.name = 'setDefault';
 
             let label = document.createElement('label');
-            label.htmlFor = 'isDefault';
+            label.htmlFor = 'setDefault';
             label.innerText = 'Set as default';
 
             div.appendChild(checkbox);

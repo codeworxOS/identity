@@ -1,145 +1,64 @@
-﻿using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
-using Codeworx.Identity.ContentType;
-using Codeworx.Identity.Converter;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class LoginMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IViewTemplate _template;
-        private readonly IContentTypeLookup _contentTypeLookup;
 
-        public LoginMiddleware(RequestDelegate next, IViewTemplate template, IContentTypeLookup lookup)
+        public LoginMiddleware(RequestDelegate next)
         {
             _next = next;
-            _template = template;
-            _contentTypeLookup = lookup;
         }
 
-        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)
+        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, ILoginViewService service)
         {
-            string body = null;
-            var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
-
-            if (context.Request.Method.Equals(HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
+            try
             {
-                var authenticateResult = await context.AuthenticateAsync(options.Value.AuthenticationScheme);
+                object response = null;
+                var request = await loginRequestBinder.BindAsync(context.Request);
+                IResponseBinder responseBinder = null;
 
-                if (authenticateResult.Succeeded)
+                switch (request)
                 {
-                    body = await _template.GetLoggedInTemplate(returnUrl);
-                }
-                else
-                {
-                    var tenantAuthenticateResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
+                    case TenantSelectionRequest tenantSelection:
+                        response = await service.ProcessTenantSelectionAsync(tenantSelection);
+                        responseBinder = context.GetResponseBinder<SignInResponse>();
+                        break;
 
-                    if (tenantAuthenticateResult.Succeeded)
-                    {
-                        var canHandleDefault = context.RequestServices.GetService<IDefaultTenantService>() != null;
+                    case TenantMissingRequest missingTeant:
+                        response = await service.ProcessTenantMissingAsync(missingTeant);
+                        responseBinder = context.GetResponseBinder<TenantMissingResponse>();
+                        break;
 
-                        body = await _template.GetTenantSelectionTemplate(returnUrl, canHandleDefault);
-                    }
-                    else
-                    {
-                        body = await _template.GetLoginTemplate(returnUrl);
-                    }
+                    case LoginFormRequest loginForm:
+                        response = await service.ProcessLoginFormAsync(loginForm);
+                        responseBinder = context.GetResponseBinder<SignInResponse>();
+                        break;
+
+                    case LoggedinRequest loggedin:
+                        response = await service.ProcessLoggedinAsync(loggedin);
+                        responseBinder = context.GetResponseBinder<LoggedinResponse>();
+                        break;
+
+                    case LoginRequest login:
+                        response = await service.ProcessLoginAsync(login);
+                        responseBinder = context.GetResponseBinder<LoginResponse>();
+                        break;
                 }
+
+                await responseBinder.BindAsync(response, context.Response);
+                return;
             }
-            else if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
+            catch (ErrorResponseException error)
             {
-                var tenantAuthenticateResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
-
-                var setting = new JsonSerializerSettings
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    Converters =
-                                  {
-                                      new StringToBooleanJsonConverter()
-                                  }
-                };
-
-                var loginRequest = await context.Request.BindAsync<LoginRequest>(setting);
-                var tenantSelectionRequest = await context.Request.BindAsync<TenantSelectionRequest>(setting);
-
-                if (loginRequest.UserName != null)
-                {
-                    try
-                    {
-                        var identityProvider = context.RequestServices.GetService<IIdentityService>();
-                        var identityData = await identityProvider.LoginAsync(loginRequest.UserName, loginRequest.Password);
-                        var principal = identityData.ToClaimsPrincipal();
-
-                        if (identityData.TenantKey != null)
-                        {
-                            var authProperties = new AuthenticationProperties();
-
-                            await context.SignInAsync(options.Value.AuthenticationScheme, principal, authProperties);
-                        }
-                        else
-                        {
-                            await context.SignInAsync(options.Value.MissingTenantAuthenticationScheme, principal);
-
-                            var redirectLocation = hasReturnUrl ? $"login?{Constants.ReturnUrlParameter}={Uri.EscapeUriString(returnUrl)}" : "login";
-
-                            context.Response.Redirect(redirectLocation);
-
-                            return;
-                        }
-                    }
-                    catch (AuthenticationException)
-                    {
-                    }
-                }
-                else if (tenantSelectionRequest.TenantKey != null && tenantAuthenticateResult.Principal?.Identity is ClaimsIdentity claimsIdentity)
-                {
-                    try
-                    {
-                        var identity = claimsIdentity.ToIdentityData();
-                        var principal = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, tenantSelectionRequest.TenantKey).ToClaimsPrincipal();
-
-                        await context.SignInAsync(options.Value.AuthenticationScheme, principal, new AuthenticationProperties());
-
-                        if (tenantSelectionRequest.SetDefault)
-                        {
-                            var defaultTenantService = context.RequestServices.GetService<IDefaultTenantService>();
-
-                            if (defaultTenantService != null)
-                            {
-                                await defaultTenantService.SetDefaultTenantAsync(identity.Identifier, tenantSelectionRequest.TenantKey);
-                            }
-                        }
-                    }
-                    catch (AuthenticationException)
-                    {
-                    }
-                }
-
-                if (hasReturnUrl)
-                {
-                    context.Response.Redirect(returnUrl);
-                    return;
-                }
-
-                body = await _template.GetLoggedInTemplate(returnUrl);
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
+                return;
             }
-
-            if (_contentTypeLookup.TryGetContentType(".html", out string contentType))
-            {
-                context.Response.ContentType = contentType;
-            }
-
-            await context.Response.WriteAsync(body);
         }
     }
 }

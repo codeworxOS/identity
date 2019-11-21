@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.ContentType;
-using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
