@@ -25,7 +25,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var providerId = Guid.Parse(provider);
 
             var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);
-            var authenticationProviderId = authenticationProvider?.Id ?? Guid.Empty;
+            var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
 
             var user = await userSet.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
