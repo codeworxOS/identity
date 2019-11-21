@@ -4,6 +4,7 @@ using System.Linq;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.ExternalLogin;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore
@@ -13,7 +14,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         public static IExternalLoginRegistration ToExternalLoginRegistration(this ExternalAuthenticationProvider provider, IEnumerable<IProcessorTypeLookup> processorTypeLookups, IServiceProvider serviceProvider)
         {
             var processorType = processorTypeLookups.FirstOrDefault(t => t.Key == provider.EndpointType)?.Type;
-            var processor = serviceProvider.GetService(processorType) as IExternalLoginProcessor;
+            var processor = serviceProvider.GetRequiredService(processorType) as IExternalLoginProcessor;
 
             object processorConfiguration = null;
 

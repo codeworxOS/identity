@@ -14,11 +14,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
         where TContext : DbContext
     {
         private readonly TContext _context;
+        private readonly IEnumerable<IProcessorTypeLookup> _processorTypeLookups;
+        private readonly IServiceProvider _serviceProvider;
         private readonly bool _windowsAuthenticationEnabled;
 
-        public EntityExternalLoginProvider(IOptionsSnapshot<IdentityOptions> options, TContext context)
+        public EntityExternalLoginProvider(IOptionsSnapshot<IdentityOptions> options, TContext context, IEnumerable<IProcessorTypeLookup> processorTypeLookups, IServiceProvider serviceProvider)
         {
             _context = context;
+            _processorTypeLookups = processorTypeLookups;
+            _serviceProvider = serviceProvider;
             _windowsAuthenticationEnabled = options.Value.WindowsAuthenticationEnabled;
         }
 
@@ -39,9 +43,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Provider.Id != Guid.Parse(Constants.ExternalWindowsProviderId));
             }
 
-            var authenticationProvider = await authenticationProviderQuery.Select(p => p.Provider).ToListAsync();
+            var loginRegistrations = await authenticationProviderQuery
+                                               .Select(p => p.Provider.ToExternalLoginRegistration(_processorTypeLookups, _serviceProvider))
+                                               .ToListAsync();
 
-            return authenticationProvider;
+            return loginRegistrations;
         }
     }
 }
