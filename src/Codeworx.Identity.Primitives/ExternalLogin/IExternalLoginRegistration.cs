@@ -1,8 +1,10 @@
-﻿namespace Codeworx.Identity.ExternalLogin
+﻿using System;
+
+namespace Codeworx.Identity.ExternalLogin
 {
     public interface IExternalLoginRegistration
     {
-        string ProcessorKey { get; }
+        Type ProcessorType { get; }
 
         string Name { get; }
 

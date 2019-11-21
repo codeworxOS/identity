@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Codeworx.Identity.ExternalLogin;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ExternalAuthenticationProvider : IExternalLoginRegistration
+    public class ExternalAuthenticationProvider
     {
         public ExternalAuthenticationProvider()
         {
@@ -27,12 +26,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
-
-        string IExternalLoginRegistration.Id => this.Id.ToString("N");
-
-        public string ProcessorKey => this.EndpointType;
-
-        public object ProcessorConfiguration => this.EndpointConfiguration;
 
         public ICollection<AuthenticationProviderUser> Users { get; }
     }
