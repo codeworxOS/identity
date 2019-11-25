@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
     public class ExternalAuthenticationProvider
     {
+        public ExternalAuthenticationProvider()
+        {
+            this.Users = new HashSet<AuthenticationProviderUser>();
+        }
+
         public string EndpointConfiguration { get; set; }
 
         [StringLength(100)]
@@ -20,5 +26,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        public ICollection<AuthenticationProviderUser> Users { get; }
     }
 }

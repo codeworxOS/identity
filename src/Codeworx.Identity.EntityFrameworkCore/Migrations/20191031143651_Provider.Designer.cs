@@ -13,14 +13,29 @@ using System;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20191031090538_ClientRegistration")]
-    partial class ClientRegistration
+    [Migration("20191031143651_Provider")]
+    partial class Provider
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>
+                {
+                    b.Property<Guid>("RightHolderId");
+
+                    b.Property<Guid>("ProviderId");
+
+                    b.Property<string>("ExternalIdentifier");
+
+                    b.HasKey("RightHolderId", "ProviderId");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("AuthenticationProviderUser");
+                });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
                 {
@@ -37,9 +52,54 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<TimeSpan>("TokenExpiration");
 
+                    b.Property<string>("ValidRedirectUrls");
+
                     b.HasKey("Id");
 
                     b.ToTable("ClientConfiguration");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("EndpointConfiguration");
+
+                    b.Property<string>("EndpointType")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<Guid?>("FilterId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FilterId");
+
+                    b.ToTable("ExternalAuthenticationProvider");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Type")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProviderFilter");
+
+                    b.HasDiscriminator<string>("Type").HasValue("ProviderFilter");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
@@ -105,20 +165,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.ToTable("UserRole");
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.DomainNameProviderFilter", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
 
-                    b.Property<Guid?>("ClientConfigurationId");
+                    b.Property<string>("DomainName");
 
-                    b.Property<string>("Url");
+                    b.ToTable("DomainNameProviderFilter");
 
-                    b.HasKey("Id");
+                    b.HasDiscriminator().HasValue("Domain");
+                });
 
-                    b.HasIndex("ClientConfigurationId");
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IPv4ProviderFilter", b =>
+                {
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
 
-                    b.ToTable("ValidRedirectUrl");
+                    b.Property<byte[]>("RangeEnd")
+                        .IsRequired();
+
+                    b.Property<byte[]>("RangeStart")
+                        .IsRequired();
+
+                    b.ToTable("IPv4ProviderFilter");
+
+                    b.HasDiscriminator().HasValue("IPv4");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
@@ -153,6 +223,26 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasDiscriminator().HasValue("User");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", "Provider")
+                        .WithMany("Users")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("Providers")
+                        .HasForeignKey("RightHolderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", "Filter")
+                        .WithMany()
+                        .HasForeignKey("FilterId");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
                 {
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Role")
@@ -184,13 +274,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .WithMany("MemberOf")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration")
-                        .WithMany("ValidRedirectUrls")
-                        .HasForeignKey("ClientConfigurationId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>

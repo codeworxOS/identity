@@ -6,10 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+    <ProjectReference Include="..\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>
 </Project>

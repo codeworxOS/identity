@@ -11,6 +11,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public ClientConfiguration()
         {
             this.AllowedScopes = new HashSet<ClientScope>();
+            this.ValidRedirectUrls = new HashSet<ValidRedirectUrl>();
         }
 
         public ICollection<ClientScope> AllowedScopes { get; }
@@ -31,12 +32,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         IReadOnlyList<ISupportedFlow> IClientRegistration.SupportedFlow => SupportedFlows.GetFlow(this.FlowTypes);
 
-        public string ValidRedirectUrls { get; set; }
-
-        IReadOnlyList<string> IClientRegistration.ValidRedirectUrls => new ReadOnlyCollection<string>(this.ValidRedirectUrls.Split(',').ToList());
+        IReadOnlyList<string> IClientRegistration.ValidRedirectUrls => new ReadOnlyCollection<string>(this.ValidRedirectUrls.Select(p => p.Url).ToList());
 
         public string DefaultRedirectUri { get; set; }
 
         Uri IClientRegistration.DefaultRedirectUri => new Uri(this.DefaultRedirectUri);
+
+        public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
     }
 }

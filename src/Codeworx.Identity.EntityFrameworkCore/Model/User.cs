@@ -9,6 +9,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public User()
         {
             this.Tenants = new HashSet<TenantUser>();
+            this.Providers = new HashSet<AuthenticationProviderUser>();
         }
 
         public Tenant DefaultTenant { get; set; }
@@ -26,5 +27,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public byte[] PasswordSalt { get; set; }
 
         public ICollection<TenantUser> Tenants { get; }
+
+        public ICollection<AuthenticationProviderUser> Providers { get; }
     }
 }

@@ -19,6 +19,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<ClientConfiguration> ClientConfigurations { get; set; }
 
+        public DbSet<ExternalAuthenticationProvider> ExternalAuthenticationProviders { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +30,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new UserRoleEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ClientConfigurationEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ExternalAuthenticationProviderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AuthenticationProviderUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
 
             modelBuilder.Ignore<ClientScope>();
             modelBuilder.Ignore<ScopeClaim>();

@@ -18,9 +18,18 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+        public async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
-            throw new NotImplementedException();
+            var userSet = _context.Set<User>();
+            var authenticationProviderSet = _context.Set<ExternalAuthenticationProvider>();
+            var providerId = Guid.Parse(provider);
+
+            var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);
+            var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
+
+            var user = await userSet.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
+
+            return user;
         }
 
         public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)

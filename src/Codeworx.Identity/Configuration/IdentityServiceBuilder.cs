@@ -20,7 +20,6 @@ namespace Codeworx.Identity.Configuration
 
             this.AddAssets(typeof(DefaultViewTemplate).GetTypeInfo().Assembly);
             this.View<DefaultViewTemplate>();
-            this.Provider<WindowsLoginProvider>();
 
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);

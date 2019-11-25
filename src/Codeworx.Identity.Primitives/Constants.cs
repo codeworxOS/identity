@@ -6,9 +6,6 @@
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string ConfigurationExceptionMessage = "Identity Configuration Incomplete.";
-        public const string ConfigurationIdentityProviderMissingExceptionMessage = "No IIdentityProvider configured";
-        public const string ConfigurationViewMissingExceptionMessage = "No IViewTemplate configured.";
         public const string CurrentTenantClaimType = "currenttenant";
         public const string DefaultAdminRoleId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
@@ -24,7 +21,7 @@
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
-        public const string ExternalWindowsProviderId = "D740E319BBC44AB0B815136CB1F96D2E";
+        public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
         public const string IdClaimType = "id";
         public const string InvalidCredentialsError = "Username or password is not valid!";

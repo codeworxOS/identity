@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -131,7 +132,17 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             ClientSecret = hashingProvider.Hash("clientSecret", salt),
                             TokenExpiration = TimeSpan.FromHours(1),
                             FlowTypes = FlowType.AuthorizationCode,
-                            ValidRedirectUrls = "https://example.org/redirect",
+                            ValidRedirectUrls =
+                            {
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect",
+                                },
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect2",
+                                }
+                            },
                             DefaultRedirectUri = "https://example.org/redirect",
                         });
                     }
@@ -145,8 +156,35 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Id = Guid.Parse(Constants.DefaultTokenFlowClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
                             FlowTypes = FlowType.Token,
-                            ValidRedirectUrls = "https://example.org/redirect",
+                            ValidRedirectUrls =
+                            {
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect",
+                                }
+                            },
                             DefaultRedirectUri = "https://example.org/redirect",
+                        });
+                    }
+
+                    var windowsLoginRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalWindowsProviderId));
+
+                    if (windowsLoginRegistration == null)
+                    {
+                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        {
+                            Id = Guid.Parse(Constants.ExternalWindowsProviderId),
+                            Name = Constants.ExternalWindowsProviderName,
+                            EndpointType = new WindowsLoginProcessorLookup().Key,
+                            EndpointConfiguration = null,
+                            Users =
+                            {
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    ExternalIdentifier = "S-1-5-21-2583907123-3048486745-1937933167-1875",
+                                }
+                            }
                         });
                     }
 

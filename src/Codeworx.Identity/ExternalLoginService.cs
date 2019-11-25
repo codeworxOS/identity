@@ -38,6 +38,7 @@ namespace Codeworx.Identity
                     if (registration.Id == providerId)
                     {
                         var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
+
                         return processor;
                     }
                 }
