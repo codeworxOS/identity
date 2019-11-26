@@ -51,8 +51,8 @@ namespace Codeworx.Identity.Test
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
-                this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
-                this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
             public string ClientId => Constants.DefaultCodeFlowClientId;
@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Test
 
             public TimeSpan TokenExpiration { get; }
 
-            public IReadOnlyList<string> ValidRedirectUrls { get; }
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
@@ -75,8 +75,8 @@ namespace Codeworx.Identity.Test
             public DummyOAuthAuthorizationTokenClientRegistration()
             {
                 this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
-                this.ValidRedirectUrls = ImmutableList.Create("https://example.org/redirect");
-                this.DefaultRedirectUri = new Uri(this.ValidRedirectUrls.First());
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
             public string ClientId => Constants.DefaultTokenFlowClientId;
@@ -91,7 +91,7 @@ namespace Codeworx.Identity.Test
 
             public TimeSpan TokenExpiration { get; }
 
-            public IReadOnlyList<string> ValidRedirectUrls { get; }
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
         }
 
         private class TokenSupportedFlow : ISupportedFlow

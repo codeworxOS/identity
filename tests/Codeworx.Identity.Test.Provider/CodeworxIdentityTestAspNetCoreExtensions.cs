@@ -5,13 +5,13 @@ namespace Codeworx.Identity.Test
 {
     public static class CodeworxIdentityTestAspNetCoreExtensions
     {
-        public static void UseTestSetup(this IIdentityServiceBuilder builder)
+        public static IIdentityServiceBuilder UseTestSetup(this IIdentityServiceBuilder builder)
         {
-            builder.UserProvider<DummyUserService>();
-            builder.PasswordValidator<DummyPasswordValidator>();
-            builder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
-            builder.ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped);
-            builder.ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped);
+            return builder.UserProvider<DummyUserService>()
+                .PasswordValidator<DummyPasswordValidator>()
+                .ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped)
+                .ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped)
+                .ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped);
         }
     }
 }

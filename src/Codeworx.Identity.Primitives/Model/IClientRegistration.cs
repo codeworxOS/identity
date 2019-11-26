@@ -15,7 +15,7 @@ namespace Codeworx.Identity.Model
 
         TimeSpan TokenExpiration { get; }
 
-        IReadOnlyList<string> ValidRedirectUrls { get; }
+        IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
         Uri DefaultRedirectUri { get; }
     }

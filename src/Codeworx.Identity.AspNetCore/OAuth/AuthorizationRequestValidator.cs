@@ -30,9 +30,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new ClientIdInvalidResult(request.State);
             }
 
-            if (!Validator.TryValidateProperty(request.RedirectUri, new ValidationContext(request) { MemberName = nameof(request.RedirectUri) }, new List<ValidationResult>()))
+            if (request.RedirectUri != null)
             {
-                return new RedirectUriInvalidResult(request.State);
+                if (!Validator.TryValidateProperty(request.RedirectUri, new ValidationContext(request) { MemberName = nameof(request.RedirectUri) }, new List<ValidationResult>()))
+                {
+                    return new RedirectUriInvalidResult(request.State);
+                }
             }
 
             if (string.IsNullOrWhiteSpace(request.RedirectUri))
@@ -45,7 +48,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 request.RedirectionTarget = client.DefaultRedirectUri.ToString();
             }
 
-            if (!client.ValidRedirectUrls.Contains(request.RedirectionTarget))
+            if (!client.ValidRedirectUrls.Any(p => p.Equals(request.RedirectionTarget)))
             {
                 return new RedirectUriInvalidResult(request.State);
             }
