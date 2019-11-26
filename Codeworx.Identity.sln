@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Web.Test"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Test.Theme", "tests\Codeworx.Identity.Test.Theme\Codeworx.Identity.Test.Theme.csproj", "{9C4702C2-F96A-4E73-9F8F-6E0A9C9BCA7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Test.Provider", "tests\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj", "{F7D13761-C90A-49FD-9AC8-9864838F3914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Test.Provider", "tests\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj", "{F7D13761-C90A-49FD-9AC8-9864838F3914}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Configuration", "src\Codeworx.Identity.Configuration\Codeworx.Identity.Configuration.csproj", "{D8141C1B-DB9A-4673-8654-0489935D0FA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,6 +143,18 @@ Global
 		{F7D13761-C90A-49FD-9AC8-9864838F3914}.Release|x64.Build.0 = Release|Any CPU
 		{F7D13761-C90A-49FD-9AC8-9864838F3914}.Release|x86.ActiveCfg = Release|Any CPU
 		{F7D13761-C90A-49FD-9AC8-9864838F3914}.Release|x86.Build.0 = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|x64.Build.0 = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Debug|x86.Build.0 = Debug|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|x64.ActiveCfg = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|x64.Build.0 = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|x86.ActiveCfg = Release|Any CPU
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,6 +169,7 @@ Global
 		{224C8DAA-7EF9-485D-A7A3-F0CA4E05FCF1} = {2E062D53-102F-4971-99B0-5D7F40FC78D6}
 		{9C4702C2-F96A-4E73-9F8F-6E0A9C9BCA7D} = {2E062D53-102F-4971-99B0-5D7F40FC78D6}
 		{F7D13761-C90A-49FD-9AC8-9864838F3914} = {2E062D53-102F-4971-99B0-5D7F40FC78D6}
+		{D8141C1B-DB9A-4673-8654-0489935D0FA9} = {AB02A07B-9A72-4605-BCC3-C2C46357DC0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3F4DB969-2A92-4815-934F-C78079FDC7B6}

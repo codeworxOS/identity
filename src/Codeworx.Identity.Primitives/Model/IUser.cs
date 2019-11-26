@@ -7,5 +7,9 @@
         string Identity { get; }
 
         string Name { get; }
+
+        byte[] PasswordHash { get; }
+
+        byte[] PasswordSalt { get; }
     }
 }

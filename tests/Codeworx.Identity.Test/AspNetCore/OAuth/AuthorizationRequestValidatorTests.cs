@@ -12,35 +12,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationRequestValidatorTests
     {
         [Fact]
-        public async Task IsValid_ValidRequest_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder().Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ClientIdNull_ReturnsError()
+        public async Task IsValid_ClientIdEmpty_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
-                          .WithClientId(null)
+                          .WithClientId(string.Empty)
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -54,10 +32,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_ClientIdEmpty_ReturnsError()
+        public async Task IsValid_ClientIdInvalidAndRedirectUriInvalid_ReturnsErrorForClientId()
         {
             var request = new AuthorizationRequestBuilder()
-                          .WithClientId(string.Empty)
+                          .WithRedirectUri("x:invalidUri")
+                          .WithClientId(null)
                           .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -114,13 +93,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_RedirectUriNullAndDefaultUriNull_ReturnsError()
+        public async Task IsValid_ClientIdNull_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
-                         .WithRedirectUri(null)
-                         .Build();
+                          .WithClientId(null)
+                          .Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -130,7 +111,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.IsType<ClientIdInvalidResult>(result);
         }
 
         [Fact]
@@ -154,32 +135,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_RedirectUriNullAndDefaultUriSet_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithRedirectUri(null)
-                          .Build();
-
-            const string DefaultRedirectUri = "http://example.org/redirect";
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
-                                  .Returns(new Uri(DefaultRedirectUri));
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(DefaultRedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
         public async Task IsValid_RedirectUriEmptyAndDefaultUriSet_ReturnsNoError()
         {
             var request = new AuthorizationRequestBuilder()
@@ -192,7 +147,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
                                   .Returns(new Uri(DefaultRedirectUri));
             clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(DefaultRedirectUri));
+                                  .Returns(ImmutableList.Create(new Uri(DefaultRedirectUri)));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -226,6 +181,74 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public async Task IsValid_RedirectUriNotInValidList_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithRedirectUri("http://notValid.org/redirect")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri("https://example.org/redirect")));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<RedirectUriInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_RedirectUriNullAndDefaultUriNull_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                         .WithRedirectUri(null)
+                         .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<RedirectUriInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_RedirectUriNullAndDefaultUriSet_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithRedirectUri(null)
+                          .Build();
+
+            const string DefaultRedirectUri = "http://example.org/redirect";
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
+                                  .Returns(new Uri(DefaultRedirectUri));
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(DefaultRedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task IsValid_RedirectUriRelative_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
@@ -246,50 +269,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task IsValid_RedirectUriNotInValidList_ReturnsError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithRedirectUri("http://notValid.org/redirect")
-                          .Build();
-            
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create("https://example.org/redirect"));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<RedirectUriInvalidResult>(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ResponseTypeNull_ReturnsError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithResponseType(null)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<ResponseTypeInvalidResult>(result);
-        }
-
-        [Fact]
         public async Task IsValid_ResponseTypeEmpty_ReturnsError()
         {
             var request = new AuthorizationRequestBuilder()
@@ -298,7 +277,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
@@ -309,225 +288,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.IsType<ResponseTypeInvalidResult>(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ResponseTypeInvalidCharacters_ReturnsError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithResponseType("-")
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<ResponseTypeInvalidResult>(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ResponseTypeWithSpace_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithResponseType("type1 type2")
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ScopeNull_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithScope(null)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ScopeEmpty_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithScope(string.Empty)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ScopeInvalidCharacters_ReturnsError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithScope("\u0020")
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<ScopeInvalidResult>(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ScopeWithSpace_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithScope("scope1 scope2")
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_StateNull_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithState(null)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_StateEmpty_ReturnsNoError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithState(string.Empty)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task IsValid_StateInvalidCharacters_ReturnsError()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithState("\u0019")
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
-                                  .Returns(ImmutableList.Create(request.RedirectUri));
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<StateInvalidResult>(result);
-        }
-
-        [Fact]
-        public async Task IsValid_ClientIdInvalidAndRedirectUriInvalid_ReturnsErrorForClientId()
-        {
-            var request = new AuthorizationRequestBuilder()
-                          .WithRedirectUri("x:invalidUri")
-                          .WithClientId(null)
-                          .Build();
-
-            var clientRegistrationStub = new Mock<IClientRegistration>();
-
-            var clientServiceStub = new Mock<IClientService>();
-            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
-                             .ReturnsAsync(clientRegistrationStub.Object);
-
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
-
-            var result = await instance.IsValid(request);
-
-            Assert.IsType<ClientIdInvalidResult>(result);
         }
 
         [Fact]
@@ -552,6 +312,94 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public async Task IsValid_ResponseTypeInvalidCharacters_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithResponseType("-")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<ResponseTypeInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ResponseTypeNull_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithResponseType(null)
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<ResponseTypeInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ResponseTypeWithSpace_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithResponseType("type1 type2")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ScopeEmpty_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithScope(string.Empty)
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task IsValid_ScopeInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
         {
             var request = new AuthorizationRequestBuilder()
@@ -573,6 +421,94 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
+        public async Task IsValid_ScopeInvalidCharacters_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithScope("\u0020")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<ScopeInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ScopeNull_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithScope(null)
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ScopeWithSpace_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithScope("scope1 scope2")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task IsValid_StateEmpty_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithState(string.Empty)
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
         public async Task IsValid_StateInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
         {
             var request = new AuthorizationRequestBuilder()
@@ -591,6 +527,70 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.IsType<RedirectUriInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_StateInvalidCharacters_ReturnsError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithState("\u0019")
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.IsType<StateInvalidResult>(result);
+        }
+
+        [Fact]
+        public async Task IsValid_StateNull_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder()
+                          .WithState(null)
+                          .Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task IsValid_ValidRequest_ReturnsNoError()
+        {
+            var request = new AuthorizationRequestBuilder().Build();
+
+            var clientRegistrationStub = new Mock<IClientRegistration>();
+            clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
+                                  .Returns(ImmutableList.Create(new Uri(request.RedirectUri)));
+
+            var clientServiceStub = new Mock<IClientService>();
+            clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
+                             .ReturnsAsync(clientRegistrationStub.Object);
+
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+
+            var result = await instance.IsValid(request);
+
+            Assert.Null(result);
         }
     }
 }

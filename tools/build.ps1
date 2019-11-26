@@ -5,6 +5,7 @@ $projects = "..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.cs
             "..\src\Codeworx.Identity.AspNetcore\Codeworx.Identity.AspNetcore.csproj", 
             "..\src\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj", 
             "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj",
+            "..\src\Codeworx.Identity.Configuration\Codeworx.Identity.Configuration.csproj",
             "..\src\Codeworx.Identity\Codeworx.Identity.csproj"
 
 New-NugetPackages `

@@ -23,7 +23,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             var result = builder
                          .UserProvider<EntityUserService<TContext>>()
-                         .PasswordValidator<EntityPasswordValidator<TContext>>()
                          .Provider<EntityExternalLoginProvider<TContext>>()
                          .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
