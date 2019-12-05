@@ -25,7 +25,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             return new ExternalLoginRegistration
             {
-                Id = provider.Id.ToString("N"),
+                Id = provider.Id.ToString("N").ToLower(),
                 Name = provider.Name,
                 ProcessorType = processorType,
                 ProcessorConfiguration = processorConfiguration
