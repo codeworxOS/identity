@@ -22,7 +22,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             return await _context.Set<ClientConfiguration>()
                 .Include(p => p.ValidRedirectUrls)
-                .Include(p => p.AllowedScopes)
                 .SingleOrDefaultAsync(p => p.Id == id);
         }
     }
