@@ -13,7 +13,7 @@ namespace Codeworx.Identity.ExternalLogin
             _baseUriAccessor = baseUriAccessor;
         }
 
-        public Type RequestParameterType { get; } = null;
+        public Type RequestParameterType { get; } = typeof(OAuthLoginRequest);
 
         public Type ConfigurationType { get; } = null;
 
