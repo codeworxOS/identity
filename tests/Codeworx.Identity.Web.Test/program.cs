@@ -14,7 +14,7 @@ namespace Codeworx.Identity.Web.Test
         public static void Main(string[] args)
         {
             BuildWebHost(args)
-                //.MigrateDatabase()
+                .MigrateDatabase()
                 .Run();
         }
     }
