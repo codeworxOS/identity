@@ -29,6 +29,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped);
 
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, WindowsLoginProcessorLookup>();
+            result.ServiceCollection.AddSingleton<IProcessorTypeLookup, OAuthLoginProcessorLookup>();
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {
