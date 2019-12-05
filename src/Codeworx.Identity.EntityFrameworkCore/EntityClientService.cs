@@ -20,7 +20,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             var id = Guid.Parse(clientIdentifier);
 
-            return await _context.Set<ClientConfiguration>().SingleOrDefaultAsync(p => p.Id == id);
+            return await _context.Set<ClientConfiguration>()
+                .Include(p => p.ValidRedirectUrls)
+                .Include(p => p.AllowedScopes)
+                .SingleOrDefaultAsync(p => p.Id == id);
         }
     }
 }
