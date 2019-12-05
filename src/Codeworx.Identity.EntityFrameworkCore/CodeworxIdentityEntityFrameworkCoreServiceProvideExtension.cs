@@ -188,6 +188,32 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    ExternalAuthenticationProvider oauthRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalOAuthProviderId));
+
+                    if (oauthRegistration == null)
+                    {
+                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        {
+                            Id = Guid.Parse(Constants.ExternalOAuthProviderId),
+                            Name = "O Auth",
+                            EndpointType = new OAuthLoginProcessorLookup().Key,
+                            EndpointConfiguration = null,
+                            Users =
+                            {
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
+                                    ExternalIdentifier = Constants.DefaultAdminUserId,
+                                },
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    ExternalIdentifier = Constants.MultiTenantUserId,
+                                },
+                            }
+                        });
+                    }
+
                     context.SaveChanges();
                 }
             }
