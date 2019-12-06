@@ -28,23 +28,23 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public async Task<IEnumerable<IExternalLoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
         {
-            var authenticationProviderQuery = _context.Set<AuthenticationProviderUser>() as IQueryable<AuthenticationProviderUser>;
+            var authenticationProviderQuery = _context.Set<ExternalAuthenticationProvider>() as IQueryable<ExternalAuthenticationProvider>;
 
             if (userName != null)
             {
                 var user = await _context.Set<User>().SingleOrDefaultAsync(p => p.Name == userName);
                 var userId = user?.Id;
 
-                authenticationProviderQuery = authenticationProviderQuery.Where(p => p.RightHolderId == userId);
+                authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Users.Any(t => t.RightHolderId == userId));
             }
 
             if (_windowsAuthenticationEnabled == false)
             {
-                authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Provider.Id != Guid.Parse(Constants.ExternalWindowsProviderId));
+                authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Id != Guid.Parse(Constants.ExternalWindowsProviderId));
             }
 
             var loginRegistrations = await authenticationProviderQuery
-                                               .Select(p => p.Provider.ToExternalLoginRegistration(_processorTypeLookups, _serviceProvider))
+                                               .Select(p => p.ToExternalLoginRegistration(_processorTypeLookups, _serviceProvider))
                                                .ToListAsync();
 
             return loginRegistrations;
