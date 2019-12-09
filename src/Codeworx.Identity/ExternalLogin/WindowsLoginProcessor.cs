@@ -31,7 +31,7 @@ namespace Codeworx.Identity.ExternalLogin
             return Task.FromResult(uriBuilder.ToString());
         }
 
-        public Task<ExternalLoginResponse> ProcessAsync(object request)
+        public Task<ExternalLoginResponse> ProcessAsync(object request, object configuration)
         {
             if (request == null)
             {

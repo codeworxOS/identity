@@ -22,7 +22,7 @@ namespace Codeworx.Identity.ExternalLogin
             throw new NotImplementedException();
         }
 
-        public Task<ExternalLoginResponse> ProcessAsync(object request)
+        public Task<ExternalLoginResponse> ProcessAsync(object request, object configuration)
         {
             throw new NotImplementedException();
         }

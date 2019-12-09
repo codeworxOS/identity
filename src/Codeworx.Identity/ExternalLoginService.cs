@@ -22,12 +22,12 @@ namespace Codeworx.Identity
 
         public async Task<Type> GetParameterTypeAsync(string providerId)
         {
-            var processor = await GetProcessorAsync(providerId);
+            var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            return processor.RequestParameterType;
+            return processorInfo.Item1.RequestParameterType;
         }
 
-        public async Task<IExternalLoginProcessor> GetProcessorAsync(string providerId)
+        public async Task<Tuple<IExternalLoginProcessor, object>> GetProcessorInfoAsync(string providerId)
         {
             foreach (var item in _providers)
             {
@@ -39,7 +39,7 @@ namespace Codeworx.Identity
                     {
                         var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
 
-                        return processor;
+                        return new Tuple<IExternalLoginProcessor, object>(processor, registration.ProcessorConfiguration);
                     }
                 }
             }
@@ -57,12 +57,18 @@ namespace Codeworx.Identity
                 {
                     var processor = _serviceProvider.GetService(externalLogin.ProcessorType) as IExternalLoginProcessor;
 
+                    if (processor == null)
+                    {
+                        return null;
+                    }
+
                     var info = new ExternalProviderInfo
                     {
                         Id = externalLogin.Id,
                         Name = externalLogin.Name,
                         Url = await processor.GetProcessorUrlAsync(request, externalLogin.ProcessorConfiguration)
                     };
+
                     result.Add(info);
                 }
             }
@@ -72,9 +78,9 @@ namespace Codeworx.Identity
 
         public async Task<SignInResponse> SignInAsync(string providerId, object parameter)
         {
-            var processor = await GetProcessorAsync(providerId);
+            var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            var response = await processor.ProcessAsync(parameter);
+            var response = await processorInfo.Item1.ProcessAsync(parameter, processorInfo.Item2);
             var identityData = await _service.LoginExternalAsync(providerId, response.NameIdentifier);
 
             return new SignInResponse(identityData, response.ReturnUrl);
