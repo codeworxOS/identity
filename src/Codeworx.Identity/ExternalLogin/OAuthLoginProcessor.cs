@@ -15,7 +15,7 @@ namespace Codeworx.Identity.ExternalLogin
 
         public Type RequestParameterType { get; } = typeof(OAuthLoginRequest);
 
-        public Type ConfigurationType { get; } = null;
+        public Type ConfigurationType { get; } = typeof(OAuthLoginConfiguration);
 
         public Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
         {
