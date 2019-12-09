@@ -88,5 +88,10 @@
         {
             public const string Bearer = "BEARER";
         }
+
+        public class ReservedClaims
+        {
+            public const string UserId = "sub";
+        }
     }
 }

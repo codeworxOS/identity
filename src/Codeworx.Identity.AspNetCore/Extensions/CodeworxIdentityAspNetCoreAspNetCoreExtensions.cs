@@ -221,6 +221,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ITokenService, TokenService>();
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 
+            collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();
+
             return builder;
         }
 
