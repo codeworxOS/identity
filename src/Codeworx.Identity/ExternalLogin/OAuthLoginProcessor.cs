@@ -47,7 +47,7 @@ namespace Codeworx.Identity.ExternalLogin
 
             var state = Guid.NewGuid().ToString("N");
 
-            await _cache.SetStringAsync(state, request.ReturnUrl, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
+            await _cache.SetStringAsync(state, request.ReturnUrl ?? string.Empty, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
 
             codeUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, state);
 
@@ -76,6 +76,11 @@ namespace Codeworx.Identity.ExternalLogin
             }
 
             var userId = await _tokenService.GetUserIdAsync(oauthConfiguration, loginRequest.Code, _redirectUri);
+
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                returnUrl = null;
+            }
 
             return new ExternalLoginResponse(userId, returnUrl);
         }
