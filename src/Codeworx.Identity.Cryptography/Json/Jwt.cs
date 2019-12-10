@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
@@ -26,15 +27,25 @@ namespace Codeworx.Identity.Cryptography.Json
             _handler = new JsonWebTokenHandler();
         }
 
-        public async Task<IDictionary<string, object>> GetPayloadAsync()
+        public Task<IDictionary<string, object>> GetPayloadAsync()
         {
-            await Task.Yield();
-            return null;
+            return Task.FromResult(_payload);
         }
 
-        public Task ParseAsync(string value)
+        public async Task ParseAsync(string value)
         {
-            throw new NotImplementedException();
+            if (!_handler.CanReadToken(value))
+            {
+                throw new ArgumentException($"Parameter {nameof(value)} is not a valid token.");
+            }
+
+            var token = _handler.ReadJsonWebToken(value);
+
+            var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
+
+            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode);
+
+            await Task.CompletedTask;
         }
 
         public Task<string> SerializeAsync()
@@ -52,18 +63,10 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public async Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
         {
-            await Task.Yield();
+            await Task.CompletedTask;
 
             _payload = data;
             _expiration = expiration;
-
-            ////using (var stringWriter = new StringWriter())
-            ////using (var writer = new JsonTextWriter(stringWriter))
-            ////{
-            ////    await WriterObjectAsync(data, writer);
-
-            ////    _payload = stringWriter.ToString();
-            ////}
         }
 
         public Task<bool> ValidateAsync()
