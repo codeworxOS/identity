@@ -4,6 +4,6 @@ namespace Codeworx.Identity.ExternalLogin
 {
     public interface IExternalOAuthTokenService
     {
-        Task<string> GetUserIdAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri);
+        Task<string> GetUserIdAsync(ExternalOAuthLoginConfiguration oauthConfiguration, string code, string redirectUri);
     }
 }

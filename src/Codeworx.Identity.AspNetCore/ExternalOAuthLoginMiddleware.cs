@@ -5,20 +5,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class OAuthLoginMiddleware
+    public class ExternalOAuthLoginMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public OAuthLoginMiddleware(RequestDelegate next)
+        public ExternalOAuthLoginMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<OAuthLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
+        public async Task Invoke(HttpContext context, IRequestBinder<ExternalOAuthLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
         {
             try
             {
-                OAuthLoginRequest oauthLoginRequest = await requestBinder.BindAsync(context.Request);
+                ExternalOAuthLoginRequest oauthLoginRequest = await requestBinder.BindAsync(context.Request);
 
                 SignInResponse signInResponse = await externalLogin.SignInAsync(Constants.ExternalOAuthProviderId, oauthLoginRequest);
 

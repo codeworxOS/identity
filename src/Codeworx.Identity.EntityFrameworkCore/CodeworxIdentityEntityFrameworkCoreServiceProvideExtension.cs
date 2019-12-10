@@ -198,8 +198,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.ExternalOAuthProviderId),
                             Name = "Basic OAuth",
-                            EndpointType = new OAuthLoginProcessorLookup().Key,
-                            EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
+                            EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
+                            EndpointConfiguration = JsonConvert.SerializeObject(new ExternalOAuthLoginConfiguration
                             {
                                 BaseUri = new Uri("http://srvlinux3.lstelcom.ads:53000/"),
                                 AuthorizationEndpoint = "auth/realms/rainbow/protocol/openid-connect/auth",

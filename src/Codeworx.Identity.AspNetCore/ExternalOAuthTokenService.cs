@@ -19,7 +19,7 @@ namespace Codeworx.Identity.AspNetCore
             _tokenProviders = tokenProviders;
         }
 
-        public async Task<string> GetUserIdAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
+        public async Task<string> GetUserIdAsync(ExternalOAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
             _client.BaseAddress = oauthConfiguration.BaseUri;
 

@@ -8,13 +8,13 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.ExternalLogin
 {
-    public class OAuthLoginProcessor : IExternalLoginProcessor
+    public class ExternalOAuthLoginProcessor : IExternalLoginProcessor
     {
         private readonly IDistributedCache _cache;
         private readonly IExternalOAuthTokenService _tokenService;
         private readonly string _redirectUri;
 
-        public OAuthLoginProcessor(IBaseUriAccessor baseUriAccessor, IExternalOAuthTokenService tokenService, IDistributedCache cache, IOptionsSnapshot<IdentityOptions> options)
+        public ExternalOAuthLoginProcessor(IBaseUriAccessor baseUriAccessor, IExternalOAuthTokenService tokenService, IDistributedCache cache, IOptionsSnapshot<IdentityOptions> options)
         {
             _tokenService = tokenService;
             _cache = cache;
@@ -25,9 +25,9 @@ namespace Codeworx.Identity.ExternalLogin
             _redirectUri = redirectUirBuilder.ToString();
         }
 
-        public Type RequestParameterType { get; } = typeof(OAuthLoginRequest);
+        public Type RequestParameterType { get; } = typeof(ExternalOAuthLoginRequest);
 
-        public Type ConfigurationType { get; } = typeof(OAuthLoginConfiguration);
+        public Type ConfigurationType { get; } = typeof(ExternalOAuthLoginConfiguration);
 
         public async Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
         {
@@ -86,9 +86,9 @@ namespace Codeworx.Identity.ExternalLogin
             return new ExternalLoginResponse(userId, returnUrl);
         }
 
-        private OAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)
+        private ExternalOAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)
         {
-            var oauthConfiguration = configuration as OAuthLoginConfiguration;
+            var oauthConfiguration = configuration as ExternalOAuthLoginConfiguration;
 
             if (oauthConfiguration == null)
             {
@@ -98,9 +98,9 @@ namespace Codeworx.Identity.ExternalLogin
             return oauthConfiguration;
         }
 
-        private OAuthLoginRequest ToOAuthLoginRequest(object request)
+        private ExternalOAuthLoginRequest ToOAuthLoginRequest(object request)
         {
-            var loginRequest = request as OAuthLoginRequest;
+            var loginRequest = request as ExternalOAuthLoginRequest;
 
             if (loginRequest == null)
             {

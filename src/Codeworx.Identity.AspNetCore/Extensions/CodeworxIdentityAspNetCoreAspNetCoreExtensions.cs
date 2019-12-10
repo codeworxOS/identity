@@ -143,7 +143,7 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
-                       p => p.UseMiddleware<OAuthLoginMiddleware>())
+                       p => p.UseMiddleware<ExternalOAuthLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
                        p => p.UseMiddleware<ProvidersMiddleware>())
@@ -182,7 +182,7 @@ namespace Codeworx.Identity.AspNetCore
 
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<OAuthLoginRequest>, OAuthLoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();

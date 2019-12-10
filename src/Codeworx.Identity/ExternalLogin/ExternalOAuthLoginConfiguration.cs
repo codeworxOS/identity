@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.ExternalLogin
 {
-    public class OAuthLoginConfiguration
+    public class ExternalOAuthLoginConfiguration
     {
         public Uri BaseUri { get; set; }
 

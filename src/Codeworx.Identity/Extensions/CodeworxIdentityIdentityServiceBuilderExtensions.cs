@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ServiceCollection.AddSingleton<IAssetProvider, AssemblyAssetProvider>(sp => new AssemblyAssetProvider(assembly));
             builder.ServiceCollection.AddScoped<WindowsLoginProcessor>();
-            builder.ServiceCollection.AddScoped<OAuthLoginProcessor>();
+            builder.ServiceCollection.AddScoped<ExternalOAuthLoginProcessor>();
             builder.PasswordValidator<PasswordValidator>();
             return builder;
         }

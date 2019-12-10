@@ -9,16 +9,16 @@ using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
-    public class OAuthLoginRequestBinder : IRequestBinder<OAuthLoginRequest>
+    public class ExternalOAuthLoginRequestBinder : IRequestBinder<ExternalOAuthLoginRequest>
     {
         private readonly IAuthenticationSchemeProvider _schemaProvider;
 
-        public OAuthLoginRequestBinder(IAuthenticationSchemeProvider schemaProvider)
+        public ExternalOAuthLoginRequestBinder(IAuthenticationSchemeProvider schemaProvider)
         {
             _schemaProvider = schemaProvider;
         }
 
-        public async Task<OAuthLoginRequest> BindAsync(HttpRequest request)
+        public async Task<ExternalOAuthLoginRequest> BindAsync(HttpRequest request)
         {
             Dictionary<string, StringValues> parameters;
 
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
             }
 
-            return new OAuthLoginRequest(codeValues, stateValues);
+            return new ExternalOAuthLoginRequest(codeValues, stateValues);
         }
     }
 }
