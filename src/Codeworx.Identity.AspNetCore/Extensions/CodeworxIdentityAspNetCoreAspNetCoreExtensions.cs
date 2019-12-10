@@ -205,6 +205,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
             collection.AddTransient<IResponseBinder<TenantMissingResponse>, TenantMissingResponseBinder>();
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
+            collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
 
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();

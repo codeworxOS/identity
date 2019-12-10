@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Response;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
@@ -72,7 +73,7 @@ namespace Codeworx.Identity.ExternalLogin
             }
             else
             {
-                throw new InvalidStateParameterException();
+                throw new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
             }
 
             var userId = await _tokenService.GetUserIdAsync(oauthConfiguration, loginRequest.Code, _redirectUri);
