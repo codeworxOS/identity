@@ -3,8 +3,10 @@ using System.Linq;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
@@ -195,9 +197,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
                         {
                             Id = Guid.Parse(Constants.ExternalOAuthProviderId),
-                            Name = "O Auth",
+                            Name = "Basic OAuth",
                             EndpointType = new OAuthLoginProcessorLookup().Key,
-                            EndpointConfiguration = null,
+                            EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
+                            {
+                                BaseUri = new Uri("http://localhost:59654/"),
+                                AuthorizationEndpoint = "oauth20",
+                                TokenEndpoint = "oauth20/token",
+                                ClientId = Constants.DefaultTokenFlowClientId,
+                                /* ClientSecret = "",*/
+                            }),
                             Users =
                             {
                                 new AuthenticationProviderUser
