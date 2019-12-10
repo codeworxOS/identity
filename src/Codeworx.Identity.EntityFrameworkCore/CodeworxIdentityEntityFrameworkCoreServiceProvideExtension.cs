@@ -201,18 +201,18 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             EndpointType = new OAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
                             {
-                                BaseUri = new Uri("http://localhost:59654/"),
-                                AuthorizationEndpoint = "oauth20",
-                                TokenEndpoint = "oauth20/token",
-                                ClientId = Constants.DefaultTokenFlowClientId,
-                                /* ClientSecret = "",*/
+                                BaseUri = new Uri("http://srvlinux3.lstelcom.ads:53000/"),
+                                AuthorizationEndpoint = "auth/realms/rainbow/protocol/openid-connect/auth",
+                                TokenEndpoint = "auth/realms/rainbow/protocol/openid-connect/token",
+                                ClientId = "CodeworxIdentityClient",
+                                ClientSecret = "5e1f0486-6923-4fea-bcb3-a79caf7ea807",
                             }),
                             Users =
                             {
                                 new AuthenticationProviderUser
                                 {
                                     RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
-                                    ExternalIdentifier = Constants.DefaultAdminUserId,
+                                    ExternalIdentifier = "c4a16c32-ebe2-40bf-aa2b-620fe9df264c",
                                 },
                                 new AuthenticationProviderUser
                                 {

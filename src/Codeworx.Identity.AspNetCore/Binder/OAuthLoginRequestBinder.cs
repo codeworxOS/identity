@@ -33,16 +33,21 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 parameters = request.Query.ToDictionary(p => p.Key, p => p.Value);
             }
 
-            var valid = true;
-            valid &= parameters.TryGetValue("code", out StringValues codeValues);
-            valid &= parameters.TryGetValue("state", out StringValues stateValues);
+            var codeAvailable = parameters.TryGetValue("code", out StringValues codeValues);
 
-            if (valid)
+            if (codeAvailable == false)
             {
-                return new OAuthLoginRequest(codeValues, stateValues);
+                throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("Code parameter missing"));
             }
 
-            throw new ErrorResponseException<UnauthorizedResponse>(new UnauthorizedResponse());
+            var stateAvailable = parameters.TryGetValue("state", out StringValues stateValues);
+
+            if (stateAvailable == false)
+            {
+                throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
+            }
+
+            return new OAuthLoginRequest(codeValues, stateValues);
         }
     }
 }
