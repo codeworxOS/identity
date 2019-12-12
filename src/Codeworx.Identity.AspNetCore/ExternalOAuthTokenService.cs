@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Token;
@@ -33,7 +36,9 @@ namespace Codeworx.Identity.AspNetCore
 
             if (oauthConfiguration.ClientSecret != null)
             {
-                contentCollection.Add(Identity.OAuth.Constants.ClientSecretName, oauthConfiguration.ClientSecret);
+                var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
+
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
             }
 
             var response = await _client.PostAsync(oauthConfiguration.TokenEndpoint, new FormUrlEncodedContent(contentCollection));
