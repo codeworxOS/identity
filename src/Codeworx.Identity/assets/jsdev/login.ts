@@ -59,11 +59,11 @@ class LoginForm {
     private loadProviders(username?: string): void {
         let url = 'providers?';
         if (username) {
-            url = url + 'username=' + username + '&';
+            url = url + 'username=' + encodeURIComponent(username) + '&';
         }
 
         if (this.returnUrl) {
-            url = url + 'returnUrl=' + this.returnUrl;
+            url = url + 'returnUrl=' + encodeURIComponent(this.returnUrl);
         }
 
         this.getData<ExternalProvider[]>(url, p => this.renderProvider(p));

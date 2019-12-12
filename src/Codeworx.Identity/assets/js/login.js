@@ -37,10 +37,10 @@ var LoginForm = (function () {
         var _this = this;
         var url = 'providers?';
         if (username) {
-            url = url + 'username=' + username + '&';
+            url = url + 'username=' + encodeURIComponent(username) + '&';
         }
         if (this.returnUrl) {
-            url = url + 'returnUrl=' + this.returnUrl;
+            url = url + 'returnUrl=' + encodeURIComponent(this.returnUrl);
         }
         this.getData(url, function (p) { return _this.renderProvider(p); });
     };

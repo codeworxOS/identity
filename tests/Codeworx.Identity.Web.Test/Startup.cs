@@ -1,6 +1,7 @@
 ﻿using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
+using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,11 +49,13 @@ namespace Codeworx.Identity.Web.Test
                 DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
             };
 
+            services.AddSingleton<IExternalLoginProvider, WindowsLoginProvider>();
+
             services.AddCodeworxIdentity(_configuration)
                 .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                 .UseTestSetup()
-                ////.UseConfiguration(_configuration);
-                .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+                //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()))
+                .UseConfiguration(_configuration);
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
