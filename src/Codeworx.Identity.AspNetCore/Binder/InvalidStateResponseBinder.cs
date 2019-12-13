@@ -8,7 +8,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
     {
         public override async Task BindAsync(InvalidStateResponse responseData, HttpResponse response)
         {
-            response.StatusCode = StatusCodes.Status403Forbidden;
+            response.StatusCode = StatusCodes.Status406NotAcceptable;
             await response.WriteAsync(responseData.Reason);
         }
     }
