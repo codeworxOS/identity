@@ -39,7 +39,7 @@ namespace Codeworx.Identity
 
                     if (processor == null)
                     {
-                        return null;
+                        throw new ProcessorNotRegisteredException();
                     }
 
                     var info = new ExternalProviderInfo
@@ -94,9 +94,15 @@ namespace Codeworx.Identity
                 Configuration = configuration;
             }
 
-            public IExternalLoginProcessor Processor { get; }
+            public IExternalLoginProcessor Processor
+            {
+                get;
+            }
 
-            public object Configuration { get; }
+            public object Configuration
+            {
+                get;
+            }
         }
     }
 }
