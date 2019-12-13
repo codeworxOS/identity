@@ -179,6 +179,7 @@ namespace Codeworx.Identity.AspNetCore
                                  });
 
             collection.AddDistributedMemoryCache();
+            collection.AddHttpContextAccessor();
 
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();

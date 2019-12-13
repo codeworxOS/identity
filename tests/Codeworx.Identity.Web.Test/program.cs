@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.EntityFrameworkCore;
+﻿using System;
+using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -13,6 +14,8 @@ namespace Codeworx.Identity.Web.Test
 
         public static void Main(string[] args)
         {
+            AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
+
             BuildWebHost(args)
                 .MigrateDatabase()
                 .Run();
