@@ -24,27 +24,7 @@ namespace Codeworx.Identity
         {
             var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            return processorInfo.Item1.RequestParameterType;
-        }
-
-        public async Task<Tuple<IExternalLoginProcessor, object>> GetProcessorInfoAsync(string providerId)
-        {
-            foreach (var item in _providers)
-            {
-                var registrations = await item.GetLoginRegistrationsAsync();
-
-                foreach (var registration in registrations)
-                {
-                    if (registration.Id == providerId)
-                    {
-                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
-
-                        return new Tuple<IExternalLoginProcessor, object>(processor, registration.ProcessorConfiguration);
-                    }
-                }
-            }
-
-            throw new KeyNotFoundException($"Provider {providerId} not found!");
+            return processorInfo.Processor.RequestParameterType;
         }
 
         public async Task<ProviderInfosResponse> GetProviderInfosAsync(ProviderRequest request)
@@ -80,10 +60,43 @@ namespace Codeworx.Identity
         {
             var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            var response = await processorInfo.Item1.ProcessAsync(parameter, processorInfo.Item2);
+            var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Configuration);
             var identityData = await _service.LoginExternalAsync(providerId, response.NameIdentifier);
 
             return new SignInResponse(identityData, response.ReturnUrl);
+        }
+
+        private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)
+        {
+            foreach (var item in _providers)
+            {
+                IEnumerable<IExternalLoginRegistration> registrations = await item.GetLoginRegistrationsAsync();
+
+                foreach (var registration in registrations)
+                {
+                    if (registration.Id == providerId)
+                    {
+                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
+
+                        return new ProcessorInfo(processor, registration.ProcessorConfiguration);
+                    }
+                }
+            }
+
+            throw new KeyNotFoundException($"Provider {providerId} not found!");
+        }
+
+        private class ProcessorInfo
+        {
+            public ProcessorInfo(IExternalLoginProcessor processor, object configuration)
+            {
+                Processor = processor;
+                Configuration = configuration;
+            }
+
+            public IExternalLoginProcessor Processor { get; }
+
+            public object Configuration { get; }
         }
     }
 }
