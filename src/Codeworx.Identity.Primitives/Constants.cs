@@ -23,6 +23,7 @@
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
+        public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string IdClaimType = "id";
         public const string InvalidCredentialsError = "Username or password is not valid!";
         public const string JsonExtension = ".json";

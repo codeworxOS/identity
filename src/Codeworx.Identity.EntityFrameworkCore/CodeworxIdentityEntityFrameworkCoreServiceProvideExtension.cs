@@ -3,8 +3,10 @@ using System.Linq;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
@@ -184,6 +186,39 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = "S-1-5-21-2583907123-3048486745-1937933167-1875",
                                 }
+                            }
+                        });
+                    }
+
+                    ExternalAuthenticationProvider oauthRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalOAuthProviderId));
+
+                    if (oauthRegistration == null)
+                    {
+                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        {
+                            Id = Guid.Parse(Constants.ExternalOAuthProviderId),
+                            Name = "Basic OAuth",
+                            EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
+                            EndpointConfiguration = JsonConvert.SerializeObject(new ExternalOAuthLoginConfiguration
+                            {
+                                BaseUri = new Uri("http://srvlinux3.lstelcom.ads:53000/"),
+                                AuthorizationEndpoint = "auth/realms/rainbow/protocol/openid-connect/auth",
+                                TokenEndpoint = "auth/realms/rainbow/protocol/openid-connect/token",
+                                ClientId = "CodeworxIdentityClient",
+                                ClientSecret = "5e1f0486-6923-4fea-bcb3-a79caf7ea807",
+                            }),
+                            Users =
+                            {
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
+                                    ExternalIdentifier = "c4a16c32-ebe2-40bf-aa2b-620fe9df264c",
+                                },
+                                new AuthenticationProviderUser
+                                {
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    ExternalIdentifier = Constants.MultiTenantUserId,
+                                },
                             }
                         });
                     }

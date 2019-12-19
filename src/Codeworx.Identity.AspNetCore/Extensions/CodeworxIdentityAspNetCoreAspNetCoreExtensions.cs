@@ -142,6 +142,9 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
+                       p => p.UseMiddleware<ExternalOAuthLoginMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
                        p => p.UseMiddleware<ProvidersMiddleware>())
                    .MapWhen(
@@ -176,9 +179,11 @@ namespace Codeworx.Identity.AspNetCore
                                  });
 
             collection.AddDistributedMemoryCache();
+            collection.AddHttpContextAccessor();
 
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
@@ -201,6 +206,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
             collection.AddTransient<IResponseBinder<TenantMissingResponse>, TenantMissingResponseBinder>();
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
+            collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
 
             collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
@@ -216,6 +222,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
             collection.AddScoped<ITokenService, TokenService>();
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
+
+            collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();
 
             return builder;
         }

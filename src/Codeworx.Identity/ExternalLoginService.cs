@@ -22,29 +22,9 @@ namespace Codeworx.Identity
 
         public async Task<Type> GetParameterTypeAsync(string providerId)
         {
-            var processor = await GetProcessorAsync(providerId);
+            var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            return processor.RequestParameterType;
-        }
-
-        public async Task<IExternalLoginProcessor> GetProcessorAsync(string providerId)
-        {
-            foreach (var item in _providers)
-            {
-                var registrations = await item.GetLoginRegistrationsAsync();
-
-                foreach (var registration in registrations)
-                {
-                    if (registration.Id == providerId)
-                    {
-                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
-
-                        return processor;
-                    }
-                }
-            }
-
-            throw new KeyNotFoundException($"Provider {providerId} not found!");
+            return processorInfo.Processor.RequestParameterType;
         }
 
         public async Task<ProviderInfosResponse> GetProviderInfosAsync(ProviderRequest request)
@@ -57,12 +37,18 @@ namespace Codeworx.Identity
                 {
                     var processor = _serviceProvider.GetService(externalLogin.ProcessorType) as IExternalLoginProcessor;
 
+                    if (processor == null)
+                    {
+                        throw new ProcessorNotRegisteredException();
+                    }
+
                     var info = new ExternalProviderInfo
                     {
                         Id = externalLogin.Id,
                         Name = externalLogin.Name,
                         Url = await processor.GetProcessorUrlAsync(request, externalLogin.ProcessorConfiguration)
                     };
+
                     result.Add(info);
                 }
             }
@@ -72,12 +58,51 @@ namespace Codeworx.Identity
 
         public async Task<SignInResponse> SignInAsync(string providerId, object parameter)
         {
-            var processor = await GetProcessorAsync(providerId);
+            var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            var response = await processor.ProcessAsync(parameter);
+            var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Configuration);
             var identityData = await _service.LoginExternalAsync(providerId, response.NameIdentifier);
 
             return new SignInResponse(identityData, response.ReturnUrl);
+        }
+
+        private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)
+        {
+            foreach (var item in _providers)
+            {
+                IEnumerable<IExternalLoginRegistration> registrations = await item.GetLoginRegistrationsAsync();
+
+                foreach (var registration in registrations)
+                {
+                    if (registration.Id == providerId)
+                    {
+                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as IExternalLoginProcessor;
+
+                        return new ProcessorInfo(processor, registration.ProcessorConfiguration);
+                    }
+                }
+            }
+
+            throw new KeyNotFoundException($"Provider {providerId} not found!");
+        }
+
+        private class ProcessorInfo
+        {
+            public ProcessorInfo(IExternalLoginProcessor processor, object configuration)
+            {
+                Processor = processor;
+                Configuration = configuration;
+            }
+
+            public IExternalLoginProcessor Processor
+            {
+                get;
+            }
+
+            public object Configuration
+            {
+                get;
+            }
         }
     }
 }
