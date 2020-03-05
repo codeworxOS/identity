@@ -7,6 +7,7 @@
         public const string AdditionalParameterValidation = GrantTypeValidation;
         public const string ClientIdName = "client_id";
         public const string ClientIdValidation = VsChars;
+        public const string ClientSecretName = "client_secret";
         public const string ClientSecretValidation = VsChars;
         public const string CodeName = "code";
         public const string CodeValidation = VsChars;
@@ -81,6 +82,16 @@
             public const string Code = "code";
 
             public const string Token = "token";
+        }
+
+        public class TokenType
+        {
+            public const string Bearer = "BEARER";
+        }
+
+        public class ReservedClaims
+        {
+            public const string UserId = "sub";
         }
     }
 }

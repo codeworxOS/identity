@@ -6,10 +6,10 @@ namespace Codeworx.Identity
 {
     public class AssignedClaim
     {
-        public AssignedClaim(string type, string value, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
-            : this(type, new[] { value }, target, source)
-        {
-        }
+        ////public AssignedClaim(string type, string value, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
+        ////    : this(type, new[] { value }, target, source)
+        ////{
+        ////}
 
         public AssignedClaim(string type, IEnumerable<string> values, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
         {

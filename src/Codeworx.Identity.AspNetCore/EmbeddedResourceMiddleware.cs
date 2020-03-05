@@ -1,66 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.Extensions.Primitives;
-using Codeworx.Identity.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
+using System.Threading.Tasks;
+using Codeworx.Identity.Model;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class EmbeddedResourceMiddleware
     {
+        private readonly ImmutableList<IAssetProvider> _assetProviders;
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
 
-        public EmbeddedResourceMiddleware(RequestDelegate next, Configuration.IdentityService service)
+        public EmbeddedResourceMiddleware(RequestDelegate next, IEnumerable<IAssetProvider> assetProviders)
         {
             _next = next;
-            _service = service;
+            _assetProviders = assetProviders.ToImmutableList();
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IResponseBinder<AssetResponse> responseBinder)
         {
-            var prefix = _service.Assets.Keys.OrderByDescending(p => p.Length).FirstOrDefault(p => context.Request.Path.StartsWithSegments(p));
+            var providers = from provider in _assetProviders
+                            from prefix in provider.Prefixes
+                            orderby prefix.Length descending
+                            where context.Request.Path.StartsWithSegments(prefix)
+                            select new { Provider = provider, Prefix = prefix };
 
-            Configuration.IdentityService.AssemblyAsset asset;
-            if (_service.Assets.TryGetValue(prefix, out asset))
+            foreach (var item in providers)
             {
-                PathString remaining;
-                if (context.Request.Path.StartsWithSegments(prefix, out remaining))
+                if (context.Request.Path.StartsWithSegments(item.Prefix, out var remaining))
                 {
-                    var assetFolder = asset.AssetFolder.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-                    var reminingPath = remaining.Value.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    var path = $"{asset.Assembly.GetName().Name}.{string.Join(".", assetFolder)}.{string.Join(".", reminingPath)}";
-                    var resourceName = asset.Assembly.GetManifestResourceNames()
-                                        .SingleOrDefault(p => p.Equals(path, StringComparison.OrdinalIgnoreCase));
-
-                    if (!string.IsNullOrWhiteSpace(resourceName))
+                    var assetResponse = await item.Provider.GetAssetAsync(item.Prefix, remaining);
                     {
-                        using (var stream = asset.Assembly.GetManifestResourceStream(resourceName))
+                        if (assetResponse.FoundAsset)
                         {
-                            string contentType;
-                            if (_service.TryGetContentType(remaining, out contentType))
-                            {
-                                context.Response.ContentType = contentType;
-                            }
-
-                            context.Response.ContentLength = stream.Length;
-                            context.Response.StatusCode = StatusCodes.Status200OK;
-                            await stream.CopyToAsync(context.Response.Body);
+                            await responseBinder.BindAsync(assetResponse, context.Response);
+                            return;
                         }
-                        return;
-                    }
-                    else
-                    {
-                        context.Response.StatusCode = StatusCodes.Status404NotFound;
-                        return;
                     }
                 }
             }
@@ -70,9 +47,9 @@ namespace Codeworx.Identity.AspNetCore
 
         internal static bool Condition(HttpContext ctx)
         {
-            var service = ctx.RequestServices.GetRequiredService<Configuration.IdentityService>();
+            var assetProviders = ctx.RequestServices.GetServices<IAssetProvider>();
 
-            return service.Assets.Keys.Any(p => ctx.Request.Path.StartsWithSegments(p));
+            return assetProviders.SelectMany(p => p.Prefixes).Any(p => ctx.Request.Path.StartsWithSegments(p));
         }
     }
 }

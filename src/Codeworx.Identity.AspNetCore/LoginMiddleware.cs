@@ -1,94 +1,64 @@
-﻿using System;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features.Authentication;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class LoginMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly Configuration.IdentityService _service;
-        private readonly IViewTemplate _template;
 
-        public LoginMiddleware(RequestDelegate next, Configuration.IdentityService service, IViewTemplate template)
+        public LoginMiddleware(RequestDelegate next)
         {
             _next = next;
-            _service = service;
-            _template = template;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, ILoginViewService service)
         {
-            string body = null;
-
-            var result = await context.AuthenticateAsync();
-
-            var hasReturnUrl = context.Request.Query.TryGetValue("returnurl", out StringValues returnUrl);
-
-            if (result.Succeeded)
+            try
             {
-                body = await _template.GetLoggedInTemplate(returnUrl);
-            }
-            else
-            {
-                body = await _template.GetLoginTemplate(returnUrl);
-            }
+                object response = null;
+                var request = await loginRequestBinder.BindAsync(context.Request);
+                IResponseBinder responseBinder = null;
 
-            if (context.Request.Method.Equals(HttpMethods.Post, StringComparison.OrdinalIgnoreCase))
-            {
-                var setting = new JsonSerializerSettings
+                switch (request)
                 {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver()
-                };
+                    case TenantSelectionRequest tenantSelection:
+                        response = await service.ProcessTenantSelectionAsync(tenantSelection);
+                        responseBinder = context.GetResponseBinder<SignInResponse>();
+                        break;
 
-                var request = await context.Request.BindAsync<LoginRequest>(setting);
-                var userName = request.UserName;
-                try
-                {
-                    var identityProvider = context.RequestServices.GetService<IIdentityService>();
-                    var identityData = await identityProvider.LoginAsync(request.UserName, request.Password);
-                    var principal = identityData.ToClaimsPrincipal();
+                    case TenantMissingRequest missingTeant:
+                        response = await service.ProcessTenantMissingAsync(missingTeant);
+                        responseBinder = context.GetResponseBinder<TenantMissingResponse>();
+                        break;
 
-                    if (identityData.TenantKey != null)
-                    {
-                        await context.SignInAsync(_service.AuthenticationScheme, principal);
-                    }
-                    else
-                    {
-                        await context.SignInAsync(Constants.MissingTenantAuthenticationScheme, principal);
-                        context.Response.Redirect(_service.Options.OauthEndpoint);
-                        return;
-                    }
+                    case LoginFormRequest loginForm:
+                        response = await service.ProcessLoginFormAsync(loginForm);
+                        responseBinder = context.GetResponseBinder<SignInResponse>();
+                        break;
 
-                    if (hasReturnUrl)
-                    {
-                        context.Response.Redirect(returnUrl);
-                        return;
-                    }
-                    body = await _template.GetLoggedInTemplate(returnUrl);
+                    case LoggedinRequest loggedin:
+                        response = await service.ProcessLoggedinAsync(loggedin);
+                        responseBinder = context.GetResponseBinder<LoggedinResponse>();
+                        break;
+
+                    case LoginRequest login:
+                        response = await service.ProcessLoginAsync(login);
+                        responseBinder = context.GetResponseBinder<LoginResponse>();
+                        break;
                 }
-                catch (AuthenticationException)
-                {
-                }
-            }
 
-            if (_service.TryGetContentType(".html", out string contentType))
+                await responseBinder.BindAsync(response, context.Response);
+                return;
+            }
+            catch (ErrorResponseException error)
             {
-                context.Response.ContentType = contentType;
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
+                return;
             }
-
-            await context.Response.WriteAsync(body);
-
-            return;
         }
     }
 }
