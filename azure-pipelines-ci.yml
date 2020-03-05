@@ -1,0 +1,46 @@
+# Starter pipeline
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+<<<<<<< HEAD
+- development
+=======
+- master
+>>>>>>> origin/master
+
+pool:
+  name: Hosted Windows 2019 with VS2019
+
+steps:
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'identity_signkey.snk'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Agent.TempDirectory)'
+    Contents: 'identity_signkey.snk'
+    TargetFolder: './private'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*Identity.Test.csproj'
+- task: PowerShell@2
+  env:
+    BUILD_PRERELEASE: '$(Build.Prerelease)'
+  inputs:
+    filePath: './tools/build.ps1'
+    workingDirectory: './tools'
+  displayName: 'Run the build script'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: './dist/nuget'
+    Contents: '*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
