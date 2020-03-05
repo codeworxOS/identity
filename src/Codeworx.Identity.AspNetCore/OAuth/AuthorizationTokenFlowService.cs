@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -60,15 +61,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var identityData = await _identityService.GetIdentityAsync(user);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
 
-            var test = Newtonsoft.Json.JsonConvert.SerializeObject(identityData);
-            var deserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<IdentityData>(test);
-
             await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 
             // TODO cach accessToken = Key value = identityData.
-            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, request.RedirectionTarget);
+            return new SuccessfulTokenAuthorizationResult(request.State, accessToken, Convert.ToInt32(Math.Floor(client.TokenExpiration.TotalSeconds)), request.RedirectionTarget);
         }
     }
 }

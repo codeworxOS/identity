@@ -24,6 +24,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, responseData.Token);
             paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.TokenTypeName, Identity.OAuth.Constants.TokenType.Bearer);
+            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.ExpiresInName, $"{responseData.ExpiresIn}");
 
             if (!string.IsNullOrWhiteSpace(responseData.State))
             {

@@ -6,11 +6,16 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationTokenResponse : AuthorizationResponse
     {
-        public AuthorizationTokenResponse(string state, string token, string redirectUri)
+        public AuthorizationTokenResponse(string state, string token, int expiresIn, string redirectUri)
             : base(state, redirectUri)
         {
             this.Token = token;
+            this.ExpiresIn = expiresIn;
         }
+
+        [Required]
+        [DataMember(Order = 2, Name = Constants.ExpiresInName)]
+        public int ExpiresIn { get; }
 
         [Required]
         [DataMember(Order = 1, Name = Constants.AccessTokenName)]
