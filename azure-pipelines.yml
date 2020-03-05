@@ -21,8 +21,6 @@ steps:
     command: 'test'
     projects: '**/*Identity.Test.csproj'
 - task: PowerShell@2
-  env:
-    BUILD_PRERELEASE: '$(Build.Prerelease)'
   inputs:
     filePath: './tools/build.ps1'
     workingDirectory: './tools'
