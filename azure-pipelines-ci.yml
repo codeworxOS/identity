@@ -3,22 +3,14 @@ pool:
   name: Hosted Windows 2019 with VS2019
 
 steps:
-- task: DownloadSecureFile@1
+- task: VSBuild@1
   inputs:
-    secureFile: 'identity_signkey.snk'
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Agent.TempDirectory)'
-    Contents: 'identity_signkey.snk'
-    TargetFolder: './private'
+    solution: '**\*.sln'
+    configuration: 'Debug'
+    maximumCpuCount: true
+    msbuildArchitecture: 'x64'
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: '**/*Identity.Test.csproj'
-- task: PowerShell@2
-  env:
-    BUILD_PRERELEASE: '$(Build.Prerelease)'
-  inputs:
-    filePath: './tools/build.ps1'
-    workingDirectory: './tools'
-  displayName: 'Run the build script'
