@@ -3,13 +3,12 @@ pool:
   name: Hosted Windows 2019 with VS2019
 
 steps:
-- task: VSBuild@1
-  inputs:
-    solution: '**\*.sln'
-    configuration: 'Debug'
-    maximumCpuCount: true
-    msbuildArchitecture: 'x64'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
