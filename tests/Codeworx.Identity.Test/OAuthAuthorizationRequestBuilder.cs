@@ -2,52 +2,53 @@
 
 namespace Codeworx.Identity.Test
 {
-    public class AuthorizationRequestBuilder
+    public class OAuthAuthorizationRequestBuilder
     {
         private string _clientId = Constants.DefaultCodeFlowClientId;
         private string _redirectUri = "https://example.org/redirect";
         private string _responseType = OAuth.Constants.ResponseType.Code;
         private string _scope;
         private string _state;
+        private string _nonce;
 
-        public AuthorizationRequestBuilder WithClientId(string value)
+        public OAuthAuthorizationRequestBuilder WithClientId(string value)
         {
             _clientId = value;
 
             return this;
         }
 
-        public AuthorizationRequestBuilder WithRedirectUri(string value)
+        public OAuthAuthorizationRequestBuilder WithRedirectUri(string value)
         {
             _redirectUri = value;
 
             return this;
         }
 
-        public AuthorizationRequestBuilder WithResponseType(string value)
+        public OAuthAuthorizationRequestBuilder WithResponseType(string value)
         {
             _responseType = value;
 
             return this;
         }
 
-        public AuthorizationRequestBuilder WithScope(string value)
+        public OAuthAuthorizationRequestBuilder WithScope(string value)
         {
             _scope = value;
 
             return this;
         }
 
-        public AuthorizationRequestBuilder WithState(string value)
+        public OAuthAuthorizationRequestBuilder WithState(string value)
         {
             _state = value;
 
             return this;
         }
 
-        public AuthorizationRequest Build()
+        public OAuthAuthorizationRequest Build()
         {
-            return new AuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state);
+            return new OAuthAuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce);
         }
     }
 }

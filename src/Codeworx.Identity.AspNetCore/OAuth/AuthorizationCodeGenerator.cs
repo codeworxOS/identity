@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _allowedCharacters = allowedCharacters;
         }
 
-        public Task<string> GenerateCode(AuthorizationRequest request, int length)
+        public Task<string> GenerateCode(OAuthAuthorizationRequest request, int length)
         {
             if (request == null)
             {

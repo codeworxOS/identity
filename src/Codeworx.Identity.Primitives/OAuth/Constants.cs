@@ -33,6 +33,8 @@
         public const string ScopeValidation = @"^(?<scope>" + NqChar + @"+)(\s{1}(?<scope>" + NqChar + @"+))*$";
         public const string StateName = "state";
         public const string StateValidation = VsChars;
+        public const string NonceName = "nonce";
+        public const string NonceValidation = VsChars;
 
         public const string TokenTypeName = "token_type";
         public const string TokenTypeValidation = GrantTypeValidation;
@@ -68,6 +70,15 @@
             public const string UnauthorizedClient = "unauthorized_client";
             public const string UnsupportedGrantType = "unsupported_grant_type";
             public const string UnsupportedResponseType = "unsupported_response_type";
+            public const string InteractionRequired = "interaction_required";
+            public const string LoginRequired = "login_required";
+            public const string AccountSelectionRequired = "account_selection_required";
+            public const string ConsentRequired = "consent_required";
+            public const string InvalidRequestUri = "invalid_request_uri";
+            public const string InvalidRequestObject = "invalid_request_object";
+            public const string RequestNotSupported = "request_not_supported";
+            public const string RequestUriNotSupported = "request_uri_not_supported";
+            public const string RegistrationNotSupported = "registration_not_supported";
         }
 
         public class GrantType

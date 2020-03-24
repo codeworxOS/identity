@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
-using Codeworx.Identity.OAuth.Validation.Authorization;
 using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
@@ -27,12 +26,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Token;
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
             if (client == null)
             {
-                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
+                return InvalidRequestResult.CreateInvalidClientId(request.State);
             }
 
             if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))

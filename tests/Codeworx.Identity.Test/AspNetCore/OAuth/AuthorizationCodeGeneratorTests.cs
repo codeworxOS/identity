@@ -13,7 +13,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task GenerateCode_CorrectInput_CodeGenerated()
         {
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
             var instance = new AuthorizationCodeGenerator();
 
             var result = await instance.GenerateCode(request, 10);

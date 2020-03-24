@@ -184,7 +184,7 @@ namespace Codeworx.Identity.AspNetCore
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
@@ -208,7 +208,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
 
-            collection.AddTransient<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>, AuthorizationRequestValidator>();
+            collection.AddTransient<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();

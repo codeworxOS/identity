@@ -21,7 +21,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .Build();
 
@@ -54,7 +54,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
             var oAuthClientServiceStub = new Mock<IClientService>();
             var scopeServiceStub = new Mock<IScopeService>();
             var tokenProvidersStub = new Mock<IEnumerable<ITokenProvider>>();
@@ -74,7 +74,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .WithScope("unknownScope")
                                                            .Build();
@@ -120,7 +120,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .WithScope(string.Empty)
                                                            .Build();
@@ -180,7 +180,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .WithScope(null)
                                                            .Build();
@@ -241,7 +241,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .WithScope(null)
                                                            .Build();
@@ -304,7 +304,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .WithScope(KnownScope)
                                                            .Build();

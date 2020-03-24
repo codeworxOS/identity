@@ -11,17 +11,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
-        private readonly IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
+        private readonly IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IUserService _userService;
 
-        public AuthorizationService(IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
+        public AuthorizationService(IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
         {
             _requestValidator = requestValidator;
             _authorizationFlowServices = authorizationFlowServices;
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
