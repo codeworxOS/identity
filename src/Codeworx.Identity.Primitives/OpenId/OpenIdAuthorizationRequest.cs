@@ -11,23 +11,22 @@ namespace Codeworx.Identity.OpenId
         public OpenIdAuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce)
             : base(clientId, redirectUri, responseType, scope, state, nonce)
         {
-            this.Nonce = nonce;
         }
 
         [Required]
         [UriAbsolute]
         [RegularExpression(OAuth.Constants.RedirectUriValidation)]
         [DataMember(Order = 2, Name = OAuth.Constants.RedirectUriName)]
-        public override string RedirectUri { get; }
+        public override string RedirectUri => base.RedirectUri;
 
         [Required]
         [RegularExpression(OAuth.Constants.ScopeValidation)]
         [DataMember(Order = 4, Name = OAuth.Constants.ScopeName)]
-        public override string Scope { get; }
+        public override string Scope => base.Scope;
 
         [Required]
         [RegularExpression(OAuth.Constants.NonceValidation)]
         [DataMember(Order = 6, Name = OAuth.Constants.NonceName)]
-        public override string Nonce { get; }
+        public override string Nonce => base.Nonce;
     }
 }
