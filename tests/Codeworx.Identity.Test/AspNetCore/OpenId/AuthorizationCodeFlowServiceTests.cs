@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.OpenId;
+﻿using Codeworx.Identity.AspNetCore.OpenId;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OpenId;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OpenId
@@ -154,6 +155,49 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             Assert.IsType<MissingOpenidScopeResult>(result);
             Assert.Equal(expectedState, result.Response.State);
             Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_MultipleScopesWithUnKnownScope_ExceptionThrown()
+        {
+            var expectedState = "MyState";
+            var expectedClientId = "MyClientId";
+            var expectedRedirectionUri = "redirect/uri";
+            var clientServiceMock = new Mock<IClientService>();
+            var clientRegistrationMock = new Mock<IClientRegistration>();
+            var supportedFlowMock = new Mock<ISupportedFlow>();
+            var scopeServiceMock = new Mock<IScopeService>();
+            var scopeMock = new Mock<IScope>();
+
+            scopeMock.SetupSequence(p => p.ScopeKey)
+                .Returns("email")
+                .Returns("account")
+                .Returns("openid");
+
+            scopeServiceMock.Setup(p => p.GetScopes())
+                .ReturnsAsync(() => new[] { scopeMock.Object, scopeMock.Object, scopeMock.Object });
+
+            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
+                .Returns(true);
+
+            clientRegistrationMock.Setup(p => p.ClientId)
+                .Returns(expectedClientId);
+            clientRegistrationMock.Setup(p => p.SupportedFlow)
+                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+
+            clientServiceMock.Setup(p => p.GetById(expectedClientId))
+                .ReturnsAsync(() => clientRegistrationMock.Object);
+
+            var instance = new AuthorizationCodeFlowService(clientServiceMock.Object, scopeServiceMock.Object);
+
+            var request = new OpenIdAuthorizationRequestBuilder()
+                .WithClientId(expectedClientId)
+                .WithRedirectUri(expectedRedirectionUri)
+                .WithState(expectedState)
+                .WithScope("email account openid test")
+                .Build();
+
+            await Assert.ThrowsAsync<NotImplementedException>(() => instance.AuthorizeRequest(request, null));
         }
     }
 }
