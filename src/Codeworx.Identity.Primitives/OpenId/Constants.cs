@@ -19,5 +19,10 @@
         {
             public const string IdToken = "id_token";
         }
+
+        public class Scopes
+        {
+            public const string OpenId = "openid";
+        }
     }
 }
