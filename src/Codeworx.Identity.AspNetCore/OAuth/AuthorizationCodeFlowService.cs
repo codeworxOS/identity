@@ -12,13 +12,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationCodeFlowService : IAuthorizationFlowService
     {
-        private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
+        private readonly IAuthorizationCodeGenerator<OAuthAuthorizationRequest> _authorizationCodeGenerator;
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _oAuthClientService;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IScopeService _scopeService;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OAuthAuthorizationRequest> authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _oAuthClientService = oAuthClientService;
