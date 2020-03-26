@@ -128,7 +128,12 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.OauthEndpoint),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
-                            .UseMiddleware<AuthorizationMiddleware>())
+                            .UseMiddleware<OAuth.AuthorizationMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OpenIdEndpoint),
+                       p => p
+                           .UseMiddleware<AuthenticationMiddleware>()
+                           .UseMiddleware<OpenId.AuthorizationMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                        p => p.UseMiddleware<LoginMiddleware>())

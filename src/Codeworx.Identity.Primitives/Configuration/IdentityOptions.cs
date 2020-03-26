@@ -8,6 +8,7 @@ namespace Codeworx.Identity.Configuration
         public IdentityOptions()
         {
             OauthEndpoint = "/oauth20";
+            OpenIdEndpoint = "/openid10";
             AccountEndpoint = "/account";
             CookieExpiration = TimeSpan.FromHours(1);
             Styles = new HashSet<string>();
@@ -32,6 +33,8 @@ namespace Codeworx.Identity.Configuration
 
         public string OauthEndpoint { get; set; }
 
+        public string OpenIdEndpoint { get; set; }
+
         public HashSet<string> Styles { get; }
 
         public bool WindowsAuthenticationEnabled { get; set; }
@@ -46,6 +49,7 @@ namespace Codeworx.Identity.Configuration
             target.AccountEndpoint = this.AccountEndpoint;
             target.CookieExpiration = this.CookieExpiration;
             target.OauthEndpoint = this.OauthEndpoint;
+            target.OpenIdEndpoint = this.OpenIdEndpoint;
             target.Styles.Clear();
             foreach (var item in this.Styles)
             {
