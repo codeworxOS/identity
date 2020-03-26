@@ -6,18 +6,18 @@ using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeTokenFlowService : ITokenFlowService
+    public class AuthorizationCodeTokenResultService : ITokenResultService
     {
         private readonly IAuthorizationCodeCache _cache;
 
-        public AuthorizationCodeTokenFlowService(IAuthorizationCodeCache cache)
+        public AuthorizationCodeTokenResultService(IAuthorizationCodeCache cache)
         {
             _cache = cache;
         }
 
         public string SupportedGrantType => Identity.OAuth.Constants.GrantType.AuthorizationCode;
 
-        public async Task<ITokenResult> AuthorizeRequest(TokenRequest request)
+        public async Task<ITokenResult> ProcessRequest(TokenRequest request)
         {
             var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
 

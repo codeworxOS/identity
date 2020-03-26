@@ -11,11 +11,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
-        private readonly IEnumerable<ITokenFlowService> _tokenFlowServices;
+        private readonly IEnumerable<ITokenResultService> _tokenResultServices;
 
-        public TokenService(IEnumerable<ITokenFlowService> tokenFlowServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
+        public TokenService(IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
         {
-            _tokenFlowServices = tokenFlowServices;
+            _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;
             _clientAuthenticationService = clientAuthenticationService;
         }
@@ -37,8 +37,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidRequestResult(validationResult);
             }
 
-            var tokenFlowService = _tokenFlowServices.FirstOrDefault(p => p.SupportedGrantType == request.GrantType);
-            if (tokenFlowService == null)
+            var tokenResultService = _tokenResultServices.FirstOrDefault(p => p.SupportedGrantType == request.GrantType);
+            if (tokenResultService == null)
             {
                 return new UnsupportedGrantTypeResult();
             }
@@ -60,8 +60,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnauthorizedClientResult();
             }
 
-            // ToDo: Check scopes (invalid_scope)
-            var tokenResult = await tokenFlowService.AuthorizeRequest(request)
+            var tokenResult = await tokenResultService.ProcessRequest(request)
                                                     .ConfigureAwait(false);
 
             return tokenResult;

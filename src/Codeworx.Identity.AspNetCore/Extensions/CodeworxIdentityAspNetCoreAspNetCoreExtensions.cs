@@ -232,7 +232,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<IAuthorizationService<OpenIdAuthorizationRequest>, AuthorizationService<OpenIdAuthorizationRequest>>();
             collection.AddScoped<IAuthorizationFlowService<OpenIdAuthorizationRequest>, OpenId.AuthorizationCodeFlowService>();
 
-            collection.AddScoped<ITokenFlowService, AuthorizationCodeTokenFlowService>();
+            collection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
             collection.AddScoped<ITokenService, TokenService>();
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 

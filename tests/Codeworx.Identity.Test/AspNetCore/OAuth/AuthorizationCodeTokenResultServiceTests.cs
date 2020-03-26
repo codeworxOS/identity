@@ -7,12 +7,11 @@ using Codeworx.Identity.OAuth.Token;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class AuthorizationCodeTokenFlowServiceTests
+    public class AuthorizationCodeTokenResultServiceTests
     {
         [Fact]
         public async Task AuthorizeRequest_AuthorizationCodeClientIdMismatch_InvalidGrantReturned()
@@ -20,7 +19,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
             var grantInformation = new Dictionary<string, string>
@@ -30,7 +29,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                    };
             await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.ProcessRequest(request);
 
             Assert.IsType<InvalidGrantResult>(result);
         }
@@ -41,14 +40,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
             await cache.SetAsync(request.Code, new Dictionary<string, string>(), TimeSpan.FromMilliseconds(1));
 
             await Task.Delay(TimeSpan.FromMilliseconds(20));
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.ProcessRequest(request);
 
             Assert.IsType<InvalidGrantResult>(result);
         }
@@ -59,12 +58,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
             var request = new AuthorizationCodeTokenRequestBuilder().WithCode("NotFound")
                                                                     .Build();
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.ProcessRequest(request);
 
             Assert.IsType<InvalidGrantResult>(result);
         }
@@ -75,7 +74,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
             var grantInformation = new Dictionary<string, string>
@@ -85,7 +84,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                    };
             await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.ProcessRequest(request);
 
             Assert.IsType<InvalidGrantResult>(result);
         }
@@ -96,9 +95,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.ProcessRequest(null));
         }
 
         [Fact]
@@ -107,7 +106,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
-            var instance = new AuthorizationCodeTokenFlowService(cache);
+            var instance = new AuthorizationCodeTokenResultService(cache);
 
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
             var grantInformation = new Dictionary<string, string>
@@ -117,7 +116,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                    };
             await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
 
-            var result = await instance.AuthorizeRequest(request);
+            var result = await instance.ProcessRequest(request);
 
             Assert.IsType<SuccessfulTokenResult>(result);
         }

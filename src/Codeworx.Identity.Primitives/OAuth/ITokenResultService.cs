@@ -2,10 +2,10 @@
 
 namespace Codeworx.Identity.OAuth
 {
-    public interface ITokenFlowService
+    public interface ITokenResultService
     {
         string SupportedGrantType { get; }
 
-        Task<ITokenResult> AuthorizeRequest(TokenRequest request);
+        Task<ITokenResult> ProcessRequest(TokenRequest request);
     }
 }
