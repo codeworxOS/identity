@@ -54,8 +54,8 @@ namespace Codeworx.Identity.Web.Test
             services.AddCodeworxIdentity(_configuration)
                 .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                 .UseTestSetup()
-                //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()))
-                .UseConfiguration(_configuration);
+                .UseConfiguration(_configuration)
+                .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
