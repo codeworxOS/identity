@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.Model;
+﻿using System;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OpenId;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OpenId;
+using Codeworx.Identity.Cache;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OpenId
@@ -28,7 +30,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             Identity.OAuth.Constants.ResponseType.Token, false)]
         public void IsSupported_ResponseTypes_IsSupported(string responseType, bool expected)
         {
-            var instance = new AuthorizationCodeFlowService(null, null, null, null);
+            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
 
             Assert.Equal(expected, instance.IsSupported(responseType));
         }
@@ -38,7 +40,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         {
             var expectedState = "MyState";
             var clientServiceMock = Mock.Of<IClientService>();
-            var instance = new AuthorizationCodeFlowService(null, clientServiceMock, null, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock, null, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(string.Empty)
@@ -68,7 +70,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -105,7 +107,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -142,7 +144,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -189,7 +191,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, scopeServiceMock.Object, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, scopeServiceMock.Object, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -242,7 +244,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(codeGeneratorMock.Object, clientServiceMock.Object, scopeServiceMock.Object, options);
+            var cacheMock = new Mock<IAuthorizationCodeCache>();
+            
+            var instance = new AuthorizationCodeFlowService(codeGeneratorMock.Object, clientServiceMock.Object, scopeServiceMock.Object, options, cacheMock.Object);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -260,6 +264,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             Assert.IsType<AuthorizationCodeResponse>(result.Response);
             var authorizationCodeResponse = result.Response as AuthorizationCodeResponse;
             Assert.Equal(expectedCode, authorizationCodeResponse?.Code);
+
+            var expectedCacheValue = new Dictionary<string, string>
+            {
+                { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
+                { Identity.OAuth.Constants.ClientIdName, request.ClientId },
+                { Identity.OAuth.Constants.NonceName, request.Nonce },
+                { Identity.OAuth.Constants.ScopeName, request.Scope }
+            };
+            cacheMock.Verify(p => p.SetAsync(It.IsAny<string>(), expectedCacheValue, It.IsAny<TimeSpan>()), Times.Once);
         }
     }
 }

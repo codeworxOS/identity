@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OpenId;
@@ -15,13 +18,15 @@ namespace Codeworx.Identity.AspNetCore.OpenId
         private readonly IScopeService _scopeService;
         private readonly IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> _authorizationCodeGenerator;
         private readonly IOptions<AuthorizationCodeOptions> _options;
+        private readonly IAuthorizationCodeCache _cache;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
             _scopeService = scopeService;
             _options = options;
+            _cache = cache;
         }
 
         public bool IsSupported(string responseType)
@@ -70,6 +75,17 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             }
 
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, _options.Value.Length)
+                .ConfigureAwait(false);
+
+            var grantInformation = new Dictionary<string, string>
+            {
+                { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
+                { Identity.OAuth.Constants.ClientIdName, request.ClientId },
+                { Identity.OAuth.Constants.NonceName, request.Nonce },
+                { Identity.OAuth.Constants.ScopeName, request.Scope },
+            };
+
+            await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
                 .ConfigureAwait(false);
 
             return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
