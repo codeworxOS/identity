@@ -61,7 +61,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
             if (!string.IsNullOrEmpty(request.Scope) && containsKey)
             {
-                throw new NotImplementedException();
+                return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
             throw new NotImplementedException();

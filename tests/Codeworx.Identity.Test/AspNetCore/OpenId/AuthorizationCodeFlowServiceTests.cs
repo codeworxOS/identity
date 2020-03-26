@@ -158,7 +158,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         }
 
         [Fact]
-        public async Task AuthorizeRequest_MultipleScopesWithUnKnownScope_ExceptionThrown()
+        public async Task AuthorizeRequest_MultipleScopesWithUnKnownScope_UnknownScope()
         {
             var expectedState = "MyState";
             var expectedClientId = "MyClientId";
@@ -197,7 +197,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
                 .WithScope("email account openid test")
                 .Build();
 
-            await Assert.ThrowsAsync<NotImplementedException>(() => instance.AuthorizeRequest(request, null));
+            var result = await instance.AuthorizeRequest(request, null);
+
+            Assert.IsType<UnknownScopeResult>(result);
+            Assert.Equal(expectedState, result.Response.State);
+            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
         }
     }
 }
