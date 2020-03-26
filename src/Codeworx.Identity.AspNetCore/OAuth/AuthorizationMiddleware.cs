@@ -23,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService<OAuthAuthorizationRequest> authorizationService)
         {
             if (context.User == null)
             {

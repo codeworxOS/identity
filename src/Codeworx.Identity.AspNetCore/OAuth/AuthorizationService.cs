@@ -8,20 +8,21 @@ using Codeworx.Identity.OAuth.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationService : IAuthorizationService
+    public class AuthorizationService<TRequest> : IAuthorizationService<TRequest>
+        where TRequest : OAuthAuthorizationRequest
     {
-        private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
-        private readonly IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse> _requestValidator;
+        private readonly IEnumerable<IAuthorizationFlowService<TRequest>> _authorizationFlowServices;
+        private readonly IRequestValidator<TRequest, AuthorizationErrorResponse> _requestValidator;
         private readonly IUserService _userService;
 
-        public AuthorizationService(IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService> authorizationFlowServices, IUserService userService)
+        public AuthorizationService(IRequestValidator<TRequest, AuthorizationErrorResponse> requestValidator, IEnumerable<IAuthorizationFlowService<TRequest>> authorizationFlowServices, IUserService userService)
         {
             _requestValidator = requestValidator;
             _authorizationFlowServices = authorizationFlowServices;
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(TRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -43,7 +44,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UserNotFoundResult(request.State, request.RedirectionTarget);
             }
 
-            var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.SupportedAuthorizationResponseType == request.ResponseType);
+            var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.IsSupported(request.ResponseType));
             if (authorizationFlowService == null)
             {
                 return new UnsupportedResponseTypeResult(request.State, request.RedirectionTarget);

@@ -9,7 +9,7 @@ using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationTokenFlowService : IAuthorizationFlowService
+    public class AuthorizationTokenFlowService : IAuthorizationFlowService<OAuthAuthorizationRequest>
     {
         private readonly IIdentityService _identityService;
         private readonly IClientService _oAuthClientService;
@@ -24,7 +24,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _identityService = identityService;
         }
 
-        public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Token;
+        public bool IsSupported(string responseType)
+        {
+            return Equals(Identity.OAuth.Constants.ResponseType.Token, responseType);
+        }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
         {

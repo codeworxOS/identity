@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
-    public class AuthorizationCodeFlowService : IOpenIdAuthorizationFlowService
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OpenIdAuthorizationRequest>
     {
         private readonly IClientService _clientService;
         private readonly IScopeService _scopeService;

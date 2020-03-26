@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeFlowService : IAuthorizationFlowService
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OAuthAuthorizationRequest>
     {
         private readonly IAuthorizationCodeGenerator<OAuthAuthorizationRequest> _authorizationCodeGenerator;
         private readonly IAuthorizationCodeCache _cache;
@@ -27,7 +27,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
-        public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
+        public bool IsSupported(string responseType)
+        {
+            return Equals(Identity.OAuth.Constants.ResponseType.Code, responseType);
+        }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
         {
