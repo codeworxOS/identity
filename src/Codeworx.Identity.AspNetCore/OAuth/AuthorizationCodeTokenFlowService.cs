@@ -38,7 +38,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidGrantResult();
             }
 
-            return new SuccessfulTokenResult(null, null);
+            return new SuccessfulTokenResult("TokenGenerationNotImplemented", Identity.OAuth.Constants.TokenType.Bearer);
         }
     }
 }
