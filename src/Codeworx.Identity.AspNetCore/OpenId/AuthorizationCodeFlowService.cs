@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OpenId;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
@@ -12,11 +13,15 @@ namespace Codeworx.Identity.AspNetCore.OpenId
     {
         private readonly IClientService _clientService;
         private readonly IScopeService _scopeService;
+        private readonly IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> _authorizationCodeGenerator;
+        private readonly IOptions<AuthorizationCodeOptions> _options;
 
-        public AuthorizationCodeFlowService(IClientService clientService, IScopeService scopeService)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options)
         {
+            _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
             _scopeService = scopeService;
+            _options = options;
         }
 
         public bool IsSupported(string responseType)
@@ -64,7 +69,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 return new UnknownScopeResult(request.State, request.RedirectionTarget);
             }
 
-            throw new NotImplementedException();
+            var authorizationCode = await _authorizationCodeGenerator.GenerateCode(request, _options.Value.Length)
+                .ConfigureAwait(false);
+
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
         }
     }
 }

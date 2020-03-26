@@ -1,12 +1,13 @@
-﻿using Codeworx.Identity.AspNetCore.OpenId;
-using Codeworx.Identity.Model;
+﻿using Codeworx.Identity.Model;
+using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OpenId;
+using Microsoft.Extensions.Options;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.OpenId;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OpenId
@@ -27,7 +28,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             Identity.OAuth.Constants.ResponseType.Token, false)]
         public void IsSupported_ResponseTypes_IsSupported(string responseType, bool expected)
         {
-            var instance = new AuthorizationCodeFlowService(null, null);
+            var instance = new AuthorizationCodeFlowService(null, null, null, null);
 
             Assert.Equal(expected, instance.IsSupported(responseType));
         }
@@ -37,7 +38,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         {
             var expectedState = "MyState";
             var clientServiceMock = Mock.Of<IClientService>();
-            var instance = new AuthorizationCodeFlowService(clientServiceMock, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(string.Empty)
@@ -67,7 +68,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(clientServiceMock.Object, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -104,7 +105,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(clientServiceMock.Object, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -141,7 +142,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(clientServiceMock.Object, null);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, null, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -188,7 +189,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
 
-            var instance = new AuthorizationCodeFlowService(clientServiceMock.Object, scopeServiceMock.Object);
+            var instance = new AuthorizationCodeFlowService(null, clientServiceMock.Object, scopeServiceMock.Object, null);
 
             var request = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(expectedClientId)
@@ -202,6 +203,63 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             Assert.IsType<UnknownScopeResult>(result);
             Assert.Equal(expectedState, result.Response.State);
             Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_ValidRequest_Successful()
+        {
+            var expectedState = "MyState";
+            var expectedClientId = "MyClientId";
+            var expectedRedirectionUri = "redirect/uri";
+            var clientServiceMock = new Mock<IClientService>();
+            var clientRegistrationMock = new Mock<IClientRegistration>();
+            var supportedFlowMock = new Mock<ISupportedFlow>();
+            var scopeServiceMock = new Mock<IScopeService>();
+            var scopeMock = new Mock<IScope>();
+            var options = Options.Create(new Codeworx.Identity.AspNetCore.OAuth.AuthorizationCodeOptions());
+
+            var expectedCode = "www";
+            var codeGeneratorMock = new Mock<IAuthorizationCodeGenerator<OpenIdAuthorizationRequest>>();
+            codeGeneratorMock.Setup(p => p.GenerateCode(It.IsAny<OpenIdAuthorizationRequest>(), It.IsAny<int>()))
+                .ReturnsAsync(expectedCode);
+
+            scopeMock.SetupSequence(p => p.ScopeKey)
+                .Returns("email")
+                .Returns("account")
+                .Returns("openid");
+
+            scopeServiceMock.Setup(p => p.GetScopes())
+                .ReturnsAsync(() => new[] { scopeMock.Object, scopeMock.Object, scopeMock.Object });
+
+            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
+                .Returns(true);
+
+            clientRegistrationMock.Setup(p => p.ClientId)
+                .Returns(expectedClientId);
+            clientRegistrationMock.Setup(p => p.SupportedFlow)
+                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+
+            clientServiceMock.Setup(p => p.GetById(expectedClientId))
+                .ReturnsAsync(() => clientRegistrationMock.Object);
+
+            var instance = new AuthorizationCodeFlowService(codeGeneratorMock.Object, clientServiceMock.Object, scopeServiceMock.Object, options);
+
+            var request = new OpenIdAuthorizationRequestBuilder()
+                .WithClientId(expectedClientId)
+                .WithRedirectUri(expectedRedirectionUri)
+                .WithState(expectedState)
+                .WithScope("email account openid")
+                .Build();
+
+            var result = await instance.AuthorizeRequest(request, null);
+
+            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
+            Assert.Equal(expectedState, result.Response.State);
+            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+
+            Assert.IsType<AuthorizationCodeResponse>(result.Response);
+            var authorizationCodeResponse = result.Response as AuthorizationCodeResponse;
+            Assert.Equal(expectedCode, authorizationCodeResponse?.Code);
         }
     }
 }
