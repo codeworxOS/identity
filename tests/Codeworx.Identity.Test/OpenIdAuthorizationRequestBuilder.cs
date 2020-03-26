@@ -9,7 +9,7 @@ namespace Codeworx.Identity.Test
         private string _responseType = OAuth.Constants.ResponseType.Code;
         private string _scope;
         private string _state;
-        private string _nonce;
+        private string _nonce = "ajhsdfojhplosjhdfio0hopishfpozhsd8ufhij";
 
         public OpenIdAuthorizationRequestBuilder WithClientId(string value)
         {
@@ -42,6 +42,13 @@ namespace Codeworx.Identity.Test
         public OpenIdAuthorizationRequestBuilder WithState(string value)
         {
             _state = value;
+
+            return this;
+        }
+
+        public OpenIdAuthorizationRequestBuilder WithNonce(string value)
+        {
+            _nonce = value;
 
             return this;
         }
