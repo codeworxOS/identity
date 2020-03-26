@@ -65,6 +65,8 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 .Select(s => s.ScopeKey)
                 .ToList();
 
+            scopeKeys.Add(Identity.OpenId.Constants.Scopes.OpenId);
+
             var containsKey = request.Scope
                                   .Split(' ')
                                   .Any(p => !scopeKeys.Contains(p)) == true;
