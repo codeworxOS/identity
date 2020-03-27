@@ -6,11 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.Cache;
-using Codeworx.Identity.OAuth.Token;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -18,119 +13,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeTokenResultServiceTests
     {
         [Fact]
-        public async Task AuthorizeRequest_RequestNull_ThrowsException()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.ProcessRequest(null));
-        }
-
-        [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeNotFound_InvalidGrantReturned()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            var request = new AuthorizationCodeTokenRequestBuilder().WithCode("NotFound")
-                .Build();
-
-            var result = await instance.ProcessRequest(request);
-
-            Assert.IsType<InvalidGrantResult>(result);
-        }
-
-        [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeExpired_InvalidGrantReturned()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            var request = new AuthorizationCodeTokenRequestBuilder().Build();
-            await cache.SetAsync(request.Code, new Dictionary<string, string>(), TimeSpan.FromMilliseconds(1));
-
-            await Task.Delay(TimeSpan.FromMilliseconds(20));
-
-            var result = await instance.ProcessRequest(request);
-
-            Assert.IsType<InvalidGrantResult>(result);
-        }
-
-        [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeClientIdMismatch_InvalidGrantReturned()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            var request = new AuthorizationCodeTokenRequestBuilder().Build();
-            var grantInformation = new Dictionary<string, string>
-                                   {
-                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
-                                       {Identity.OAuth.Constants.ClientIdName, "notMatching"}
-                                   };
-            await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
-
-            var result = await instance.ProcessRequest(request);
-
-            Assert.IsType<InvalidGrantResult>(result);
-        }
-
-        [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeRedirectUriMismatch_InvalidGrantReturned()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            var request = new AuthorizationCodeTokenRequestBuilder().Build();
-            var grantInformation = new Dictionary<string, string>
-                                   {
-                                       {Identity.OAuth.Constants.RedirectUriName, "http://notMatching/redirect"},
-                                       {Identity.OAuth.Constants.ClientIdName, request.ClientId}
-                                   };
-            await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
-
-            var result = await instance.ProcessRequest(request);
-
-            Assert.IsType<InvalidGrantResult>(result);
-        }
-
-
-        [Fact]
-        public async Task AuthorizeRequest_ValidRequest_SuccessReturned()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache, null, null, null);
-
-            var request = new AuthorizationCodeTokenRequestBuilder().Build();
-            var grantInformation = new Dictionary<string, string>
-                                   {
-                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
-                                       {Identity.OAuth.Constants.ClientIdName, request.ClientId}
-                                   };
-            await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
-
-            var result = await instance.ProcessRequest(request);
-
-            Assert.IsType<SuccessfulTokenResult>(result);
-        }
-
-        [Fact]
         public async Task CreateAccessToken_CacheDataNull_ThrowsException()
         {
             var user = new ClaimsIdentity();
-            var instance = new AuthorizationCodeTokenResultService(null, null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null, user));
         }
@@ -139,7 +25,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         public async Task CreateAccessToken_UserNull_ThrowsException()
         {
             var emptyCache = new Dictionary<string, string>();
-            var instance = new AuthorizationCodeTokenResultService(null, null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(emptyCache, null));
         }
@@ -153,7 +39,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             };
             var user = new ClaimsIdentity();
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             var result = await instance.CreateAccessToken(cache, user);
 
@@ -170,7 +56,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             };
             var user = new ClaimsIdentity();
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             var result = await instance.CreateAccessToken(cache, user);
 
@@ -196,7 +82,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProvider.SetupGet(p => p.TokenType)
                 .Returns("abc");
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(null, null, new[] { tokenProvider.Object });
 
             var result = await instance.CreateAccessToken(cache, user);
 
@@ -229,7 +115,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
                 .ReturnsAsync(user.ToIdentityData());
 
-            var instance = new AuthorizationCodeTokenResultService(null, identityServiceMock.Object, clientServiceMock.Object, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, clientServiceMock.Object, new[] { tokenProvider.Object });
 
             var result = await instance.CreateAccessToken(cache, user);
 

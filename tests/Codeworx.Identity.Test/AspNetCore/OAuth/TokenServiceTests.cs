@@ -110,8 +110,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var tokenFlowServiceStub = new Mock<ITokenResultService>();
             tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
                                 .Returns(request.GrantType);
-            tokenFlowServiceStub.Setup(p => p.ProcessRequest(It.IsAny<TokenRequest>()))
-                                .ReturnsAsync(new SuccessfulTokenResult(null, null));
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
             supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "Authorized")))
