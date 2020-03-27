@@ -27,7 +27,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedGrantType => Identity.OAuth.Constants.GrantType.AuthorizationCode;
 
-        public async Task<string> CreateAccessToken(Dictionary<string, string> cacheData, ClaimsIdentity user)
+        public async Task<string> CreateAccessToken(IDictionary<string, string> cacheData, ClaimsIdentity user)
         {
             if (cacheData == null)
             {

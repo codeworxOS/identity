@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 
@@ -12,18 +14,21 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
         private readonly IEnumerable<ITokenResultService> _tokenResultServices;
+        private readonly IAuthorizationCodeCache _cache;
 
-        public TokenService(IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
+        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
         {
             _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;
             _clientAuthenticationService = clientAuthenticationService;
+            _cache = cache;
         }
 
         public async Task<ITokenResult> AuthorizeRequest(
             TokenRequest request,
             string clientId,
-            string clientSecret)
+            string clientSecret,
+            ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -60,10 +65,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnauthorizedClientResult();
             }
 
-            var tokenResult = await tokenResultService.ProcessRequest(request)
-                                                    .ConfigureAwait(false);
+            var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
 
-            return tokenResult;
+            if (request == null || authorizationCodeTokenRequest == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
+                .ConfigureAwait(false);
+
+            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, user);
+
+            return new SuccessfulTokenResult(accessToken, Identity.OAuth.Constants.TokenType.Bearer);
         }
     }
 }

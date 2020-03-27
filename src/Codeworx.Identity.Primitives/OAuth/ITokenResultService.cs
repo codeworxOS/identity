@@ -8,7 +8,7 @@ namespace Codeworx.Identity.OAuth
     {
         string SupportedGrantType { get; }
 
-        Task<string> CreateAccessToken(Dictionary<string, string> cacheData, ClaimsIdentity user);
+        Task<string> CreateAccessToken(IDictionary<string, string> cacheData, ClaimsIdentity user);
 
         Task<ITokenResult> ProcessRequest(TokenRequest request);
     }
