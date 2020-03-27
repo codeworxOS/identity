@@ -14,20 +14,26 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeTokenResultServiceTests
     {
         [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeClientIdMismatch_InvalidGrantReturned()
+        public async Task AuthorizeRequest_RequestNull_ThrowsException()
         {
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeTokenResultService(cache);
 
-            var request = new AuthorizationCodeTokenRequestBuilder().Build();
-            var grantInformation = new Dictionary<string, string>
-                                   {
-                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
-                                       {Identity.OAuth.Constants.ClientIdName, "notMatching"}
-                                   };
-            await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.ProcessRequest(null));
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_AuthorizationCodeNotFound_InvalidGrantReturned()
+        {
+            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+            var cache = new DistributedAuthorizationCodeCache(memory);
+
+            var instance = new AuthorizationCodeTokenResultService(cache);
+
+            var request = new AuthorizationCodeTokenRequestBuilder().WithCode("NotFound")
+                .Build();
 
             var result = await instance.ProcessRequest(request);
 
@@ -53,15 +59,20 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task AuthorizeRequest_AuthorizationCodeNotFound_InvalidGrantReturned()
+        public async Task AuthorizeRequest_AuthorizationCodeClientIdMismatch_InvalidGrantReturned()
         {
             var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
             var cache = new DistributedAuthorizationCodeCache(memory);
 
             var instance = new AuthorizationCodeTokenResultService(cache);
 
-            var request = new AuthorizationCodeTokenRequestBuilder().WithCode("NotFound")
-                                                                    .Build();
+            var request = new AuthorizationCodeTokenRequestBuilder().Build();
+            var grantInformation = new Dictionary<string, string>
+                                   {
+                                       {Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
+                                       {Identity.OAuth.Constants.ClientIdName, "notMatching"}
+                                   };
+            await cache.SetAsync(request.Code, grantInformation, TimeSpan.FromSeconds(60));
 
             var result = await instance.ProcessRequest(request);
 
@@ -89,17 +100,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.IsType<InvalidGrantResult>(result);
         }
 
-        [Fact]
-        public async Task AuthorizeRequest_RequestNull_ThrowsException()
-        {
-            var memory = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-            var cache = new DistributedAuthorizationCodeCache(memory);
-
-            var instance = new AuthorizationCodeTokenResultService(cache);
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.ProcessRequest(null));
-        }
-
+        
         [Fact]
         public async Task AuthorizeRequest_ValidRequest_SuccessReturned()
         {
