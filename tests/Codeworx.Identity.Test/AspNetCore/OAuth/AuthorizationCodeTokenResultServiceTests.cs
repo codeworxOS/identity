@@ -1,5 +1,4 @@
 ﻿using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.Model;
 using Codeworx.Identity.Token;
 using Moq;
 using System;
@@ -15,7 +14,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task CreateAccessToken_CacheDataNull_ThrowsException()
         {
-            var instance = new AuthorizationCodeTokenResultService(null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null, TimeSpan.Zero));
         }
@@ -28,7 +27,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc" }
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -44,7 +43,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc"},
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -61,7 +60,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc"},
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -89,7 +88,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProvideMock.SetupGet(p => p.TokenType)
                 .Returns("abc");
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, new[] { tokenProvideMock.Object });
+            var instance = new AuthorizationCodeTokenResultService(null, new[] { tokenProvideMock.Object });
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -117,15 +116,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 .ReturnsAsync(tokenMock.Object);
             tokenProvider.SetupGet(p => p.TokenType)
                 .Returns("jwt");
-            var clientRegistrationMock = new Mock<IClientRegistration>();
-            var clientServiceMock = new Mock<IClientService>();
-            clientServiceMock.Setup(p => p.GetById(It.IsAny<string>()))
-                .ReturnsAsync(clientRegistrationMock.Object);
             var identityServiceMock = new Mock<IIdentityService>();
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
 
-            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, clientServiceMock.Object, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object });
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -154,15 +149,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 .ReturnsAsync(tokenMock.Object);
             tokenProvider.SetupGet(p => p.TokenType)
                 .Returns("jwt");
-            var clientRegistrationMock = new Mock<IClientRegistration>();
-            var clientServiceMock = new Mock<IClientService>();
-            clientServiceMock.Setup(p => p.GetById(It.IsAny<string>()))
-                .ReturnsAsync(clientRegistrationMock.Object);
             var identityServiceMock = new Mock<IIdentityService>();
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
 
-            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, clientServiceMock.Object, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object });
 
             var result = await instance.CreateIdToken(cache, TimeSpan.Zero);
 

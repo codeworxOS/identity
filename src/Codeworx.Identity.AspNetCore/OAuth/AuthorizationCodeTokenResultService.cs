@@ -10,13 +10,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationCodeTokenResultService : ITokenResultService
     {
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
-        private readonly IClientService _clientService;
         private readonly IIdentityService _identityService;
 
-        public AuthorizationCodeTokenResultService(IIdentityService identityService, IClientService clientService, IEnumerable<ITokenProvider> tokenProviders)
+        public AuthorizationCodeTokenResultService(IIdentityService identityService, IEnumerable<ITokenProvider> tokenProviders)
         {
             _tokenProviders = tokenProviders;
-            _clientService = clientService;
             _identityService = identityService;
         }
 
