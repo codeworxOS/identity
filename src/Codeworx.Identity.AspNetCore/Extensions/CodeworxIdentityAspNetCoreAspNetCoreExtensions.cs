@@ -130,6 +130,9 @@ namespace Codeworx.Identity.AspNetCore
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<OAuth.AuthorizationMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.OpenIdEndpoint + "/token"),
+                       p => p.UseMiddleware<TokenMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.OpenIdEndpoint),
                        p => p
                            .UseMiddleware<AuthenticationMiddleware>()
