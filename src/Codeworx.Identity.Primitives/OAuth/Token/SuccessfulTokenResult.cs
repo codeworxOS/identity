@@ -6,7 +6,7 @@ namespace Codeworx.Identity.OAuth.Token
     {
         public SuccessfulTokenResult(string accessToken, string idToken, TimeSpan expiresIn, string scope)
         {
-            this.Response = new TokenResponse(accessToken, idToken, Constants.TokenType.Bearer, expiresIn.Seconds, scope);
+            this.Response = new TokenResponse(accessToken, idToken, Constants.TokenType.Bearer, (int)expiresIn.TotalSeconds, scope);
         }
 
         public TokenErrorResponse Error => null;
