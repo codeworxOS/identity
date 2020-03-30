@@ -6,7 +6,7 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class TokenResponse
     {
-        public TokenResponse(string accessToken, string idToken, string tokenType, int expiresIn = 0, string refreshToken = null, string scope = null)
+        public TokenResponse(string accessToken, string idToken, string tokenType, int expiresIn, string scope, string refreshToken = null)
         {
             this.AccessToken = accessToken;
             this.IdToken = idToken;
