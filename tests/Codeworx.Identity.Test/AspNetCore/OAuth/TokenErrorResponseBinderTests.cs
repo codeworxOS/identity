@@ -49,7 +49,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
 
@@ -82,7 +82,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
 
@@ -116,7 +116,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
             Assert.Equal("Basic", context.Response.Headers[HeaderNames.WWWAuthenticate]);
