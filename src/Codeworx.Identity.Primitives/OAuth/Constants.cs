@@ -4,6 +4,8 @@
     {
         public const string AccessTokenName = "access_token";
         public const string AccessTokenValidation = VsChars;
+        public const string IdTokenName = "id_token";
+        public const string IdTokenValidation = VsChars;
         public const string AdditionalParameterValidation = GrantTypeValidation;
         public const string ClientIdName = "client_id";
         public const string ClientIdValidation = VsChars;

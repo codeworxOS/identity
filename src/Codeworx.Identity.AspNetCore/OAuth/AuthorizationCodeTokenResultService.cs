@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Token;
@@ -23,7 +22,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedGrantType => Identity.OAuth.Constants.GrantType.AuthorizationCode;
 
-        public async Task<string> CreateAccessToken(IDictionary<string, string> cacheData)
+        public Task<string> CreateAccessToken(IDictionary<string, string> cacheData, TimeSpan expiresIn)
+        {
+            return this.CreateToken(cacheData, expiresIn, "jwt", ClaimTarget.AccessToken);
+        }
+
+        public Task<string> CreateIdToken(IDictionary<string, string> cacheData, TimeSpan expiresIn)
+        {
+            return this.CreateToken(cacheData, expiresIn, "jwt", ClaimTarget.IdToken);
+        }
+
+        private async Task<string> CreateToken(IDictionary<string, string> cacheData, TimeSpan expiresIn, string tokenType, ClaimTarget target)
         {
             if (cacheData == null)
             {
@@ -41,7 +50,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return null;
             }
 
-            var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == "jwt");
+            var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == tokenType);
             if (tokenProvider == null)
             {
                 return null;
@@ -50,11 +59,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var token = await tokenProvider.CreateAsync(null);
 
             var identityData = await _identityService.GetIdentityAsync(login);
-            var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
+            var payload = identityData.GetTokenClaims(target);
 
-            var client = await _clientService.GetById(cacheData[Identity.OAuth.Constants.ClientIdName]);
-
-            await token.SetPayloadAsync(payload, client.TokenExpiration);
+            await token.SetPayloadAsync(payload, expiresIn);
 
             return await token.SerializeAsync();
         }

@@ -14,12 +14,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
         private readonly IEnumerable<ITokenResultService> _tokenResultServices;
         private readonly IAuthorizationCodeCache _cache;
+        private readonly IClientService _clientService;
 
-        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
+        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
         {
             _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;
             _clientAuthenticationService = clientAuthenticationService;
+            _clientService = clientService;
             _cache = cache;
         }
 
@@ -73,9 +75,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
                 .ConfigureAwait(false);
 
-            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation);
+            var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
 
-            return new SuccessfulTokenResult(accessToken, Identity.OAuth.Constants.TokenType.Bearer);
+            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
+            var idtoken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
+
+            deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
+
+            return new SuccessfulTokenResult(accessToken, idtoken, client.TokenExpiration, scope);
         }
     }
 }
