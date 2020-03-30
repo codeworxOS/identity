@@ -34,6 +34,16 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             var client = await _oAuthClientService.GetById(request.ClientId)
                                                   .ConfigureAwait(false);
             if (client == null)
@@ -68,6 +78,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                    {
                                        { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
                                        { Identity.OAuth.Constants.ClientIdName, request.ClientId },
+                                       { Constants.LoginClaimType, user.ToIdentityData().Login },
                                    };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

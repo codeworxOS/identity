@@ -7,6 +7,8 @@ namespace Codeworx.Identity
     {
         Task<IdentityData> GetIdentityAsync(ClaimsIdentity user);
 
+        Task<IdentityData> GetIdentityAsync(string login);
+
         Task<IdentityData> LoginAsync(string username, string password);
 
         Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,13 +12,31 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class AuthorizationCodeFlowServiceTests
     {
+        [Fact]
+        public async Task AuthorizeRequest_MissingRequest_ArgumentNull()
+        {
+            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(null, new ClaimsIdentity()));
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_MissingUser_ArgumentNull()
+        {
+            var request = new OAuthAuthorizationRequestBuilder()
+                .Build();
+
+            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(request, null));
+        }
+
         [Fact]
         public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
         {

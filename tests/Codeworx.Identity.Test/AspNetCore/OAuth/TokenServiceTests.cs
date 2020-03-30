@@ -32,7 +32,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenService(null,new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
-            var result = await instance.AuthorizeRequest(request, null, null, null);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<InvalidRequestResult>(result);
         }
@@ -54,7 +54,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenService(null,new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
-            var result = await instance.AuthorizeRequest(request, null, null, null);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<InvalidRequestResult>(result);
         }
@@ -76,7 +76,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
 
-            var result = await instance.AuthorizeRequest(request, null, null, null);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<InvalidRequestResult>(result);
         }
@@ -96,7 +96,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenService(null,new List<ITokenResultService>(), requestValidatorStub.Object, clientAuthenticationStub.Object);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null, null, null, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null, null, null));
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new TokenService(null, new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
-            var result = await instance.AuthorizeRequest(request, null, null, null);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<UnauthorizedClientResult>(result);
         }
@@ -142,7 +142,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("Unsupported")
                                                                     .Build();
 
-            var result = await instance.AuthorizeRequest(request, null, null, null);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<UnsupportedGrantTypeResult>(result);
         }
@@ -155,9 +155,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             {
                 {"abc", "def"}
             };
-
-            var expectedUser = new ClaimsIdentity();
-
+            
             var request = new AuthorizationCodeTokenRequestBuilder().Build();
 
             var cacheMock = new Mock<IAuthorizationCodeCache>();
@@ -166,10 +164,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, TokenErrorResponse>>();
 
-            var tokenFlowServiceStub = new Mock<ITokenResultService>();
-            tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
+            var tokenResultServiceStub = new Mock<ITokenResultService>();
+            tokenResultServiceStub.SetupGet(p => p.SupportedGrantType)
                                 .Returns(request.GrantType);
-            tokenFlowServiceStub.Setup(p => p.CreateAccessToken(It.IsAny<Dictionary<string, string>>(),It.IsAny<ClaimsIdentity>()))
+            tokenResultServiceStub.Setup(p => p.CreateAccessToken(It.IsAny<Dictionary<string, string>>()))
                                 .ReturnsAsync(expectedToken);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -184,15 +182,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<string>(), It.IsAny<string>()))
                                     .ReturnsAsync(new AuthenticateClientResult { ClientRegistration = clientRegistrationStub.Object });
 
-            var instance = new TokenService(cacheMock.Object,new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
+            var instance = new TokenService(cacheMock.Object,new List<ITokenResultService> { tokenResultServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object);
 
-            var result = await instance.AuthorizeRequest(request, null, null, expectedUser);
+            var result = await instance.AuthorizeRequest(request, null, null);
 
             Assert.IsType<SuccessfulTokenResult>(result);
             requestValidatorStub.Verify(p=> p.IsValid(It.IsAny<TokenRequest>()),Times.Once);
             clientAuthenticationStub.Verify(p => p.AuthenticateClient(It.IsAny<TokenRequest>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             supportedFlowStub.Verify(p => p.IsSupported(It.Is<string>(v => v == request.GrantType)), Times.Once);
-            tokenFlowServiceStub.Verify(p => p.CreateAccessToken(expectedCache, expectedUser), Times.Once);
+            tokenResultServiceStub.Verify(p => p.CreateAccessToken(expectedCache), Times.Once);
             Assert.Equal(expectedToken, result.Response.AccessToken);
         }
     }

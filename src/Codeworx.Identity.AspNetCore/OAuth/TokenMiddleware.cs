@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
@@ -53,7 +52,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                     clientSecret = credentials[1];
                 }
 
-                var result = await tokenService.AuthorizeRequest(bindingResult.Result, clientId, clientSecret, context.User?.Identity as ClaimsIdentity);
+                var result = await tokenService.AuthorizeRequest(bindingResult.Result, clientId, clientSecret);
 
                 if (result.Error != null)
                 {

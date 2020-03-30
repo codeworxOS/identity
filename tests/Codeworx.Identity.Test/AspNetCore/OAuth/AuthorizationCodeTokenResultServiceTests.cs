@@ -15,19 +15,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task CreateAccessToken_CacheDataNull_ThrowsException()
         {
-            var user = new ClaimsIdentity();
             var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null, user));
-        }
-
-        [Fact]
-        public async Task CreateAccessToken_UserNull_ThrowsException()
-        {
-            var emptyCache = new Dictionary<string, string>();
-            var instance = new AuthorizationCodeTokenResultService(null, null, null);
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(emptyCache, null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null));
         }
 
         [Fact]
@@ -37,11 +27,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             {
                 {"cde", "abc" }
             };
-            var user = new ClaimsIdentity();
 
             var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
-            var result = await instance.CreateAccessToken(cache, user);
+            var result = await instance.CreateAccessToken(cache);
 
             Assert.Null(result);
         }
@@ -54,11 +43,27 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {"cde", "abc"},
             };
-            var user = new ClaimsIdentity();
 
             var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
-            var result = await instance.CreateAccessToken(cache, user);
+            var result = await instance.CreateAccessToken(cache);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task CreateAccessToken_LoginMissing_ReturnsNull()
+        {
+            var cache = new Dictionary<string, string>
+            {
+                {Identity.OAuth.Constants.ClientIdName, "abc"},
+                {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {"cde", "abc"},
+            };
+
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
+
+            var result = await instance.CreateAccessToken(cache);
 
             Assert.Null(result);
         }
@@ -66,25 +71,29 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task CreateAccessToken_MissingMatchingTokenProvider_ReturnsNull()
         {
+            var tokenProvideMock = new Mock<ITokenProvider>();
+            var tokenMock = new Mock<IToken>();
+
             var cache = new Dictionary<string, string>
             {
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.LoginClaimType, "login"},
             };
-            var user = new ClaimsIdentity();
 
-            var tokenMock = new Mock<IToken>();
             tokenMock.Setup(p => p.SerializeAsync())
                 .ReturnsAsync("abc");
-            var tokenProvider = new Mock<ITokenProvider>();
-            tokenProvider.Setup(p => p.CreateAsync(null))
+
+            tokenProvideMock.Setup(p => p.CreateAsync(null))
                 .ReturnsAsync(tokenMock.Object);
-            tokenProvider.SetupGet(p => p.TokenType)
+            tokenProvideMock.SetupGet(p => p.TokenType)
                 .Returns("abc");
 
-            var instance = new AuthorizationCodeTokenResultService(null, null, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(null, null, new[] { tokenProvideMock.Object });
 
-            var result = await instance.CreateAccessToken(cache, user);
+            var result = await instance.CreateAccessToken(cache);
+
+            tokenProvideMock.Verify(p => p.TokenType, Times.AtLeastOnce);
 
             Assert.Null(result);
         }
@@ -92,13 +101,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task CreateAccessToken_ValidData_CallsGenerateToken()
         {
+            var expectedLogin = "login";
+
             var cache = new Dictionary<string, string>
             {
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.LoginClaimType, expectedLogin},
             };
-            var user = new ClaimsIdentity();
-
             var tokenMock = new Mock<IToken>();
             tokenMock.Setup(p => p.SerializeAsync())
                 .ReturnsAsync("abc");
@@ -112,15 +122,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceMock.Setup(p => p.GetById(It.IsAny<string>()))
                 .ReturnsAsync(clientRegistrationMock.Object);
             var identityServiceMock = new Mock<IIdentityService>();
-            identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
-                .ReturnsAsync(user.ToIdentityData());
+            identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
+                .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
 
             var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, clientServiceMock.Object, new[] { tokenProvider.Object });
 
-            var result = await instance.CreateAccessToken(cache, user);
+            var result = await instance.CreateAccessToken(cache);
 
             Assert.NotNull(result);
-            identityServiceMock.Verify(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()), Times.Once);
+            identityServiceMock.Verify(p => p.GetIdentityAsync(expectedLogin), Times.Once);
             tokenProvider.Verify(p => p.CreateAsync(It.IsAny<object>()), Times.Once);
             tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<TimeSpan>()), Times.Once);
         }

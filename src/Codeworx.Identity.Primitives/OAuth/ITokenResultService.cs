@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth
@@ -8,6 +7,6 @@ namespace Codeworx.Identity.OAuth
     {
         string SupportedGrantType { get; }
 
-        Task<string> CreateAccessToken(IDictionary<string, string> cacheData, ClaimsIdentity user);
+        Task<string> CreateAccessToken(IDictionary<string, string> cacheData);
     }
 }

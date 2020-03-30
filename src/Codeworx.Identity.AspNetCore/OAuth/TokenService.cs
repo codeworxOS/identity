@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
@@ -27,8 +26,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         public async Task<ITokenResult> AuthorizeRequest(
             TokenRequest request,
             string clientId,
-            string clientSecret,
-            ClaimsIdentity user)
+            string clientSecret)
         {
             if (request == null)
             {
@@ -75,7 +73,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
                 .ConfigureAwait(false);
 
-            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, user);
+            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation);
 
             return new SuccessfulTokenResult(accessToken, Identity.OAuth.Constants.TokenType.Bearer);
         }

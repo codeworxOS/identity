@@ -36,6 +36,16 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
         public async Task<IAuthorizationResult> AuthorizeRequest(OpenIdAuthorizationRequest request, ClaimsIdentity user)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             var client = await _clientService.GetById(request.ClientId)
                 .ConfigureAwait(false);
 
@@ -85,6 +95,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 { Identity.OAuth.Constants.ClientIdName, request.ClientId },
                 { Identity.OAuth.Constants.NonceName, request.Nonce },
                 { Identity.OAuth.Constants.ScopeName, request.Scope },
+                { Constants.LoginClaimType, user.ToIdentityData().Login },
             };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

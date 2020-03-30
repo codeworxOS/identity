@@ -23,20 +23,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public string SupportedGrantType => Identity.OAuth.Constants.GrantType.AuthorizationCode;
 
-        public async Task<string> CreateAccessToken(IDictionary<string, string> cacheData, ClaimsIdentity user)
+        public async Task<string> CreateAccessToken(IDictionary<string, string> cacheData)
         {
             if (cacheData == null)
             {
                 throw new ArgumentNullException();
             }
 
-            if (user == null)
-            {
-                throw new ArgumentNullException();
-            }
-
             if (cacheData.ContainsKey(Identity.OAuth.Constants.ClientIdName) == false
                 || cacheData.ContainsKey(Identity.OAuth.Constants.RedirectUriName) == false)
+            {
+                return null;
+            }
+
+            if (!cacheData.TryGetValue(Constants.LoginClaimType, out var login))
             {
                 return null;
             }
@@ -49,7 +49,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var token = await tokenProvider.CreateAsync(null);
 
-            var identityData = await _identityService.GetIdentityAsync(user);
+            var identityData = await _identityService.GetIdentityAsync(login);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
 
             var client = await _clientService.GetById(cacheData[Identity.OAuth.Constants.ClientIdName]);
