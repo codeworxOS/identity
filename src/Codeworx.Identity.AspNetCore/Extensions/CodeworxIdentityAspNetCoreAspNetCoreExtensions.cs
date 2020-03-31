@@ -19,6 +19,7 @@ using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OpenId;
+using Codeworx.Identity.OpenId.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Builder;

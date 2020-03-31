@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.OpenId;
+using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

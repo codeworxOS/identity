@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Codeworx.Identity.OpenId
+namespace Codeworx.Identity.OpenId.Model
 {
     [DataContract]
     public class WellKnownResponse
