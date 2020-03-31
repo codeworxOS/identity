@@ -1,6 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.OpenId;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -17,9 +17,19 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _options = identityOptions.Value;
         }
 
-        public Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context)
         {
-            throw new NotImplementedException();
+            var host = $"{context.Request.Scheme}://{context.Request.Host}";
+
+            var content = new WellKnownResponse
+            {
+                Issuer = host,
+                AuthorizationEndpoint = host + _options.OpenIdAuthorizationEndpoint,
+                TokenEndpoint = host + _options.OpenIdTokenEndpoint,
+            };
+
+            var responseBinder = context.GetResponseBinder<WellKnownResponse>();
+            await responseBinder.BindAsync(content, context.Response);
         }
     }
 }
