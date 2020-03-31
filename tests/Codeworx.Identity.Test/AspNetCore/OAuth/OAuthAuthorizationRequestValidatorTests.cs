@@ -9,12 +9,12 @@ using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class AuthorizationRequestValidatorTests
+    public class OAuthAuthorizationRequestValidatorTests
     {
         [Fact]
         public async Task IsValid_ClientIdEmpty_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithClientId(string.Empty)
                           .Build();
 
@@ -24,17 +24,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ClientIdInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ClientIdInvalidAndRedirectUriInvalid_ReturnsErrorForClientId()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("x:invalidUri")
                           .WithClientId(null)
                           .Build();
@@ -45,17 +46,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ClientIdInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ClientIdInvalidCharacters_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithClientId("\u0020\u007e\u0019")
                           .Build();
 
@@ -65,17 +67,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ClientIdInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ClientIdNotRegistered_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithClientId("notRegistered")
                           .Build();
 
@@ -85,17 +88,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == "registered")))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ClientIdInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ClientIdNull_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithClientId(null)
                           .Build();
 
@@ -107,17 +111,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ClientIdInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_RedirectUriEmptyAndDefaultUriNull_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri(string.Empty)
                           .Build();
 
@@ -127,17 +132,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_RedirectUriEmptyAndDefaultUriSet_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri(string.Empty)
                           .Build();
 
@@ -153,7 +159,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -163,7 +169,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_RedirectUriInvalid_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("x:invalidUri")
                           .Build();
 
@@ -173,17 +179,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_RedirectUriNotInValidList_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("http://notValid.org/redirect")
                           .Build();
 
@@ -195,17 +202,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_RedirectUriNullAndDefaultUriNull_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                          .WithRedirectUri(null)
                          .Build();
 
@@ -215,17 +223,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_RedirectUriNullAndDefaultUriSet_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri(null)
                           .Build();
 
@@ -241,7 +250,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -251,7 +260,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_RedirectUriRelative_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("/redirect")
                           .Build();
 
@@ -261,17 +270,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ResponseTypeEmpty_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithResponseType(string.Empty)
                           .Build();
 
@@ -283,17 +293,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ResponseTypeInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ResponseTypeInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("x:invalidUri")
                           .WithResponseType(null)
                           .Build();
@@ -304,17 +315,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ResponseTypeInvalidCharacters_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithResponseType("-")
                           .Build();
 
@@ -326,17 +338,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ResponseTypeInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ResponseTypeNull_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithResponseType(null)
                           .Build();
 
@@ -348,17 +361,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ResponseTypeInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ResponseTypeWithSpace_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithResponseType("type1 type2")
                           .Build();
 
@@ -370,7 +384,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -380,7 +394,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_ScopeEmpty_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithScope(string.Empty)
                           .Build();
 
@@ -392,7 +406,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -402,7 +416,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_ScopeInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("x:invalidUri")
                           .WithResponseType("-")
                           .Build();
@@ -413,17 +427,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ScopeInvalidCharacters_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithScope("\u0020")
                           .Build();
 
@@ -435,17 +450,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<ScopeInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.ScopeName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_ScopeNull_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithScope(null)
                           .Build();
 
@@ -457,7 +473,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -467,7 +483,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_ScopeWithSpace_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithScope("scope1 scope2")
                           .Build();
 
@@ -479,7 +495,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -489,7 +505,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_StateEmpty_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithState(string.Empty)
                           .Build();
 
@@ -501,7 +517,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -511,7 +527,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_StateInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithRedirectUri("x:invalidUri")
                           .WithState("\u0019")
                           .Build();
@@ -522,17 +538,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<RedirectUriInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_StateInvalidCharacters_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithState("\u0019")
                           .Build();
 
@@ -544,17 +561,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
-            Assert.IsType<StateInvalidResult>(result);
+            Assert.NotNull(result);
+            Assert.Equal(Identity.OAuth.Constants.StateName, result.Error.ErrorDescription);
         }
 
         [Fact]
         public async Task IsValid_StateNull_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithState(null)
                           .Build();
 
@@ -566,7 +584,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -576,7 +594,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task IsValid_ValidRequest_ReturnsNoError()
         {
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
@@ -586,7 +604,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 

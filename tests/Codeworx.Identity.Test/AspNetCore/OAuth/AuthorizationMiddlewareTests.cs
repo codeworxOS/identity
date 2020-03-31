@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId("\u0019")
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId("\u0019")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -44,7 +44,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId(string.Empty)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(string.Empty)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+            var request = new OAuthAuthorizationRequestBuilder().WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -100,7 +100,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             const string InvalidState = "ä";
-            var request = new AuthorizationRequestBuilder().WithState(InvalidState)
+            var request = new OAuthAuthorizationRequestBuilder().WithState(InvalidState)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -123,7 +123,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithRedirectUri("x:invalidUri")
+            var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri("x:invalidUri")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -143,7 +143,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithRedirectUri("/invalidRedirect")
+            var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri("/invalidRedirect")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -163,7 +163,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
 
             var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}";
 
@@ -184,7 +184,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
                                                            .WithScope("unknown")
                                                            .Build();
 
@@ -206,7 +206,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithScope("ä")
+            var request = new OAuthAuthorizationRequestBuilder().WithScope("ä")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -244,7 +244,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder()
+            var request = new OAuthAuthorizationRequestBuilder()
                           .WithClientId(Constants.DefaultCodeFlowClientId)
                           .WithResponseType("unsupported")
                           .Build();
@@ -267,7 +267,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -292,7 +292,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new AuthorizationRequestBuilder().WithRedirectUri(string.Empty)
+            var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri(string.Empty)
                                                            .WithClientId(Constants.DefaultCodeFlowClientId)
                                                            .Build();
 
@@ -305,7 +305,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal("https://example.org/redirect", $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
         }
 
-        private string ToRequestString(AuthorizationRequest request)
+        private string ToRequestString(OAuthAuthorizationRequest request)
         {
             return $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}" +
                    $"&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}" +

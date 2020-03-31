@@ -3,35 +3,31 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OpenId;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.AspNetCore.OAuth
+namespace Codeworx.Identity.AspNetCore.OpenId
 {
     public class AuthorizationMiddleware
     {
-        private readonly IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
+        private readonly IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly RequestDelegate _next;
-        private readonly IEnumerable<IResponseBinder> _responseBinders;
 
-        public AuthorizationMiddleware(
-                                       RequestDelegate next,
-                                       IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
-                                       IEnumerable<IResponseBinder> responseBinders)
+        public AuthorizationMiddleware(RequestDelegate next, IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder)
         {
             _next = next;
             _authorizationRequestBinder = authorizationRequestBinder;
-            _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<OAuthAuthorizationRequest> authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService<OpenIdAuthorizationRequest> authorizationService)
         {
-            if (context.User == null)
+            var claimsIdentity = context.User?.Identity as ClaimsIdentity;
+
+            if (claimsIdentity == null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
-
-            var claimsIdentity = context.User.Identity as ClaimsIdentity;
 
             var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
 

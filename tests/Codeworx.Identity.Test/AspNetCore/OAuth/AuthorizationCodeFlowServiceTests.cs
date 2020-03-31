@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -19,16 +19,35 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeFlowServiceTests
     {
         [Fact]
+        public async Task AuthorizeRequest_MissingRequest_ArgumentNull()
+        {
+            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(null, new ClaimsIdentity()));
+        }
+
+        [Fact]
+        public async Task AuthorizeRequest_MissingUser_ArgumentNull()
+        {
+            var request = new OAuthAuthorizationRequestBuilder()
+                .Build();
+
+            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(request, null));
+        }
+
+        [Fact]
         public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -62,9 +81,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
         {
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
 
             var oAuthClientServiceStub = new Mock<IClientService>();
 
@@ -84,18 +103,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Fact]
-        public async Task AuthorizeRequest_ReadCachedGrantInformation_ContainsRedirectUriAndClientIdFromRequest()
+        public async Task AuthorizeRequest_ReadCachedGrantInformation_ContainsRedirectUriAndClientIdAndNonceFromRequest()
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -144,12 +163,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope("unknownScope")
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -193,12 +212,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -246,12 +265,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope(string.Empty)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -295,12 +314,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -345,12 +364,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
             const string KnownScope = "knownScope";
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithScope(KnownScope)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();

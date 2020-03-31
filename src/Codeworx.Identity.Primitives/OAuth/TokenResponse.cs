@@ -6,9 +6,10 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class TokenResponse
     {
-        public TokenResponse(string accessToken, string tokenType, int expiresIn = 0, string refreshToken = null, string scope = null)
+        public TokenResponse(string accessToken, string idToken, string tokenType, int expiresIn, string scope, string refreshToken = null)
         {
             this.AccessToken = accessToken;
+            this.IdToken = idToken;
             this.ExpiresIn = expiresIn;
             this.RefreshToken = refreshToken;
             this.Scope = scope;
@@ -35,5 +36,9 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.TokenTypeValidation)]
         [DataMember(Order = 2, Name = Constants.TokenTypeName)]
         public string TokenType { get; }
+
+        [RegularExpression(Constants.IdTokenValidation)]
+        [DataMember(Order = 6, Name = Constants.IdTokenName)]
+        public string IdToken { get; }
     }
 }

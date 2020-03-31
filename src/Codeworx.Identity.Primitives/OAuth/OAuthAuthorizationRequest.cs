@@ -5,17 +5,18 @@ using Codeworx.Identity.Validation;
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class AuthorizationRequest
+    public class OAuthAuthorizationRequest
     {
         private string _defaultRedirectUri;
 
-        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state)
+        public OAuthAuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;
             this.ResponseType = responseType;
             this.Scope = scope;
             this.State = state;
+            this.Nonce = nonce;
         }
 
         [Required]
@@ -23,10 +24,10 @@ namespace Codeworx.Identity.OAuth
         [DataMember(Order = 1, Name = Constants.ClientIdName)]
         public string ClientId { get; }
 
-        [RegularExpression(Constants.RedirectUriValidation)]
         [UriAbsolute]
+        [RegularExpression(Constants.RedirectUriValidation)]
         [DataMember(Order = 2, Name = Constants.RedirectUriName)]
-        public string RedirectUri { get; }
+        public virtual string RedirectUri { get; }
 
         [Required]
         [RegularExpression(Constants.ResponseTypeValidation)]
@@ -35,11 +36,15 @@ namespace Codeworx.Identity.OAuth
 
         [RegularExpression(Constants.ScopeValidation)]
         [DataMember(Order = 4, Name = Constants.ScopeName)]
-        public string Scope { get; }
+        public virtual string Scope { get; }
 
         [RegularExpression(Constants.StateValidation)]
         [DataMember(Order = 5, Name = Constants.StateName)]
         public string State { get; }
+
+        [RegularExpression(Constants.NonceValidation)]
+        [DataMember(Order = 6, Name = Constants.NonceName)]
+        public virtual string Nonce { get; }
 
         [IgnoreDataMember]
         public string RedirectionTarget

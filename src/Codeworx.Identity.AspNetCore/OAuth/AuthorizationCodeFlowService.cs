@@ -6,20 +6,19 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
-using Codeworx.Identity.OAuth.Validation.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeFlowService : IAuthorizationFlowService
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OAuthAuthorizationRequest>
     {
-        private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
+        private readonly IAuthorizationCodeGenerator<OAuthAuthorizationRequest> _authorizationCodeGenerator;
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _oAuthClientService;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IScopeService _scopeService;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OAuthAuthorizationRequest> authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _oAuthClientService = oAuthClientService;
@@ -28,15 +27,28 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
-        public string SupportedAuthorizationResponseType => Identity.OAuth.Constants.ResponseType.Code;
-
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public bool IsSupported(string responseType)
         {
+            return Equals(Identity.OAuth.Constants.ResponseType.Code, responseType);
+        }
+
+        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             var client = await _oAuthClientService.GetById(request.ClientId)
                                                   .ConfigureAwait(false);
             if (client == null)
             {
-                return new InvalidRequestResult(new ClientIdInvalidResult(request.State));
+                return InvalidRequestResult.CreateInvalidClientId(request.State);
             }
 
             if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
@@ -66,6 +78,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                    {
                                        { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
                                        { Identity.OAuth.Constants.ClientIdName, request.ClientId },
+                                       { Constants.LoginClaimType, user.ToIdentityData().Login },
+                                       { Identity.OAuth.Constants.ScopeName, request.Scope },
                                    };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

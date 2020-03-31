@@ -28,15 +28,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task Invoke(HttpContext context, ITokenService tokenService)
         {
-            var bindingResult = _tokenRequestBinder.FromQuery(context.Request.Form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
+            IRequestBindingResult<AuthorizationCodeTokenRequest, TokenErrorResponse> bindingResult = null;
 
-            if (bindingResult.Error != null)
+            if (context.Request.HasFormContentType)
+            {
+                bindingResult = _tokenRequestBinder.FromQuery(context.Request.Form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
+            }
+
+            if (bindingResult?.Error != null)
             {
                 var responseBinder = context.GetResponseBinder<TokenErrorResponse>();
                 await responseBinder.BindAsync(bindingResult.Error, context.Response);
                 return;
             }
-            else if (bindingResult.Result != null)
+            else if (bindingResult?.Result != null)
             {
                 string clientId = null, clientSecret = null;
                 if (AuthenticationHeaderValue.TryParse(context.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
@@ -62,6 +67,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                     return;
                 }
             }
+
+            context.Response.StatusCode = 401;
         }
     }
 }

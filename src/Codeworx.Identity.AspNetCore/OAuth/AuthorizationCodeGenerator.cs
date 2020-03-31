@@ -8,7 +8,8 @@ using Codeworx.Identity.OAuth;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeGenerator : IAuthorizationCodeGenerator
+    public class AuthorizationCodeGenerator<TRequest> : IAuthorizationCodeGenerator<TRequest>
+        where TRequest : OAuthAuthorizationRequest
     {
         private static readonly IReadOnlyCollection<char> _allowedCharacters;
 
@@ -24,7 +25,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _allowedCharacters = allowedCharacters;
         }
 
-        public Task<string> GenerateCode(AuthorizationRequest request, int length)
+        public Task<string> GenerateCode(TRequest request, int length)
         {
             if (request == null)
             {

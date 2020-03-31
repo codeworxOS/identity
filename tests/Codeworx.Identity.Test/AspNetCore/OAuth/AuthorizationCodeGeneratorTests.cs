@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
+using Codeworx.Identity.OAuth;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -13,8 +11,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task GenerateCode_CorrectInput_CodeGenerated()
         {
-            var request = new AuthorizationRequestBuilder().Build();
-            var instance = new AuthorizationCodeGenerator();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
+            var instance = new AuthorizationCodeGenerator<OAuthAuthorizationRequest>();
 
             var result = await instance.GenerateCode(request, 10);
 
@@ -25,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task GenerateCode_RequestNull_ThrowsException()
         {
-            var instance = new AuthorizationCodeGenerator();
+            var instance = new AuthorizationCodeGenerator<OAuthAuthorizationRequest>();
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.GenerateCode(null, 10));
         }
     }

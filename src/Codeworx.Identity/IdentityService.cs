@@ -38,6 +38,20 @@ namespace Codeworx.Identity
             return result;
         }
 
+        public async Task<IdentityData> GetIdentityAsync(string username)
+        {
+            var currentUser = await _userService.GetUserByNameAsync(username);
+
+            if (currentUser == null)
+            {
+                throw new AuthenticationException();
+            }
+
+            var result = await GetIdentityAsync(currentUser);
+
+            return result;
+        }
+
         public async Task<IdentityData> LoginAsync(string username, string password)
         {
             var user = await _userService.GetUserByNameAsync(username);

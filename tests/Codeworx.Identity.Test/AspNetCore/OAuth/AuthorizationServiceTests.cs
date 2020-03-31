@@ -18,17 +18,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_InvalidRequest_ReturnsError()
         {
-            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
-            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
-                         .ReturnsAsync(new ClientIdInvalidResult());
+            var validatorStub = new Mock<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<OAuthAuthorizationRequest>()))
+                .ReturnsAsync(new OAuthInvalidResult(null, null, null));
 
-            var flowServiceStub = new Mock<IAuthorizationFlowService>();
+            var flowServiceStub = new Mock<IAuthorizationFlowService<OAuthAuthorizationRequest>>();
 
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
 
             var userServiceStub = new Mock<IUserService>();
 
-            var instance = new AuthorizationService(validatorStub.Object, new List<IAuthorizationFlowService> { flowServiceStub.Object }, userServiceStub.Object);
+            var instance = new AuthorizationService<OAuthAuthorizationRequest>(validatorStub.Object, new List<IAuthorizationFlowService<OAuthAuthorizationRequest>> { flowServiceStub.Object }, userServiceStub.Object);
 
             var result = await instance.AuthorizeRequest(request, null);
 
@@ -38,15 +38,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_RequestNull_ThrowsException()
         {
-            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
-            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
+            var validatorStub = new Mock<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<OAuthAuthorizationRequest>()))
                          .ReturnsAsync(() => null);
 
-            var flowServiceStub = new Mock<IAuthorizationFlowService>();
+            var flowServiceStub = new Mock<IAuthorizationFlowService<OAuthAuthorizationRequest>>();
 
             var userServiceStub = new Mock<IUserService>();
 
-            var instance = new AuthorizationService(validatorStub.Object, new List<IAuthorizationFlowService> { flowServiceStub.Object }, userServiceStub.Object);
+            var instance = new AuthorizationService<OAuthAuthorizationRequest>(validatorStub.Object, new List<IAuthorizationFlowService<OAuthAuthorizationRequest>> { flowServiceStub.Object }, userServiceStub.Object);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null, null));
         }
@@ -57,18 +57,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string UserIdentifier = "2C532CF0-65D1-40C7-82B8-837AC6758165";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
 
-            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
-            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
+            var validatorStub = new Mock<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<OAuthAuthorizationRequest>()))
                          .ReturnsAsync(() => null);
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .WithResponseType("unsupported")
                                                            .Build();
 
-            var flowServiceStub = new Mock<IAuthorizationFlowService>();
-            flowServiceStub.SetupGet(p => p.SupportedAuthorizationResponseType)
-                           .Returns(Identity.OAuth.Constants.ResponseType.Code);
-            flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
+            var flowServiceStub = new Mock<IAuthorizationFlowService<OAuthAuthorizationRequest>>();
+            flowServiceStub.Setup(p => p.IsSupported(Identity.OAuth.Constants.ResponseType.Code))
+                           .Returns(false);
+            flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<OAuthAuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -89,7 +89,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             userServiceStub.Setup(p => p.GetUserByIdentifierAsync(It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(userStub.Object);
 
-            var instance = new AuthorizationService(validatorStub.Object, new List<IAuthorizationFlowService> { flowServiceStub.Object }, userServiceStub.Object);
+            var instance = new AuthorizationService<OAuthAuthorizationRequest>(validatorStub.Object, new List<IAuthorizationFlowService<OAuthAuthorizationRequest>> { flowServiceStub.Object }, userServiceStub.Object);
             var identity = new IdentityData(UserIdentifier, "test", new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -100,19 +100,19 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_UserNotFound_ReturnsError()
         {
-            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
-            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
+            var validatorStub = new Mock<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<OAuthAuthorizationRequest>()))
                          .ReturnsAsync(() => null);
 
-            var flowServiceStub = new Mock<IAuthorizationFlowService>();
+            var flowServiceStub = new Mock<IAuthorizationFlowService<OAuthAuthorizationRequest>>();
 
-            var request = new AuthorizationRequestBuilder().Build();
+            var request = new OAuthAuthorizationRequestBuilder().Build();
 
             var userServiceStub = new Mock<IUserService>();
             userServiceStub.Setup(p => p.GetUserByIdentifierAsync(It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(() => null);
 
-            var instance = new AuthorizationService(validatorStub.Object, new List<IAuthorizationFlowService> { flowServiceStub.Object }, userServiceStub.Object);
+            var instance = new AuthorizationService<OAuthAuthorizationRequest>(validatorStub.Object, new List<IAuthorizationFlowService<OAuthAuthorizationRequest>> { flowServiceStub.Object }, userServiceStub.Object);
             var identity = new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -126,17 +126,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string UserIdentifier = "2C532CF0-65D1-40C7-82B8-837AC6758165";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
 
-            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
-            validatorStub.Setup(p => p.IsValid(It.IsAny<AuthorizationRequest>()))
+            var validatorStub = new Mock<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>>();
+            validatorStub.Setup(p => p.IsValid(It.IsAny<OAuthAuthorizationRequest>()))
                          .ReturnsAsync(() => null);
 
-            var request = new AuthorizationRequestBuilder().WithClientId(ClientIdentifier)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .Build();
 
-            var flowServiceStub = new Mock<IAuthorizationFlowService>();
-            flowServiceStub.SetupGet(p => p.SupportedAuthorizationResponseType)
-                           .Returns(request.ResponseType);
-            flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
+            var flowServiceStub = new Mock<IAuthorizationFlowService<OAuthAuthorizationRequest>>();
+            flowServiceStub.Setup(p => p.IsSupported(request.ResponseType))
+                           .Returns(true);
+            flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<OAuthAuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -157,7 +157,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             userServiceStub.Setup(p => p.GetUserByIdentifierAsync(It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(userStub.Object);
 
-            var instance = new AuthorizationService(validatorStub.Object, new List<IAuthorizationFlowService> { flowServiceStub.Object }, userServiceStub.Object);
+            var instance = new AuthorizationService<OAuthAuthorizationRequest>(validatorStub.Object, new List<IAuthorizationFlowService<OAuthAuthorizationRequest>> { flowServiceStub.Object }, userServiceStub.Object);
 
             var identity = new IdentityData(UserIdentifier, "test", new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
 

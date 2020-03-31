@@ -4,6 +4,8 @@
     {
         public const string AccessTokenName = "access_token";
         public const string AccessTokenValidation = VsChars;
+        public const string IdTokenName = "id_token";
+        public const string IdTokenValidation = VsChars;
         public const string AdditionalParameterValidation = GrantTypeValidation;
         public const string ClientIdName = "client_id";
         public const string ClientIdValidation = VsChars;
@@ -33,6 +35,8 @@
         public const string ScopeValidation = @"^(?<scope>" + NqChar + @"+)(\s{1}(?<scope>" + NqChar + @"+))*$";
         public const string StateName = "state";
         public const string StateValidation = VsChars;
+        public const string NonceName = "nonce";
+        public const string NonceValidation = VsChars;
 
         public const string TokenTypeName = "token_type";
         public const string TokenTypeValidation = GrantTypeValidation;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 
@@ -11,13 +12,17 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
-        private readonly IEnumerable<ITokenFlowService> _tokenFlowServices;
+        private readonly IEnumerable<ITokenResultService> _tokenResultServices;
+        private readonly IAuthorizationCodeCache _cache;
+        private readonly IClientService _clientService;
 
-        public TokenService(IEnumerable<ITokenFlowService> tokenFlowServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService)
+        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
         {
-            _tokenFlowServices = tokenFlowServices;
+            _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;
             _clientAuthenticationService = clientAuthenticationService;
+            _clientService = clientService;
+            _cache = cache;
         }
 
         public async Task<ITokenResult> AuthorizeRequest(
@@ -37,8 +42,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new InvalidRequestResult(validationResult);
             }
 
-            var tokenFlowService = _tokenFlowServices.FirstOrDefault(p => p.SupportedGrantType == request.GrantType);
-            if (tokenFlowService == null)
+            var tokenResultService = _tokenResultServices.FirstOrDefault(p => p.SupportedGrantType == request.GrantType);
+            if (tokenResultService == null)
             {
                 return new UnsupportedGrantTypeResult();
             }
@@ -60,11 +65,24 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return new UnauthorizedClientResult();
             }
 
-            // ToDo: Check scopes (invalid_scope)
-            var tokenResult = await tokenFlowService.AuthorizeRequest(request)
-                                                    .ConfigureAwait(false);
+            var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
 
-            return tokenResult;
+            if (request == null || authorizationCodeTokenRequest == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
+                .ConfigureAwait(false);
+
+            var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
+
+            var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
+            var idtoken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
+
+            deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
+
+            return new SuccessfulTokenResult(accessToken, idtoken, client.TokenExpiration, scope);
         }
     }
 }
