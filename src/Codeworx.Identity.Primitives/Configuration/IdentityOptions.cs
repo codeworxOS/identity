@@ -11,6 +11,7 @@ namespace Codeworx.Identity.Configuration
             OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
             OpenIdAuthorizationEndpoint = "/openid10";
             OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
+            OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
             AccountEndpoint = "/account";
             CookieExpiration = TimeSpan.FromHours(1);
             Styles = new HashSet<string>();
@@ -41,6 +42,8 @@ namespace Codeworx.Identity.Configuration
 
         public string OpenIdTokenEndpoint { get; private set; }
 
+        public string OpenIdJsonWebKeyEndpoint { get; private set; }
+
         public HashSet<string> Styles { get; }
 
         public bool WindowsAuthenticationEnabled { get; private set; }
@@ -59,6 +62,7 @@ namespace Codeworx.Identity.Configuration
             target.OauthTokenEndpoint = this.OauthTokenEndpoint;
             target.OpenIdAuthorizationEndpoint = this.OpenIdAuthorizationEndpoint;
             target.OpenIdTokenEndpoint = this.OpenIdTokenEndpoint;
+            target.OpenIdJsonWebKeyEndpoint = this.OpenIdJsonWebKeyEndpoint;
             target.Styles.Clear();
 
             foreach (var item in this.Styles)

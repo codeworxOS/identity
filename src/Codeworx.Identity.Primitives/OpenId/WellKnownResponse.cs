@@ -18,7 +18,7 @@ namespace Codeworx.Identity.OpenId
         public string UserInfoEndpoint { get; set; }
 
         [DataMember(Order = 5, Name = "jwks_uri")]
-        public string WebKeySetEndpoint { get; set; }
+        public string JsonWebKeyEndpoint { get; set; }
 
         [DataMember(Order = 6, Name = "registration_endpoint")]
         public string ClientRegistrationEndpoint { get; set; }
