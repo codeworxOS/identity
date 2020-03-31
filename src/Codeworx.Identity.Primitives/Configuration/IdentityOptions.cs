@@ -7,8 +7,10 @@ namespace Codeworx.Identity.Configuration
     {
         public IdentityOptions()
         {
-            OauthEndpoint = "/oauth20";
-            OpenIdEndpoint = "/openid10";
+            OauthAuthorizationEndpoint = "/oauth20";
+            OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
+            OpenIdAuthorizationEndpoint = "/openid10";
+            OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
             AccountEndpoint = "/account";
             CookieExpiration = TimeSpan.FromHours(1);
             Styles = new HashSet<string>();
@@ -19,25 +21,29 @@ namespace Codeworx.Identity.Configuration
             WindowsAuthenticationEnabled = false;
         }
 
-        public string AccountEndpoint { get; set; }
+        public string AccountEndpoint { get; private set; }
 
-        public string AuthenticationCookie { get; set; }
+        public string AuthenticationCookie { get; private set; }
 
-        public string AuthenticationScheme { get; set; }
+        public string AuthenticationScheme { get; private set; }
 
-        public TimeSpan CookieExpiration { get; set; }
+        public TimeSpan CookieExpiration { get; private set; }
 
-        public string MissingTenantAuthenticationCookie { get; set; }
+        public string MissingTenantAuthenticationCookie { get; private set; }
 
-        public string MissingTenantAuthenticationScheme { get; set; }
+        public string MissingTenantAuthenticationScheme { get; private set; }
 
-        public string OauthEndpoint { get; set; }
+        public string OauthAuthorizationEndpoint { get; private set; }
 
-        public string OpenIdEndpoint { get; set; }
+        public string OauthTokenEndpoint { get; private set; }
+
+        public string OpenIdAuthorizationEndpoint { get; private set; }
+
+        public string OpenIdTokenEndpoint { get; private set; }
 
         public HashSet<string> Styles { get; }
 
-        public bool WindowsAuthenticationEnabled { get; set; }
+        public bool WindowsAuthenticationEnabled { get; private set; }
 
         public void CopyTo(IdentityOptions target)
         {
@@ -45,12 +51,16 @@ namespace Codeworx.Identity.Configuration
             target.AuthenticationScheme = this.AuthenticationScheme;
             target.MissingTenantAuthenticationCookie = this.MissingTenantAuthenticationCookie;
             target.MissingTenantAuthenticationScheme = this.MissingTenantAuthenticationScheme;
+            target.WindowsAuthenticationEnabled = this.WindowsAuthenticationEnabled;
 
             target.AccountEndpoint = this.AccountEndpoint;
             target.CookieExpiration = this.CookieExpiration;
-            target.OauthEndpoint = this.OauthEndpoint;
-            target.OpenIdEndpoint = this.OpenIdEndpoint;
+            target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;
+            target.OauthTokenEndpoint = this.OauthTokenEndpoint;
+            target.OpenIdAuthorizationEndpoint = this.OpenIdAuthorizationEndpoint;
+            target.OpenIdTokenEndpoint = this.OpenIdTokenEndpoint;
             target.Styles.Clear();
+
             foreach (var item in this.Styles)
             {
                 target.Styles.Add(item);

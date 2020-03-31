@@ -125,18 +125,18 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals("/.well-known/openid-configuration"),
                        p => p.UseMiddleware<WellKnownMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
+                       p => p.Request.Path.Equals(options.OauthTokenEndpoint),
                        p => p.UseMiddleware<TokenMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthEndpoint),
+                       p => p.Request.Path.Equals(options.OauthAuthorizationEndpoint),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<OAuth.AuthorizationMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdEndpoint + "/token"),
+                       p => p.Request.Path.Equals(options.OpenIdTokenEndpoint),
                        p => p.UseMiddleware<TokenMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdEndpoint),
+                       p => p.Request.Path.Equals(options.OpenIdAuthorizationEndpoint),
                        p => p
                            .UseMiddleware<AuthenticationMiddleware>()
                            .UseMiddleware<OpenId.AuthorizationMiddleware>())
