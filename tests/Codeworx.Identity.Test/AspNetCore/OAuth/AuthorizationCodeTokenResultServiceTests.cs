@@ -14,7 +14,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task CreateAccessToken_CacheDataNull_ThrowsException()
         {
-            var instance = new AuthorizationCodeTokenResultService(null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null, TimeSpan.Zero));
         }
@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc" }
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -43,7 +43,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc"},
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -60,7 +60,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {"cde", "abc"},
             };
 
-            var instance = new AuthorizationCodeTokenResultService(null, null);
+            var instance = new AuthorizationCodeTokenResultService(null, null, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -88,7 +88,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProvideMock.SetupGet(p => p.TokenType)
                 .Returns("abc");
 
-            var instance = new AuthorizationCodeTokenResultService(null, new[] { tokenProvideMock.Object });
+            var instance = new AuthorizationCodeTokenResultService(null, new[] { tokenProvideMock.Object }, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
@@ -120,14 +120,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
 
-            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object }, null);
 
             var result = await instance.CreateAccessToken(cache, TimeSpan.Zero);
 
             Assert.NotNull(result);
             identityServiceMock.Verify(p => p.GetIdentityAsync(expectedLogin), Times.Once);
             tokenProvider.Verify(p => p.CreateAsync(It.IsAny<object>()), Times.Once);
-            tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<TimeSpan>()), Times.Once);
+            tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ClaimsIdentity>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         }
 
         [Fact]
@@ -153,14 +153,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
 
-            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object });
+            var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object }, null);
 
             var result = await instance.CreateIdToken(cache, TimeSpan.Zero);
 
             Assert.NotNull(result);
             identityServiceMock.Verify(p => p.GetIdentityAsync(expectedLogin), Times.Once);
             tokenProvider.Verify(p => p.CreateAsync(It.IsAny<object>()), Times.Once);
-            tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<TimeSpan>()), Times.Once);
+            tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ClaimsIdentity>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
         }
     }
 }

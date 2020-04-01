@@ -7,7 +7,7 @@ namespace Codeworx.Identity
 {
     public static class CodeworxIdentityIdentityDataExtensions
     {
-        public static ClaimsPrincipal ToClaimsPrincipal(this IdentityData data)
+        public static ClaimsIdentity ToClaimsIdentity(this IdentityData data)
         {
             var identity = new ClaimsIdentity(Constants.ProductName, Constants.LoginClaimType, Constants.RoleClaimType);
 
@@ -18,6 +18,13 @@ namespace Codeworx.Identity
 
             var additionalClaims = data.ToLoginCookieClaims();
             identity.AddClaims(additionalClaims);
+
+            return identity;
+        }
+
+        public static ClaimsPrincipal ToClaimsPrincipal(this IdentityData data)
+        {
+            var identity = data.ToClaimsIdentity();
 
             var principal = new ClaimsPrincipal(identity);
 

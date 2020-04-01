@@ -10,11 +10,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class AuthorizationCodeTokenResultService : ITokenResultService
     {
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityService _identityService;
 
-        public AuthorizationCodeTokenResultService(IIdentityService identityService, IEnumerable<ITokenProvider> tokenProviders)
+        public AuthorizationCodeTokenResultService(IIdentityService identityService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor)
         {
             _tokenProviders = tokenProviders;
+            _baseUriAccessor = baseUriAccessor;
             _identityService = identityService;
         }
 
@@ -58,8 +60,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var identityData = await _identityService.GetIdentityAsync(login);
             var payload = identityData.GetTokenClaims(target);
+            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
+            var audience = cacheData[Identity.OAuth.Constants.ClientIdName];
+            cacheData.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
+            cacheData.TryGetValue(Identity.OAuth.Constants.NonceName, out var nonce);
 
-            await token.SetPayloadAsync(payload, expiresIn);
+            await token.SetPayloadAsync(payload, issuer, audience, identityData.ToClaimsIdentity(), scope, nonce, expiresIn);
 
             return await token.SerializeAsync();
         }
