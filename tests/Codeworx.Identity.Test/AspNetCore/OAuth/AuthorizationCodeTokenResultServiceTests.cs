@@ -117,8 +117,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProvider.SetupGet(p => p.TokenType)
                 .Returns("jwt");
             var identityServiceMock = new Mock<IIdentityService>();
+            var claims = new List<Claim>
+            {
+                new Claim(Constants.IdClaimType, "id"),
+                new Claim(Constants.LoginClaimType, "login")
+            };
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
+                .ReturnsAsync(new ClaimsIdentity(claims).ToIdentityData());
 
             var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object }, null);
 
@@ -150,8 +155,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProvider.SetupGet(p => p.TokenType)
                 .Returns("jwt");
             var identityServiceMock = new Mock<IIdentityService>();
+            var claims = new List<Claim>
+            {
+                new Claim(Constants.IdClaimType, "id"),
+                new Claim(Constants.LoginClaimType, "login")
+            };
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
-                .ReturnsAsync(new ClaimsIdentity().ToIdentityData());
+                .ReturnsAsync(new ClaimsIdentity(claims).ToIdentityData());
 
             var instance = new AuthorizationCodeTokenResultService(identityServiceMock.Object, new[] { tokenProvider.Object }, null);
 

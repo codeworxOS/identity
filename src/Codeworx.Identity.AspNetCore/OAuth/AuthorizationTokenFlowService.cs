@@ -64,7 +64,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var identityData = await _identityService.GetIdentityAsync(user);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
-            var issuer = _baseUriAccessor.BaseUri.OriginalString;
+            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 
             await token.SetPayloadAsync(payload, issuer, request.ClientId, user, request.Scope, request.Nonce, client.TokenExpiration).ConfigureAwait(false);
 

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.OAuth;
+﻿using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.Token;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -358,7 +358,20 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
         private static ClaimsIdentity GetIdentity()
         {
-            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }).ToClaimsPrincipal().Identity as ClaimsIdentity;
+            var tenants = new[]
+            {
+                new TenantInfo {Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName},
+
+            };
+            var claims = new[]
+            {
+                new AssignedClaim(Constants.IdClaimType, new[] {"id"}),
+                new AssignedClaim(Constants.LoginClaimType, new[] {"login"})
+
+            };
+
+            return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, tenants, claims)
+                .ToClaimsIdentity();
         }
     }
 }
