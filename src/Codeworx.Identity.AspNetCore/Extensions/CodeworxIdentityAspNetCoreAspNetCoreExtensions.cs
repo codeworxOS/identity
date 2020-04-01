@@ -229,6 +229,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
+            collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
 
             collection.AddTransient<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<OpenIdAuthorizationRequest, AuthorizationErrorResponse>, OpenIdAuthorizationRequestValidator>();
