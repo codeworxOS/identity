@@ -17,9 +17,9 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _options = identityOptions.Value;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IBaseUriAccessor baseUriAccessor)
         {
-            var host = $"{context.Request.Scheme}://{context.Request.Host}";
+            var host = baseUriAccessor.BaseUri.OriginalString;
 
             var content = new WellKnownResponse
             {
