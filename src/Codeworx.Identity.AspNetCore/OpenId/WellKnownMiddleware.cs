@@ -27,6 +27,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 AuthorizationEndpoint = host + _options.OpenIdAuthorizationEndpoint,
                 TokenEndpoint = host + _options.OpenIdTokenEndpoint,
                 JsonWebKeyEndpoint = host + _options.OpenIdJsonWebKeyEndpoint,
+                UserInfoEndpoint = host + _options.UserInfoEndpoint
             };
 
             var responseBinder = context.GetResponseBinder<WellKnownResponse>();
