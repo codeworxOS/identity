@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.OpenId.Model;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth

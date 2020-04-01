@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Codeworx.Identity.OpenId.Model;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
