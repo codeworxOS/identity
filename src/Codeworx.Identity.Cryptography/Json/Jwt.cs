@@ -40,7 +40,7 @@ namespace Codeworx.Identity.Cryptography.Json
         {
             if (!_handler.CanReadToken(value))
             {
-                throw new ArgumentException($"Parameter {nameof(value)} is not a valid token.");
+                throw new SecurityTokenException($"Parameter {nameof(value)} is not a valid token.");
             }
 
             var token = _handler.ReadJsonWebToken(value);

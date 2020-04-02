@@ -126,7 +126,7 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals("/.well-known/openid-configuration"),
                        p => p.UseMiddleware<WellKnownMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals("/userinfo"),
+                       p => p.Request.Path.Equals(options.UserInfoEndpoint),
                        p => p.UseMiddleware<UserInfoMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.OpenIdJsonWebKeyEndpoint),

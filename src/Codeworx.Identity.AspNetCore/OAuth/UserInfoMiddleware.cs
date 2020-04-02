@@ -1,7 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -14,23 +18,36 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, ITokenProvider tokenProvider)
         {
-            if (context.User == null)
+            var token = await tokenProvider.CreateAsync(null);
+            string tokenValue = null;
+
+            if (context.Request.Headers.ContainsKey(HeaderNames.Authorization) && context.Request.Headers[HeaderNames.Authorization].Any())
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                tokenValue = context.Request.Headers[HeaderNames.Authorization][0].Substring("Bearer ".Length);
+            }
+
+            try
+            {
+                await token.ParseAsync(tokenValue);
+                /*await token.ValidateAsync() Not Implemented */
+            }
+            catch (SecurityTokenException)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsync("{\n    \"error\": \"invalid_request\",\n    \"error_description\": \"Token not provided\"\n}");
                 return;
             }
 
-            var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
-
-            context.Response.StatusCode = StatusCodes.Status200OK;
+            var payload = await token.GetPayloadAsync();
 
             var content = new UserInfoResponse
             {
-                Subject = data.Identifier,
-                Name = data.Login,
+                Subject = payload[JwtRegisteredClaimNames.Sub]?.ToString(),
+                Name = payload[Constants.LoginClaimType]?.ToString(),
             };
+
             var responseBinder = context.GetResponseBinder<UserInfoResponse>();
             await responseBinder.BindAsync(content, context.Response);
         }
