@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
@@ -35,8 +36,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             catch (SecurityTokenException)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("{\n    \"error\": \"invalid_request\",\n    \"error_description\": \"Token not provided\"\n}");
+                var errorResponseBinder = context.GetResponseBinder<ErrorResponse>();
+                var errorResponse = new ErrorResponse(Identity.OAuth.Constants.Error.InvalidRequest, "Token not provided", null);
+                await errorResponseBinder.BindAsync(errorResponse, context.Response);
                 return;
             }
 

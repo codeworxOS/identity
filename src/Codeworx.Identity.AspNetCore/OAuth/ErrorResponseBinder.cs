@@ -31,6 +31,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                     response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
                 }
             }
+            else if (responseData.Error == Identity.OAuth.Constants.Error.InvalidRequest)
+            {
+                response.StatusCode = StatusCodes.Status400BadRequest;
+            }
             else
             {
                 response.StatusCode = StatusCodes.Status400BadRequest;
