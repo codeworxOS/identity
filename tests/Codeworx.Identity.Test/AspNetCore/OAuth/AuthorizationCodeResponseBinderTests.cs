@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
+using Moq;
+using Moq.Protected;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -74,6 +78,56 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(2, queryParts.Length);
             Assert.Equal($"{Identity.OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
             Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
+        }
+
+        [Fact]
+        public async Task RespondAsync_ResponseModeFormPost_RedirectsToLocation()
+        {
+            const string RedirectUri = "http://example.org/redirect";
+            const string Code = "asdf";
+            const string State = "state";
+
+            var clientHandlerMock = new Mock<DelegatingHandler>();
+            clientHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync", 
+                    ItExpr.IsAny<HttpRequestMessage>(), 
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK))
+                .Verifiable();
+
+            var httpClient = new HttpClient(clientHandlerMock.Object);
+
+            var clientFactoryMock = new Mock<IHttpClientFactory>();
+            
+            clientFactoryMock.Setup(p => p.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient).Verifiable();
+
+            var context = new DefaultHttpContext();
+
+            var authorizationCodeResponse = new AuthorizationCodeResponse(
+                State,
+                Code,
+                RedirectUri,
+                Identity.OpenId.Constants.ResponseMode.FormPost);
+
+            var instance = new AuthorizationCodeResponseBinder(clientFactoryMock.Object);
+
+            await instance.BindAsync(authorizationCodeResponse, context.Response);
+
+            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode)context.Response.StatusCode);
+
+            var locationHeader = context.Response.GetTypedHeaders().Location;
+            Assert.NotNull(locationHeader);
+
+            Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
+            
+            clientFactoryMock.Verify(p=> p.CreateClient(It.IsAny<string>()), Times.Once);
+            clientHandlerMock.Protected().Verify(
+                "SendAsync",
+                Times.Once(), 
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>());
         }
     }
 }
