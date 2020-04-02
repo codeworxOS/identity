@@ -75,6 +75,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
                 .ConfigureAwait(false);
 
+            if (deserializedGrantInformation == null)
+            {
+                throw new TimeoutException("Code is no longer available");
+            }
+
             var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
 
             var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
