@@ -26,7 +26,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             context.Response.StatusCode = StatusCodes.Status200OK;
 
-            var content = new UserInfoResponse();
+            var content = new UserInfoResponse
+            {
+                Subject = data.Identifier,
+                Name = data.Login,
+            };
             var responseBinder = context.GetResponseBinder<UserInfoResponse>();
             await responseBinder.BindAsync(content, context.Response);
         }
