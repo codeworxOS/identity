@@ -13,7 +13,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task RespondAsync_NullResponse_ExceptionThrown()
         {
-            var instance = new AuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder(null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
@@ -21,7 +21,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task RespondAsync_NullContext_ExceptionThrown()
         {
-            var instance = new AuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder(null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new AuthorizationCodeResponse(null, null, null), null));
         }
@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task RespondAsync_Redirect_RedirectsToLocationWithQueryString()
         {
-            var instance = new AuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder(null);
 
             const string RedirectUri = "http://example.org/redirect";
             const string ExpectedCode = "asdf";
@@ -53,7 +53,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task RespondAsync_RedirectWithState_RedirectsToLocationWithQueryString()
         {
-            var instance = new AuthorizationCodeResponseBinder();
+            var instance = new AuthorizationCodeResponseBinder(null);
 
             const string RedirectUri = "http://example.org/redirect";
             const string ExpectedCode = "asdf";

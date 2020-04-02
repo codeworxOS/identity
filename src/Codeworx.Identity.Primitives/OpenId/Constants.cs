@@ -24,5 +24,10 @@
         {
             public const string OpenId = "openid";
         }
+
+        public class ResponseMode
+        {
+            public const string FormPost = "form_post";
+        }
     }
 }

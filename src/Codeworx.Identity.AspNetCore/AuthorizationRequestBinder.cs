@@ -13,6 +13,7 @@ namespace Codeworx.Identity.AspNetCore
             IReadOnlyCollection<string> scope = null;
             IReadOnlyCollection<string> state = null;
             IReadOnlyCollection<string> nonce = null;
+            IReadOnlyCollection<string> responseMode = null;
 
             query?.TryGetValue(Identity.OAuth.Constants.ClientIdName, out clientId);
             query?.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out redirectUri);
@@ -20,6 +21,7 @@ namespace Codeworx.Identity.AspNetCore
             query?.TryGetValue(Identity.OAuth.Constants.ScopeName, out scope);
             query?.TryGetValue(Identity.OAuth.Constants.StateName, out state);
             query?.TryGetValue(Identity.OAuth.Constants.NonceName, out nonce);
+            query?.TryGetValue(Identity.OAuth.Constants.ResponseModeName, out responseMode);
 
             if (clientId?.Count > 1)
             {
@@ -51,17 +53,23 @@ namespace Codeworx.Identity.AspNetCore
                 return this.GetErrorResult(Identity.OAuth.Constants.NonceName, state?.FirstOrDefault());
             }
 
+            if (responseMode?.Count > 1)
+            {
+                return this.GetErrorResult(Identity.OAuth.Constants.ResponseModeName, state?.FirstOrDefault());
+            }
+
             return this.GetSuccessfulResult(
                 clientId?.FirstOrDefault(),
                 redirectUri?.FirstOrDefault(),
                 responseType?.FirstOrDefault(),
                 scope?.FirstOrDefault(),
                 state?.FirstOrDefault(),
-                nonce?.FirstOrDefault());
+                nonce?.FirstOrDefault(),
+                responseMode?.FirstOrDefault());
         }
 
         protected abstract IRequestBindingResult<TRequest, TError> GetErrorResult(string errorDescription, string state);
 
-        protected abstract IRequestBindingResult<TRequest, TError> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce);
+        protected abstract IRequestBindingResult<TRequest, TError> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null);
     }
 }

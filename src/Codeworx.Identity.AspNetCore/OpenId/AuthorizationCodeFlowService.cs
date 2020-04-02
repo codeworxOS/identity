@@ -101,7 +101,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
                 .ConfigureAwait(false);
 
-            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget, request.ResponseMode);
         }
     }
 }

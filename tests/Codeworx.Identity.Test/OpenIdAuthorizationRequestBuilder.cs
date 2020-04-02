@@ -55,7 +55,7 @@ namespace Codeworx.Identity.Test
 
         public OpenIdAuthorizationRequest Build()
         {
-            return new OpenIdAuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce);
+            return new OpenIdAuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce, null);
         }
     }
 }

@@ -41,10 +41,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
                 .ReturnsAsync(() => new SuccessfulCodeAuthorizationResult("", "", "http://example.com/redirect"));
 
             serviceProviderMock.Setup(p => p.GetService(typeof(IResponseBinder<AuthorizationCodeResponse>)))
-                .Returns(() => new AuthorizationCodeResponseBinder());
+                .Returns(() => new AuthorizationCodeResponseBinder(null));
 
             requestBindingResultMock.Setup(p => p.Result)
-                .Returns(new OpenIdAuthorizationRequest("", "", "", "", "", ""));
+                .Returns(new OpenIdAuthorizationRequest("", "", "", "", "", "", null));
 
             requestBinderMock.Setup(p => p.FromQuery(It.IsAny<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>()))
                 .Returns(() => requestBindingResultMock.Object);

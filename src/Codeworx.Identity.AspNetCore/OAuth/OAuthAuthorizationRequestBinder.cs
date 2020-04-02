@@ -10,9 +10,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             return new OAuthErrorResult(errorDescription, state);
         }
 
-        protected override IRequestBindingResult<OAuthAuthorizationRequest, AuthorizationErrorResponse> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce)
+        protected override IRequestBindingResult<OAuthAuthorizationRequest, AuthorizationErrorResponse> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
-            var request = new OAuthAuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce);
+            var request = new OAuthAuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce, responseMode);
 
             return new OAuthSuccessfulBindingResult(request);
         }
