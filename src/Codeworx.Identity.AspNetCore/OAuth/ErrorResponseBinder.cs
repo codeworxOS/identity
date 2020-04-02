@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenErrorResponseBinder : ResponseBinder<TokenErrorResponse>
+    public class ErrorResponseBinder : ResponseBinder<ErrorResponse>
     {
-        public override async Task BindAsync(TokenErrorResponse responseData, HttpResponse response)
+        public override async Task BindAsync(ErrorResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
@@ -48,7 +48,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public bool Supports(Type responseType)
         {
-            return responseType == typeof(TokenErrorResponse);
+            return responseType == typeof(ErrorResponse);
         }
     }
 }

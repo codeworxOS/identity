@@ -206,7 +206,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse>, OpenIdAuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
 
@@ -217,7 +217,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationTokenResponse>, AuthorizationTokenResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<ErrorResponse>, ErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
             collection.AddTransient<IResponseBinder<AssetResponse>, AssetResponseBinder>();
@@ -233,7 +233,7 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddTransient<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
             collection.AddTransient<IRequestValidator<OpenIdAuthorizationRequest, AuthorizationErrorResponse>, OpenIdAuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
+            collection.AddTransient<IRequestValidator<TokenRequest, ErrorResponse>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>, AuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
             collection.AddTransient<IAuthorizationCodeGenerator<OpenIdAuthorizationRequest>, AuthorizationCodeGenerator<OpenIdAuthorizationRequest>>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();

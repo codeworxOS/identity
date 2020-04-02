@@ -9,7 +9,7 @@ namespace Codeworx.Identity.OAuth.Token
             this.Response = new TokenResponse(accessToken, idToken, Constants.TokenType.Bearer, (int)expiresIn.TotalSeconds, scope);
         }
 
-        public TokenErrorResponse Error => null;
+        public ErrorResponse Error => null;
 
         public TokenResponse Response { get; }
     }

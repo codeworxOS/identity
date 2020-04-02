@@ -1,12 +1,12 @@
 ﻿namespace Codeworx.Identity.OAuth.Validation.Token
 {
-    public class ClientIdInvalidResult : IValidationResult<TokenErrorResponse>
+    public class ClientIdInvalidResult : IValidationResult<ErrorResponse>
     {
         public ClientIdInvalidResult()
         {
-            this.Error = new TokenErrorResponse(Constants.Error.InvalidRequest, null, null);
+            this.Error = new ErrorResponse(Constants.Error.InvalidRequest, null, null);
         }
 
-        public TokenErrorResponse Error { get; }
+        public ErrorResponse Error { get; }
     }
 }

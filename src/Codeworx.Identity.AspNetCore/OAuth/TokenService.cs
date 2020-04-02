@@ -11,12 +11,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class TokenService : ITokenService
     {
         private readonly IClientAuthenticationService _clientAuthenticationService;
-        private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
+        private readonly IRequestValidator<TokenRequest, ErrorResponse> _requestValidator;
         private readonly IEnumerable<ITokenResultService> _tokenResultServices;
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _clientService;
 
-        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
+        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, ErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
         {
             _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;

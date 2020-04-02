@@ -4,17 +4,17 @@ namespace Codeworx.Identity.OAuth.Token
 {
     public class InvalidRequestResult : ITokenResult
     {
-        public InvalidRequestResult(IValidationResult<TokenErrorResponse> validationResult)
+        public InvalidRequestResult(IValidationResult<ErrorResponse> validationResult)
         {
             this.Error = validationResult.Error ?? throw new ArgumentNullException(nameof(validationResult));
         }
 
         public InvalidRequestResult()
         {
-            this.Error = new TokenErrorResponse(Constants.Error.InvalidRequest, null, null);
+            this.Error = new ErrorResponse(Constants.Error.InvalidRequest, null, null);
         }
 
-        public TokenErrorResponse Error { get; }
+        public ErrorResponse Error { get; }
 
         public TokenResponse Response => null;
     }
