@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 
@@ -8,9 +10,9 @@ namespace Codeworx.Identity.Cryptography.Json
     {
         private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
 
-        public JwtProvider(IDefaultSigningKeyProvider defaultSigningKeyProvider)
+        public JwtProvider(IEnumerable<IDefaultSigningKeyProvider> defaultSigningKeyProvider)
         {
-            _defaultSigningKeyProvider = defaultSigningKeyProvider;
+            _defaultSigningKeyProvider = defaultSigningKeyProvider.FirstOrDefault();
         }
 
         public Type ConfigurationType { get; } = typeof(JwtConfiguration);

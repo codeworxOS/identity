@@ -237,6 +237,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>, AuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
             collection.AddTransient<IAuthorizationCodeGenerator<OpenIdAuthorizationRequest>, AuthorizationCodeGenerator<OpenIdAuthorizationRequest>>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
+            collection.AddSingleton<IDefaultSigningKeyProvider, RsaSigningKeyProvider>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();

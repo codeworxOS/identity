@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
@@ -83,11 +84,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
 
             var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
-            var idtoken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
+            var identityToken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
 
             deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
 
-            return new SuccessfulTokenResult(accessToken, idtoken, client.TokenExpiration, scope);
+            return new SuccessfulTokenResult(accessToken, identityToken, client.TokenExpiration, scope);
         }
     }
 }
