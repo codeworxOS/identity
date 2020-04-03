@@ -142,7 +142,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 },
                                 new ValidRedirectUrl
                                 {
-                                    Url = "https://example.org/redirect2",
+                                    Url = "http://127.0.0.1:64023",
                                 }
                             },
                             DefaultRedirectUri = "https://example.org/redirect",
