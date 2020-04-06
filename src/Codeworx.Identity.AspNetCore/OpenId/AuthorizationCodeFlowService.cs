@@ -29,6 +29,8 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _cache = cache;
         }
 
+        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Code };
+
         public bool IsSupported(string responseType)
         {
             return Equals(responseType, Identity.OAuth.Constants.ResponseType.Code);

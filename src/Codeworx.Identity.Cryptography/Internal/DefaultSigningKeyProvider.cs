@@ -25,6 +25,8 @@ namespace Codeworx.Identity.Cryptography.Internal
             ////var privateKey = x.GetECDsaPrivateKey();
         }
 
+        public string Algorithm { get; } = "ES384";
+
         public SecurityKey GetKey()
         {
             return _key;

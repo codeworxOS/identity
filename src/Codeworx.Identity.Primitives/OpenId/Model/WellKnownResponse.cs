@@ -24,18 +24,18 @@ namespace Codeworx.Identity.OpenId.Model
         public string ClientRegistrationEndpoint { get; set; }
 
         [DataMember(Order = 7, Name = "scopes_supported")]
-        public string SupportedScopes { get; set; }
+        public string[] SupportedScopes { get; set; }
 
         [DataMember(Order = 8, Name = "response_types_supported")]
-        public string SupportedResponseTypes { get; set; }
+        public string[] SupportedResponseTypes { get; set; }
 
         [DataMember(Order = 12, Name = "subject_types_supported")]
-        public string SupportedSubjectTypes { get; set; }
+        public string[] SupportedSubjectTypes { get; set; }
 
         [DataMember(Order = 13, Name = "id_token_signing_alg_values_supported")]
         public string[] SupportedIdTokenSigningAlgorithms { get; set; }
 
         [DataMember(Order = 25, Name = "claims_supported")]
-        public string SupportedClaims { get; set; }
+        public string[] SupportedClaims { get; set; }
     }
 }

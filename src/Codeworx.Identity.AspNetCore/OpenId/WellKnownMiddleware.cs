@@ -1,5 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -17,9 +22,17 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _options = identityOptions.Value;
         }
 
-        public async Task Invoke(HttpContext context, IBaseUriAccessor baseUriAccessor)
+        public async Task Invoke(
+            HttpContext context,
+            IBaseUriAccessor baseUriAccessor,
+            IScopeService scopeService,
+            IEnumerable<IAuthorizationFlowService<OpenIdAuthorizationRequest>> supportedFlows,
+            IEnumerable<IDefaultSigningKeyProvider> signingKeyProviders)
         {
             var host = baseUriAccessor.BaseUri.OriginalString;
+            var scopes = await scopeService.GetScopes();
+            var responseTypes = supportedFlows.SelectMany(p => p.SupportedResponseTypes);
+            var supportedSigningAlgorithms = signingKeyProviders.Select(p => p.Algorithm);
 
             var content = new WellKnownResponse
             {
@@ -29,6 +42,11 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 JsonWebKeyEndpoint = host + _options.OpenIdJsonWebKeyEndpoint,
                 UserInfoEndpoint = host + _options.UserInfoEndpoint,
                 ClientRegistrationEndpoint = host + "/notimplemented",
+                SupportedResponseTypes = responseTypes.ToArray(),
+                SupportedIdTokenSigningAlgorithms = supportedSigningAlgorithms.ToArray(),
+                SupportedClaims = new[] { "aud", "sub", "iss", "name" },
+                SupportedSubjectTypes = new[] { "public" },
+                SupportedScopes = scopes.Select(p => p.ScopeKey).ToArray()
             };
 
             var responseBinder = context.GetResponseBinder<WellKnownResponse>();

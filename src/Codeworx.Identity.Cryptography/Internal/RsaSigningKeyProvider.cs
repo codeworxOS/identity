@@ -19,6 +19,8 @@ namespace Codeworx.Identity.Cryptography.Internal
             _key = new RsaSecurityKey(_rsa);
         }
 
+        public string Algorithm { get; } = "RS256";
+
         public SecurityKey GetKey()
         {
             return _key;

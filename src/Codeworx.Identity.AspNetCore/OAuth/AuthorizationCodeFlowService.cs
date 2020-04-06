@@ -27,6 +27,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
+        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Code };
+
         public bool IsSupported(string responseType)
         {
             return Equals(Identity.OAuth.Constants.ResponseType.Code, responseType);
