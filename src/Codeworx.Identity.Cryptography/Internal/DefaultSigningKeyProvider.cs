@@ -27,6 +27,8 @@ namespace Codeworx.Identity.Cryptography.Internal
 
         public string Algorithm { get; } = "ES384";
 
+        public string KeyId => Identifier;
+
         public SecurityKey GetKey()
         {
             return _key;
@@ -38,7 +40,7 @@ namespace Codeworx.Identity.Cryptography.Internal
             var x = Base64UrlEncoder.Encode(parameters.Q.X);
             var y = Base64UrlEncoder.Encode(parameters.Q.Y);
 
-            return new EllipticKeyParameter(Identifier, KeyUse.Signature, CurveType.P384, x, y);
+            return new EllipticKeyParameter(Identifier, KeyUse.Signature, _key.KeySize, x, y);
         }
     }
 }

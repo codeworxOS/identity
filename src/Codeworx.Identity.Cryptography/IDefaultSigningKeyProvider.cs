@@ -7,6 +7,8 @@ namespace Codeworx.Identity.Cryptography
     {
         string Algorithm { get; }
 
+        string KeyId { get; }
+
         SecurityKey GetKey();
 
         KeyParameter GetKeyParameter();

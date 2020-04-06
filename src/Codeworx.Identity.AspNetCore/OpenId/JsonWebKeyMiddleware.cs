@@ -13,22 +13,22 @@ namespace Codeworx.Identity.AspNetCore.OpenId
     public class JsonWebKeyMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly IEnumerable<IJwkInformationSerializer> _jwkInformationSerializers;
 
-        public JsonWebKeyMiddleware(RequestDelegate next)
+        public JsonWebKeyMiddleware(RequestDelegate next, IEnumerable<IJwkInformationSerializer> jwkInformationSerializers)
         {
             _next = next;
+            _jwkInformationSerializers = jwkInformationSerializers;
         }
 
-        public async Task Invoke(HttpContext context, IEnumerable<IDefaultSigningKeyProvider> keyProviders)
+        public async Task Invoke(HttpContext context, IDefaultSigningKeyProvider keyProvider)
         {
-            var keys = new KeyList
-            {
-                Keys = keyProviders.Select(p => p.GetKeyParameter()).ToArray()
-            };
+            var defaultKey = keyProvider.GetKey();
+            var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
 
-            var responseString = JsonConvert.SerializeObject(keys);
+            var responseString = JsonConvert.SerializeObject(new KeyList { Keys = new[] { serializer.SerializeKeyToJsonWebKey(defaultKey, keyProvider.KeyId) } });
 
             await context.Response.WriteAsync(responseString)
                 .ConfigureAwait(false);

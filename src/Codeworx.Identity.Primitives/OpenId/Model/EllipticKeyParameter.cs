@@ -4,16 +4,16 @@ namespace Codeworx.Identity.OpenId.Model
 {
     public class EllipticKeyParameter : KeyParameter
     {
-        public EllipticKeyParameter(string keyId, KeyUse keyUse, CurveType curveType, string x, string y)
+        public EllipticKeyParameter(string keyId, KeyUse keyUse, int keySize, string x, string y)
             : base(keyId, KeyType.EllipticCurve, keyUse)
         {
-            this.Curve = curveType;
+            this.Curve = $"P-{keySize}";
             this.X = x;
             this.Y = y;
         }
 
         [DataMember(Order = 10, Name = "crv")]
-        public CurveType Curve { get; }
+        public string Curve { get; }
 
         [DataMember(Order = 11, Name = "x")]
         public string X { get; }
