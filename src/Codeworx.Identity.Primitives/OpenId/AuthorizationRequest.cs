@@ -1,14 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Validation;
 
 namespace Codeworx.Identity.OpenId
 {
     [DataContract]
-    public class OpenIdAuthorizationRequest : OAuthAuthorizationRequest
+    public class AuthorizationRequest : OAuth.AuthorizationRequest
     {
-        public OpenIdAuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce, string responseMode)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce, string responseMode)
             : base(clientId, redirectUri, responseType, scope, state, nonce, responseMode)
         {
         }

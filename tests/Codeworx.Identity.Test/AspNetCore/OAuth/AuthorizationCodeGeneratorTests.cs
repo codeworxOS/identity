@@ -12,7 +12,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         public async Task GenerateCode_CorrectInput_CodeGenerated()
         {
             var request = new OAuthAuthorizationRequestBuilder().Build();
-            var instance = new AuthorizationCodeGenerator<OAuthAuthorizationRequest>();
+            var instance = new AuthorizationCodeGenerator<AuthorizationRequest>();
 
             var result = await instance.GenerateCode(request, 10);
 
@@ -23,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task GenerateCode_RequestNull_ThrowsException()
         {
-            var instance = new AuthorizationCodeGenerator<OAuthAuthorizationRequest>();
+            var instance = new AuthorizationCodeGenerator<AuthorizationRequest>();
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.GenerateCode(null, 10));
         }
     }

@@ -12,15 +12,15 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
-    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OpenIdAuthorizationRequest>
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>
     {
         private readonly IClientService _clientService;
         private readonly IScopeService _scopeService;
-        private readonly IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> _authorizationCodeGenerator;
+        private readonly IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest> _authorizationCodeGenerator;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IAuthorizationCodeCache _cache;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
@@ -36,7 +36,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             return Equals(responseType, Identity.OAuth.Constants.ResponseType.Code);
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(OpenIdAuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(Identity.OpenId.AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {

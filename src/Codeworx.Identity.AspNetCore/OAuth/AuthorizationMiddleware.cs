@@ -9,13 +9,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationMiddleware
     {
-        private readonly IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
+        private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly RequestDelegate _next;
         private readonly IEnumerable<IResponseBinder> _responseBinders;
 
         public AuthorizationMiddleware(
                                        RequestDelegate next,
-                                       IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
+                                       IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
                                        IEnumerable<IResponseBinder> responseBinders)
         {
             _next = next;
@@ -23,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<OAuthAuthorizationRequest> authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService<AuthorizationRequest> authorizationService)
         {
             if (context.User == null)
             {

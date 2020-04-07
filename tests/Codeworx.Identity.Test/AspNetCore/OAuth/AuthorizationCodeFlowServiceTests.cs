@@ -46,8 +46,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -83,7 +83,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var request = new OAuthAuthorizationRequestBuilder().Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
 
             var oAuthClientServiceStub = new Mock<IClientService>();
 
@@ -113,8 +113,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -167,8 +167,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope("unknownScope")
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -216,8 +216,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -269,8 +269,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(string.Empty)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -318,8 +318,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(null)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
@@ -368,8 +368,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .WithScope(KnownScope)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<OAuthAuthorizationRequest>(), 10))
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();

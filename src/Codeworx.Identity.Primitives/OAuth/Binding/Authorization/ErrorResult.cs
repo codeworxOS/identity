@@ -1,13 +1,13 @@
 ﻿namespace Codeworx.Identity.OAuth.Binding.Authorization
 {
-    public class OAuthErrorResult : IRequestBindingResult<OAuthAuthorizationRequest, AuthorizationErrorResponse>
+    public class ErrorResult : IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse>
     {
-        public OAuthErrorResult(string errorDescription, string state)
+        public ErrorResult(string errorDescription, string state)
         {
             this.Error = new AuthorizationErrorResponse(Constants.Error.InvalidRequest, errorDescription, null, state);
         }
 
-        public OAuthAuthorizationRequest Result => null;
+        public AuthorizationRequest Result => null;
 
         public AuthorizationErrorResponse Error { get; }
     }

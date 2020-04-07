@@ -46,9 +46,9 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
-        public OAuthAuthorizationRequest Build()
+        public AuthorizationRequest Build()
         {
-            return new OAuthAuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce);
+            return new AuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce);
         }
     }
 }

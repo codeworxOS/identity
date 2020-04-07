@@ -6,11 +6,9 @@ using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
-using Codeworx.Identity.OpenId;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;
-using AuthorizationMiddleware = Codeworx.Identity.AspNetCore.OpenId.AuthorizationMiddleware;
 
 namespace Codeworx.Identity.Test.AspNetCore.OpenId
 {
@@ -21,7 +19,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         {
             var context = new DefaultHttpContext { User = new ClaimsPrincipal() };
 
-            var instance = new AuthorizationMiddleware(null, null);
+            var instance = new Identity.AspNetCore.OpenId.AuthorizationMiddleware(null, null);
 
             await instance.Invoke(context, null);
 
@@ -31,30 +29,30 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         [Fact]
         public async Task Invoke_ValidQuery_AuthorizationServiceCalled()
         {
-            var requestBinderMock = new Mock<IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse>>();
-            var requestBindingResultMock = new Mock<IRequestBindingResult<OpenIdAuthorizationRequest, AuthorizationErrorResponse>>();
+            var requestBinderMock = new Mock<IRequestBinder<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>>();
+            var requestBindingResultMock = new Mock<IRequestBindingResult<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>>();
             var serviceProviderMock = new Mock<IServiceProvider>();
-            var authorizationServiceMock = new Mock<IAuthorizationService<OpenIdAuthorizationRequest>>();
+            var authorizationServiceMock = new Mock<IAuthorizationService<Identity.OpenId.AuthorizationRequest>>();
 
             authorizationServiceMock.Setup(p =>
-                    p.AuthorizeRequest(It.IsAny<OpenIdAuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
+                    p.AuthorizeRequest(It.IsAny<Identity.OpenId.AuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
                 .ReturnsAsync(() => new SuccessfulCodeAuthorizationResult("", "", "http://example.com/redirect"));
 
             serviceProviderMock.Setup(p => p.GetService(typeof(IResponseBinder<AuthorizationCodeResponse>)))
                 .Returns(() => new AuthorizationCodeResponseBinder(null));
 
             requestBindingResultMock.Setup(p => p.Result)
-                .Returns(new OpenIdAuthorizationRequest("", "", "", "", "", "", null));
+                .Returns(new Identity.OpenId.AuthorizationRequest("", "", "", "", "", "", null));
 
             requestBinderMock.Setup(p => p.FromQuery(It.IsAny<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>()))
                 .Returns(() => requestBindingResultMock.Object);
 
             var context = new DefaultHttpContext { RequestServices = serviceProviderMock.Object };
-            var instance = new AuthorizationMiddleware(null, requestBinderMock.Object);
+            var instance = new Identity.AspNetCore.OpenId.AuthorizationMiddleware(null, requestBinderMock.Object);
 
             await instance.Invoke(context, authorizationServiceMock.Object);
 
-            authorizationServiceMock.Verify(p => p.AuthorizeRequest(It.IsAny<OpenIdAuthorizationRequest>(), It.IsAny<ClaimsIdentity>()), Times.Once);
+            authorizationServiceMock.Verify(p => p.AuthorizeRequest(It.IsAny<Identity.OpenId.AuthorizationRequest>(), It.IsAny<ClaimsIdentity>()), Times.Once);
         }
     }
 }

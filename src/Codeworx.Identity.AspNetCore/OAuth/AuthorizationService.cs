@@ -9,7 +9,7 @@ using Codeworx.Identity.OAuth.Authorization;
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationService<TRequest> : IAuthorizationService<TRequest>
-        where TRequest : OAuthAuthorizationRequest
+        where TRequest : AuthorizationRequest
     {
         private readonly IEnumerable<IAuthorizationFlowService<TRequest>> _authorizationFlowServices;
         private readonly IRequestValidator<TRequest, AuthorizationErrorResponse> _requestValidator;

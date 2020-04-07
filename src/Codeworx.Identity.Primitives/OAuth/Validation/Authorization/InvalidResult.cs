@@ -1,8 +1,8 @@
 ﻿namespace Codeworx.Identity.OAuth.Validation.Authorization
 {
-    public class OAuthInvalidResult : IValidationResult<AuthorizationErrorResponse>
+    public class InvalidResult : IValidationResult<AuthorizationErrorResponse>
     {
-        public OAuthInvalidResult(string error, string errorDescription, string state, string redirectUri = null)
+        public InvalidResult(string error, string errorDescription, string state, string redirectUri = null)
         {
             this.Error = new AuthorizationErrorResponse(error, errorDescription, null, state, redirectUri);
         }

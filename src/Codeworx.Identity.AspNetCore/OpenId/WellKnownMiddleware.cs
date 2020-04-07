@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -28,7 +27,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
             IScopeService scopeService,
-            IEnumerable<IAuthorizationFlowService<OpenIdAuthorizationRequest>> supportedFlows,
+            IEnumerable<IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>> supportedFlows,
             IDefaultSigningKeyProvider keyProvider)
         {
             var host = baseUriAccessor.BaseUri.OriginalString;

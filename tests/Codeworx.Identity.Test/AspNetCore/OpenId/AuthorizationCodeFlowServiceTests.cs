@@ -235,7 +235,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             var expectedClientId = "MyClientId";
             var expectedRedirectionUri = "redirect/uri";
             var expectedCode = "www";
-            var options = Options.Create(new Codeworx.Identity.AspNetCore.OAuth.AuthorizationCodeOptions());
+            var options = Options.Create(new Identity.AspNetCore.OAuth.AuthorizationCodeOptions());
 
             var clientServiceMock = new Mock<IClientService>();
             var clientRegistrationMock = new Mock<IClientRegistration>();
@@ -243,9 +243,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             var scopeServiceMock = new Mock<IScopeService>();
             var scopeMock = new Mock<IScope>();
             var cacheMock = new Mock<IAuthorizationCodeCache>();
-            var codeGeneratorMock = new Mock<IAuthorizationCodeGenerator<OpenIdAuthorizationRequest>>();
+            var codeGeneratorMock = new Mock<IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest>>();
 
-            codeGeneratorMock.Setup(p => p.GenerateCode(It.IsAny<OpenIdAuthorizationRequest>(), It.IsAny<int>()))
+            codeGeneratorMock.Setup(p => p.GenerateCode(It.IsAny<Identity.OpenId.AuthorizationRequest>(), It.IsAny<int>()))
                 .ReturnsAsync(expectedCode);
 
             scopeMock.SetupSequence(p => p.ScopeKey)

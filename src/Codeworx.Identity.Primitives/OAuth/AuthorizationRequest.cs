@@ -5,11 +5,11 @@ using Codeworx.Identity.Validation;
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class OAuthAuthorizationRequest
+    public class AuthorizationRequest
     {
         private string _defaultRedirectUri;
 
-        public OAuthAuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;

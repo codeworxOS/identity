@@ -7,7 +7,7 @@ using Codeworx.Identity.OAuth;
 namespace Codeworx.Identity.AspNetCore
 {
     public abstract class AuthorizationRequestValidator<TRequest, TResult> : IRequestValidator<TRequest, TResult>
-        where TRequest : OAuthAuthorizationRequest
+        where TRequest : AuthorizationRequest
     {
         private readonly IClientService _clientService;
 

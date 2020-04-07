@@ -3,16 +3,16 @@ using Codeworx.Identity.OAuth.Validation.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationRequestValidator : AuthorizationRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>
+    public class AuthorizationRequestValidator : AuthorizationRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>
     {
-        public OAuthAuthorizationRequestValidator(IClientService clientService)
+        public AuthorizationRequestValidator(IClientService clientService)
             : base(clientService)
         {
         }
 
         protected override IValidationResult<AuthorizationErrorResponse> GetInvalidResult(string errorDescription, string state, string redirectUri = null, string error = Identity.OAuth.Constants.Error.InvalidRequest)
         {
-            return new OAuthInvalidResult(error, errorDescription, state, redirectUri);
+            return new InvalidResult(error, errorDescription, state, redirectUri);
         }
     }
 }

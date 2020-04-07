@@ -10,15 +10,15 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OAuthAuthorizationRequest>
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<AuthorizationRequest>
     {
-        private readonly IAuthorizationCodeGenerator<OAuthAuthorizationRequest> _authorizationCodeGenerator;
+        private readonly IAuthorizationCodeGenerator<AuthorizationRequest> _authorizationCodeGenerator;
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _oAuthClientService;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IScopeService _scopeService;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OAuthAuthorizationRequest> authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<AuthorizationRequest> authorizationCodeGenerator, IClientService oAuthClientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _oAuthClientService = oAuthClientService;
@@ -34,7 +34,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             return Equals(Identity.OAuth.Constants.ResponseType.Code, responseType);
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {

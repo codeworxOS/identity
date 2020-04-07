@@ -305,7 +305,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal("https://example.org/redirect", $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
         }
 
-        private string ToRequestString(OAuthAuthorizationRequest request)
+        private string ToRequestString(AuthorizationRequest request)
         {
             return $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}" +
                    $"&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}" +

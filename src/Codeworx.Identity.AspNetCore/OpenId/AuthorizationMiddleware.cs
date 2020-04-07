@@ -3,23 +3,22 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OpenId;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
     public class AuthorizationMiddleware
     {
-        private readonly IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
+        private readonly IRequestBinder<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly RequestDelegate _next;
 
-        public AuthorizationMiddleware(RequestDelegate next, IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder)
+        public AuthorizationMiddleware(RequestDelegate next, IRequestBinder<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder)
         {
             _next = next;
             _authorizationRequestBinder = authorizationRequestBinder;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<OpenIdAuthorizationRequest> authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService<Identity.OpenId.AuthorizationRequest> authorizationService)
         {
             var claimsIdentity = context.User?.Identity as ClaimsIdentity;
 
