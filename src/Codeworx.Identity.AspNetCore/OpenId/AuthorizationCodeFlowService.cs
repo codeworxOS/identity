@@ -97,7 +97,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 { Identity.OAuth.Constants.ClientIdName, request.ClientId },
                 { Identity.OAuth.Constants.NonceName, request.Nonce },
                 { Identity.OAuth.Constants.ScopeName, request.Scope },
-                { Constants.LoginClaimType, user.ToIdentityData().Login },
+                { Constants.Claims.Name, user.ToIdentityData().Login },
             };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

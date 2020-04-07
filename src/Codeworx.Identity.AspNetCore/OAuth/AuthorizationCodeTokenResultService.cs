@@ -45,7 +45,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return null;
             }
 
-            if (!cacheData.TryGetValue(Constants.LoginClaimType, out var login))
+            if (!cacheData.TryGetValue(Constants.Claims.Name, out var login))
             {
                 return null;
             }

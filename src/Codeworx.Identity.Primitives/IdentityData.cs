@@ -45,10 +45,10 @@ namespace Codeworx.Identity
 
             var result = claims.ToDictionary(p => p.Key, p => p.Value);
 
-            result[Constants.IdClaimType] = Identifier;
-            result[Constants.LoginClaimType] = Login;
-            result[Constants.CurrentTenantClaimType] = TenantKey;
-            result[Constants.TenantClaimType] = Tenants.ToDictionary(p => p.Key, p => (object)p.Name);
+            result[Constants.Claims.Id] = Identifier;
+            result[Constants.Claims.Name] = Login;
+            result[Constants.Claims.CurrentTenant] = TenantKey;
+            result[Constants.Claims.Tenant] = Tenants.ToDictionary(p => p.Key, p => (object)p.Name);
 
             return result;
         }

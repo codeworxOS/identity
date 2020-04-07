@@ -365,9 +365,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             };
             var claims = new[]
             {
-                new AssignedClaim(Constants.IdClaimType, new[] {"id"}),
-                new AssignedClaim(Constants.LoginClaimType, new[] {"login"})
-
+                new AssignedClaim(Constants.Claims.Id, new[] {"id"}),
+                new AssignedClaim(Constants.Claims.Name, new[] {"login"})
             };
 
             return new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, tenants, claims)

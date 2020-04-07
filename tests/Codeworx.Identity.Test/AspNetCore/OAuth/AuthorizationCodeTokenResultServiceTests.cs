@@ -77,7 +77,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             {
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {Identity.OAuth.Constants.RedirectUriName, "redirect"},
-                {Constants.LoginClaimType, "login"},
+                {Constants.Claims.Name, "login"},
             };
 
             tokenMock.Setup(p => p.SerializeAsync())
@@ -106,7 +106,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             {
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {Identity.OAuth.Constants.RedirectUriName, "redirect"},
-                {Constants.LoginClaimType, expectedLogin},
+                {Constants.Claims.Name, expectedLogin},
             };
             var tokenMock = new Mock<IToken>();
             tokenMock.Setup(p => p.SerializeAsync())
@@ -119,8 +119,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var identityServiceMock = new Mock<IIdentityService>();
             var claims = new List<Claim>
             {
-                new Claim(Constants.IdClaimType, "id"),
-                new Claim(Constants.LoginClaimType, "login")
+                new Claim(Constants.Claims.Id, "id"),
+                new Claim(Constants.Claims.Name, expectedLogin)
             };
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity(claims).ToIdentityData());
@@ -144,7 +144,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             {
                 {Identity.OAuth.Constants.ClientIdName, "abc"},
                 {Identity.OAuth.Constants.RedirectUriName, "redirect"},
-                {Constants.LoginClaimType, expectedLogin},
+                {Constants.Claims.Name, expectedLogin},
             };
             var tokenMock = new Mock<IToken>();
             tokenMock.Setup(p => p.SerializeAsync())
@@ -157,8 +157,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var identityServiceMock = new Mock<IIdentityService>();
             var claims = new List<Claim>
             {
-                new Claim(Constants.IdClaimType, "id"),
-                new Claim(Constants.LoginClaimType, "login")
+                new Claim(Constants.Claims.Id, "id"),
+                new Claim(Constants.Claims.Name, expectedLogin)
             };
             identityServiceMock.Setup(p => p.GetIdentityAsync(It.IsAny<string>()))
                 .ReturnsAsync(new ClaimsIdentity(claims).ToIdentityData());

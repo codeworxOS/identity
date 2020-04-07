@@ -276,7 +276,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
 
             var instance = new AuthorizationCodeFlowService(codeGeneratorMock.Object, clientServiceMock.Object, scopeServiceMock.Object, options, cacheMock.Object);
 
-            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity(new[] { new Claim(Constants.LoginClaimType, expectedLogin) }));
+            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity(new[] { new Claim(Constants.Claims.Name, expectedLogin) }));
 
             Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
             Assert.Equal(expectedState, result.Response.State);
@@ -292,7 +292,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
                 { Identity.OAuth.Constants.ClientIdName, request.ClientId },
                 { Identity.OAuth.Constants.NonceName, request.Nonce },
                 { Identity.OAuth.Constants.ScopeName, request.Scope },
-                { Constants.LoginClaimType, expectedLogin },
+                { Constants.Claims.Name, expectedLogin },
             };
             cacheMock.Verify(p => p.SetAsync(It.IsAny<string>(), expectedCacheValue, It.IsAny<TimeSpan>()), Times.Once);
         }

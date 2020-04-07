@@ -46,8 +46,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var content = new UserInfoResponse
             {
-                Subject = payload[JwtRegisteredClaimNames.Sub]?.ToString(),
-                Name = payload[Constants.LoginClaimType]?.ToString(),
+                Subject = payload[Constants.Claims.Subject]?.ToString(),
+                Name = payload[Constants.Claims.Name]?.ToString(),
             };
 
             var responseBinder = context.GetResponseBinder<UserInfoResponse>();

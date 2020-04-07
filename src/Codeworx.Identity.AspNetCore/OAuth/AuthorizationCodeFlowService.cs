@@ -80,7 +80,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                    {
                                        { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
                                        { Identity.OAuth.Constants.ClientIdName, request.ClientId },
-                                       { Constants.LoginClaimType, user.ToIdentityData().Login },
+                                       { Constants.Claims.Name, user.ToIdentityData().Login },
                                        { Identity.OAuth.Constants.ScopeName, request.Scope },
                                    };
 
