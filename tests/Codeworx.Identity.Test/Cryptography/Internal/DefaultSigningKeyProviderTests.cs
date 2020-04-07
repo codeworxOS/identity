@@ -11,7 +11,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
         {
             var expectedKeyType = KeyType.EllipticCurve;
             var expectedKeyUse = KeyUse.Signature;
-            var expectedCurveType = CurveType.P384;
+            var expectedCurveType = "P-384";
             
             var instance = new DefaultSigningKeyProvider();
 
