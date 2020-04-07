@@ -19,5 +19,15 @@ namespace Codeworx.Identity.Cryptography.Internal
 
             throw new NotSupportedException("Key type not supported!");
         }
+
+        public string GetAlgorithm(SecurityKey key)
+        {
+            if (key is ECDsaSecurityKey ecdKey)
+            {
+                return $"ES{ecdKey.KeySize}";
+            }
+
+            throw new NotSupportedException("Key type not supported!");
+        }
     }
 }

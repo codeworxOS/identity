@@ -28,7 +28,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
             context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
 
-            var responseString = JsonConvert.SerializeObject(new KeyList { Keys = new[] { serializer.SerializeKeyToJsonWebKey(defaultKey, keyProvider.KeyId) } });
+            var responseString = JsonConvert.SerializeObject(new KeyList { Keys = new[] { serializer.SerializeKeyToJsonWebKey(defaultKey, string.Empty) } });
 
             await context.Response.WriteAsync(responseString)
                 .ConfigureAwait(false);

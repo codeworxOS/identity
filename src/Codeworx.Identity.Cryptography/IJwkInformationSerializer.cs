@@ -8,5 +8,7 @@ namespace Codeworx.Identity.Cryptography
         bool Supports(SecurityKey key);
 
         KeyParameter SerializeKeyToJsonWebKey(SecurityKey key, string keyId);
+
+        string GetAlgorithm(SecurityKey key);
     }
 }

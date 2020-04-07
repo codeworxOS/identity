@@ -19,5 +19,15 @@ namespace Codeworx.Identity.Cryptography.Internal
 
             throw new NotSupportedException("Key type not supported!");
         }
+
+        public string GetAlgorithm(SecurityKey key)
+        {
+            if (key is RsaSecurityKey rsaKey)
+            {
+                return "RS256";
+            }
+
+            throw new NotSupportedException("Key type not supported!");
+        }
     }
 }
