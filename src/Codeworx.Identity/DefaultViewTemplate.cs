@@ -49,6 +49,14 @@ namespace Codeworx.Identity
                 .Replace("{{styles}}", GetStyles());
         }
 
+        public async Task<string> GetFormPostTemplate(string redirectUrl, string code, string state)
+        {
+            return (await GetTemplateAsString("Codeworx.Identity.assets.form_post.html"))
+                .Replace("{{redirectUrl}}", redirectUrl)
+                .Replace("{{code}}", code)
+                .Replace("{{state}}", state);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)

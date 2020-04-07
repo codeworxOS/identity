@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationCodeResponseBinder : ResponseBinder<AuthorizationCodeResponse>
     {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly IViewTemplate _view;
 
-        public AuthorizationCodeResponseBinder(IHttpClientFactory clientFactory)
+        public AuthorizationCodeResponseBinder(IViewTemplate view)
         {
-            _clientFactory = clientFactory;
+            _view = view;
         }
 
         public override async Task BindAsync(AuthorizationCodeResponse responseData, HttpResponse response)
@@ -28,40 +28,28 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(responseData));
             }
 
-            var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
-
             if (Equals(responseData.ResponseMode, Identity.OpenId.Constants.ResponseMode.FormPost))
             {
-                var client = _clientFactory.CreateClient();
+                response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
+                response.Headers.Add(HeaderNames.CacheControl, "no-store, must-revalidate, max-age=0");
 
-                var formsData = new[]
-                {
-                    new KeyValuePair<string, string>(Identity.OAuth.Constants.CodeName, responseData.Code),
-                    new KeyValuePair<string, string>(Identity.OAuth.Constants.StateName, responseData.State),
-                };
+                var encodedCode = HttpUtility.HtmlEncode(responseData.Code);
 
-                await client.PostAsync(responseData.RedirectUri, new FormUrlEncodedContent(formsData));
-
-                /*await response.WriteAsync(
-                    @"<html>" +
-                    @"<head><title>Submit This Form</title></head> " +
-                    @"<body onload=""javascript:document.forms[0].submit()"">" +
-                    $@"<form method=""post"" action=""{responseData.RedirectUri}"">" +
-                    $@"<input type=""hidden"" name=""state"" value=""{responseData.State}""/> " +
-                    $@"<input type=""hidden"" name=""code"" value=""{responseData.Code}""/> " +
-                    @"</form></body></html>");*/
+                await response.WriteAsync(await _view.GetFormPostTemplate(responseData.RedirectUri, encodedCode, responseData.State));
             }
             else
             {
+                var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
+
                 redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName, responseData.Code);
 
                 if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
                     redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
                 }
-            }
 
-            response.Redirect(redirectUriBuilder.Uri.ToString());
+                response.Redirect(redirectUriBuilder.Uri.ToString());
+            }
         }
     }
 }
