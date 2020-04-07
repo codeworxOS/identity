@@ -23,33 +23,33 @@ namespace Codeworx.Identity.Configuration
             WindowsAuthenticationEnabled = false;
         }
 
-        public string AccountEndpoint { get; private set; }
+        public string AccountEndpoint { get; set; }
 
-        public string AuthenticationCookie { get; private set; }
+        public string AuthenticationCookie { get; set; }
 
-        public string AuthenticationScheme { get; private set; }
+        public string AuthenticationScheme { get; set; }
 
-        public TimeSpan CookieExpiration { get; private set; }
+        public TimeSpan CookieExpiration { get; set; }
 
-        public string MissingTenantAuthenticationCookie { get; private set; }
+        public string MissingTenantAuthenticationCookie { get; set; }
 
-        public string MissingTenantAuthenticationScheme { get; private set; }
+        public string MissingTenantAuthenticationScheme { get; set; }
 
-        public string OauthAuthorizationEndpoint { get; private set; }
+        public string OauthAuthorizationEndpoint { get; set; }
 
-        public string OauthTokenEndpoint { get; private set; }
+        public string OauthTokenEndpoint { get; set; }
 
-        public string OpenIdAuthorizationEndpoint { get; private set; }
+        public string OpenIdAuthorizationEndpoint { get; set; }
 
-        public string OpenIdTokenEndpoint { get; private set; }
+        public string OpenIdTokenEndpoint { get; set; }
 
-        public string OpenIdJsonWebKeyEndpoint { get; private set; }
+        public string OpenIdJsonWebKeyEndpoint { get; set; }
 
-        public string UserInfoEndpoint { get; private set; }
+        public string UserInfoEndpoint { get; set; }
 
         public HashSet<string> Styles { get; }
 
-        public bool WindowsAuthenticationEnabled { get; private set; }
+        public bool WindowsAuthenticationEnabled { get; set; }
 
         public void CopyTo(IdentityOptions target)
         {
