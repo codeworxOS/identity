@@ -1,20 +1,17 @@
 ﻿using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Binding.Authorization;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationRequestBinder : AuthorizationRequestBinder<AuthorizationRequest, AuthorizationErrorResponse>
+    public class AuthorizationRequestBinder : AuthorizationRequestBinder<AuthorizationRequest>
     {
-        protected override IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse> GetErrorResult(string errorDescription, string state)
+        protected override ErrorResponseException GetErrorResponse(string errorDescription, string state)
         {
-            return new ErrorResult(errorDescription, state);
+            return new ErrorResponseException<AuthorizationErrorResponse>(new AuthorizationErrorResponse(Identity.OAuth.Constants.Error.InvalidRequest, errorDescription, null, state));
         }
 
-        protected override IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
+        protected override AuthorizationRequest GetResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
-            var request = new AuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce, responseMode);
-
-            return new SuccessfulBindingResult(request);
+            return new AuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce, responseMode);
         }
     }
 }

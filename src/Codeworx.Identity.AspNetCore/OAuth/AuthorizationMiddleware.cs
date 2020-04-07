@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
@@ -9,21 +7,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationMiddleware
     {
-        private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly RequestDelegate _next;
-        private readonly IEnumerable<IResponseBinder> _responseBinders;
 
-        public AuthorizationMiddleware(
-                                       RequestDelegate next,
-                                       IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
-                                       IEnumerable<IResponseBinder> responseBinders)
+        public AuthorizationMiddleware(RequestDelegate next)
         {
             _next = next;
-            _authorizationRequestBinder = authorizationRequestBinder;
-            _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<AuthorizationRequest> authorizationService)
+        public async Task Invoke(HttpContext context, IAuthorizationService<AuthorizationRequest> authorizationService, IRequestBinder<AuthorizationRequest> authorizationRequestBinder)
         {
             if (context.User == null)
             {
@@ -33,19 +24,20 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var claimsIdentity = context.User.Identity as ClaimsIdentity;
 
-            var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
+            try
+            {
+                var authorizationRequest = await authorizationRequestBinder.BindAsync(context.Request)
+                                                                           .ConfigureAwait(false);
 
-            if (bindingResult.Error != null)
-            {
-                var responseBinder = context.GetResponseBinder<AuthorizationErrorResponse>();
-                await responseBinder.BindAsync(bindingResult.Error, context.Response);
-            }
-            else if (bindingResult.Result != null)
-            {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, claimsIdentity);
+                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity);
 
                 var responseBinder = context.GetResponseBinder(result.Response.GetType());
                 await responseBinder.BindAsync(result.Response, context.Response);
+            }
+            catch (ErrorResponseException error)
+            {
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
             }
         }
     }

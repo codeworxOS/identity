@@ -1,19 +1,17 @@
-﻿using Codeworx.Identity.OAuth;
+﻿using Codeworx.Identity.OpenId;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
-    public class AuthorizationRequestBinder : AuthorizationRequestBinder<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>
+    public class AuthorizationRequestBinder : AuthorizationRequestBinder<AuthorizationRequest>
     {
-        protected override IRequestBindingResult<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse> GetErrorResult(string errorDescription, string state)
+        protected override ErrorResponseException GetErrorResponse(string errorDescription, string state)
         {
-            return new Identity.OpenId.Binding.Authorization.ErrorResult(errorDescription, state);
+            return new ErrorResponseException<Identity.OAuth.AuthorizationErrorResponse>(new Identity.OAuth.AuthorizationErrorResponse(Identity.OAuth.Constants.Error.InvalidRequest, errorDescription, null, state));
         }
 
-        protected override IRequestBindingResult<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
+        protected override AuthorizationRequest GetResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
-            var request = new Identity.OpenId.AuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce, responseMode);
-
-            return new Identity.OpenId.Binding.Authorization.SuccessfulBindingResult(request);
+            return new AuthorizationRequest(clientId, redirectUri, responseType, scope, state, nonce, responseMode);
         }
     }
 }

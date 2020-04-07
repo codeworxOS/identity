@@ -203,8 +203,8 @@ namespace Codeworx.Identity.AspNetCore
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest, AuthorizationErrorResponse>, OAuth.AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>, OpenId.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();

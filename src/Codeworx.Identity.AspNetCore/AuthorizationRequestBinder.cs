@@ -1,64 +1,76 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public abstract class AuthorizationRequestBinder<TRequest, TError> : IRequestBinder<TRequest, TError>
+    public abstract class AuthorizationRequestBinder<TRequest> : IRequestBinder<TRequest>
     {
-        public IRequestBindingResult<TRequest, TError> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
+        public async Task<TRequest> BindAsync(HttpRequest request)
         {
-            IReadOnlyCollection<string> clientId = null;
-            IReadOnlyCollection<string> redirectUri = null;
-            IReadOnlyCollection<string> responseType = null;
-            IReadOnlyCollection<string> scope = null;
-            IReadOnlyCollection<string> state = null;
-            IReadOnlyCollection<string> nonce = null;
-            IReadOnlyCollection<string> responseMode = null;
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
 
-            query?.TryGetValue(Identity.OAuth.Constants.ClientIdName, out clientId);
-            query?.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out redirectUri);
-            query?.TryGetValue(Identity.OAuth.Constants.ResponseTypeName, out responseType);
-            query?.TryGetValue(Identity.OAuth.Constants.ScopeName, out scope);
-            query?.TryGetValue(Identity.OAuth.Constants.StateName, out state);
-            query?.TryGetValue(Identity.OAuth.Constants.NonceName, out nonce);
-            query?.TryGetValue(Identity.OAuth.Constants.ResponseModeName, out responseMode);
+            Dictionary<string, IReadOnlyCollection<string>> dictionary;
+            if (request.HasFormContentType)
+            {
+                var form = await request.ReadFormAsync()
+                                        .ConfigureAwait(false);
+                dictionary = form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
+            }
+            else
+            {
+                dictionary = request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
+            }
+
+            dictionary.TryGetValue(Identity.OAuth.Constants.ClientIdName, out var clientId);
+            dictionary.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out var redirectUri);
+            dictionary.TryGetValue(Identity.OAuth.Constants.ResponseTypeName, out var responseType);
+            dictionary.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
+            dictionary.TryGetValue(Identity.OAuth.Constants.StateName, out var state);
+            dictionary.TryGetValue(Identity.OAuth.Constants.NonceName, out var nonce);
+            dictionary.TryGetValue(Identity.OAuth.Constants.ResponseModeName, out var responseMode);
 
             if (clientId?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.ClientIdName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.ClientIdName, state?.FirstOrDefault());
             }
 
             if (redirectUri?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.RedirectUriName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.RedirectUriName, state?.FirstOrDefault());
             }
 
             if (responseType?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.ResponseTypeName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.ResponseTypeName, state?.FirstOrDefault());
             }
 
             if (scope?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.ScopeName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.ScopeName, state?.FirstOrDefault());
             }
 
             if (state?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.StateName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.StateName, state.FirstOrDefault());
             }
 
             if (nonce?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.NonceName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.NonceName, state?.FirstOrDefault());
             }
 
             if (responseMode?.Count > 1)
             {
-                return this.GetErrorResult(Identity.OAuth.Constants.ResponseModeName, state?.FirstOrDefault());
+                throw this.GetErrorResponse(Identity.OAuth.Constants.ResponseModeName, state?.FirstOrDefault());
             }
 
-            return this.GetSuccessfulResult(
+            return this.GetResult(
                 clientId?.FirstOrDefault(),
                 redirectUri?.FirstOrDefault(),
                 responseType?.FirstOrDefault(),
@@ -68,8 +80,8 @@ namespace Codeworx.Identity.AspNetCore
                 responseMode?.FirstOrDefault());
         }
 
-        protected abstract IRequestBindingResult<TRequest, TError> GetErrorResult(string errorDescription, string state);
+        protected abstract ErrorResponseException GetErrorResponse(string errorDescription, string state);
 
-        protected abstract IRequestBindingResult<TRequest, TError> GetSuccessfulResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null);
+        protected abstract TRequest GetResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null);
     }
 }
