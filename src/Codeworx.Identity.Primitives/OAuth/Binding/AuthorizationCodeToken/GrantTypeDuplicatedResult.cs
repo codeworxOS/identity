@@ -1,14 +1,14 @@
 ﻿namespace Codeworx.Identity.OAuth.Binding.AuthorizationCodeToken
 {
-    public class GrantTypeDuplicatedResult : IRequestBindingResult<AuthorizationCodeTokenRequest, TokenErrorResponse>
+    public class GrantTypeDuplicatedResult : IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse>
     {
         public GrantTypeDuplicatedResult()
         {
-            this.Error = new TokenErrorResponse(Constants.Error.InvalidRequest, string.Empty, string.Empty);
+            this.Error = new ErrorResponse(Constants.Error.InvalidRequest, string.Empty, string.Empty);
         }
 
         public AuthorizationCodeTokenRequest Result => null;
 
-        public TokenErrorResponse Error { get; }
+        public ErrorResponse Error { get; }
     }
 }

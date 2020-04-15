@@ -18,7 +18,7 @@ using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OpenId;
+using Codeworx.Identity.OpenId.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Builder;
@@ -122,18 +122,27 @@ namespace Codeworx.Identity.AspNetCore
             return app
                    .UseAuthentication()
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthEndpoint + "/token"),
+                       p => p.Request.Path.Equals("/.well-known/openid-configuration"),
+                       p => p.UseMiddleware<WellKnownMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.UserInfoEndpoint),
+                       p => p.UseMiddleware<UserInfoMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OpenIdJsonWebKeyEndpoint),
+                       p => p.UseMiddleware<JsonWebKeyMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthTokenEndpoint),
                        p => p.UseMiddleware<TokenMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthEndpoint),
+                       p => p.Request.Path.Equals(options.OauthAuthorizationEndpoint),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<OAuth.AuthorizationMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdEndpoint + "/token"),
+                       p => p.Request.Path.Equals(options.OpenIdTokenEndpoint),
                        p => p.UseMiddleware<TokenMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdEndpoint),
+                       p => p.Request.Path.Equals(options.OpenIdAuthorizationEndpoint),
                        p => p
                            .UseMiddleware<AuthenticationMiddleware>()
                            .UseMiddleware<OpenId.AuthorizationMiddleware>())
@@ -194,9 +203,9 @@ namespace Codeworx.Identity.AspNetCore
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<OpenIdAuthorizationRequest, AuthorizationErrorResponse>, OpenIdAuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
 
@@ -207,7 +216,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationTokenResponse>, AuthorizationTokenResponseBinder>();
-            collection.AddTransient<IResponseBinder<TokenErrorResponse>, TokenErrorResponseBinder>();
+            collection.AddTransient<IResponseBinder<ErrorResponse>, ErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
             collection.AddTransient<IResponseBinder<AssetResponse>, AssetResponseBinder>();
@@ -218,22 +227,27 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<TenantMissingResponse>, TenantMissingResponseBinder>();
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
+            collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
+            collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
 
-            collection.AddTransient<IRequestValidator<OAuthAuthorizationRequest, AuthorizationErrorResponse>, OAuthAuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<OpenIdAuthorizationRequest, AuthorizationErrorResponse>, OpenIdAuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<TokenRequest, TokenErrorResponse>, TokenRequestValidator>();
-            collection.AddTransient<IAuthorizationCodeGenerator<OAuthAuthorizationRequest>, AuthorizationCodeGenerator<OAuthAuthorizationRequest>>();
-            collection.AddTransient<IAuthorizationCodeGenerator<OpenIdAuthorizationRequest>, AuthorizationCodeGenerator<OpenIdAuthorizationRequest>>();
+            collection.AddTransient<IRequestValidator<Identity.OAuth.AuthorizationRequest, AuthorizationErrorResponse>, OAuth.AuthorizationRequestValidator>();
+            collection.AddTransient<IRequestValidator<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>, OpenId.AuthorizationRequestValidator>();
+            collection.AddTransient<IRequestValidator<TokenRequest, ErrorResponse>, TokenRequestValidator>();
+            collection.AddTransient<IAuthorizationCodeGenerator<Identity.OAuth.AuthorizationRequest>, AuthorizationCodeGenerator<Identity.OAuth.AuthorizationRequest>>();
+            collection.AddTransient<IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest>, AuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest>>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
 
-            collection.AddScoped<IAuthorizationFlowService<OAuthAuthorizationRequest>, OAuth.AuthorizationCodeFlowService>();
-            collection.AddScoped<IAuthorizationFlowService<OAuthAuthorizationRequest>, OAuth.AuthorizationTokenFlowService>();
-            collection.AddScoped<IAuthorizationService<OAuthAuthorizationRequest>, AuthorizationService<OAuthAuthorizationRequest>>();
-            collection.AddScoped<IAuthorizationService<OpenIdAuthorizationRequest>, AuthorizationService<OpenIdAuthorizationRequest>>();
-            collection.AddScoped<IAuthorizationFlowService<OpenIdAuthorizationRequest>, OpenId.AuthorizationCodeFlowService>();
+            collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
+            collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
+
+            collection.AddScoped<IAuthorizationFlowService<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationTokenFlowService>();
+            collection.AddScoped<IAuthorizationService<Identity.OAuth.AuthorizationRequest>, AuthorizationService<Identity.OAuth.AuthorizationRequest>>();
+            collection.AddScoped<IAuthorizationService<Identity.OpenId.AuthorizationRequest>, AuthorizationService<Identity.OpenId.AuthorizationRequest>>();
+            collection.AddScoped<IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationCodeFlowService>();
 
             collection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
             collection.AddScoped<ITokenService, TokenService>();

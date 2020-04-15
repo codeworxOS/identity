@@ -37,6 +37,8 @@
         public const string StateValidation = VsChars;
         public const string NonceName = "nonce";
         public const string NonceValidation = VsChars;
+        public const string ResponseModeName = "response_mode";
+        public const string ResponseModeValidation = VsChars;
 
         public const string TokenTypeName = "token_type";
         public const string TokenTypeValidation = GrantTypeValidation;

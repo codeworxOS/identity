@@ -1,6 +1,6 @@
 ﻿namespace Codeworx.Identity.OAuth.Binding.AuthorizationCodeToken
 {
-    public class SuccessfulBindingResult : IRequestBindingResult<AuthorizationCodeTokenRequest, TokenErrorResponse>
+    public class SuccessfulBindingResult : IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse>
     {
         public SuccessfulBindingResult(AuthorizationCodeTokenRequest result)
         {
@@ -9,6 +9,6 @@
 
         public AuthorizationCodeTokenRequest Result { get; }
 
-        public TokenErrorResponse Error => null;
+        public ErrorResponse Error => null;
     }
 }

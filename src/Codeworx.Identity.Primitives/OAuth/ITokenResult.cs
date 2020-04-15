@@ -2,7 +2,7 @@
 {
     public interface ITokenResult
     {
-        TokenErrorResponse Error { get; }
+        ErrorResponse Error { get; }
 
         TokenResponse Response { get; }
     }

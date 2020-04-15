@@ -5,11 +5,11 @@ using Codeworx.Identity.Validation;
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class OAuthAuthorizationRequest
+    public class AuthorizationRequest
     {
         private string _defaultRedirectUri;
 
-        public OAuthAuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;
@@ -17,6 +17,7 @@ namespace Codeworx.Identity.OAuth
             this.Scope = scope;
             this.State = state;
             this.Nonce = nonce;
+            this.ResponseMode = responseMode;
         }
 
         [Required]
@@ -45,6 +46,10 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.NonceValidation)]
         [DataMember(Order = 6, Name = Constants.NonceName)]
         public virtual string Nonce { get; }
+
+        [RegularExpression(Constants.ResponseModeValidation)]
+        [DataMember(Order = 7, Name = OAuth.Constants.ResponseModeName)]
+        public string ResponseMode { get; }
 
         [IgnoreDataMember]
         public string RedirectionTarget

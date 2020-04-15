@@ -9,7 +9,7 @@ using Codeworx.Identity.OAuth;
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationCodeGenerator<TRequest> : IAuthorizationCodeGenerator<TRequest>
-        where TRequest : OAuthAuthorizationRequest
+        where TRequest : AuthorizationRequest
     {
         private static readonly IReadOnlyCollection<char> _allowedCharacters;
 

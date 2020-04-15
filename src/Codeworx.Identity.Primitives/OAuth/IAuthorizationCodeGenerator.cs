@@ -3,7 +3,7 @@
 namespace Codeworx.Identity.OAuth
 {
     public interface IAuthorizationCodeGenerator<TRequest>
-        where TRequest : OAuthAuthorizationRequest
+        where TRequest : AuthorizationRequest
     {
         Task<string> GenerateCode(TRequest request, int length);
     }

@@ -7,9 +7,9 @@ namespace Codeworx.Identity
 {
     public static class CodeworxIdentityIdentityDataExtensions
     {
-        public static ClaimsPrincipal ToClaimsPrincipal(this IdentityData data)
+        public static ClaimsIdentity ToClaimsIdentity(this IdentityData data)
         {
-            var identity = new ClaimsIdentity(Constants.ProductName, Constants.LoginClaimType, Constants.RoleClaimType);
+            var identity = new ClaimsIdentity(Constants.ProductName, Constants.Claims.Name, Constants.Claims.Role);
 
             var tenants = data.ToTenantClaims();
             identity.AddClaims(tenants);
@@ -18,6 +18,13 @@ namespace Codeworx.Identity
 
             var additionalClaims = data.ToLoginCookieClaims();
             identity.AddClaims(additionalClaims);
+
+            return identity;
+        }
+
+        public static ClaimsPrincipal ToClaimsPrincipal(this IdentityData data)
+        {
+            var identity = data.ToClaimsIdentity();
 
             var principal = new ClaimsPrincipal(identity);
 
@@ -36,20 +43,20 @@ namespace Codeworx.Identity
             {
                 switch (item.Type)
                 {
-                    case Constants.IdClaimType:
+                    case Constants.Claims.Id:
                         id = item.Value;
                         break;
 
-                    case Constants.LoginClaimType:
+                    case Constants.Claims.Name:
                         login = item.Value;
                         break;
 
-                    case Constants.CurrentTenantClaimType:
+                    case Constants.Claims.CurrentTenant:
                         currentTenant = item.Value;
                         tenants.Add(new TenantInfo { Key = currentTenant, Name = item.Properties[Constants.TenantNameProperty] });
                         break;
 
-                    case Constants.TenantClaimType:
+                    case Constants.Claims.Tenant:
                         tenants.Add(new TenantInfo { Key = item.Value, Name = item.Properties[Constants.TenantNameProperty] });
                         break;
 
@@ -71,7 +78,7 @@ namespace Codeworx.Identity
         {
             foreach (var item in data.Tenants)
             {
-                var type = item.Key == data.TenantKey ? Constants.CurrentTenantClaimType : Constants.TenantClaimType;
+                var type = item.Key == data.TenantKey ? Constants.Claims.CurrentTenant : Constants.Claims.Tenant;
                 var value = item.Key;
 
                 var claim = new Claim(type, value, item.Name);
@@ -94,8 +101,8 @@ namespace Codeworx.Identity
 
         private static IEnumerable<Claim> ToIdentityClaims(this IdentityData data)
         {
-            yield return new Claim(Constants.IdClaimType, data.Identifier);
-            yield return new Claim(Constants.LoginClaimType, data.Login);
+            yield return new Claim(Constants.Claims.Id, data.Identifier);
+            yield return new Claim(Constants.Claims.Name, data.Login);
         }
 
         private static IEnumerable<Claim> ToLoginCookieClaims(this IdentityData data)

@@ -12,15 +12,15 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
-    public class AuthorizationCodeFlowService : IAuthorizationFlowService<OpenIdAuthorizationRequest>
+    public class AuthorizationCodeFlowService : IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>
     {
         private readonly IClientService _clientService;
         private readonly IScopeService _scopeService;
-        private readonly IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> _authorizationCodeGenerator;
+        private readonly IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest> _authorizationCodeGenerator;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IAuthorizationCodeCache _cache;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<OpenIdAuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest> authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
@@ -29,12 +29,14 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _cache = cache;
         }
 
+        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Code };
+
         public bool IsSupported(string responseType)
         {
             return Equals(responseType, Identity.OAuth.Constants.ResponseType.Code);
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(OpenIdAuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(Identity.OpenId.AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -95,13 +97,13 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 { Identity.OAuth.Constants.ClientIdName, request.ClientId },
                 { Identity.OAuth.Constants.NonceName, request.Nonce },
                 { Identity.OAuth.Constants.ScopeName, request.Scope },
-                { Constants.LoginClaimType, user.ToIdentityData().Login },
+                { Constants.Claims.Name, user.ToIdentityData().Login },
             };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
                 .ConfigureAwait(false);
 
-            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget);
+            return new SuccessfulCodeAuthorizationResult(request.State, authorizationCode, request.RedirectionTarget, request.ResponseMode);
         }
     }
 }

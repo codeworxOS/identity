@@ -7,8 +7,12 @@ namespace Codeworx.Identity.Configuration
     {
         public IdentityOptions()
         {
-            OauthEndpoint = "/oauth20";
-            OpenIdEndpoint = "/openid10";
+            OauthAuthorizationEndpoint = "/oauth20";
+            OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
+            OpenIdAuthorizationEndpoint = "/openid10";
+            OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
+            OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
+            UserInfoEndpoint = "/userinfo";
             AccountEndpoint = "/account";
             CookieExpiration = TimeSpan.FromHours(1);
             Styles = new HashSet<string>();
@@ -31,9 +35,17 @@ namespace Codeworx.Identity.Configuration
 
         public string MissingTenantAuthenticationScheme { get; set; }
 
-        public string OauthEndpoint { get; set; }
+        public string OauthAuthorizationEndpoint { get; set; }
 
-        public string OpenIdEndpoint { get; set; }
+        public string OauthTokenEndpoint { get; set; }
+
+        public string OpenIdAuthorizationEndpoint { get; set; }
+
+        public string OpenIdTokenEndpoint { get; set; }
+
+        public string OpenIdJsonWebKeyEndpoint { get; set; }
+
+        public string UserInfoEndpoint { get; set; }
 
         public HashSet<string> Styles { get; }
 
@@ -45,12 +57,18 @@ namespace Codeworx.Identity.Configuration
             target.AuthenticationScheme = this.AuthenticationScheme;
             target.MissingTenantAuthenticationCookie = this.MissingTenantAuthenticationCookie;
             target.MissingTenantAuthenticationScheme = this.MissingTenantAuthenticationScheme;
+            target.WindowsAuthenticationEnabled = this.WindowsAuthenticationEnabled;
 
             target.AccountEndpoint = this.AccountEndpoint;
             target.CookieExpiration = this.CookieExpiration;
-            target.OauthEndpoint = this.OauthEndpoint;
-            target.OpenIdEndpoint = this.OpenIdEndpoint;
+            target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;
+            target.OauthTokenEndpoint = this.OauthTokenEndpoint;
+            target.OpenIdAuthorizationEndpoint = this.OpenIdAuthorizationEndpoint;
+            target.OpenIdTokenEndpoint = this.OpenIdTokenEndpoint;
+            target.OpenIdJsonWebKeyEndpoint = this.OpenIdJsonWebKeyEndpoint;
+            target.UserInfoEndpoint = this.UserInfoEndpoint;
             target.Styles.Clear();
+
             foreach (var item in this.Styles)
             {
                 target.Styles.Add(item);

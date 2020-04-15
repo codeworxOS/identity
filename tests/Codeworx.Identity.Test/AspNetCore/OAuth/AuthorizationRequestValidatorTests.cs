@@ -3,13 +3,12 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Model;
-using Codeworx.Identity.OAuth.Validation.Authorization;
 using Moq;
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class OAuthAuthorizationRequestValidatorTests
+    public class AuthorizationRequestValidatorTests
     {
         [Fact]
         public async Task IsValid_ClientIdEmpty_ReturnsError()
@@ -24,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -46,7 +45,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -67,7 +66,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -88,7 +87,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == "registered")))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -111,7 +110,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -132,7 +131,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -159,7 +158,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -179,7 +178,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -202,7 +201,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -223,7 +222,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -250,7 +249,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -270,7 +269,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -293,7 +292,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -315,7 +314,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -338,7 +337,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -361,7 +360,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -384,7 +383,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -406,7 +405,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -427,7 +426,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -450,7 +449,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -473,7 +472,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -495,7 +494,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -517,7 +516,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -538,7 +537,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -561,7 +560,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -584,7 +583,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 
@@ -604,7 +603,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             clientServiceStub.Setup(p => p.GetById(It.Is<string>(v => v == request.ClientId)))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
-            var instance = new OAuthAuthorizationRequestValidator(clientServiceStub.Object);
+            var instance = new AuthorizationRequestValidator(clientServiceStub.Object);
 
             var result = await instance.IsValid(request);
 

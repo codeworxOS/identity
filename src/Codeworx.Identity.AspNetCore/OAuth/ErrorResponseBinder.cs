@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class TokenErrorResponseBinder : ResponseBinder<TokenErrorResponse>
+    public class ErrorResponseBinder : ResponseBinder<ErrorResponse>
     {
-        public override async Task BindAsync(TokenErrorResponse responseData, HttpResponse response)
+        public override async Task BindAsync(ErrorResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
@@ -31,12 +31,16 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                     response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
                 }
             }
+            else if (responseData.Error == Identity.OAuth.Constants.Error.InvalidRequest)
+            {
+                response.StatusCode = StatusCodes.Status400BadRequest;
+            }
             else
             {
                 response.StatusCode = StatusCodes.Status400BadRequest;
             }
 
-            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
+            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
             response.Headers.Add(HeaderNames.CacheControl, "no-store");
             response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
@@ -48,7 +52,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public bool Supports(Type responseType)
         {
-            return responseType == typeof(TokenErrorResponse);
+            return responseType == typeof(ErrorResponse);
         }
     }
 }

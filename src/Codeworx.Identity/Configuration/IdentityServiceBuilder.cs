@@ -35,8 +35,14 @@ namespace Codeworx.Identity.Configuration
             {
                 return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
                                                             {
+                                                                new OpenIdScope(),
                                                                 new DummyScope()
                                                             });
+            }
+
+            private class OpenIdScope : IScope
+            {
+                public string ScopeKey => OpenId.Constants.Scopes.OpenId;
             }
 
             private class DummyScope : IScope

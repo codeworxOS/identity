@@ -16,7 +16,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public static InvalidRequestResult CreateInvalidClientId(string state)
         {
-            return new InvalidRequestResult(new OAuthInvalidResult(Identity.OAuth.Constants.Error.InvalidRequest, Identity.OAuth.Constants.ClientIdName, state));
+            return new InvalidRequestResult(new InvalidResult(Constants.Error.InvalidRequest, Constants.ClientIdName, state));
         }
     }
 }

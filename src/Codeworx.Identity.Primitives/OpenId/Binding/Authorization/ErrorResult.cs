@@ -2,14 +2,14 @@
 
 namespace Codeworx.Identity.OpenId.Binding.Authorization
 {
-    public class OpenIdErrorResult : IRequestBindingResult<OpenIdAuthorizationRequest, AuthorizationErrorResponse>
+    public class ErrorResult : IRequestBindingResult<AuthorizationRequest, AuthorizationErrorResponse>
     {
-        public OpenIdErrorResult(string errorDescription, string state)
+        public ErrorResult(string errorDescription, string state)
         {
             this.Error = new AuthorizationErrorResponse(OAuth.Constants.Error.InvalidRequest, errorDescription, null, state);
         }
 
-        public OpenIdAuthorizationRequest Result => null;
+        public AuthorizationRequest Result => null;
 
         public AuthorizationErrorResponse Error { get; }
     }

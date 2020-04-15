@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -12,17 +13,20 @@ namespace Codeworx.Identity.Cryptography.Json
     public class Jwt : IToken
     {
         private readonly JwtConfiguration _configuration;
-        private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
         private readonly JsonWebTokenHandler _handler;
         private readonly SecurityKey _signingKey;
         private TimeSpan _expiration;
         private IDictionary<string, object> _payload;
+        private string _audience;
+        private ClaimsIdentity _subject;
+        private string _nonce;
+        private string _issuer;
+        private string _scope;
 
         public Jwt(IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
-            _defaultSigningKeyProvider = defaultSigningKeyProvider;
             _configuration = configuration;
-            _signingKey = _defaultSigningKeyProvider.GetKey();
+            _signingKey = defaultSigningKeyProvider.GetKey();
 
             _handler = new JsonWebTokenHandler();
         }
@@ -36,7 +40,7 @@ namespace Codeworx.Identity.Cryptography.Json
         {
             if (!_handler.CanReadToken(value))
             {
-                throw new ArgumentException($"Parameter {nameof(value)} is not a valid token.");
+                throw new SecurityTokenException($"Parameter {nameof(value)} is not a valid token.");
             }
 
             var token = _handler.ReadJsonWebToken(value);
@@ -50,22 +54,35 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public Task<string> SerializeAsync()
         {
+            _payload.Add(Identity.OAuth.Constants.NonceName, _nonce);
+            _payload.Add(Constants.Claims.Subject, _subject?.FindFirst(Constants.Claims.Id)?.Value);
+            _payload.Add(Identity.OAuth.Constants.ScopeName, _scope);
+
             var descriptor = new SecurityTokenDescriptor
             {
-                SigningCredentials = GetSigningCredentials(),
+                Issuer = _issuer,
+                Audience = _audience,
+                Subject = _subject, // Is not used in implementation
                 Claims = _payload,
                 Expires = DateTime.Now + _expiration,
-                IssuedAt = DateTime.Now
+                IssuedAt = DateTime.Now,
+                NotBefore = DateTime.MinValue,
+                SigningCredentials = GetSigningCredentials(),
             };
 
             return Task.FromResult(_handler.CreateToken(descriptor));
         }
 
-        public async Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
+        public async Task SetPayloadAsync(IDictionary<string, object> data, string issuer, string audience, ClaimsIdentity subject, string scope, string nonce, TimeSpan expiration)
         {
             await Task.CompletedTask;
 
             _payload = data;
+            _issuer = issuer;
+            _audience = audience;
+            _subject = subject;
+            _scope = scope;
+            _nonce = nonce;
             _expiration = expiration;
         }
 

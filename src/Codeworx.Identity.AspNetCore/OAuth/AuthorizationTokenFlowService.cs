@@ -9,27 +9,31 @@ using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationTokenFlowService : IAuthorizationFlowService<OAuthAuthorizationRequest>
+    public class AuthorizationTokenFlowService : IAuthorizationFlowService<AuthorizationRequest>
     {
         private readonly IIdentityService _identityService;
         private readonly IClientService _oAuthClientService;
         private readonly IScopeService _scopeService;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public AuthorizationTokenFlowService(IIdentityService identityService, IClientService oAuthClientService, IScopeService scopeService, IEnumerable<ITokenProvider> tokenProviders)
+        public AuthorizationTokenFlowService(IIdentityService identityService, IClientService oAuthClientService, IScopeService scopeService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
         {
             _oAuthClientService = oAuthClientService;
             _scopeService = scopeService;
             _tokenProviders = tokenProviders;
+            _baseUriAccessor = baseUriAccessor;
             _identityService = identityService;
         }
+
+        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Token };
 
         public bool IsSupported(string responseType)
         {
             return Equals(Identity.OAuth.Constants.ResponseType.Token, responseType);
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(OAuthAuthorizationRequest request, ClaimsIdentity user)
+        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             var client = await _oAuthClientService.GetById(request.ClientId);
             if (client == null)
@@ -62,12 +66,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var identityData = await _identityService.GetIdentityAsync(user);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
+            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 
-            await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(payload, issuer, request.ClientId, user, request.Scope, request.Nonce, client.TokenExpiration).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 
-            // TODO cach accessToken = Key value = identityData.
             return new SuccessfulTokenAuthorizationResult(request.State, accessToken, Convert.ToInt32(Math.Floor(client.TokenExpiration.TotalSeconds)), request.RedirectionTarget);
         }
     }

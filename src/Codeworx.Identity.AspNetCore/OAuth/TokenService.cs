@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
@@ -11,12 +12,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     public class TokenService : ITokenService
     {
         private readonly IClientAuthenticationService _clientAuthenticationService;
-        private readonly IRequestValidator<TokenRequest, TokenErrorResponse> _requestValidator;
+        private readonly IRequestValidator<TokenRequest, ErrorResponse> _requestValidator;
         private readonly IEnumerable<ITokenResultService> _tokenResultServices;
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _clientService;
 
-        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, TokenErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
+        public TokenService(IAuthorizationCodeCache cache, IEnumerable<ITokenResultService> tokenResultServices, IRequestValidator<TokenRequest, ErrorResponse> requestValidator, IClientAuthenticationService clientAuthenticationService, IClientService clientService)
         {
             _tokenResultServices = tokenResultServices;
             _requestValidator = requestValidator;
@@ -75,14 +76,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var deserializedGrantInformation = await _cache.GetAsync(authorizationCodeTokenRequest.Code)
                 .ConfigureAwait(false);
 
+            if (deserializedGrantInformation == null)
+            {
+                throw new TimeoutException("Code is no longer available");
+            }
+
             var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
 
             var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
-            var idtoken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
+            var identityToken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
 
             deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
 
-            return new SuccessfulTokenResult(accessToken, idtoken, client.TokenExpiration, scope);
+            return new SuccessfulTokenResult(accessToken, identityToken, client.TokenExpiration, scope);
         }
     }
 }

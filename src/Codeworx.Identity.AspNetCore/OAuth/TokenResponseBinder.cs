@@ -21,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(response));
             }
 
-            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=UTF8");
+            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
             response.Headers.Add(HeaderNames.CacheControl, "no-store");
             response.Headers.Add(HeaderNames.Pragma, "no-cache");
 

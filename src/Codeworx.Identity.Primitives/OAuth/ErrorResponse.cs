@@ -4,9 +4,9 @@ using System.Runtime.Serialization;
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class TokenErrorResponse
+    public class ErrorResponse
     {
-        public TokenErrorResponse(string error, string errorDescription, string errorUri)
+        public ErrorResponse(string error, string errorDescription, string errorUri)
         {
             this.Error = error;
             this.ErrorDescription = errorDescription;

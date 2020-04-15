@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>OIDC Form_Post Response</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body Onload="document.forms[0].submit()">
+    <form method="post" action="{{redirectUrl}}">
+        <input type="hidden" name="code" value="{{code}}" />
+        <input type="hidden" name="state" value="{{state}}" />
+
+        <noscript>
+            <p>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue.</p>
+            <input type="submit" name="continue" value="Continue" />
+        </noscript>
+    </form>
+</body>
+</html>

@@ -11,12 +11,12 @@ using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    public class TokenErrorResponseBinderTests
+    public class ErrorResponseBinderTests
     {
         [Fact]
         public async Task RespondAsync_NullResponse_ExceptionThrown()
         {
-            var instance = new TokenErrorResponseBinder();
+            var instance = new ErrorResponseBinder();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
         }
@@ -24,9 +24,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task RespondAsync_NullContext_ExceptionThrown()
         {
-            var instance = new TokenErrorResponseBinder();
+            var instance = new ErrorResponseBinder();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new TokenErrorResponse(null, null, null), null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new ErrorResponse(null, null, null), null));
         }
 
         [Fact]
@@ -39,9 +39,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
 
-            var instance = new TokenErrorResponseBinder();
+            var instance = new ErrorResponseBinder();
 
-            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
+            await instance.BindAsync(new ErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -49,7 +49,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
 
@@ -72,9 +72,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
 
-            var instance = new TokenErrorResponseBinder();
+            var instance = new ErrorResponseBinder();
 
-            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
+            await instance.BindAsync(new ErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -82,7 +82,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
 
@@ -106,9 +106,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             context.Request.Headers.Add(HeaderNames.Authorization, new AuthenticationHeaderValue(AuthenticationSchemes.Basic.ToString()).ToString());
             context.Response.Body = new MemoryStream();
 
-            var instance = new TokenErrorResponseBinder();
+            var instance = new ErrorResponseBinder();
 
-            await instance.BindAsync(new TokenErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
+            await instance.BindAsync(new ErrorResponse(ExpectedError, ExpectedDescription, ExpectedErrorUri), context.Response);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
 
@@ -116,7 +116,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var typedHeaders = context.Response.GetTypedHeaders();
             Assert.Equal("application/json", typedHeaders.ContentType.MediaType.ToString());
-            Assert.Equal("UTF8", typedHeaders.ContentType.Charset.ToString());
+            Assert.Equal("utf-8", typedHeaders.ContentType.Charset.ToString());
             Assert.True(typedHeaders.CacheControl.NoStore);
             Assert.Equal("no-cache", context.Response.Headers[HeaderNames.Pragma]);
             Assert.Equal("Basic", context.Response.Headers[HeaderNames.WWWAuthenticate]);

@@ -4,10 +4,10 @@
     {
         public UnsupportedGrantTypeResult()
         {
-            this.Error = new TokenErrorResponse(Constants.Error.UnsupportedGrantType, string.Empty, string.Empty);
+            this.Error = new ErrorResponse(Constants.Error.UnsupportedGrantType, string.Empty, string.Empty);
         }
 
-        public TokenErrorResponse Error { get; }
+        public ErrorResponse Error { get; }
 
         public TokenResponse Response => null;
     }

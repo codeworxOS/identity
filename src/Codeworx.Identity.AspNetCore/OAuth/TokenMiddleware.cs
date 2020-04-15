@@ -14,11 +14,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
     {
         private readonly RequestDelegate _next;
         private readonly IEnumerable<IResponseBinder> _responseBinders;
-        private readonly IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> _tokenRequestBinder;
+        private readonly IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse> _tokenRequestBinder;
 
         public TokenMiddleware(
                                RequestDelegate next,
-                               IRequestBinder<AuthorizationCodeTokenRequest, TokenErrorResponse> tokenRequestBinder,
+                               IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse> tokenRequestBinder,
                                IEnumerable<IResponseBinder> responseBinders)
         {
             _next = next;
@@ -28,7 +28,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task Invoke(HttpContext context, ITokenService tokenService)
         {
-            IRequestBindingResult<AuthorizationCodeTokenRequest, TokenErrorResponse> bindingResult = null;
+            IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse> bindingResult = null;
 
             if (context.Request.HasFormContentType)
             {
@@ -37,7 +37,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (bindingResult?.Error != null)
             {
-                var responseBinder = context.GetResponseBinder<TokenErrorResponse>();
+                var responseBinder = context.GetResponseBinder<ErrorResponse>();
                 await responseBinder.BindAsync(bindingResult.Error, context.Response);
                 return;
             }
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
                 if (result.Error != null)
                 {
-                    var responseBinder = context.GetResponseBinder<TokenErrorResponse>();
+                    var responseBinder = context.GetResponseBinder<ErrorResponse>();
                     await responseBinder.BindAsync(result.Error, context.Response);
                     return;
                 }

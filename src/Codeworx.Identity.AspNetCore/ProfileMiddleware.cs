@@ -49,15 +49,15 @@ namespace Codeworx.Identity.AspNetCore
                 {
                     await jsonTextWriter.WriteStartObjectAsync();
 
-                    await jsonTextWriter.WritePropertyNameAsync(Constants.IdClaimType);
+                    await jsonTextWriter.WritePropertyNameAsync(nameof(data.Identifier));
                     await jsonTextWriter.WriteValueAsync(data.Identifier);
 
-                    await jsonTextWriter.WritePropertyNameAsync(Constants.LoginClaimType);
+                    await jsonTextWriter.WritePropertyNameAsync(nameof(data.Login));
                     await jsonTextWriter.WriteValueAsync(data.Login);
 
                     if (data.TenantKey != null)
                     {
-                        await jsonTextWriter.WritePropertyNameAsync(Constants.CurrentTenantClaimType);
+                        await jsonTextWriter.WritePropertyNameAsync(nameof(data.TenantKey));
                         await jsonTextWriter.WriteValueAsync(data.TenantKey);
                     }
 

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
+using Codeworx.Identity.Cryptography;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -52,10 +53,11 @@ namespace Codeworx.Identity.Web.Test
             services.AddSingleton<IExternalLoginProvider, WindowsLoginProvider>();
 
             services.AddCodeworxIdentity(_configuration)
-                .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                .UseTestSetup()
-                .UseConfiguration(_configuration)
-                .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+                    .ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
+                    .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
+                    .UseTestSetup()
+                    .UseConfiguration(_configuration)
+                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
