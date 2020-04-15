@@ -122,7 +122,7 @@ namespace Codeworx.Identity.AspNetCore
             return app
                    .UseAuthentication()
                    .MapWhen(
-                       p => p.Request.Path.Equals("/.well-known/openid-configuration"),
+                       p => p.Request.Path.Equals("/common/v2.0/.well-known/openid-configuration"),
                        p => p.UseMiddleware<WellKnownMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.UserInfoEndpoint),

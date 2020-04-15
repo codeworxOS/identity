@@ -29,6 +29,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             }
             else if (config.Type.HasFlag(ClientType.Native) || config.Type.HasFlag(ClientType.UserAgent))
             {
+                flows.Add(Codeworx.Identity.OAuth.Constants.ResponseType.Code);
                 flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.AuthorizationCode);
                 flows.Add(Codeworx.Identity.OAuth.Constants.ResponseType.Token);
                 flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.Password);

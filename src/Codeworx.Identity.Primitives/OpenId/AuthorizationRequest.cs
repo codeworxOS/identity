@@ -23,7 +23,7 @@ namespace Codeworx.Identity.OpenId
         [DataMember(Order = 4, Name = OAuth.Constants.ScopeName)]
         public override string Scope => base.Scope;
 
-        [Required]
+        // TODO Check with specs: seams to be optional [Required]
         [RegularExpression(OAuth.Constants.NonceValidation)]
         [DataMember(Order = 6, Name = OAuth.Constants.NonceName)]
         public override string Nonce => base.Nonce;

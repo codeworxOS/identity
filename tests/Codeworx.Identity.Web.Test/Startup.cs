@@ -53,11 +53,11 @@ namespace Codeworx.Identity.Web.Test
             services.AddSingleton<IExternalLoginProvider, WindowsLoginProvider>();
 
             services.AddCodeworxIdentity(_configuration)
-                    .ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
+                    //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     .UseTestSetup()
-                    .UseConfiguration(_configuration)
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()))
+                    .UseConfiguration(_configuration);
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 

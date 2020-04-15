@@ -1,4 +1,4 @@
-var TenantForm = (function () {
+var TenantForm = /** @class */ (function () {
     function TenantForm() {
         this.DONE = 4;
         this.OK = 200;
