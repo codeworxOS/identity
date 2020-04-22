@@ -55,9 +55,8 @@ namespace Codeworx.Identity.Web.Test
             services.AddCodeworxIdentity(_configuration)
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                    .UseTestSetup()
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()))
-                    .UseConfiguration(_configuration);
+                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+            //.UseConfiguration(_configuration);
 
             services.AddScoped<IClaimsService, SampleClaimsProvider>();
 

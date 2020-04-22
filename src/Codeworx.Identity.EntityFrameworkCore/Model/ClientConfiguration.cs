@@ -26,8 +26,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public string DefaultRedirectUri { get; set; }
 
-        Uri IClientRegistration.DefaultRedirectUri => new Uri(this.DefaultRedirectUri);
-
         public FlowType FlowTypes { get; set; }
 
         public Guid Id { get; set; }

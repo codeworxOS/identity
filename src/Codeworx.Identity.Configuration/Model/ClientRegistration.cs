@@ -24,8 +24,6 @@ namespace Codeworx.Identity.Configuration.Model
 
         public byte[] ClientSecretSalt { get; }
 
-        public Uri DefaultRedirectUri => ValidRedirectUrls.FirstOrDefault();
-
         public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
         public TimeSpan TokenExpiration { get; }

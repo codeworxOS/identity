@@ -149,8 +149,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string DefaultRedirectUri = "http://example.org/redirect";
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
-                                  .Returns(new Uri(DefaultRedirectUri));
             clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
                                   .Returns(ImmutableList.Create(new Uri(DefaultRedirectUri)));
 
@@ -240,8 +238,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string DefaultRedirectUri = "http://example.org/redirect";
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.DefaultRedirectUri)
-                                  .Returns(new Uri(DefaultRedirectUri));
             clientRegistrationStub.SetupGet(p => p.ValidRedirectUrls)
                                   .Returns(ImmutableList.Create(new Uri(DefaultRedirectUri)));
 

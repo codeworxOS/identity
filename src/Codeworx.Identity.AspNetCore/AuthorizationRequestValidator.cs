@@ -40,15 +40,17 @@ namespace Codeworx.Identity.AspNetCore
 
             if (string.IsNullOrWhiteSpace(request.RedirectUri))
             {
-                if (client.DefaultRedirectUri == null)
+                if (client.ValidRedirectUrls.Count == 1)
+                {
+                    request.RedirectionTarget = client.ValidRedirectUrls[0].ToString();
+                }
+                else
                 {
                     return this.GetInvalidResult(Identity.OAuth.Constants.RedirectUriName, request.State);
                 }
-
-                request.RedirectionTarget = client.DefaultRedirectUri.ToString();
             }
 
-            if (!client.ValidRedirectUrls.Any(p => p.Equals(request.RedirectionTarget)))
+            if (!client.ValidRedirectUrls.Any(p => request.RedirectionTarget.StartsWith(p.ToString(), System.StringComparison.OrdinalIgnoreCase)))
             {
                 return this.GetInvalidResult(Identity.OAuth.Constants.RedirectUriName, request.State);
             }
