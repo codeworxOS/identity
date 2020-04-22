@@ -25,36 +25,39 @@ namespace Codeworx.Identity.AspNetCore
 
         public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService, IOptionsSnapshot<IdentityOptions> options)
         {
-            var authenticationResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
+            // TODO reimplement
+            await Task.CompletedTask;
 
-            if (!authenticationResult.Succeeded)
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
-            }
+            ////var authenticationResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
 
-            var identity = (ClaimsIdentity)authenticationResult.Principal.Identity;
+            ////if (!authenticationResult.Succeeded)
+            ////{
+            ////    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            ////    return;
+            ////}
 
-            var tenants = await tenantService.GetTenantsByIdentityAsync(identity) ?? Enumerable.Empty<TenantInfo>();
+            ////var identity = (ClaimsIdentity)authenticationResult.Principal.Identity;
 
-            if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out string contentType))
-            {
-                context.Response.ContentType = contentType;
-            }
+            ////var tenants = await tenantService.GetTenantsByIdentityAsync(identity) ?? Enumerable.Empty<TenantInfo>();
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
+            ////if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out string contentType))
+            ////{
+            ////    context.Response.ContentType = contentType;
+            ////}
 
-            var setting = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+            ////context.Response.StatusCode = StatusCodes.Status200OK;
 
-            var json = JsonSerializer.Create(setting);
+            ////var setting = new JsonSerializerSettings
+            ////{
+            ////    ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ////};
 
-            using (var responseWriter = new StreamWriter(context.Response.Body))
-            {
-                json.Serialize(responseWriter, tenants);
-            }
+            ////var json = JsonSerializer.Create(setting);
+
+            ////using (var responseWriter = new StreamWriter(context.Response.Body))
+            ////{
+            ////    json.Serialize(responseWriter, tenants);
+            ////}
         }
     }
 }

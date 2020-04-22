@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;

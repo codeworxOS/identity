@@ -18,8 +18,6 @@ namespace Codeworx.Identity.Configuration
             Styles = new HashSet<string>();
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
-            MissingTenantAuthenticationScheme = Constants.DefaultMissingTenantAuthenticationScheme;
-            MissingTenantAuthenticationCookie = Constants.DefaultMissingTenantCookieName;
             WindowsAuthenticationEnabled = false;
         }
 
@@ -30,10 +28,6 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
-
-        public string MissingTenantAuthenticationCookie { get; set; }
-
-        public string MissingTenantAuthenticationScheme { get; set; }
 
         public string OauthAuthorizationEndpoint { get; set; }
 
@@ -55,8 +49,6 @@ namespace Codeworx.Identity.Configuration
         {
             target.AuthenticationCookie = this.AuthenticationCookie;
             target.AuthenticationScheme = this.AuthenticationScheme;
-            target.MissingTenantAuthenticationCookie = this.MissingTenantAuthenticationCookie;
-            target.MissingTenantAuthenticationScheme = this.MissingTenantAuthenticationScheme;
             target.WindowsAuthenticationEnabled = this.WindowsAuthenticationEnabled;
 
             target.AccountEndpoint = this.AccountEndpoint;

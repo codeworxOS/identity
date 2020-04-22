@@ -35,63 +35,25 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl);
             }
 
-            var tenantAuthenticateResult = await request.HttpContext.AuthenticateAsync(_options.MissingTenantAuthenticationScheme);
-
-            if (tenantAuthenticateResult.Succeeded)
+            if (HttpMethods.IsGet(request.Method))
             {
-                var tenantIdentity = (ClaimsIdentity)tenantAuthenticateResult.Principal.Identity;
-
-                if (HttpMethods.IsGet(request.Method))
+                return new LoginRequest(returnUrl);
+            }
+            else if (HttpMethods.IsPost(request.Method))
+            {
+                if (request.HasFormContentType)
                 {
-                    return new TenantMissingRequest(returnUrl, tenantIdentity);
-                }
-                else if (HttpMethods.IsPost(request.Method))
-                {
-                    if (request.HasFormContentType)
-                    {
-                        var tenantKey = request.Form["tenantKey"].FirstOrDefault();
-                        bool setDefault = false;
+                    var username = request.Form["username"].FirstOrDefault();
+                    var password = request.Form["password"].FirstOrDefault();
 
-                        if (request.Form.TryGetValue("setDefault", out var values))
-                        {
-                            if (bool.TryParse(values.First(), out var value))
-                            {
-                                setDefault = value;
-                            }
-                        }
-
-                        return new TenantSelectionRequest(returnUrl, tenantIdentity, tenantKey, setDefault);
-                    }
-
-                    throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
+                    return new LoginFormRequest(returnUrl, username, password);
                 }
-                else
-                {
-                    throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
-                }
+
+                throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
             }
             else
             {
-                if (HttpMethods.IsGet(request.Method))
-                {
-                    return new LoginRequest(returnUrl);
-                }
-                else if (HttpMethods.IsPost(request.Method))
-                {
-                    if (request.HasFormContentType)
-                    {
-                        var username = request.Form["username"].FirstOrDefault();
-                        var password = request.Form["password"].FirstOrDefault();
-
-                        return new LoginFormRequest(returnUrl, username, password);
-                    }
-
-                    throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
-                }
-                else
-                {
-                    throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
-                }
+                throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
             }
 
             throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("this should not happen!"));

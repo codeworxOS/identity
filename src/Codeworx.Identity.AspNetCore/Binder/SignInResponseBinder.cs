@@ -25,21 +25,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             var returnUrl = responseData.ReturnUrl;
 
-            if (responseData.Identity.TenantKey != null)
-            {
-                await response.HttpContext.SignInAsync(_options.AuthenticationScheme, principal);
-            }
-            else
-            {
-                var authProperties = new AuthenticationProperties();
-                authProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(5);
-                await response.HttpContext.SignInAsync(_options.MissingTenantAuthenticationScheme, principal);
-
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri);
-                builder.AppendPath($"{_options.AccountEndpoint}/login");
-                builder.AppendQueryPart(Constants.ReturnUrlParameter, returnUrl);
-                returnUrl = builder.ToString();
-            }
+            await response.HttpContext.SignInAsync(_options.AuthenticationScheme, principal);
 
             if (returnUrl == null)
             {

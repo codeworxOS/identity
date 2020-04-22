@@ -23,7 +23,6 @@ namespace Codeworx.Identity.AspNetCore
             var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
 
             await context.SignOutAsync(options.Value.AuthenticationScheme);
-            await context.SignOutAsync(options.Value.MissingTenantAuthenticationScheme);
 
             context.Response.Redirect(hasReturnUrl ? returnUrl.First() : "login");
         }

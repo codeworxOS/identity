@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Codeworx.Identity.Configuration.Infrastructure;
 using Codeworx.Identity.Configuration.Model;
 using Codeworx.Identity.Cryptography;

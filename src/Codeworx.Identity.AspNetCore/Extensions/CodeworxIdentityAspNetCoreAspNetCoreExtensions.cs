@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -187,14 +186,6 @@ namespace Codeworx.Identity.AspNetCore
                                      p.Cookie.Name = identityOptions.AuthenticationCookie;
                                      p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
-                                 })
-                      .AddCookie(
-                                 identityOptions.MissingTenantAuthenticationScheme,
-                                 p =>
-                                 {
-                                     p.Cookie.Name = identityOptions.MissingTenantAuthenticationCookie;
-                                     p.LoginPath = identityOptions.AccountEndpoint + "/login";
-                                     p.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                                  });
 
             collection.AddDistributedMemoryCache();
