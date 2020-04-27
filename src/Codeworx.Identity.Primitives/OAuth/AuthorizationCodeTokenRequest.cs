@@ -13,8 +13,8 @@ namespace Codeworx.Identity.OAuth
         }
 
         [Required]
-        [RegularExpression(Constants.CodeValidation)]
-        [DataMember(Order = 1, Name = Constants.CodeName)]
+        [RegularExpression(Constants.OAuth.CodeValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.CodeName)]
         public string Code { get; }
     }
 }

@@ -4,7 +4,7 @@
     {
         public ClientIdInvalidResult()
         {
-            this.Error = new ErrorResponse(Constants.Error.InvalidRequest, null, null);
+            this.Error = new ErrorResponse(Constants.OAuth.Error.InvalidRequest, null, null);
         }
 
         public ErrorResponse Error { get; }

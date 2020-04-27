@@ -1,59 +1,68 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Binding.AuthorizationCodeToken;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
-    public class AuthorizationCodeTokenRequestBinder : IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse>
+    public class AuthorizationCodeTokenRequestBinder : IRequestBinder<AuthorizationCodeTokenRequest>
     {
-        public IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse> FromQuery(IReadOnlyDictionary<string, IReadOnlyCollection<string>> query)
+        public Task<AuthorizationCodeTokenRequest> BindAsync(HttpRequest request)
         {
-            IReadOnlyCollection<string> clientId = null;
-            IReadOnlyCollection<string> redirectUri = null;
-            IReadOnlyCollection<string> code = null;
-            IReadOnlyCollection<string> grantType = null;
-            IReadOnlyCollection<string> clientSecret = null;
+            string clientId = null;
+            string clientSecret = null;
 
-            query?.TryGetValue(Identity.OAuth.Constants.ClientIdName, out clientId);
-            query?.TryGetValue(Identity.OAuth.Constants.RedirectUriName, out redirectUri);
-            query?.TryGetValue(Identity.OAuth.Constants.CodeName, out code);
-            query?.TryGetValue(Identity.OAuth.Constants.GrantTypeName, out grantType);
-            query?.TryGetValue(Identity.OAuth.Constants.ClientSecretName, out clientSecret);
-
-            if (clientId?.Count > 1)
+            if (AuthenticationHeaderValue.TryParse(request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
             {
-                return new ClientIdDuplicatedResult();
+                var credentialBytes = Convert.FromBase64String(authenticationHeaderValue.Parameter);
+                var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
+                clientId = credentials[0];
+                clientSecret = credentials[1];
             }
 
-            if (redirectUri?.Count > 1)
+            request.Form.TryGetValue(Constants.OAuth.ClientIdName, out var clientIdValues);
+            request.Form.TryGetValue(Constants.OAuth.ClientSecretName, out var clientSecretValues);
+            request.Form.TryGetValue(Constants.OAuth.RedirectUriName, out var redirectUri);
+            request.Form.TryGetValue(Constants.OAuth.CodeName, out var code);
+            request.Form.TryGetValue(Constants.OAuth.GrantTypeName, out var grantType);
+
+            if (clientIdValues.Count > 1 ||
+                clientSecretValues.Count > 1 ||
+                redirectUri.Count > 1 ||
+                code.Count > 1 ||
+                grantType.Count > 1)
             {
-                return new RedirectUriDuplicatedResult();
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
 
-            if (code?.Count > 1)
+            if (clientIdValues.Any() && clientId != null && clientIdValues.First() != clientId)
             {
-                return new CodeDuplicatedResult();
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
 
-            if (grantType?.Count > 1)
+            if (clientSecretValues.Any() && clientSecret != null && clientSecretValues.First() != clientSecret)
             {
-                return new GrantTypeDuplicatedResult();
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
 
-            if (clientSecret?.Count > 1)
+            clientId = clientId ?? clientIdValues.FirstOrDefault();
+            clientSecret = clientSecret ?? clientSecretValues.FirstOrDefault();
+
+            if (string.IsNullOrEmpty(clientId))
             {
-                return new ClientSecretDuplicatedResult();
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
             }
 
-            var request = new AuthorizationCodeTokenRequest(
-                                                            clientId?.FirstOrDefault(),
-                                                            redirectUri?.FirstOrDefault(),
-                                                            code?.FirstOrDefault(),
-                                                            grantType?.FirstOrDefault(),
-                                                            clientSecret?.FirstOrDefault());
-
-            return new SuccessfulBindingResult(request);
+            return Task.FromResult(new AuthorizationCodeTokenRequest(
+                                                clientId,
+                                                redirectUri.FirstOrDefault(),
+                                                code.FirstOrDefault(),
+                                                grantType.FirstOrDefault(),
+                                                clientSecret));
         }
     }
 }

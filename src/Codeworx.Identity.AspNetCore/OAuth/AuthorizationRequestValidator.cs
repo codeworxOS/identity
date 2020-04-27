@@ -10,7 +10,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         {
         }
 
-        protected override IValidationResult<AuthorizationErrorResponse> GetInvalidResult(string errorDescription, string state, string redirectUri = null, string error = Identity.OAuth.Constants.Error.InvalidRequest)
+        protected override IValidationResult<AuthorizationErrorResponse> GetInvalidResult(string errorDescription, string state, string redirectUri = null, string error = Constants.OAuth.Error.InvalidRequest)
         {
             return new InvalidResult(error, errorDescription, state, redirectUri);
         }

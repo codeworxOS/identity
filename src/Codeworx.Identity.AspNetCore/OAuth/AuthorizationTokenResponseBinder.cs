@@ -22,13 +22,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
             var paramsBuilder = new UriBuilder();
 
-            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.AccessTokenName, responseData.Token);
-            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.TokenTypeName, Identity.OAuth.Constants.TokenType.Bearer);
-            paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.ExpiresInName, $"{responseData.ExpiresIn}");
+            paramsBuilder.AppendQueryPart(Constants.OAuth.AccessTokenName, responseData.Token);
+            paramsBuilder.AppendQueryPart(Constants.OAuth.TokenTypeName, Constants.OAuth.TokenType.Bearer);
+            paramsBuilder.AppendQueryPart(Constants.OAuth.ExpiresInName, $"{responseData.ExpiresIn}");
 
             if (!string.IsNullOrWhiteSpace(responseData.State))
             {
-                paramsBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
+                paramsBuilder.AppendQueryPart(Constants.OAuth.StateName, responseData.State);
             }
 
             response.Redirect($"{redirectUriBuilder.Uri}#{paramsBuilder.Query.Substring(1)}");

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -17,57 +17,33 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _hashingProvider = hashingProvider;
         }
 
-        public async Task<AuthenticateClientResult> AuthenticateClient(TokenRequest request, string clientId, string clientSecret)
+        public async Task<IClientRegistration> AuthenticateClient(TokenRequest request)
         {
-            var requestClientIdHasValue = !string.IsNullOrEmpty(request?.ClientId);
-            var requestClientSecretHasValue = !string.IsNullOrEmpty(request?.ClientSecret);
-            var headerClientIdHasValue = !string.IsNullOrEmpty(clientId);
-            var headerClientSecretHasValue = !string.IsNullOrEmpty(clientSecret);
-
             var result = new AuthenticateClientResult();
 
-            if (((requestClientSecretHasValue && headerClientSecretHasValue) ||
-                (requestClientIdHasValue && headerClientIdHasValue)) && request?.ClientId != clientId)
-            {
-                result.TokenResult = new InvalidRequestResult();
-                return result;
-            }
-
-            if (requestClientIdHasValue && requestClientSecretHasValue && !headerClientIdHasValue && !headerClientSecretHasValue)
-            {
-                clientId = request?.ClientId;
-                clientSecret = request?.ClientSecret;
-            }
-            else if (!headerClientIdHasValue || !headerClientSecretHasValue)
-            {
-                result.TokenResult = new InvalidClientResult();
-                return result;
-            }
-
-            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
-            {
-                result.TokenResult = new InvalidClientResult();
-                return result;
-            }
-
-            var client = await _clientService.GetById(clientId)
+            var client = await _clientService.GetById(request.ClientId)
                                              .ConfigureAwait(false);
 
             if (client == null)
             {
-                result.TokenResult = new InvalidClientResult();
-                return result;
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
             }
 
-            var secretHash = _hashingProvider.Hash(clientSecret, client.ClientSecretSalt);
-            if (!secretHash.SequenceEqual(client.ClientSecretHash))
+            if (client.ClientSecretHash != null)
             {
-                result.TokenResult = new InvalidClientResult();
-                return result;
+                if (string.IsNullOrWhiteSpace(request.ClientSecret))
+                {
+                    ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
+                }
+
+                var secretHash = _hashingProvider.Hash(request.ClientSecret, client.ClientSecretSalt);
+                if (!secretHash.SequenceEqual(client.ClientSecretHash))
+                {
+                    ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
+                }
             }
 
-            result.ClientRegistration = client;
-            return result;
+            return client;
         }
     }
 }

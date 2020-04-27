@@ -54,9 +54,9 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public Task<string> SerializeAsync()
         {
-            _payload.Add(Identity.OAuth.Constants.NonceName, _nonce);
+            _payload.Add(Constants.OAuth.NonceName, _nonce);
             _payload.Add(Constants.Claims.Subject, _subject?.FindFirst(Constants.Claims.Id)?.Value);
-            _payload.Add(Identity.OAuth.Constants.ScopeName, _scope);
+            _payload.Add(Constants.OAuth.ScopeName, _scope);
 
             var descriptor = new SecurityTokenDescriptor
             {

@@ -4,7 +4,7 @@
     {
         public UserNotFoundResult(string state, string redirectUri = null)
         {
-            this.Response = new AuthorizationErrorResponse(Constants.Error.AccessDenied, string.Empty, string.Empty, state, redirectUri);
+            this.Response = new AuthorizationErrorResponse(Constants.OAuth.Error.AccessDenied, string.Empty, string.Empty, state, redirectUri);
         }
 
         public AuthorizationResponse Response { get; }

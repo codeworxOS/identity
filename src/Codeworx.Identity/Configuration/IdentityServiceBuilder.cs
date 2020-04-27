@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
-using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +41,7 @@ namespace Codeworx.Identity.Configuration
 
             private class OpenIdScope : IScope
             {
-                public string ScopeKey => OpenId.Constants.Scopes.OpenId;
+                public string ScopeKey => Constants.OpenId.Scopes.OpenId;
             }
 
             private class DummyScope : IScope

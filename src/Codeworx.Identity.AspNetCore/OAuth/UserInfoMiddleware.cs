@@ -36,7 +36,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             catch (SecurityTokenException)
             {
                 var errorResponseBinder = context.GetResponseBinder<ErrorResponse>();
-                var errorResponse = new ErrorResponse(Identity.OAuth.Constants.Error.InvalidRequest, "Token not provided", null);
+                var errorResponse = new ErrorResponse(Constants.OAuth.Error.InvalidRequest, "Token not provided", null);
                 await errorResponseBinder.BindAsync(errorResponse, context.Response);
                 return;
             }

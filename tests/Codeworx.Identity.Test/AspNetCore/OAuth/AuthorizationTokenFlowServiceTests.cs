@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .Build();
 
             var identityServiceStub = new Mock<IIdentityService>();
@@ -75,14 +75,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string KnownScope = "knownScope";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .WithScope("unknownScope")
                                                            .Build();
 
             var identityServiceStub = new Mock<IIdentityService>();
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Token)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -121,7 +121,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string KnownScope = "knownScope";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .WithScope(string.Empty)
                                                            .Build();
 
@@ -181,12 +181,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string KnownScope = "knownScope";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .WithScope(null)
                                                            .Build();
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Token)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -242,12 +242,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string KnownScope = "knownScope";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .WithScope(null)
                                                            .Build();
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Token)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -305,12 +305,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             const string KnownScope = "knownScope";
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
-                                                           .WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+                                                           .WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .WithScope(KnownScope)
                                                            .Build();
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Token)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Token)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();

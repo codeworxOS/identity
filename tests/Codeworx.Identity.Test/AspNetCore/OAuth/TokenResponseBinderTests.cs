@@ -56,11 +56,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             using (var reader = new StreamReader(context.Response.Body))
             {
                 var content = await reader.ReadToEndAsync();
-                Assert.Contains($"\"{Identity.OAuth.Constants.AccessTokenName}\":\"{ExpectedAccessToken}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.TokenTypeName}\":\"{ExpectedTokenType}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ExpiresInName}\":{ExpectedExpiresIn}", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.RefreshTokenName}\":\"{ExpectedRefreshToken}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ScopeName}\":\"{ExpectedScope}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.AccessTokenName}\":\"{ExpectedAccessToken}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.TokenTypeName}\":\"{ExpectedTokenType}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ExpiresInName}\":{ExpectedExpiresIn}", content);
+                Assert.Contains($"\"{Constants.OAuth.RefreshTokenName}\":\"{ExpectedRefreshToken}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ScopeName}\":\"{ExpectedScope}\"", content);
             }
         }
     }

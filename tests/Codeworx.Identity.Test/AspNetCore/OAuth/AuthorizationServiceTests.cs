@@ -66,13 +66,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                            .Build();
 
             var flowServiceStub = new Mock<IAuthorizationFlowService<AuthorizationRequest>>();
-            flowServiceStub.Setup(p => p.IsSupported(Identity.OAuth.Constants.ResponseType.Code))
+            flowServiceStub.Setup(p => p.IsSupported(Constants.OAuth.ResponseType.Code))
                            .Returns(false);
             flowServiceStub.Setup(p => p.AuthorizeRequest(It.IsAny<AuthorizationRequest>(), It.IsAny<ClaimsIdentity>()))
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -140,7 +140,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                            .ReturnsAsync(new SuccessfulCodeAuthorizationResult("", "", ""));
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();

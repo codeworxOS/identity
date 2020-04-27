@@ -48,7 +48,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
         }
 
         [Fact]
@@ -73,8 +73,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.CodeName}={ExpectedCode}", queryParts[0]);
-            Assert.Equal($"{Identity.OAuth.Constants.StateName}={ExpectedState}", queryParts[1]);
+            Assert.Equal($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.StateName}={ExpectedState}", queryParts[1]);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 State,
                 Code,
                 RedirectUri,
-                Identity.OpenId.Constants.ResponseMode.FormPost);
+                Constants.OpenId.ResponseMode.FormPost);
 
             var instance = new AuthorizationCodeResponseBinder(viewTemplateMock.Object);
 

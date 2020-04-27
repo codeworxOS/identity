@@ -12,7 +12,7 @@ namespace Codeworx.Identity.Test
 
         private string _clientId = "SomeClientId";
         private string _redirectUri = "http://example.org/redirect";
-        private string _grantType = OAuth.Constants.GrantType.AuthorizationCode;
+        private string _grantType = Constants.OAuth.GrantType.AuthorizationCode;
         private string _clientSecret = string.Empty;
 
         public TokenRequestBuilder WithClientId(string value)

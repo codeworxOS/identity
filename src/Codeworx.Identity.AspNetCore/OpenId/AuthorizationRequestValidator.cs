@@ -9,7 +9,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
         {
         }
 
-        protected override IValidationResult<AuthorizationErrorResponse> GetInvalidResult(string errorDescription, string state, string redirectUri = null, string error = Identity.OAuth.Constants.Error.InvalidRequest)
+        protected override IValidationResult<AuthorizationErrorResponse> GetInvalidResult(string errorDescription, string state, string redirectUri = null, string error = Constants.OAuth.Error.InvalidRequest)
         {
             return new Identity.OpenId.Validation.Authorization.InvalidResult(error, errorDescription, state, redirectUri);
         }

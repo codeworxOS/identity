@@ -28,10 +28,10 @@ namespace Codeworx.Identity.AspNetCore
 
             var contentCollection = new Dictionary<string, string>
             {
-                { Identity.OAuth.Constants.GrantTypeName, Identity.OAuth.Constants.GrantType.AuthorizationCode },
-                { Identity.OAuth.Constants.CodeName, code },
-                { Identity.OAuth.Constants.RedirectUriName, redirectUri },
-                { Identity.OAuth.Constants.ClientIdName, oauthConfiguration.ClientId },
+                { Constants.OAuth.GrantTypeName, Constants.OAuth.GrantType.AuthorizationCode },
+                { Constants.OAuth.CodeName, code },
+                { Constants.OAuth.RedirectUriName, redirectUri },
+                { Constants.OAuth.ClientIdName, oauthConfiguration.ClientId },
             };
 
             if (oauthConfiguration.ClientSecret != null)
@@ -55,20 +55,20 @@ namespace Codeworx.Identity.AspNetCore
 
             var payload = await token.GetPayloadAsync();
 
-            payload.TryGetValue(Identity.OAuth.Constants.ReservedClaims.UserId, out var userId);
+            payload.TryGetValue(Constants.OAuth.ReservedClaims.UserId, out var userId);
 
             return userId?.ToString();
         }
 
         private class ResponseType
         {
-            [JsonProperty(Identity.OAuth.Constants.AccessTokenName)]
+            [JsonProperty(Constants.OAuth.AccessTokenName)]
             public string AccessToken { get; set; }
 
-            [JsonProperty(Identity.OAuth.Constants.RefreshTokenName)]
+            [JsonProperty(Constants.OAuth.RefreshTokenName)]
             public string RefreshToken { get; set; }
 
-            [JsonProperty(Identity.OAuth.Constants.ScopeName)]
+            [JsonProperty(Constants.OAuth.ScopeName)]
             public string Scope { get; set; }
         }
     }

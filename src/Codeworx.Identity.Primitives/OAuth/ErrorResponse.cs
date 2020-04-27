@@ -14,16 +14,21 @@ namespace Codeworx.Identity.OAuth
         }
 
         [Required]
-        [RegularExpression(Constants.ErrorValidation)]
-        [DataMember(Order = 1, Name = Constants.ErrorName)]
+        [RegularExpression(Constants.OAuth.ErrorValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.ErrorName)]
         public string Error { get; }
 
-        [RegularExpression(Constants.ErrorDescriptionValidation)]
-        [DataMember(Order = 2, Name = Constants.ErrorDescriptionName)]
+        [RegularExpression(Constants.OAuth.ErrorDescriptionValidation)]
+        [DataMember(Order = 2, Name = Constants.OAuth.ErrorDescriptionName)]
         public string ErrorDescription { get; }
 
-        [RegularExpression(Constants.ErrorUriValidation)]
-        [DataMember(Order = 3, Name = Constants.ErrorUriName)]
+        [RegularExpression(Constants.OAuth.ErrorUriValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.ErrorUriName)]
         public string ErrorUri { get; }
+
+        public static void Throw(string error, string errorDescription = null, string errorUri = null)
+        {
+            throw new ErrorResponseException<ErrorResponse>(new ErrorResponse(error, errorDescription, errorUri));
+        }
     }
 }

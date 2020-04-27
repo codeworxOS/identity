@@ -28,7 +28,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(responseData));
             }
 
-            if (Equals(responseData.ResponseMode, Identity.OpenId.Constants.ResponseMode.FormPost))
+            if (Equals(responseData.ResponseMode, Constants.OpenId.ResponseMode.FormPost))
             {
                 response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
                 response.Headers.Add(HeaderNames.CacheControl, "no-store, must-revalidate, max-age=0");
@@ -41,11 +41,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             {
                 var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
 
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.CodeName, responseData.Code);
+                redirectUriBuilder.AppendQueryPart(Constants.OAuth.CodeName, responseData.Code);
 
                 if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.StateName, responseData.State);
                 }
 
                 response.Redirect(redirectUriBuilder.Uri.ToString());

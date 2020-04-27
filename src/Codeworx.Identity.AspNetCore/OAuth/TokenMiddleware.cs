@@ -1,74 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class TokenMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IEnumerable<IResponseBinder> _responseBinders;
-        private readonly IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse> _tokenRequestBinder;
 
-        public TokenMiddleware(
-                               RequestDelegate next,
-                               IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse> tokenRequestBinder,
-                               IEnumerable<IResponseBinder> responseBinders)
+        public TokenMiddleware(RequestDelegate next)
         {
             _next = next;
-            _tokenRequestBinder = tokenRequestBinder;
-            _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, ITokenService tokenService)
+        public async Task Invoke(
+            HttpContext context,
+            ITokenService tokenService,
+            IRequestBinder<AuthorizationCodeTokenRequest> tokenRequestBinder,
+            IResponseBinder<TokenResponse> tokenResponseBinder)
         {
             IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse> bindingResult = null;
 
-            if (context.Request.HasFormContentType)
+            try
             {
-                bindingResult = _tokenRequestBinder.FromQuery(context.Request.Form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
-            }
+                var tokenRequest = await tokenRequestBinder.BindAsync(context.Request);
+                var result = await tokenService.AuthorizeRequest(bindingResult.Result);
 
-            if (bindingResult?.Error != null)
+                await tokenResponseBinder.BindAsync(result, context.Response);
+            }
+            catch (ErrorResponseException error)
             {
-                var responseBinder = context.GetResponseBinder<ErrorResponse>();
-                await responseBinder.BindAsync(bindingResult.Error, context.Response);
-                return;
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
             }
-            else if (bindingResult?.Result != null)
-            {
-                string clientId = null, clientSecret = null;
-                if (AuthenticationHeaderValue.TryParse(context.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
-                {
-                    var credentialBytes = Convert.FromBase64String(authenticationHeaderValue.Parameter);
-                    var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
-                    clientId = credentials[0];
-                    clientSecret = credentials[1];
-                }
-
-                var result = await tokenService.AuthorizeRequest(bindingResult.Result, clientId, clientSecret);
-
-                if (result.Error != null)
-                {
-                    var responseBinder = context.GetResponseBinder<ErrorResponse>();
-                    await responseBinder.BindAsync(result.Error, context.Response);
-                    return;
-                }
-                else if (result.Response != null)
-                {
-                    var responseBinder = context.GetResponseBinder<TokenResponse>();
-                    await responseBinder.BindAsync(result.Response, context.Response);
-                    return;
-                }
-            }
-
-            context.Response.StatusCode = 401;
         }
     }
 }

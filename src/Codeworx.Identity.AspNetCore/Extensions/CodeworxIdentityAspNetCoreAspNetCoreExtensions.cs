@@ -196,7 +196,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest, ErrorResponse>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
 

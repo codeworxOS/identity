@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -26,10 +24,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
-        public async Task<ITokenResult> AuthorizeRequest(
-            TokenRequest request,
-            string clientId,
-            string clientSecret)
+        public async Task<TokenResponse> AuthorizeRequest(
+            TokenRequest request)
         {
             if (request == null)
             {
@@ -40,30 +36,21 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                                                           .ConfigureAwait(false);
             if (validationResult != null)
             {
-                return new InvalidRequestResult(validationResult);
+                throw new ErrorResponseException<ErrorResponse>(validationResult.Error);
             }
 
             var tokenResultService = _tokenResultServices.FirstOrDefault(p => p.SupportedGrantType == request.GrantType);
             if (tokenResultService == null)
             {
-                return new UnsupportedGrantTypeResult();
+                throw new ErrorResponseException<ErrorResponse>(new ErrorResponse(Constants.OAuth.Error.UnsupportedGrantType, string.Empty, string.Empty));
             }
 
-            var clientAuthenticationResult = await _clientAuthenticationService.AuthenticateClient(request, clientId, clientSecret)
+            var client = await _clientAuthenticationService.AuthenticateClient(request)
                                                                                  .ConfigureAwait(false);
-            if (clientAuthenticationResult.TokenResult != null)
-            {
-                return clientAuthenticationResult.TokenResult;
-            }
 
-            if (clientAuthenticationResult.ClientRegistration == null)
+            if (!client.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
             {
-                return new InvalidClientResult();
-            }
-
-            if (!clientAuthenticationResult.ClientRegistration.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
-            {
-                return new UnauthorizedClientResult();
+                ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
             }
 
             var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
@@ -78,17 +65,21 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             if (deserializedGrantInformation == null)
             {
-                throw new TimeoutException("Code is no longer available");
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
 
-            var client = await _clientService.GetById(deserializedGrantInformation[Identity.OAuth.Constants.ClientIdName]);
+            var clientId = deserializedGrantInformation[Constants.OAuth.ClientIdName];
+            if (clientId != request.ClientId)
+            {
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
+            }
 
             var accessToken = await tokenResultService.CreateAccessToken(deserializedGrantInformation, client.TokenExpiration);
             var identityToken = await tokenResultService.CreateIdToken(deserializedGrantInformation, client.TokenExpiration);
 
-            deserializedGrantInformation.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
+            deserializedGrantInformation.TryGetValue(Constants.OAuth.ScopeName, out var scope);
 
-            return new SuccessfulTokenResult(accessToken, identityToken, client.TokenExpiration, scope);
+            return new TokenResponse(accessToken, identityToken, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope);
         }
     }
 }

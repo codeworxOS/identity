@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -92,7 +92,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -181,7 +181,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -225,7 +225,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -270,7 +270,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -293,7 +293,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -338,7 +338,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -361,7 +361,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -427,7 +427,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -450,7 +450,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.ScopeName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.ScopeName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -538,7 +538,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
         }
 
         [Fact]
@@ -561,7 +561,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var result = await instance.IsValid(request);
 
             Assert.NotNull(result);
-            Assert.Equal(Identity.OAuth.Constants.StateName, result.Error.ErrorDescription);
+            Assert.Equal(Constants.OAuth.StateName, result.Error.ErrorDescription);
         }
 
         [Fact]

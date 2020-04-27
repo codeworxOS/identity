@@ -6,7 +6,7 @@ namespace Codeworx.Identity.OpenId.Binding.Authorization
     {
         public ErrorResult(string errorDescription, string state)
         {
-            this.Error = new AuthorizationErrorResponse(OAuth.Constants.Error.InvalidRequest, errorDescription, null, state);
+            this.Error = new AuthorizationErrorResponse(Constants.OAuth.Error.InvalidRequest, errorDescription, null, state);
         }
 
         public AuthorizationRequest Result => null;

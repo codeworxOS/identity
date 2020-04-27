@@ -29,11 +29,11 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _cache = cache;
         }
 
-        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Code };
+        public string[] SupportedResponseTypes { get; } = { Constants.OAuth.ResponseType.Code };
 
         public bool IsSupported(string responseType)
         {
-            return Equals(responseType, Identity.OAuth.Constants.ResponseType.Code);
+            return Equals(responseType, Constants.OAuth.ResponseType.Code);
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(Identity.OpenId.AuthorizationRequest request, ClaimsIdentity user)
@@ -63,7 +63,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
             var containsOpenId = request.Scope
                 .Split(' ')
-                .Any(p => p.Equals(Identity.OpenId.Constants.Scopes.OpenId));
+                .Any(p => p.Equals(Constants.OpenId.Scopes.OpenId));
 
             if (containsOpenId == false)
             {
@@ -77,7 +77,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 .Select(s => s.ScopeKey)
                 .ToList();
 
-            scopeKeys.Add(Identity.OpenId.Constants.Scopes.OpenId);
+            scopeKeys.Add(Constants.OpenId.Scopes.OpenId);
 
             var containsKey = request.Scope
                                   .Split(' ')
@@ -93,10 +93,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
             var grantInformation = new Dictionary<string, string>
             {
-                { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
-                { Identity.OAuth.Constants.ClientIdName, request.ClientId },
-                { Identity.OAuth.Constants.NonceName, request.Nonce },
-                { Identity.OAuth.Constants.ScopeName, request.Scope },
+                { Constants.OAuth.RedirectUriName, request.RedirectUri },
+                { Constants.OAuth.ClientIdName, request.ClientId },
+                { Constants.OAuth.NonceName, request.Nonce },
+                { Constants.OAuth.ScopeName, request.Scope },
                 { Constants.Claims.Name, user.ToIdentityData().Login },
             };
 

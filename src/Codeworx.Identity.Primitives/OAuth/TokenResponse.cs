@@ -17,28 +17,28 @@ namespace Codeworx.Identity.OAuth
         }
 
         [Required]
-        [RegularExpression(Constants.AccessTokenValidation)]
-        [DataMember(Order = 1, Name = Constants.AccessTokenName)]
+        [RegularExpression(Constants.OAuth.AccessTokenValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.AccessTokenName)]
         public string AccessToken { get; }
 
-        [DataMember(Order = 3, Name = Constants.ExpiresInName)]
+        [DataMember(Order = 3, Name = Constants.OAuth.ExpiresInName)]
         public int ExpiresIn { get; }
 
-        [RegularExpression(Constants.RefreshTokenValidation)]
-        [DataMember(Order = 4, Name = Constants.RefreshTokenName)]
+        [RegularExpression(Constants.OAuth.RefreshTokenValidation)]
+        [DataMember(Order = 4, Name = Constants.OAuth.RefreshTokenName)]
         public string RefreshToken { get; }
 
-        [RegularExpression(Constants.ScopeValidation)]
-        [DataMember(Order = 5, Name = Constants.ScopeName)]
+        [RegularExpression(Constants.OAuth.ScopeValidation)]
+        [DataMember(Order = 5, Name = Constants.OAuth.ScopeName)]
         public string Scope { get; }
 
         [Required]
-        [RegularExpression(Constants.TokenTypeValidation)]
-        [DataMember(Order = 2, Name = Constants.TokenTypeName)]
+        [RegularExpression(Constants.OAuth.TokenTypeValidation)]
+        [DataMember(Order = 2, Name = Constants.OAuth.TokenTypeName)]
         public string TokenType { get; }
 
-        [RegularExpression(Constants.IdTokenValidation)]
-        [DataMember(Order = 6, Name = Constants.IdTokenName)]
+        [RegularExpression(Constants.OAuth.IdTokenValidation)]
+        [DataMember(Order = 6, Name = Constants.OAuth.IdTokenName)]
         public string IdToken { get; }
     }
 }

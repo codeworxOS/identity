@@ -14,11 +14,11 @@ namespace Codeworx.Identity.OAuth
         }
 
         [Required]
-        [DataMember(Order = 2, Name = Constants.ExpiresInName)]
+        [DataMember(Order = 2, Name = Constants.OAuth.ExpiresInName)]
         public int ExpiresIn { get; }
 
         [Required]
-        [DataMember(Order = 1, Name = Constants.AccessTokenName)]
+        [DataMember(Order = 1, Name = Constants.OAuth.AccessTokenName)]
         public string Token { get; }
     }
 }

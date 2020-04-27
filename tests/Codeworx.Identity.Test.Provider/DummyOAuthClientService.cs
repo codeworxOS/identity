@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Test
         {
             public bool IsSupported(string flowKey)
             {
-                return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
+                return flowKey == Constants.OAuth.ResponseType.Code || flowKey == Constants.OAuth.GrantType.AuthorizationCode;
             }
         }
 
@@ -98,7 +98,7 @@ namespace Codeworx.Identity.Test
         {
             public bool IsSupported(string flowKey)
             {
-                return flowKey == OAuth.Constants.ResponseType.Token;
+                return flowKey == Constants.OAuth.ResponseType.Token;
             }
         }
     }

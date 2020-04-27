@@ -4,7 +4,7 @@
     {
         public UnauthorizedClientResult(string state, string redirectUri)
         {
-            this.Response = new AuthorizationErrorResponse(Constants.Error.UnauthorizedClient, string.Empty, string.Empty, state, redirectUri);
+            this.Response = new AuthorizationErrorResponse(Constants.OAuth.Error.UnauthorizedClient, string.Empty, string.Empty, state, redirectUri);
         }
 
         public AuthorizationResponse Response { get; }

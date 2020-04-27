@@ -2,7 +2,7 @@
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
-using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.OAuth;
 using Moq;
 using Xunit;
 
@@ -13,11 +13,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthenticateClient_AuthorizationSucceededOnHeader_ReturnsNull()
         {
-            var request = new TokenRequestBuilder().WithClientId(string.Empty)
-                                                   .WithClientSecret(string.Empty)
+            var request = new TokenRequestBuilder().WithClientId("clientId")
+                                                   .WithClientSecret("clientSecret")
                                                    .Build();
-
-            var header = ("clientId", "clientSecret");
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
@@ -33,10 +31,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header.Item1, header.Item2);
+            var result = await instance.AuthenticateClient(request);
 
-            Assert.Null(result.TokenResult);
-            Assert.Same(clientRegistrationStub.Object, result.ClientRegistration);
+            Assert.Same(clientRegistrationStub.Object, result);
         }
 
         [Fact]
@@ -60,20 +57,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null, null);
+            var result = await instance.AuthenticateClient(request);
 
-            Assert.Null(result.TokenResult);
-            Assert.Same(clientRegistrationStub.Object, result.ClientRegistration);
+            Assert.Same(clientRegistrationStub.Object, result);
         }
 
         [Fact]
         public async Task AuthenticateClient_InvalidSecretOnHeader_ReturnsInvalidClient()
         {
-            var request = new TokenRequestBuilder().WithClientId(string.Empty)
-                                                   .WithClientSecret(string.Empty)
+            var request = new TokenRequestBuilder().WithClientId("clientId")
+                                                   .WithClientSecret("clientSecret")
                                                    .Build();
-
-            var header = ("clientId", "clientSecret");
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
@@ -89,10 +83,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header.Item1, header.Item2);
-
-            Assert.IsType<InvalidClientResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -117,10 +109,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null, null);
-
-            Assert.IsType<InvalidClientResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -135,10 +125,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, "clientId", "clientSecret");
-
-            Assert.IsType<InvalidRequestResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -153,10 +141,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null, null);
-
-            Assert.IsType<InvalidClientResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -181,10 +167,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header.Item1, header.Item2);
-
-            Assert.IsType<InvalidRequestResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -192,19 +176,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var request = new TokenRequestBuilder().WithClientId(string.Empty)
                                                    .WithClientSecret(string.Empty)
+                                                   .WithClientId("clientId")
+                                                   .WithClientSecret("clientSecret")
                                                    .Build();
-
-            var header = ("clientId", "clientSecret");
 
             var clientServiceStub = new Mock<IClientService>();
             var hashingProviderStub = new Mock<IHashingProvider>();
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, header.Item1, header.Item2);
-
-            Assert.IsType<InvalidClientResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
         [Fact]
@@ -219,10 +201,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
-            var result = await instance.AuthenticateClient(request, null, null);
-
-            Assert.IsType<InvalidClientResult>(result.TokenResult);
-            Assert.Null(result.ClientRegistration);
+            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthenticateClient(request));
+            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
     }
 }

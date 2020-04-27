@@ -26,11 +26,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _identityService = identityService;
         }
 
-        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Token };
+        public string[] SupportedResponseTypes { get; } = { Constants.OAuth.ResponseType.Token };
 
         public bool IsSupported(string responseType)
         {
-            return Equals(Identity.OAuth.Constants.ResponseType.Token, responseType);
+            return Equals(Constants.OAuth.ResponseType.Token, responseType);
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)

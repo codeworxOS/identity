@@ -14,21 +14,21 @@ namespace Codeworx.Identity.OAuth
             this.ClientSecret = clientSecret;
         }
 
-        [RegularExpression(Constants.ClientIdValidation)]
-        [DataMember(Order = 1, Name = Constants.ClientIdName)]
+        [RegularExpression(Constants.OAuth.ClientIdValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.ClientIdName)]
         public string ClientId { get; }
 
         [Required]
-        [RegularExpression(Constants.GrantTypeValidation)]
-        [DataMember(Order = 2, Name = Constants.GrantTypeName)]
+        [RegularExpression(Constants.OAuth.GrantTypeValidation)]
+        [DataMember(Order = 2, Name = Constants.OAuth.GrantTypeName)]
         public string GrantType { get; }
 
-        [RegularExpression(Constants.RedirectUriValidation)]
-        [DataMember(Order = 3, Name = Constants.RedirectUriName)]
+        [RegularExpression(Constants.OAuth.RedirectUriValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.RedirectUriName)]
         public string RedirectUri { get; }
 
-        [RegularExpression(Constants.ClientSecretValidation)]
-        [DataMember(Order = 3, Name = Constants.ClientSecretName)]
+        [RegularExpression(Constants.OAuth.ClientSecretValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.ClientSecretName)]
         public string ClientSecret { get; }
     }
 }

@@ -24,14 +24,14 @@ namespace Codeworx.Identity.Configuration.Extensions
 
             if (config.Type.HasFlag(ClientType.Web))
             {
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.AuthorizationCode);
+                flows.Add(Constants.OAuth.GrantType.AuthorizationCode);
             }
             else if (config.Type.HasFlag(ClientType.Native) || config.Type.HasFlag(ClientType.UserAgent))
             {
-                flows.Add(Codeworx.Identity.OAuth.Constants.ResponseType.Code);
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.AuthorizationCode);
-                flows.Add(Codeworx.Identity.OAuth.Constants.ResponseType.Token);
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.Password);
+                flows.Add(Constants.OAuth.ResponseType.Code);
+                flows.Add(Constants.OAuth.GrantType.AuthorizationCode);
+                flows.Add(Constants.OAuth.ResponseType.Token);
+                flows.Add(Constants.OAuth.GrantType.Password);
             }
 
             ////else if (config.Type.HasFlag(ClientType.Backend))

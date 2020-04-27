@@ -14,18 +14,18 @@ namespace Codeworx.Identity.OpenId
 
         [Required]
         [UriAbsolute]
-        [RegularExpression(OAuth.Constants.RedirectUriValidation)]
-        [DataMember(Order = 2, Name = OAuth.Constants.RedirectUriName)]
+        [RegularExpression(Constants.OAuth.RedirectUriValidation)]
+        [DataMember(Order = 2, Name = Constants.OAuth.RedirectUriName)]
         public override string RedirectUri => base.RedirectUri;
 
         [Required]
-        [RegularExpression(OAuth.Constants.ScopeValidation)]
-        [DataMember(Order = 4, Name = OAuth.Constants.ScopeName)]
+        [RegularExpression(Constants.OAuth.ScopeValidation)]
+        [DataMember(Order = 4, Name = Constants.OAuth.ScopeName)]
         public override string Scope => base.Scope;
 
         // TODO Check with specs: seams to be optional [Required]
-        [RegularExpression(OAuth.Constants.NonceValidation)]
-        [DataMember(Order = 6, Name = OAuth.Constants.NonceName)]
+        [RegularExpression(Constants.OAuth.NonceValidation)]
+        [DataMember(Order = 6, Name = Constants.OAuth.NonceName)]
         public override string Nonce => base.Nonce;
     }
 }

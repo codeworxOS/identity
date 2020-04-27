@@ -37,9 +37,9 @@ namespace Codeworx.Identity.ExternalLogin
 
             codeUriBuilder.AppendPath(oauthConfiguration.AuthorizationEndpoint);
 
-            codeUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ResponseTypeName, Identity.OAuth.Constants.ResponseType.Code);
-            codeUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ClientIdName, oauthConfiguration.ClientId);
-            codeUriBuilder.AppendQueryPart(Identity.OAuth.Constants.RedirectUriName, _redirectUri);
+            codeUriBuilder.AppendQueryPart(Constants.OAuth.ResponseTypeName, Constants.OAuth.ResponseType.Code);
+            codeUriBuilder.AppendQueryPart(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
+            codeUriBuilder.AppendQueryPart(Constants.OAuth.RedirectUriName, _redirectUri);
 
             if (oauthConfiguration.Scope != null)
             {
@@ -50,7 +50,7 @@ namespace Codeworx.Identity.ExternalLogin
 
             await _cache.SetStringAsync(state, request.ReturnUrl ?? string.Empty, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
 
-            codeUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, state);
+            codeUriBuilder.AppendQueryPart(Constants.OAuth.StateName, state);
 
             return codeUriBuilder.ToString();
         }

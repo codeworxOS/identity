@@ -12,8 +12,8 @@ namespace Codeworx.Identity.OAuth
             this.RedirectUri = redirectUri;
         }
 
-        [RegularExpression(Constants.StateValidation)]
-        [DataMember(Order = 1, Name = Constants.StateName)]
+        [RegularExpression(Constants.OAuth.StateValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.StateName)]
         public string State { get; }
 
         [IgnoreDataMember]

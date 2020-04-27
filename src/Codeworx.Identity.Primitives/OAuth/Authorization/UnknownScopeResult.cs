@@ -4,7 +4,7 @@
     {
         public UnknownScopeResult(string state, string redirectUri)
         {
-            this.Response = new AuthorizationErrorResponse(Constants.Error.InvalidScope, string.Empty, string.Empty, state, redirectUri);
+            this.Response = new AuthorizationErrorResponse(Constants.OAuth.Error.InvalidScope, string.Empty, string.Empty, state, redirectUri);
         }
 
         public AuthorizationResponse Response { get; }

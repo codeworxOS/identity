@@ -27,11 +27,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _cache = cache;
         }
 
-        public string[] SupportedResponseTypes { get; } = { Identity.OAuth.Constants.ResponseType.Code };
+        public string[] SupportedResponseTypes { get; } = { Constants.OAuth.ResponseType.Code };
 
         public bool IsSupported(string responseType)
         {
-            return Equals(Identity.OAuth.Constants.ResponseType.Code, responseType);
+            return Equals(Constants.OAuth.ResponseType.Code, responseType);
         }
 
         public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
@@ -78,10 +78,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
             var grantInformation = new Dictionary<string, string>
                                    {
-                                       { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri },
-                                       { Identity.OAuth.Constants.ClientIdName, request.ClientId },
+                                       { Constants.OAuth.RedirectUriName, request.RedirectUri },
+                                       { Constants.OAuth.ClientIdName, request.ClientId },
                                        { Constants.Claims.Name, user.ToIdentityData().Login },
-                                       { Identity.OAuth.Constants.ScopeName, request.Scope },
+                                       { Constants.OAuth.ScopeName, request.Scope },
                                    };
 
             await _cache.SetAsync(authorizationCode, grantInformation, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))

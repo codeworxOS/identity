@@ -35,8 +35,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(Identity.OAuth.Constants.ClientIdName, responseHtml);
+            Assert.Contains(Constants.OAuth.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Constants.OAuth.ClientIdName, responseHtml);
         }
 
         [Fact]
@@ -55,8 +55,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(Identity.OAuth.Constants.ClientIdName, responseHtml);
+            Assert.Contains(Constants.OAuth.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Constants.OAuth.ClientIdName, responseHtml);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithResponseType(Identity.OAuth.Constants.ResponseType.Token)
+            var request = new OAuthAuthorizationRequestBuilder().WithResponseType(Constants.OAuth.ResponseType.Token)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -77,7 +77,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.UnauthorizedClient}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.UnauthorizedClient}", queryParts[0]);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Constants.OAuth.Error.InvalidRequest, responseHtml);
         }
 
         [Fact]
@@ -113,9 +113,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(3, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.StateName}", queryParts[1]);
-            Assert.Equal($"{Identity.OAuth.Constants.StateName}={InvalidState}", queryParts[2]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.InvalidRequest}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorDescriptionName}={Constants.OAuth.StateName}", queryParts[1]);
+            Assert.Equal($"{Constants.OAuth.StateName}={InvalidState}", queryParts[2]);
         }
 
         [Fact]
@@ -134,8 +134,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
+            Assert.Contains(Constants.OAuth.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Constants.OAuth.RedirectUriName, responseHtml);
         }
 
         [Fact]
@@ -154,8 +154,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
 
-            Assert.Contains(Identity.OAuth.Constants.Error.InvalidRequest, responseHtml);
-            Assert.Contains(Identity.OAuth.Constants.RedirectUriName, responseHtml);
+            Assert.Contains(Constants.OAuth.Error.InvalidRequest, responseHtml);
+            Assert.Contains(Constants.OAuth.RedirectUriName, responseHtml);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new OAuthAuthorizationRequestBuilder().Build();
 
-            var requestString = $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}";
+            var requestString = $"?{Constants.OAuth.ClientIdName}={request.ClientId}&{Constants.OAuth.RedirectUriName}={request.RedirectUri}";
 
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
             var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
@@ -175,8 +175,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidRequest}", queryParts[0]);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.ResponseTypeName}", queryParts[1]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.InvalidRequest}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorDescriptionName}={Constants.OAuth.ResponseTypeName}", queryParts[1]);
         }
 
         [Fact]
@@ -198,7 +198,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidScope}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.InvalidScope}", queryParts[0]);
         }
 
         [Fact]
@@ -219,8 +219,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(2, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.InvalidScope}", queryParts[0]);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorDescriptionName}={Identity.OAuth.Constants.ScopeName}", queryParts[1]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.InvalidScope}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorDescriptionName}={Constants.OAuth.ScopeName}", queryParts[1]);
         }
 
         [Fact(Skip = "Implement")]
@@ -259,7 +259,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.Equal(1, queryParts.Length);
-            Assert.Equal($"{Identity.OAuth.Constants.ErrorName}={Identity.OAuth.Constants.Error.UnsupportedResponseType}", queryParts[0]);
+            Assert.Equal($"{Constants.OAuth.ErrorName}={Constants.OAuth.Error.UnsupportedResponseType}", queryParts[0]);
         }
 
         [Fact]
@@ -307,11 +307,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
         private string ToRequestString(AuthorizationRequest request)
         {
-            return $"?{Identity.OAuth.Constants.ClientIdName}={request.ClientId}" +
-                   $"&{Identity.OAuth.Constants.RedirectUriName}={request.RedirectUri}" +
-                   $"&{Identity.OAuth.Constants.ResponseTypeName}={request.ResponseType}" +
-                   $"&{Identity.OAuth.Constants.ScopeName}={request.Scope}" +
-                   $"&{Identity.OAuth.Constants.StateName}={request.State}";
+            return $"?{Constants.OAuth.ClientIdName}={request.ClientId}" +
+                   $"&{Constants.OAuth.RedirectUriName}={request.RedirectUri}" +
+                   $"&{Constants.OAuth.ResponseTypeName}={request.ResponseType}" +
+                   $"&{Constants.OAuth.ScopeName}={request.Scope}" +
+                   $"&{Constants.OAuth.StateName}={request.State}";
         }
     }
 }

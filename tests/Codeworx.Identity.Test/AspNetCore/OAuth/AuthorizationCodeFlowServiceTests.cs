@@ -118,7 +118,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -152,8 +152,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var grantInformation = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
                                           .ConfigureAwait(false);
 
-            Assert.Equal(request.ClientId, grantInformation[Identity.OAuth.Constants.ClientIdName]);
-            Assert.Equal(request.RedirectUri, grantInformation[Identity.OAuth.Constants.RedirectUriName]);
+            Assert.Equal(request.ClientId, grantInformation[Constants.OAuth.ClientIdName]);
+            Assert.Equal(request.RedirectUri, grantInformation[Constants.OAuth.RedirectUriName]);
         }
 
         [Fact]
@@ -172,7 +172,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -221,7 +221,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -274,7 +274,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -323,7 +323,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
@@ -373,7 +373,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                           .ReturnsAsync(AuthorizationCode);
 
             var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Identity.OAuth.Constants.ResponseType.Code)))
+            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == Constants.OAuth.ResponseType.Code)))
                              .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();

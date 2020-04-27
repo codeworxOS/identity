@@ -20,7 +20,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _identityService = identityService;
         }
 
-        public string SupportedGrantType => Identity.OAuth.Constants.GrantType.AuthorizationCode;
+        public string SupportedGrantType => Constants.OAuth.GrantType.AuthorizationCode;
 
         public Task<string> CreateAccessToken(IDictionary<string, string> cacheData, TimeSpan expiresIn)
         {
@@ -39,8 +39,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException();
             }
 
-            if (cacheData.ContainsKey(Identity.OAuth.Constants.ClientIdName) == false
-                || cacheData.ContainsKey(Identity.OAuth.Constants.RedirectUriName) == false)
+            if (cacheData.ContainsKey(Constants.OAuth.ClientIdName) == false
+                || cacheData.ContainsKey(Constants.OAuth.RedirectUriName) == false)
             {
                 return null;
             }
@@ -61,9 +61,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var identityData = await _identityService.GetIdentityAsync(login);
             var payload = identityData.GetTokenClaims(target);
             var issuer = _baseUriAccessor?.BaseUri.OriginalString;
-            var audience = cacheData[Identity.OAuth.Constants.ClientIdName];
-            cacheData.TryGetValue(Identity.OAuth.Constants.ScopeName, out var scope);
-            cacheData.TryGetValue(Identity.OAuth.Constants.NonceName, out var nonce);
+            var audience = cacheData[Constants.OAuth.ClientIdName];
+            cacheData.TryGetValue(Constants.OAuth.ScopeName, out var scope);
+            cacheData.TryGetValue(Constants.OAuth.NonceName, out var nonce);
 
             await token.SetPayloadAsync(payload, issuer, audience, identityData.ToClaimsIdentity(), scope, nonce, expiresIn);
 

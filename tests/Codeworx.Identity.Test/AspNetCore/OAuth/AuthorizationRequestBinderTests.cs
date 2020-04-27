@@ -16,12 +16,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     {
         private static readonly ReadOnlyDictionary<string, IReadOnlyCollection<string>> _values = new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(new Dictionary<string, IReadOnlyCollection<string>>
                                                                                                                                                               {
-                                                                                                                                                                  {Identity.OAuth.Constants.ClientIdName, new[] {"SomeId"}},
-                                                                                                                                                                  {Identity.OAuth.Constants.RedirectUriName, new[] {"http://example.org/redirect"}},
-                                                                                                                                                                  {Identity.OAuth.Constants.ResponseTypeName, new[] {Identity.OAuth.Constants.ResponseType.Code}},
-                                                                                                                                                                  {Identity.OAuth.Constants.ScopeName, new[] {"scope1 scope2"}},
-                                                                                                                                                                  {Identity.OAuth.Constants.StateName, new[] {"SomeState"}},
-                                                                                                                                                                  {Identity.OAuth.Constants.NonceName, new[] {"abc"}}
+                                                                                                                                                                  {Constants.OAuth.ClientIdName, new[] {"SomeId"}},
+                                                                                                                                                                  {Constants.OAuth.RedirectUriName, new[] {"http://example.org/redirect"}},
+                                                                                                                                                                  {Constants.OAuth.ResponseTypeName, new[] {Constants.OAuth.ResponseType.Code}},
+                                                                                                                                                                  {Constants.OAuth.ScopeName, new[] {"scope1 scope2"}},
+                                                                                                                                                                  {Constants.OAuth.StateName, new[] {"SomeState"}},
+                                                                                                                                                                  {Constants.OAuth.NonceName, new[] {"abc"}}
                                                                                                                                                               });
 
         private static IEnumerable<object[]> EmptyData()
@@ -70,7 +70,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> ClientIdentifierDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.ClientIdName] = new[] {"id1", "id2"};
+            values[Constants.OAuth.ClientIdName] = new[] {"id1", "id2"};
 
             return GenerateRequests(values);
         }
@@ -78,7 +78,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> RedirectUriDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.RedirectUriName] = new[] {"http://redirect1", "http://redirect2"};
+            values[Constants.OAuth.RedirectUriName] = new[] {"http://redirect1", "http://redirect2"};
 
             return GenerateRequests(values);
         }
@@ -86,7 +86,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> ResponseTypeDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.ResponseTypeName] = new[] {"type1", "type2"};
+            values[Constants.OAuth.ResponseTypeName] = new[] {"type1", "type2"};
 
             return GenerateRequests(values);
         }
@@ -94,7 +94,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> ScopeDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.ScopeName] = new[] {"scope1", "scope2"};
+            values[Constants.OAuth.ScopeName] = new[] {"scope1", "scope2"};
 
             return GenerateRequests(values);
         }
@@ -102,7 +102,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> StateDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.StateName] = new[] {"state1", "state2"};
+            values[Constants.OAuth.StateName] = new[] {"state1", "state2"};
 
             return GenerateRequests(values);
         }
@@ -110,7 +110,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         private static IEnumerable<object[]> NonceDuplicated()
         {
             var values = _values.ToDictionary(p => p.Key, p => p.Value);
-            values[Identity.OAuth.Constants.NonceName] = new[] {"nonce1", "nonce2"};
+            values[Constants.OAuth.NonceName] = new[] {"nonce1", "nonce2"};
 
             return GenerateRequests(values);
         }
@@ -142,12 +142,12 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var bindingResult = await instance.BindAsync(request);
 
-            Assert.Equal(_values[Identity.OAuth.Constants.ClientIdName].First(), bindingResult.ClientId);
-            Assert.Equal(_values[Identity.OAuth.Constants.RedirectUriName].First(), bindingResult.RedirectUri);
-            Assert.Equal(_values[Identity.OAuth.Constants.ResponseTypeName].First(), bindingResult.ResponseType);
-            Assert.Equal(_values[Identity.OAuth.Constants.ScopeName].First(), bindingResult.Scope);
-            Assert.Equal(_values[Identity.OAuth.Constants.StateName].First(), bindingResult.State);
-            Assert.Equal(_values[Identity.OAuth.Constants.NonceName].First(), bindingResult.Nonce);
+            Assert.Equal(_values[Constants.OAuth.ClientIdName].First(), bindingResult.ClientId);
+            Assert.Equal(_values[Constants.OAuth.RedirectUriName].First(), bindingResult.RedirectUri);
+            Assert.Equal(_values[Constants.OAuth.ResponseTypeName].First(), bindingResult.ResponseType);
+            Assert.Equal(_values[Constants.OAuth.ScopeName].First(), bindingResult.Scope);
+            Assert.Equal(_values[Constants.OAuth.StateName].First(), bindingResult.State);
+            Assert.Equal(_values[Constants.OAuth.NonceName].First(), bindingResult.Nonce);
         }
 
         [Theory]
@@ -158,7 +158,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.ClientIdName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.ClientIdName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         [Theory]
@@ -169,7 +169,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.RedirectUriName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.RedirectUriName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         [Theory]
@@ -180,7 +180,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.ResponseTypeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.ResponseTypeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         [Theory]
@@ -191,7 +191,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.ScopeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.ScopeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         [Theory]
@@ -202,7 +202,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.StateName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.StateName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         [Theory]
@@ -213,19 +213,19 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            Assert.Equal(Identity.OAuth.Constants.NonceName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+            Assert.Equal(Constants.OAuth.NonceName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
         }
 
         public static IEnumerable<object[]> SingleFieldNull()
         {
             var fields = new[]
                          {
-                             Identity.OAuth.Constants.ClientIdName,
-                             Identity.OAuth.Constants.RedirectUriName,
-                             Identity.OAuth.Constants.ResponseTypeName,
-                             Identity.OAuth.Constants.ScopeName,
-                             Identity.OAuth.Constants.StateName,
-                             Identity.OAuth.Constants.NonceName
+                             Constants.OAuth.ClientIdName,
+                             Constants.OAuth.RedirectUriName,
+                             Constants.OAuth.ResponseTypeName,
+                             Constants.OAuth.ScopeName,
+                             Constants.OAuth.StateName,
+                             Constants.OAuth.NonceName
                          };
 
             foreach (var field in fields)
@@ -256,7 +256,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.ClientIdName);
+        //    _values.Remove(Constants.OAuth.ClientIdName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -268,7 +268,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.RedirectUriName);
+        //    _values.Remove(Constants.OAuth.RedirectUriName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -280,7 +280,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.ResponseTypeName);
+        //    _values.Remove(Constants.OAuth.ResponseTypeName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -292,7 +292,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.ScopeName);
+        //    _values.Remove(Constants.OAuth.ScopeName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -304,7 +304,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.StateName);
+        //    _values.Remove(Constants.OAuth.StateName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -316,7 +316,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values.Remove(Identity.OAuth.Constants.NonceName);
+        //    _values.Remove(Constants.OAuth.NonceName);
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -328,7 +328,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.ClientIdName] = new string[0];
+        //    _values[Constants.OAuth.ClientIdName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -340,7 +340,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.RedirectUriName] = new string[0];
+        //    _values[Constants.OAuth.RedirectUriName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -352,7 +352,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.ResponseTypeName] = new string[0];
+        //    _values[Constants.OAuth.ResponseTypeName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -364,7 +364,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.ScopeName] = new string[0];
+        //    _values[Constants.OAuth.ScopeName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -376,7 +376,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.StateName] = new string[0];
+        //    _values[Constants.OAuth.StateName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 
@@ -388,7 +388,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         //{
         //    var instance = new AuthorizationRequestBinder();
 
-        //    _values[Identity.OAuth.Constants.NonceName] = new string[0];
+        //    _values[Constants.OAuth.NonceName] = new string[0];
 
         //    var bindingResult = instance.FromQuery(_values);
 

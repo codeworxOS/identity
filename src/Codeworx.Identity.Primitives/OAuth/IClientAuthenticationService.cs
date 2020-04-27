@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth
 {
     public interface IClientAuthenticationService
     {
-        Task<AuthenticateClientResult> AuthenticateClient(TokenRequest request, string clientId, string clientSecret);
+        Task<IClientRegistration> AuthenticateClient(TokenRequest request);
     }
 }

@@ -56,16 +56,16 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             using (var reader = new StreamReader(context.Response.Body))
             {
                 var content = await reader.ReadToEndAsync();
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorName}\":\"{ExpectedError}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorName}\":\"{ExpectedError}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
             }
         }
 
         [Fact]
         public async Task RespondAsync_Unauthorized_ResponseWritten()
         {
-            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidClient;
+            const string ExpectedError = Constants.OAuth.Error.InvalidClient;
             const string ExpectedDescription = "ERROR_DESCRIPTION";
             const string ExpectedErrorUri = "ERROR_URI";
 
@@ -89,16 +89,16 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             using (var reader = new StreamReader(context.Response.Body))
             {
                 var content = await reader.ReadToEndAsync();
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorName}\":\"{ExpectedError}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorName}\":\"{ExpectedError}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
             }
         }
 
         [Fact]
         public async Task RespondAsync_UnauthorizedFromRequestHeader_ResponseWritten()
         {
-            const string ExpectedError = Identity.OAuth.Constants.Error.InvalidClient;
+            const string ExpectedError = Constants.OAuth.Error.InvalidClient;
             const string ExpectedDescription = "ERROR_DESCRIPTION";
             const string ExpectedErrorUri = "ERROR_URI";
 
@@ -124,9 +124,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             using (var reader = new StreamReader(context.Response.Body))
             {
                 var content = await reader.ReadToEndAsync();
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorName}\":\"{ExpectedError}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
-                Assert.Contains($"\"{Identity.OAuth.Constants.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorName}\":\"{ExpectedError}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorDescriptionName}\":\"{ExpectedDescription}\"", content);
+                Assert.Contains($"\"{Constants.OAuth.ErrorUriName}\":\"{ExpectedErrorUri}\"", content);
             }
         }
     }

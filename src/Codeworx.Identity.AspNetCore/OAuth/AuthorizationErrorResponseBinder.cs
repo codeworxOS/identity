@@ -27,21 +27,21 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             else
             {
                 var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
-                redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorName, responseData.Error);
+                redirectUriBuilder.AppendQueryPart(Constants.OAuth.ErrorName, responseData.Error);
 
                 if (!string.IsNullOrWhiteSpace(responseData.ErrorDescription))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorDescriptionName, responseData.ErrorDescription);
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.ErrorDescriptionName, responseData.ErrorDescription);
                 }
 
                 if (!string.IsNullOrWhiteSpace(responseData.ErrorUri))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.ErrorUriName, responseData.ErrorUri);
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.ErrorUriName, responseData.ErrorUri);
                 }
 
                 if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
-                    redirectUriBuilder.AppendQueryPart(Identity.OAuth.Constants.StateName, responseData.State);
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.StateName, responseData.State);
                 }
 
                 response.Redirect(redirectUriBuilder.Uri.ToString());

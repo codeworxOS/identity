@@ -39,7 +39,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var cache = new Dictionary<string, string>
             {
-                {Identity.OAuth.Constants.ClientIdName, "abc"},
+                {Constants.OAuth.ClientIdName, "abc"},
                 {"cde", "abc"},
             };
 
@@ -55,8 +55,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var cache = new Dictionary<string, string>
             {
-                {Identity.OAuth.Constants.ClientIdName, "abc"},
-                {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.OAuth.ClientIdName, "abc"},
+                {Constants.OAuth.RedirectUriName, "redirect"},
                 {"cde", "abc"},
             };
 
@@ -75,8 +75,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var cache = new Dictionary<string, string>
             {
-                {Identity.OAuth.Constants.ClientIdName, "abc"},
-                {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.OAuth.ClientIdName, "abc"},
+                {Constants.OAuth.RedirectUriName, "redirect"},
                 {Constants.Claims.Name, "login"},
             };
 
@@ -104,8 +104,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var cache = new Dictionary<string, string>
             {
-                {Identity.OAuth.Constants.ClientIdName, "abc"},
-                {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.OAuth.ClientIdName, "abc"},
+                {Constants.OAuth.RedirectUriName, "redirect"},
                 {Constants.Claims.Name, expectedLogin},
             };
             var tokenMock = new Mock<IToken>();
@@ -142,8 +142,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var cache = new Dictionary<string, string>
             {
-                {Identity.OAuth.Constants.ClientIdName, "abc"},
-                {Identity.OAuth.Constants.RedirectUriName, "redirect"},
+                {Constants.OAuth.ClientIdName, "abc"},
+                {Constants.OAuth.RedirectUriName, "redirect"},
                 {Constants.Claims.Name, expectedLogin},
             };
             var tokenMock = new Mock<IToken>();

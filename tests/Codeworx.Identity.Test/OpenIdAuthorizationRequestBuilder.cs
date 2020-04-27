@@ -6,7 +6,7 @@ namespace Codeworx.Identity.Test
     {
         private string _clientId = Constants.DefaultCodeFlowClientId;
         private string _redirectUri = "https://example.org/redirect";
-        private string _responseType = OAuth.Constants.ResponseType.Code;
+        private string _responseType = Constants.OAuth.ResponseType.Code;
         private string _scope;
         private string _state;
         private string _nonce = "ajhsdfojhplosjhdfio0hopishfpozhsd8ufhij";

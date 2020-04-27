@@ -21,34 +21,34 @@ namespace Codeworx.Identity.OAuth
         }
 
         [Required]
-        [RegularExpression(Constants.ClientIdValidation)]
-        [DataMember(Order = 1, Name = Constants.ClientIdName)]
+        [RegularExpression(Constants.OAuth.ClientIdValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.ClientIdName)]
         public string ClientId { get; }
 
         [UriAbsolute]
-        [RegularExpression(Constants.RedirectUriValidation)]
-        [DataMember(Order = 2, Name = Constants.RedirectUriName)]
+        [RegularExpression(Constants.OAuth.RedirectUriValidation)]
+        [DataMember(Order = 2, Name = Constants.OAuth.RedirectUriName)]
         public virtual string RedirectUri { get; }
 
         [Required]
-        [RegularExpression(Constants.ResponseTypeValidation)]
-        [DataMember(Order = 3, Name = Constants.ResponseTypeName)]
+        [RegularExpression(Constants.OAuth.ResponseTypeValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.ResponseTypeName)]
         public string ResponseType { get; }
 
-        [RegularExpression(Constants.ScopeValidation)]
-        [DataMember(Order = 4, Name = Constants.ScopeName)]
+        [RegularExpression(Constants.OAuth.ScopeValidation)]
+        [DataMember(Order = 4, Name = Constants.OAuth.ScopeName)]
         public virtual string Scope { get; }
 
-        [RegularExpression(Constants.StateValidation)]
-        [DataMember(Order = 5, Name = Constants.StateName)]
+        [RegularExpression(Constants.OAuth.StateValidation)]
+        [DataMember(Order = 5, Name = Constants.OAuth.StateName)]
         public string State { get; }
 
-        [RegularExpression(Constants.NonceValidation)]
-        [DataMember(Order = 6, Name = Constants.NonceName)]
+        [RegularExpression(Constants.OAuth.NonceValidation)]
+        [DataMember(Order = 6, Name = Constants.OAuth.NonceName)]
         public virtual string Nonce { get; }
 
-        [RegularExpression(Constants.ResponseModeValidation)]
-        [DataMember(Order = 7, Name = OAuth.Constants.ResponseModeName)]
+        [RegularExpression(Constants.OAuth.ResponseModeValidation)]
+        [DataMember(Order = 7, Name =Constants.OAuth.ResponseModeName)]
         public string ResponseMode { get; }
 
         [IgnoreDataMember]

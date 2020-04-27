@@ -37,17 +37,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
         }
 
         [Theory]
-        [InlineData(Identity.OAuth.Constants.ResponseType.Code, true)]
-        [InlineData(Identity.OpenId.Constants.ResponseType.IdToken, false)]
-        [InlineData(Identity.OpenId.Constants.ResponseType.IdToken + " " + Identity.OAuth.Constants.ResponseType.Token,
+        [InlineData(Constants.OAuth.ResponseType.Code, true)]
+        [InlineData(Constants.OpenId.ResponseType.IdToken, false)]
+        [InlineData(Constants.OpenId.ResponseType.IdToken + " " + Constants.OAuth.ResponseType.Token,
             false)]
-        [InlineData(Identity.OAuth.Constants.ResponseType.Code + " " + Identity.OpenId.Constants.ResponseType.IdToken,
+        [InlineData(Constants.OAuth.ResponseType.Code + " " + Constants.OpenId.ResponseType.IdToken,
             false)]
-        [InlineData(Identity.OAuth.Constants.ResponseType.Code + " " + Identity.OAuth.Constants.ResponseType.Token,
+        [InlineData(Constants.OAuth.ResponseType.Code + " " + Constants.OAuth.ResponseType.Token,
             false)]
         [InlineData(
-            Identity.OAuth.Constants.ResponseType.Code + " " + Identity.OpenId.Constants.ResponseType.IdToken + " " +
-            Identity.OAuth.Constants.ResponseType.Token, false)]
+            Constants.OAuth.ResponseType.Code + " " + Constants.OpenId.ResponseType.IdToken + " " +
+            Constants.OAuth.ResponseType.Token, false)]
         public void IsSupported_ResponseTypes_IsSupported(string responseType, bool expected)
         {
             var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
@@ -288,10 +288,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
 
             var expectedCacheValue = new Dictionary<string, string>
             {
-                { Identity.OAuth.Constants.RedirectUriName, request.RedirectUri},
-                { Identity.OAuth.Constants.ClientIdName, request.ClientId },
-                { Identity.OAuth.Constants.NonceName, request.Nonce },
-                { Identity.OAuth.Constants.ScopeName, request.Scope },
+                { Constants.OAuth.RedirectUriName, request.RedirectUri},
+                { Constants.OAuth.ClientIdName, request.ClientId },
+                { Constants.OAuth.NonceName, request.Nonce },
+                { Constants.OAuth.ScopeName, request.Scope },
                 { Constants.Claims.Name, expectedLogin },
             };
             cacheMock.Verify(p => p.SetAsync(It.IsAny<string>(), expectedCacheValue, It.IsAny<TimeSpan>()), Times.Once);

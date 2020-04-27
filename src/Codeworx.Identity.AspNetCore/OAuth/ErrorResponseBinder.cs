@@ -22,7 +22,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 throw new ArgumentNullException(nameof(responseData));
             }
 
-            if (responseData.Error == Identity.OAuth.Constants.Error.InvalidClient)
+            if (responseData.Error == Constants.OAuth.Error.InvalidClient)
             {
                 response.StatusCode = StatusCodes.Status401Unauthorized;
 
@@ -31,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                     response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
                 }
             }
-            else if (responseData.Error == Identity.OAuth.Constants.Error.InvalidRequest)
+            else if (responseData.Error == Constants.OAuth.Error.InvalidRequest)
             {
                 response.StatusCode = StatusCodes.Status400BadRequest;
             }
