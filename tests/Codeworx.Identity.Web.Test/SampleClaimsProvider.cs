@@ -12,7 +12,8 @@ namespace Codeworx.Identity.Web.Test
 
             return new[]
             {
-                new AssignedClaim("whatever",new []{"Raphael Schwarz" },ClaimTarget.AllTokens, AssignedClaim.AssignmentSource.User)
+                new AssignedClaim("upn",new []{"Raphael Schwarz" },ClaimTarget.AllTokens, AssignedClaim.AssignmentSource.User),
+                new AssignedClaim("given_name",new []{"Raphael Schwarz" },ClaimTarget.AllTokens, AssignedClaim.AssignmentSource.User)
             };
         }
     }

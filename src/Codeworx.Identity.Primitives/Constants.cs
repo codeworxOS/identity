@@ -14,6 +14,7 @@ namespace Codeworx.Identity
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
+        public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
         public const string DefaultSecondTenantName = "Sendond Tenant";

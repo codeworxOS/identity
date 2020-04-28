@@ -50,8 +50,6 @@ namespace Codeworx.Identity.Web.Test
                 DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
             };
 
-            services.AddSingleton<IExternalLoginProvider, WindowsLoginProvider>();
-
             services.AddCodeworxIdentity(_configuration)
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     .ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)

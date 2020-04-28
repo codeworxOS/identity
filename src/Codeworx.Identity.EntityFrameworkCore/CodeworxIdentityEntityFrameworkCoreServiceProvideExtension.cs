@@ -144,6 +144,25 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    var authCodePublicClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultCodeFlowPublicClientId));
+
+                    if (authCodePublicClient == null)
+                    {
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(Constants.DefaultCodeFlowPublicClientId),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            FlowTypes = FlowType.AuthorizationCode,
+                            ValidRedirectUrls =
+                            {
+                                new ValidRedirectUrl
+                                {
+                                    Url = "https://example.org/redirect",
+                                }
+                            }
+                        });
+                    }
+
                     var authTokenClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultTokenFlowClientId));
 
                     if (authTokenClient == null)

@@ -19,12 +19,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             IRequestBinder<AuthorizationCodeTokenRequest> tokenRequestBinder,
             IResponseBinder<TokenResponse> tokenResponseBinder)
         {
-            IRequestBindingResult<AuthorizationCodeTokenRequest, ErrorResponse> bindingResult = null;
-
             try
             {
                 var tokenRequest = await tokenRequestBinder.BindAsync(context.Request);
-                var result = await tokenService.AuthorizeRequest(bindingResult.Result);
+                var result = await tokenService.AuthorizeRequest(tokenRequest);
 
                 await tokenResponseBinder.BindAsync(result, context.Response);
             }
