@@ -131,9 +131,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.DefaultCodeFlowClientId),
                             ClientSecretSalt = salt,
-                            ClientSecret = hashingProvider.Hash("clientSecret", salt),
+                            ClientSecretHash = hashingProvider.Hash("clientSecret", salt),
                             TokenExpiration = TimeSpan.FromHours(1),
-                            FlowTypes = FlowType.AuthorizationCode,
+                            ClientType = Identity.Model.ClientType.WebBackend,
                             ValidRedirectUrls =
                             {
                                 new ValidRedirectUrl
@@ -152,7 +152,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.DefaultCodeFlowPublicClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
-                            FlowTypes = FlowType.AuthorizationCode,
+                            ClientType = Identity.Model.ClientType.Native,
                             ValidRedirectUrls =
                             {
                                 new ValidRedirectUrl
@@ -171,7 +171,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.DefaultTokenFlowClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
-                            FlowTypes = FlowType.Token,
+                            ClientType = Identity.Model.ClientType.UserAgent,
                             ValidRedirectUrls =
                             {
                                 new ValidRedirectUrl
@@ -179,7 +179,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                     Url = "https://example.org/redirect",
                                 }
                             },
-                            DefaultRedirectUri = "https://example.org/redirect",
                         });
                     }
 

@@ -102,7 +102,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizeRequest_UnauthorizedClient_ReturnsError()
         {
-            var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("Authorized")
+            var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("code")
                                                                     .Build();
 
             var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, ErrorResponse>>();
@@ -111,13 +111,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenFlowServiceStub.SetupGet(p => p.SupportedGrantType)
                                 .Returns(request.GrantType);
 
-            var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == "unAuthorized")))
-                             .Returns(true);
-
             var clientRegistrationStub = new Mock<IClientRegistration>();
-            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+            clientRegistrationStub.SetupGet(p => p.ClientType)
+                                  .Returns(ClientType.Backend);
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>()))
@@ -172,21 +168,18 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenResultServiceStub.Setup(p => p.CreateAccessToken(It.IsAny<Dictionary<string, string>>(), It.IsAny<TimeSpan>()))
                                 .ReturnsAsync(expectedToken);
 
-            var supportedFlowStub = new Mock<ISupportedFlow>();
-            supportedFlowStub.Setup(p => p.IsSupported(It.Is<string>(v => v == request.GrantType)))
-                             .Returns(true);
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.Setup(p => p.TokenExpiration)
                                     .Returns(expectedTimespan);
-            clientRegistrationStub.SetupGet(p => p.SupportedFlow)
-                                  .Returns(ImmutableList.Create(supportedFlowStub.Object));
+            clientRegistrationStub.SetupGet(p => p.ClientType)
+                                  .Returns(ClientType.Native);
 
             var clientAuthenticationStub = new Mock<IClientAuthenticationService>();
             clientAuthenticationStub.Setup(p => p.AuthenticateClient(It.IsAny<TokenRequest>()))
                                     .ReturnsAsync(clientRegistrationStub.Object);
 
-        
+
             var clientServiceMock = new Mock<IClientService>();
             clientServiceMock.Setup(p => p.GetById(It.IsAny<string>()))
                 .ReturnsAsync(clientRegistrationStub.Object);
@@ -199,7 +192,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             requestValidatorStub.Verify(p => p.IsValid(It.IsAny<TokenRequest>()), Times.Once);
             clientAuthenticationStub.Verify(p => p.AuthenticateClient(It.IsAny<TokenRequest>()), Times.Once);
-            supportedFlowStub.Verify(p => p.IsSupported(It.Is<string>(v => v == request.GrantType)), Times.Once);
             tokenResultServiceStub.Verify(p => p.CreateAccessToken(expectedCache, expectedTimespan), Times.Once);
             Assert.Equal(expectedToken, result.AccessToken);
         }

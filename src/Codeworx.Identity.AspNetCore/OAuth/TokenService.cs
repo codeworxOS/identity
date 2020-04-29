@@ -48,10 +48,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             var client = await _clientAuthenticationService.AuthenticateClient(request)
                                                                                  .ConfigureAwait(false);
 
-            if (!client.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
-            {
-                ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
-            }
+            // TODO implement ClientType
+            ////if (!client.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
+            ////{
+            ////    ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
+            ////}
 
             var authorizationCodeTokenRequest = request as AuthorizationCodeTokenRequest;
 

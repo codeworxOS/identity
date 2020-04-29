@@ -41,22 +41,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             ////{
             ////}
 
-            return new ClientRegistration(id, hash, salt, new ISupportedFlow[] { new SupportedFlow(flows) }, config.TokenExpiration, urls);
-        }
-
-        private class SupportedFlow : ISupportedFlow
-        {
-            private HashSet<string> _flows;
-
-            public SupportedFlow(HashSet<string> flows)
-            {
-                _flows = flows;
-            }
-
-            public bool IsSupported(string flowKey)
-            {
-                return _flows.Contains(flowKey);
-            }
+            return new ClientRegistration(id, hash, salt, ClientType.Native, config.TokenExpiration, urls);
         }
     }
 }

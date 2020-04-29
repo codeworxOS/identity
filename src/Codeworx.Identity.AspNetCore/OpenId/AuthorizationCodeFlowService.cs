@@ -56,10 +56,11 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 return InvalidRequestResult.CreateInvalidClientId(request.State);
             }
 
-            if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
-            {
-                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
-            }
+            // TODO implement ClientType
+            ////if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            ////{
+            ////    return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
+            ////}
 
             var containsOpenId = request.Scope
                 .Split(' ')

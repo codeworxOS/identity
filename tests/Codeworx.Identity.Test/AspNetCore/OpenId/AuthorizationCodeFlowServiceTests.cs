@@ -84,8 +84,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
 
             clientRegistrationMock.Setup(p => p.ClientId)
                 .Returns(expectedClientId);
-            clientRegistrationMock.Setup(p => p.SupportedFlow)
-                .Returns(new ReadOnlyCollection<ISupportedFlow>(new List<ISupportedFlow>()));
+            clientRegistrationMock.Setup(p => p.ClientType)
+                .Returns(ClientType.Native);
 
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
@@ -114,15 +114,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             var expectedRedirectionUri = "redirect/uri";
             var clientServiceMock = new Mock<IClientService>();
             var clientRegistrationMock = new Mock<IClientRegistration>();
-            var supportedFlowMock = new Mock<ISupportedFlow>();
-
-            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
-                .Returns(true);
 
             clientRegistrationMock.Setup(p => p.ClientId)
                 .Returns(expectedClientId);
-            clientRegistrationMock.Setup(p => p.SupportedFlow)
-                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+            clientRegistrationMock.Setup(p => p.ClientType)
+                .Returns(ClientType.Native);
 
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
@@ -151,15 +147,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             var expectedRedirectionUri = "redirect/uri";
             var clientServiceMock = new Mock<IClientService>();
             var clientRegistrationMock = new Mock<IClientRegistration>();
-            var supportedFlowMock = new Mock<ISupportedFlow>();
-
-            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
-                .Returns(true);
 
             clientRegistrationMock.Setup(p => p.ClientId)
                 .Returns(expectedClientId);
-            clientRegistrationMock.Setup(p => p.SupportedFlow)
-                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+            clientRegistrationMock.Setup(p => p.ClientType)
+                .Returns(ClientType.Native);
 
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
@@ -188,7 +180,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             var expectedRedirectionUri = "redirect/uri";
             var clientServiceMock = new Mock<IClientService>();
             var clientRegistrationMock = new Mock<IClientRegistration>();
-            var supportedFlowMock = new Mock<ISupportedFlow>();
             var scopeServiceMock = new Mock<IScopeService>();
             var scopeMock = new Mock<IScope>();
 
@@ -200,13 +191,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             scopeServiceMock.Setup(p => p.GetScopes())
                 .ReturnsAsync(() => new[] { scopeMock.Object, scopeMock.Object, scopeMock.Object });
 
-            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
-                .Returns(true);
-
             clientRegistrationMock.Setup(p => p.ClientId)
                 .Returns(expectedClientId);
-            clientRegistrationMock.Setup(p => p.SupportedFlow)
-                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+            clientRegistrationMock.Setup(p => p.ClientType)
+                .Returns(ClientType.Native);
 
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);
@@ -239,7 +227,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
 
             var clientServiceMock = new Mock<IClientService>();
             var clientRegistrationMock = new Mock<IClientRegistration>();
-            var supportedFlowMock = new Mock<ISupportedFlow>();
             var scopeServiceMock = new Mock<IScopeService>();
             var scopeMock = new Mock<IScope>();
             var cacheMock = new Mock<IAuthorizationCodeCache>();
@@ -256,13 +243,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OpenId
             scopeServiceMock.Setup(p => p.GetScopes())
                 .ReturnsAsync(() => new[] { scopeMock.Object, scopeMock.Object, scopeMock.Object });
 
-            supportedFlowMock.Setup(p => p.IsSupported(It.IsAny<string>()))
-                .Returns(true);
-
             clientRegistrationMock.Setup(p => p.ClientId)
                 .Returns(expectedClientId);
-            clientRegistrationMock.Setup(p => p.SupportedFlow)
-                .Returns(new ReadOnlyCollection<ISupportedFlow>(new[] { supportedFlowMock.Object }));
+            clientRegistrationMock.Setup(p => p.ClientType)
+                .Returns(ClientType.Native);
 
             clientServiceMock.Setup(p => p.GetById(expectedClientId))
                 .ReturnsAsync(() => clientRegistrationMock.Object);

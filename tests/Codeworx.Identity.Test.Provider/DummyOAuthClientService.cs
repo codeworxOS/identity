@@ -34,13 +34,6 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
         }
 
-        private class AuthorizationCodeSupportedFlow : ISupportedFlow
-        {
-            public bool IsSupported(string flowKey)
-            {
-                return flowKey == Constants.OAuth.ResponseType.Code || flowKey == Constants.OAuth.GrantType.AuthorizationCode;
-            }
-        }
 
         private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
         {
@@ -50,7 +43,7 @@ namespace Codeworx.Identity.Test
                 this.ClientSecretSalt = clientSecretSalt;
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
-                this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
+                this.ClientType = ClientType.Web;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
@@ -63,18 +56,18 @@ namespace Codeworx.Identity.Test
 
             public Uri DefaultRedirectUri { get; }
 
-            public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
-
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
         {
             public DummyOAuthAuthorizationTokenClientRegistration()
             {
-                this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
+                this.ClientType = ClientType.UserAgent;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
@@ -86,20 +79,12 @@ namespace Codeworx.Identity.Test
             public byte[] ClientSecretSalt => null;
 
             public Uri DefaultRedirectUri { get; }
-
-            public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
-
+            
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
-        }
 
-        private class TokenSupportedFlow : ISupportedFlow
-        {
-            public bool IsSupported(string flowKey)
-            {
-                return flowKey == Constants.OAuth.ResponseType.Token;
-            }
+            public ClientType ClientType { get; }
         }
     }
 }

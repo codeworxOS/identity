@@ -41,10 +41,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 return InvalidRequestResult.CreateInvalidClientId(request.State);
             }
 
-            if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
-            {
-                return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
-            }
+            // TODO implement ClientType
+            ////if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            ////{
+            ////    return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
+            ////}
 
             var scopes = await _scopeService.GetScopes()
                                             .ConfigureAwait(false);

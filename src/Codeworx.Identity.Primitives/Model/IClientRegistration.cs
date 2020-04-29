@@ -11,7 +11,7 @@ namespace Codeworx.Identity.Model
 
         byte[] ClientSecretSalt { get; }
 
-        IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
+        ClientType ClientType { get; }
 
         TimeSpan TokenExpiration { get; }
 
