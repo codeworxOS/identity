@@ -10,9 +10,5 @@ namespace Codeworx.Identity.Login
         Task<LoginResponse> ProcessLoginAsync(LoginRequest request);
 
         Task<SignInResponse> ProcessLoginFormAsync(LoginFormRequest request);
-
-        Task<TenantMissingResponse> ProcessTenantMissingAsync(TenantMissingRequest request);
-
-        Task<SignInResponse> ProcessTenantSelectionAsync(TenantSelectionRequest request);
     }
 }

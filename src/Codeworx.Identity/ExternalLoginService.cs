@@ -46,7 +46,7 @@ namespace Codeworx.Identity
                     {
                         Id = externalLogin.Id,
                         Name = externalLogin.Name,
-                        Url = await processor.GetProcessorUrlAsync(request, externalLogin.ProcessorConfiguration)
+                        Url = await processor.GetProcessorUrlAsync(request, externalLogin.ProcessorConfiguration),
                     };
 
                     result.Add(info);

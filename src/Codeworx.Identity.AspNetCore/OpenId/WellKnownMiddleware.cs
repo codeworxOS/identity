@@ -27,7 +27,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
             IScopeService scopeService,
-            IEnumerable<IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>> supportedFlows,
+            IEnumerable<IAuthorizationFlowService> supportedFlows,
             IDefaultSigningKeyProvider keyProvider)
         {
             var host = baseUriAccessor.BaseUri.OriginalString;
@@ -40,19 +40,19 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey) };
 
             var content = new WellKnownResponse
-                          {
-                              Issuer = host,
-                              AuthorizationEndpoint = host + _options.OpenIdAuthorizationEndpoint,
-                              TokenEndpoint = host + _options.OpenIdTokenEndpoint,
-                              JsonWebKeyEndpoint = host + _options.OpenIdJsonWebKeyEndpoint,
-                              UserInfoEndpoint = host + _options.UserInfoEndpoint,
-                              ClientRegistrationEndpoint = host + "/notimplemented",
-                              SupportedResponseTypes = responseTypes.ToArray(),
-                              SupportedIdTokenSigningAlgorithms = supportedSigningAlgorithms.ToArray(),
-                              SupportedClaims = new[] { "aud", "sub", "iss", "name" },
-                              SupportedSubjectTypes = new[] { "public" },
-                              SupportedScopes = scopes.Select(p => p.ScopeKey).ToArray()
-                          };
+            {
+                Issuer = host,
+                AuthorizationEndpoint = host + _options.OpenIdAuthorizationEndpoint,
+                TokenEndpoint = host + _options.OpenIdTokenEndpoint,
+                JsonWebKeyEndpoint = host + _options.OpenIdJsonWebKeyEndpoint,
+                UserInfoEndpoint = host + _options.UserInfoEndpoint,
+                ClientRegistrationEndpoint = host + "/notimplemented",
+                SupportedResponseTypes = responseTypes.ToArray(),
+                SupportedIdTokenSigningAlgorithms = supportedSigningAlgorithms.ToArray(),
+                SupportedClaims = new[] { "aud", "sub", "iss", "name" },
+                SupportedSubjectTypes = new[] { "public" },
+                SupportedScopes = scopes.Select(p => p.ScopeKey).ToArray(),
+            };
 
             var responseBinder = context.GetResponseBinder<WellKnownResponse>();
             await responseBinder.BindAsync(content, context.Response);

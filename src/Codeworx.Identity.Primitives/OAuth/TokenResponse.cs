@@ -6,10 +6,10 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class TokenResponse
     {
-        public TokenResponse(string accessToken, string idToken, string tokenType, int expiresIn, string scope, string refreshToken = null)
+        public TokenResponse(string accessToken, string identityToken, string tokenType, int expiresIn, string scope, string refreshToken = null)
         {
             this.AccessToken = accessToken;
-            this.IdToken = idToken;
+            this.IdToken = identityToken;
             this.ExpiresIn = expiresIn;
             this.RefreshToken = refreshToken;
             this.Scope = scope;

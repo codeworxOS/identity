@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace Codeworx.Identity.Model
+﻿namespace Codeworx.Identity.Model
 {
-    [Flags]
     public enum ClientType
     {
         None = 0x00,

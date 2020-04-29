@@ -2,9 +2,8 @@
 
 namespace Codeworx.Identity.OAuth
 {
-    public interface IAuthorizationCodeGenerator<TRequest>
-        where TRequest : AuthorizationRequest
+    public interface IAuthorizationCodeGenerator
     {
-        Task<string> GenerateCode(TRequest request, int length);
+        Task<string> GenerateCode(IAuthorizationParameters request, int length);
     }
 }

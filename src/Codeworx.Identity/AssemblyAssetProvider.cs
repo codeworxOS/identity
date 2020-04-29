@@ -21,7 +21,7 @@ namespace Codeworx.Identity
                          select new
                          {
                              Prefix = a.UriPrefix,
-                             Folder = a.AssetsFolder
+                             Folder = a.AssetsFolder,
                          };
 
             _assets = result.ToImmutableDictionary(p => p.Prefix, p => p.Folder);

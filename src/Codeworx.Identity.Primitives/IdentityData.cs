@@ -6,19 +6,11 @@ namespace Codeworx.Identity
 {
     public class IdentityData
     {
-        public IdentityData(string identifier, string login, IEnumerable<TenantInfo> tenants, IEnumerable<AssignedClaim> claims = null, string tenantKey = null)
-            : this(identifier, login, tenantKey, claims ?? Enumerable.Empty<AssignedClaim>())
+        public IdentityData(string identifier, string login, IEnumerable<AssignedClaim> claims = null)
         {
-            Tenants = ImmutableList.CreateRange(tenants);
-        }
-
-        private IdentityData(string identifier, string login, string tenantKey, IEnumerable<AssignedClaim> claims)
-        {
-            Tenants = Enumerable.Empty<TenantInfo>();
-            TenantKey = tenantKey;
             Identifier = identifier;
             Login = login;
-            Claims = ImmutableList.CreateRange(claims);
+            Claims = ImmutableList.CreateRange(claims ?? Enumerable.Empty<AssignedClaim>());
         }
 
         public IEnumerable<AssignedClaim> Claims { get; }
@@ -26,10 +18,6 @@ namespace Codeworx.Identity
         public string Identifier { get; }
 
         public string Login { get; }
-
-        public string TenantKey { get; }
-
-        public IEnumerable<TenantInfo> Tenants { get; }
 
         public IDictionary<string, object> GetTokenClaims(ClaimTarget target)
         {
@@ -40,15 +28,13 @@ namespace Codeworx.Identity
                          select new
                          {
                              Key = grp.Key,
-                             Value = values.Length > 1 ? (object)values : values.FirstOrDefault()
+                             Value = values.Length > 1 ? (object)values : values.FirstOrDefault(),
                          };
 
             var result = claims.ToDictionary(p => p.Key, p => p.Value);
 
             result[Constants.Claims.Id] = Identifier;
             result[Constants.Claims.Name] = Login;
-            result[Constants.Claims.CurrentTenant] = TenantKey;
-            result[Constants.Claims.Tenant] = Tenants.ToDictionary(p => p.Key, p => (object)p.Name);
 
             return result;
         }

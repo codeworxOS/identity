@@ -19,34 +19,25 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
     public class AuthorizationCodeFlowServiceTests
     {
         [Fact]
-        public async Task AuthorizeRequest_MissingRequest_ArgumentNull()
+        public async Task AuthorizeRequest_MissingParameter_ArgumentNull()
         {
             var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
 
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(null, new ClaimsIdentity()));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(null));
         }
 
-        [Fact]
-        public async Task AuthorizeRequest_MissingUser_ArgumentNull()
-        {
-            var request = new OAuthAuthorizationRequestBuilder()
-                .Build();
-
-            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
-
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(request, null));
-        }
 
         [Fact]
         public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
         {
             const string AuthorizationCode = "AuthorizationCode";
             const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
+            var identity = GetIdentity();
 
             var request = new OAuthAuthorizationRequestBuilder().WithClientId(ClientIdentifier)
                                                            .Build();
 
-            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator<AuthorizationRequest>>();
+            var authorizationCodeGeneratorStub = new Mock<IAuthorizationCodeGenerator>();
             authorizationCodeGeneratorStub.Setup(p => p.GenerateCode(It.IsAny<AuthorizationRequest>(), 10))
                                           .ReturnsAsync(AuthorizationCode);
 
@@ -67,7 +58,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var instance = new AuthorizationCodeFlowService(authorizationCodeGeneratorStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, options, cache);
 
-            var identity = GetIdentity();
+
 
             var result = await instance.AuthorizeRequest(request, identity);
 

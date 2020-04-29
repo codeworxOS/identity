@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth
 {
-    public interface IAuthorizationService<TRequest>
-        where TRequest : AuthorizationRequest
+    public interface IAuthorizationService
     {
-        Task<IAuthorizationResult> AuthorizeRequest(TRequest request, ClaimsIdentity user);
+        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user);
     }
 }

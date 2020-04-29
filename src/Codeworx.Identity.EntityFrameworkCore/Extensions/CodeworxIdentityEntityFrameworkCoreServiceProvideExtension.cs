@@ -41,8 +41,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                new UserRole
                                {
                                    RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
-                               }
-                            }
+                               },
+                            },
                         });
                     }
 
@@ -64,8 +64,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                new UserRole
                                {
                                    RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
-                               }
-                            }
+                               },
+                            },
                         });
                     }
 
@@ -81,13 +81,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             {
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId)
+                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
                                 },
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId)
-                                }
-                            }
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                },
+                            },
                         });
                     }
 
@@ -103,9 +103,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             {
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId)
-                                }
-                            }
+                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                },
+                            },
                         });
                     }
 
@@ -139,8 +139,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 new ValidRedirectUrl
                                 {
                                     Url = "https://example.org/redirect",
-                                }
-                            }
+                                },
+                            },
                         });
                     }
 
@@ -158,8 +158,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 new ValidRedirectUrl
                                 {
                                     Url = "https://example.org/redirect",
-                                }
-                            }
+                                },
+                            },
                         });
                     }
 
@@ -177,7 +177,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 new ValidRedirectUrl
                                 {
                                     Url = "https://example.org/redirect",
-                                }
+                                },
                             },
                         });
                     }
@@ -198,8 +198,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = "S-1-5-21-2583907123-3048486745-1937933167-1875",
-                                }
-                            }
+                                },
+                            },
                         });
                     }
 
@@ -232,7 +232,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = Constants.MultiTenantUserId,
                                 },
-                            }
+                            },
                         });
                     }
 

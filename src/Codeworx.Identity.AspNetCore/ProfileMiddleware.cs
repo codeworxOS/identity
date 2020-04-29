@@ -39,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore
 
             var setting = new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
             };
             var ser = JsonSerializer.Create(setting);
 
@@ -54,12 +54,6 @@ namespace Codeworx.Identity.AspNetCore
 
                     await jsonTextWriter.WritePropertyNameAsync(nameof(data.Login));
                     await jsonTextWriter.WriteValueAsync(data.Login);
-
-                    if (data.TenantKey != null)
-                    {
-                        await jsonTextWriter.WritePropertyNameAsync(nameof(data.TenantKey));
-                        await jsonTextWriter.WriteValueAsync(data.TenantKey);
-                    }
 
                     foreach (var item in data.Claims)
                     {

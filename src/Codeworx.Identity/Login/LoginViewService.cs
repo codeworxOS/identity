@@ -5,15 +5,11 @@ namespace Codeworx.Identity.Login
 {
     public class LoginViewService : ILoginViewService
     {
-        private readonly IDefaultTenantService _defaultTenantService;
         private readonly IExternalLoginService _externalLoginService;
         private readonly IIdentityService _identityService;
-        private readonly ITenantService _tenantService;
 
-        public LoginViewService(ITenantService tenantService, IExternalLoginService externalLoginService, IIdentityService identityService, IDefaultTenantService defaultTenantService = null)
+        public LoginViewService(IExternalLoginService externalLoginService, IIdentityService identityService)
         {
-            _defaultTenantService = defaultTenantService;
-            _tenantService = tenantService;
             _externalLoginService = externalLoginService;
             _identityService = identityService;
         }
@@ -47,21 +43,6 @@ namespace Codeworx.Identity.Login
 
                 throw new ErrorResponseException<LoginResponse>(loginResponse);
             }
-        }
-
-        public async Task<TenantMissingResponse> ProcessTenantMissingAsync(TenantMissingRequest request)
-        {
-            var tenants = await _tenantService.GetTenantsByIdentityAsync(request.Identity);
-
-            return new TenantMissingResponse(tenants, _defaultTenantService != null, request.ReturnUrl);
-        }
-
-        public Task<SignInResponse> ProcessTenantSelectionAsync(TenantSelectionRequest request)
-        {
-            var identity = request.Identity.ToIdentityData();
-            var signInIdentity = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, request.TenantKey);
-
-            return Task.FromResult(new SignInResponse(signInIdentity, request.ReturnUrl));
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 Id = provider.Id.ToString("N").ToLower(),
                 Name = provider.Name,
                 ProcessorType = processorType,
-                ProcessorConfiguration = processorConfiguration
+                ProcessorConfiguration = processorConfiguration,
             };
         }
     }

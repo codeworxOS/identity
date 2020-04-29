@@ -10,9 +10,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         {
             builder.ToTable("RightHolder");
 
-            builder.HasDiscriminator<byte>("Type")
-                   .HasValue<User>(1)
-                   .HasValue<Role>(2);
+            builder.HasDiscriminator<string>("Type")
+                   .HasValue<User>("User")
+                   .HasValue<Role>("Role");
         }
     }
 }

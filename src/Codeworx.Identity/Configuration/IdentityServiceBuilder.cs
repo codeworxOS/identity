@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Configuration
                 return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
                                                             {
                                                                 new OpenIdScope(),
-                                                                new DummyScope()
+                                                                new DummyScope(),
                                                             });
             }
 

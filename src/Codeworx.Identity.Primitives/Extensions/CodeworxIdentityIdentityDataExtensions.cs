@@ -11,8 +11,6 @@ namespace Codeworx.Identity
         {
             var identity = new ClaimsIdentity(Constants.ProductName, Constants.Claims.Name, Constants.Claims.Role);
 
-            var tenants = data.ToTenantClaims();
-            identity.AddClaims(tenants);
             var identityClaims = data.ToIdentityClaims();
             identity.AddClaims(identityClaims);
 
@@ -35,7 +33,6 @@ namespace Codeworx.Identity
         {
             string id = null;
             string login = null;
-            string currentTenant = null;
             List<TenantInfo> tenants = new List<TenantInfo>();
             List<Claim> claims = new List<Claim>();
 
@@ -51,15 +48,6 @@ namespace Codeworx.Identity
                         login = item.Value;
                         break;
 
-                    case Constants.Claims.CurrentTenant:
-                        currentTenant = item.Value;
-                        tenants.Add(new TenantInfo { Key = currentTenant, Name = item.Properties[Constants.TenantNameProperty] });
-                        break;
-
-                    case Constants.Claims.Tenant:
-                        tenants.Add(new TenantInfo { Key = item.Value, Name = item.Properties[Constants.TenantNameProperty] });
-                        break;
-
                     default:
                         claims.Add(item);
                         break;
@@ -71,20 +59,7 @@ namespace Codeworx.Identity
                                     .Select(p => new AssignedClaim(p.Key, p.Select(x => x.Value), ClaimTarget.LoginCookie, AssignedClaim.AssignmentSource.Global))
                                     .ToList();
 
-            return new IdentityData(id, login, tenants, assignedClaims, currentTenant);
-        }
-
-        public static IEnumerable<Claim> ToTenantClaims(this IdentityData data)
-        {
-            foreach (var item in data.Tenants)
-            {
-                var type = item.Key == data.TenantKey ? Constants.Claims.CurrentTenant : Constants.Claims.Tenant;
-                var value = item.Key;
-
-                var claim = new Claim(type, value, item.Name);
-                claim.Properties.Add(Constants.TenantNameProperty, item.Name);
-                yield return claim;
-            }
+            return new IdentityData(id, login, assignedClaims);
         }
 
         private static AssignedClaim.AssignmentSource ParseClaimSource(string issuer)

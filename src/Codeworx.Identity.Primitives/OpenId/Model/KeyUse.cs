@@ -11,6 +11,6 @@ namespace Codeworx.Identity.OpenId.Model
         [EnumMember(Value = "sig")]
         Signature,
         [EnumMember(Value = "enc")]
-        Encryption
+        Encryption,
     }
 }

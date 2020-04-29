@@ -13,6 +13,6 @@ namespace Codeworx.Identity.OpenId.Model
         [EnumMember(Value = "EC")]
         EllipticCurve,
         [EnumMember(Value = "oct")]
-        Octet
+        Octet,
     }
 }

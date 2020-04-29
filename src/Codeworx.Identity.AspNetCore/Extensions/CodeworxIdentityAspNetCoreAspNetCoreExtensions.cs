@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Binder;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
 using Codeworx.Identity.AspNetCore.OAuth;
+using Codeworx.Identity.AspNetCore.OAuth.Authorization;
+using Codeworx.Identity.AspNetCore.OAuth.Binder;
 using Codeworx.Identity.AspNetCore.OpenId;
+using Codeworx.Identity.AspNetCore.OpenId.Binder;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
@@ -17,6 +20,8 @@ using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.ExternalLogin;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Authorization;
+using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
@@ -194,8 +199,8 @@ namespace Codeworx.Identity.AspNetCore
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.Binder.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
@@ -221,11 +226,11 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
             collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
 
-            collection.AddTransient<IRequestValidator<Identity.OAuth.AuthorizationRequest, AuthorizationErrorResponse>, OAuth.AuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<Identity.OpenId.AuthorizationRequest, AuthorizationErrorResponse>, OpenId.AuthorizationRequestValidator>();
-            collection.AddTransient<IRequestValidator<TokenRequest, ErrorResponse>, TokenRequestValidator>();
-            collection.AddTransient<IAuthorizationCodeGenerator<Identity.OAuth.AuthorizationRequest>, AuthorizationCodeGenerator<Identity.OAuth.AuthorizationRequest>>();
-            collection.AddTransient<IAuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest>, AuthorizationCodeGenerator<Identity.OpenId.AuthorizationRequest>>();
+            collection.AddTransient<IAuthorizationRequestProcessor, StageOneAuthorizationRequestProcessor>();
+            collection.AddTransient<IAuthorizationRequestProcessor, StageTwoAuthorizationRequestProcessor>();
+
+            collection.AddTransient<IRequestValidator<TokenRequest>, TokenRequestValidator>();
+            collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
@@ -234,11 +239,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
 
-            collection.AddScoped<IAuthorizationFlowService<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationCodeFlowService>();
-            collection.AddScoped<IAuthorizationFlowService<Identity.OAuth.AuthorizationRequest>, OAuth.AuthorizationTokenFlowService>();
-            collection.AddScoped<IAuthorizationService<Identity.OAuth.AuthorizationRequest>, AuthorizationService<Identity.OAuth.AuthorizationRequest>>();
-            collection.AddScoped<IAuthorizationService<Identity.OpenId.AuthorizationRequest>, AuthorizationService<Identity.OpenId.AuthorizationRequest>>();
-            collection.AddScoped<IAuthorizationFlowService<Identity.OpenId.AuthorizationRequest>, OpenId.AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationService, AuthorizationService>();
 
             collection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
             collection.AddScoped<ITokenService, TokenService>();

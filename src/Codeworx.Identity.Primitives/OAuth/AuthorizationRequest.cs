@@ -7,8 +7,6 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationRequest
     {
-        private string _defaultRedirectUri;
-
         public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
             this.ClientId = clientId;
@@ -48,14 +46,7 @@ namespace Codeworx.Identity.OAuth
         public virtual string Nonce { get; }
 
         [RegularExpression(Constants.OAuth.ResponseModeValidation)]
-        [DataMember(Order = 7, Name =Constants.OAuth.ResponseModeName)]
+        [DataMember(Order = 7, Name = Constants.OAuth.ResponseModeName)]
         public string ResponseMode { get; }
-
-        [IgnoreDataMember]
-        public string RedirectionTarget
-        {
-            get => string.IsNullOrWhiteSpace(_defaultRedirectUri) ? this.RedirectUri : _defaultRedirectUri;
-            set => _defaultRedirectUri = value;
-        }
     }
 }

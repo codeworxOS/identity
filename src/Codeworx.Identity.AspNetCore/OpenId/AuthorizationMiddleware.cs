@@ -14,7 +14,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<Identity.OpenId.AuthorizationRequest> authorizationService, IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder)
         {
             var claimsIdentity = context.User?.Identity as ClaimsIdentity;
 

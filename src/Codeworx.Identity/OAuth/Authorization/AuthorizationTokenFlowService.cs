@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Codeworx.Identity.Token;
+
+namespace Codeworx.Identity.OAuth.Authorization
+{
+    public class AuthorizationTokenFlowService : IAuthorizationFlowService
+    {
+        private readonly IIdentityService _identityService;
+        private readonly IClientService _clientService;
+        private readonly IScopeService _scopeService;
+        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly IBaseUriAccessor _baseUriAccessor;
+
+        public AuthorizationTokenFlowService(IIdentityService identityService, IClientService clientService, IScopeService scopeService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
+        {
+            _clientService = clientService;
+            _scopeService = scopeService;
+            _tokenProviders = tokenProviders;
+            _baseUriAccessor = baseUriAccessor;
+            _identityService = identityService;
+        }
+
+        public string[] SupportedResponseTypes { get; } = { Constants.OAuth.ResponseType.Token };
+
+        public bool IsSupported(string responseType)
+        {
+            return Equals(Constants.OAuth.ResponseType.Token, responseType);
+        }
+
+        public async Task<IAuthorizationResult> AuthorizeRequest(IAuthorizationParameters parameters)
+        {
+            var client = await _clientService.GetById(parameters.ClientId);
+            if (client == null)
+            {
+                return InvalidRequestResult.CreateInvalidClientId(parameters.State);
+            }
+
+            // TODO implement ClientType
+            ////if (!client.SupportedFlow.Any(p => p.IsSupported(request.ResponseType)))
+            ////{
+            ////    return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
+            ////}
+
+            var scopes = await _scopeService.GetScopes()
+                                            .ConfigureAwait(false);
+
+            var scopeKeys = scopes
+                            .Select(s => s.ScopeKey)
+                            .ToList();
+
+            if (parameters.Scopes
+                          .Any(p => scopeKeys.Contains(p) == false))
+            {
+                return new UnknownScopeResult(parameters.State, parameters.RedirectUri);
+            }
+
+            var provider = _tokenProviders.First(p => p.TokenType == "jwt");
+            var token = await provider.CreateAsync(null);
+
+            var identityData = await _identityService.GetIdentityAsync(parameters.User);
+            var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
+            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
+
+            await token.SetPayloadAsync(payload, issuer, parameters.ClientId, parameters.User, string.Join(" ", parameters.Scopes), parameters.Nonce, client.TokenExpiration).ConfigureAwait(false);
+
+            var accessToken = await token.SerializeAsync().ConfigureAwait(false);
+
+            return new SuccessfulTokenAuthorizationResult(parameters.State, accessToken, Convert.ToInt32(Math.Floor(client.TokenExpiration.TotalSeconds)), parameters.RedirectUri);
+        }
+    }
+}

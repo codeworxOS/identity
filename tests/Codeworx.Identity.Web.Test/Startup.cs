@@ -52,12 +52,12 @@ namespace Codeworx.Identity.Web.Test
 
             services.AddCodeworxIdentity(_configuration)
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
-                    .ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
+                    //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
             //.UseConfiguration(_configuration);
 
-            services.AddScoped<IClaimsService, SampleClaimsProvider>();
+            ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddMvcCore()
                 .AddAuthorization()

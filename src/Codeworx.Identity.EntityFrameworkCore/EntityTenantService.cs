@@ -40,7 +40,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 .Select(p => new TenantInfo
                                 {
                                     Key = p.TenantId.ToString("N"),
-                                    Name = p.Tenant.Name
+                                    Name = p.Tenant.Name,
                                 })
                                 .ToListAsync();
 

@@ -14,7 +14,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService<AuthorizationRequest> authorizationService, IRequestBinder<AuthorizationRequest> authorizationRequestBinder)
+        public async Task Invoke(
+            HttpContext context,
+            IAuthorizationService authorizationService,
+            IRequestBinder<AuthorizationRequest> authorizationRequestBinder)
         {
             if (context.User == null)
             {

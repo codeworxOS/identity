@@ -36,13 +36,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("ClientSecret");
+                    b.Property<byte[]>("ClientSecretHash");
 
                     b.Property<byte[]>("ClientSecretSalt");
 
-                    b.Property<string>("DefaultRedirectUri");
-
-                    b.Property<int>("FlowTypes");
+                    b.Property<int>("ClientType");
 
                     b.Property<TimeSpan>("TokenExpiration");
 

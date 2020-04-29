@@ -26,5 +26,10 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.OAuth.ErrorUriValidation)]
         [DataMember(Order = 3, Name = Constants.OAuth.ErrorUriName)]
         public string ErrorUri { get; }
+
+        public static void Throw(string error, string errorDescription, string state, string redirectUri = null, string errorUri = null)
+        {
+            throw new ErrorResponseException<AuthorizationErrorResponse>(new AuthorizationErrorResponse(error, errorDescription, errorUri, state, redirectUri));
+        }
     }
 }

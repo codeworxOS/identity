@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
@@ -11,14 +10,12 @@ namespace Codeworx.Identity
     {
         private readonly ImmutableList<IClaimsService> _claimsProviders;
         private readonly IPasswordValidator _passwordValidator;
-        private readonly ITenantService _tenantService;
         private readonly IUserService _userService;
 
-        public IdentityService(IUserService userService, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
+        public IdentityService(IUserService userService, IPasswordValidator passwordValidator, IEnumerable<IClaimsService> claimsProvider)
         {
             _userService = userService;
             _passwordValidator = passwordValidator;
-            _tenantService = tenantService;
             _claimsProviders = ImmutableList.CreateRange(claimsProvider);
         }
 
@@ -33,7 +30,7 @@ namespace Codeworx.Identity
                 throw new AuthenticationException();
             }
 
-            var result = await GetIdentityAsync(currentUser, identity.TenantKey);
+            var result = await GetIdentityAsync(currentUser);
 
             return result;
         }
@@ -82,13 +79,9 @@ namespace Codeworx.Identity
             return result;
         }
 
-        protected virtual async Task<IdentityData> GetIdentityAsync(IUser user, string tenantKey = null)
+        protected virtual async Task<IdentityData> GetIdentityAsync(IUser user)
         {
-            var tenants = await _tenantService.GetTenantsByUserAsync(user);
-
             var claims = new List<AssignedClaim>();
-
-            tenantKey = tenantKey ?? user.DefaultTenantKey ?? (tenants?.Count() == 1 ? tenants.First().Key : null);
 
             foreach (var cp in _claimsProviders)
             {
@@ -96,7 +89,7 @@ namespace Codeworx.Identity
                 claims.AddRange(c);
             }
 
-            var result = new IdentityData(user.Identity, user.Name, tenants, claims, tenantKey);
+            var result = new IdentityData(user.Identity, user.Name, claims);
 
             return result;
         }
