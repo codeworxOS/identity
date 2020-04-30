@@ -9,16 +9,14 @@ namespace Codeworx.Identity.OpenId
     public class AuthorizationCodeFlowService : IAuthorizationFlowService
     {
         private readonly IClientService _clientService;
-        private readonly IScopeService _scopeService;
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
         private readonly IOptions<AuthorizationCodeOptions> _options;
         private readonly IAuthorizationCodeCache _cache;
 
-        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IClientService clientService, IScopeService scopeService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
+        public AuthorizationCodeFlowService(IAuthorizationCodeGenerator authorizationCodeGenerator, IClientService clientService, IOptions<AuthorizationCodeOptions> options, IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
-            _scopeService = scopeService;
             _options = options;
             _cache = cache;
         }

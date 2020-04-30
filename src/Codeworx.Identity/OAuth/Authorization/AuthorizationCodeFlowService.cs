@@ -13,18 +13,15 @@ namespace Codeworx.Identity.OAuth.Authorization
         private readonly IAuthorizationCodeCache _cache;
         private readonly IClientService _clientService;
         private readonly IOptions<AuthorizationCodeOptions> _options;
-        private readonly IScopeService _scopeService;
 
         public AuthorizationCodeFlowService(
             IAuthorizationCodeGenerator authorizationCodeGenerator,
             IClientService clientService,
-            IScopeService scopeService,
             IOptions<AuthorizationCodeOptions> options,
             IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
             _clientService = clientService;
-            _scopeService = scopeService;
             _options = options;
             _cache = cache;
         }
@@ -55,19 +52,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             ////{
             ////    return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
             ////}
-
-            var scopes = await _scopeService.GetScopes()
-                                            .ConfigureAwait(false);
-
-            var scopeKeys = scopes
-                .Select(s => s.ScopeKey)
-                .ToList();
-
-            if (parameters.Scopes
-                          .Any(p => !scopeKeys.Contains(p)))
-            {
-                return new UnknownScopeResult(parameters.State, parameters.RedirectUri);
-            }
 
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(parameters, _options.Value.Length)
                                                                      .ConfigureAwait(false);

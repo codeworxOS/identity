@@ -49,6 +49,11 @@ namespace Codeworx.Identity
             public const string CurrentTenant = "currenttenant";
         }
 
+        public static class Scopes
+        {
+            public const string Tenant = "tenant";
+        }
+
         public static class OAuth
         {
             public const string AccessTokenName = "access_token";
@@ -173,6 +178,8 @@ namespace Codeworx.Identity
             public static class Scopes
             {
                 public const string OpenId = "openid";
+                public const string Profile = "profile";
+                public const string OfflineAccess = "offline_access";
             }
 
             public static class ResponseMode

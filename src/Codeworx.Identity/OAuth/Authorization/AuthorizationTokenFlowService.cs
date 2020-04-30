@@ -10,14 +10,12 @@ namespace Codeworx.Identity.OAuth.Authorization
     {
         private readonly IIdentityService _identityService;
         private readonly IClientService _clientService;
-        private readonly IScopeService _scopeService;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
         private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public AuthorizationTokenFlowService(IIdentityService identityService, IClientService clientService, IScopeService scopeService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
+        public AuthorizationTokenFlowService(IIdentityService identityService, IClientService clientService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
         {
             _clientService = clientService;
-            _scopeService = scopeService;
             _tokenProviders = tokenProviders;
             _baseUriAccessor = baseUriAccessor;
             _identityService = identityService;
@@ -43,19 +41,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             ////{
             ////    return new UnauthorizedClientResult(request.State, request.RedirectionTarget);
             ////}
-
-            var scopes = await _scopeService.GetScopes()
-                                            .ConfigureAwait(false);
-
-            var scopeKeys = scopes
-                            .Select(s => s.ScopeKey)
-                            .ToList();
-
-            if (parameters.Scopes
-                          .Any(p => scopeKeys.Contains(p) == false))
-            {
-                return new UnknownScopeResult(parameters.State, parameters.RedirectUri);
-            }
 
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);

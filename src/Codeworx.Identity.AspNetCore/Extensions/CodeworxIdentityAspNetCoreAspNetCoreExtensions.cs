@@ -171,7 +171,7 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
                        p => p.UseMiddleware<ProvidersMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/tenants"),
+                       p => p.Request.Path.Equals(options.SelectTenantEndpoint),
                        p => p.UseMiddleware<TenantsMiddleware>())
                    .MapWhen(
                        EmbeddedResourceMiddleware.Condition,
@@ -220,7 +220,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
             collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
-            collection.AddTransient<IResponseBinder<TenantMissingResponse>, TenantMissingResponseBinder>();
+            collection.AddTransient<IResponseBinder<SelectTenantViewResponse>, TenantMissingResponseBinder>();
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
@@ -228,6 +228,7 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddTransient<IAuthorizationRequestProcessor, StageOneAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, StageTwoAuthorizationRequestProcessor>();
+            collection.AddTransient<IAuthorizationRequestProcessor, ScopeAuthorizationRequestProcessor>();
 
             collection.AddTransient<IRequestValidator<TokenRequest>, TokenRequestValidator>();
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
@@ -235,6 +236,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
+            collection.AddSingleton<ISystemScopeService, SystemScopeService>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();

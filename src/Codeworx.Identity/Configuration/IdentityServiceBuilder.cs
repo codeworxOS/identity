@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Login;
-using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.Configuration
@@ -23,31 +20,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
-            this.ReplaceService<IScopeService, DummyScopeService>(ServiceLifetime.Scoped);
         }
 
         public IServiceCollection ServiceCollection { get; }
-
-        private class DummyScopeService : IScopeService
-        {
-            public Task<IEnumerable<IScope>> GetScopes()
-            {
-                return Task.FromResult<IEnumerable<IScope>>(new List<IScope>
-                                                            {
-                                                                new OpenIdScope(),
-                                                                new DummyScope(),
-                                                            });
-            }
-
-            private class OpenIdScope : IScope
-            {
-                public string ScopeKey => Constants.OpenId.Scopes.OpenId;
-            }
-
-            private class DummyScope : IScope
-            {
-                public string ScopeKey => Constants.DefaultScopeKey;
-            }
-        }
     }
 }

@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Binder\SelectTenantView\" />
+  </ItemGroup>
 </Project>

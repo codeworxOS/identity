@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.Model
 {
-    public class TenantSelectionRequest : TenantMissingRequest
+    public class TenantSelectionRequest : SelectTenantViewRequest
     {
         public TenantSelectionRequest(string returnUrl, ClaimsIdentity identity, string tenantKey, bool setDefault)
             : base(returnUrl, identity)

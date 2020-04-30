@@ -14,6 +14,7 @@ namespace Codeworx.Identity.Configuration
             OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
             UserInfoEndpoint = "/userinfo";
             AccountEndpoint = "/account";
+            SelectTenantEndpoint = AccountEndpoint + "/tenant";
             CookieExpiration = TimeSpan.FromHours(1);
             Styles = new HashSet<string>();
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
@@ -22,6 +23,8 @@ namespace Codeworx.Identity.Configuration
         }
 
         public string AccountEndpoint { get; set; }
+
+        public string SelectTenantEndpoint { get; set; }
 
         public string AuthenticationCookie { get; set; }
 

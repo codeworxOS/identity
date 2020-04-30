@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 {
-    public class TenantMissingResponseBinder : ResponseBinder<TenantMissingResponse>
+    public class TenantMissingResponseBinder : ResponseBinder<SelectTenantViewResponse>
     {
         private readonly IContentTypeLookup _lookup;
         private readonly IViewTemplate _view;
@@ -16,7 +16,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(TenantMissingResponse responseData, HttpResponse response)
+        public override async Task BindAsync(SelectTenantViewResponse responseData, HttpResponse response)
         {
             var html = await _view.GetTenantSelectionTemplate(responseData.ReturnUrl, responseData.CanSetDefault);
 

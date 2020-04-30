@@ -1,40 +1,34 @@
-﻿using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.ContentType;
+using Codeworx.Identity.OAuth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class TenantsMiddleware
     {
-        private readonly IContentTypeLookup _contentTypeLookup;
         private readonly RequestDelegate _next;
 
-        public TenantsMiddleware(RequestDelegate next, IContentTypeLookup contentTypeLookup)
+        public TenantsMiddleware(RequestDelegate next)
         {
             _next = next;
-            _contentTypeLookup = contentTypeLookup;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService, IOptionsSnapshot<IdentityOptions> options)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<AuthorizationRequest> authorizationRequestBinder)
         {
-            // TODO reimplement
-            await Task.CompletedTask;
+            var authenticationResult = await context.AuthenticateAsync(options.Value.AuthenticationScheme);
 
-            ////var authenticationResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
+            if (!authenticationResult.Succeeded)
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return;
+            }
 
-            ////if (!authenticationResult.Succeeded)
-            ////{
-            ////    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            ////    return;
-            ////}
+            var request = await authorizationRequestBinder.BindAsync(context.Request);
+
 
             ////var identity = (ClaimsIdentity)authenticationResult.Principal.Identity;
 
