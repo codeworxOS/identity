@@ -18,6 +18,7 @@ namespace Codeworx.Identity.Configuration
             this.View<DefaultViewTemplate>();
 
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
         }

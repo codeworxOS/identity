@@ -41,12 +41,9 @@ namespace Codeworx.Identity
                 .Replace("{{styles}}", GetStyles());
         }
 
-        public async Task<string> GetTenantSelectionTemplate(string returnUrl, bool showDefault)
+        public async Task<string> GetTenantSelectionTemplate()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.tenant.html"))
-                .Replace("{{returnUrl}}", returnUrl)
-                .Replace("{{showDefault}}", showDefault.ToString())
-                .Replace("{{styles}}", GetStyles());
+            return await GetTemplateAsString("Codeworx.Identity.assets.tenant.html");
         }
 
         public async Task<string> GetFormPostTemplate(string redirectUrl, string code, string state)

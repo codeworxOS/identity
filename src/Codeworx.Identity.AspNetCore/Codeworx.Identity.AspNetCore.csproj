@@ -15,14 +15,11 @@
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.0" />
+    <PackageReference Include="Stubble.Core" Version="1.8.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity\Codeworx.Identity.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Binder\SelectTenantView\" />
   </ItemGroup>
 </Project>

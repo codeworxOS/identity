@@ -27,5 +27,7 @@ namespace Codeworx.Identity.OpenId
         [RegularExpression(Constants.OAuth.NonceValidation)]
         [DataMember(Order = 6, Name = Constants.OAuth.NonceName)]
         public override string Nonce => base.Nonce;
+
+        public override string GetRequestPath() => "openid";
     }
 }

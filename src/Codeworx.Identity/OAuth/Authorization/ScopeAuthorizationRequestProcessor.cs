@@ -57,7 +57,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
                 else
                 {
-                    throw new ErrorResponseException<MissingTenantResponse>(new MissingTenantResponse(request));
+                    throw new ErrorResponseException<MissingTenantResponse>(new MissingTenantResponse(request, request.GetRequestPath()));
                 }
             }
 

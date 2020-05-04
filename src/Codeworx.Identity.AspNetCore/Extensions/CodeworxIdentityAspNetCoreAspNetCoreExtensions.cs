@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Binder;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
+using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.AspNetCore.OAuth.Authorization;
 using Codeworx.Identity.AspNetCore.OAuth.Binder;
@@ -204,6 +205,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
+            collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -220,11 +223,13 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
             collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
-            collection.AddTransient<IResponseBinder<SelectTenantViewResponse>, TenantMissingResponseBinder>();
             collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
             collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
+            collection.AddTransient<IResponseBinder<SelectTenantViewResponse>, SelectTenantViewResponseBinder>();
+            collection.AddTransient<IResponseBinder<SelectTenantSuccessResponse>, SelectTenantSuccessResponseBinder>();
+            collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
 
             collection.AddTransient<IAuthorizationRequestProcessor, StageOneAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, StageTwoAuthorizationRequestProcessor>();

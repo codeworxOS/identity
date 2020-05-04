@@ -7,12 +7,12 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
-    public class SelectTenantResponseBinder : ResponseBinder<MissingTenantResponse>
+    public class MissingTenantResponseBinder : ResponseBinder<MissingTenantResponse>
     {
         private readonly IdentityOptions _options;
         private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public SelectTenantResponseBinder(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor)
+        public MissingTenantResponseBinder(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor)
         {
             _options = options.Value;
             _baseUriAccessor = baseUriAccessor;
@@ -23,6 +23,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             uriBuilder.AppendPath($"{_options.SelectTenantEndpoint}");
             responseData.Request.Append(uriBuilder);
+            uriBuilder.AppendQueryPart(Constants.OAuth.RequestPathName, responseData.RequestPath);
 
             response.Redirect(uriBuilder.ToString());
 

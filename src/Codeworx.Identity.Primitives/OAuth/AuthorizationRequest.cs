@@ -8,7 +8,7 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationRequest
     {
-        public AuthorizationRequest(string requestPath, string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;
@@ -49,6 +49,8 @@ namespace Codeworx.Identity.OAuth
         [RegularExpression(Constants.OAuth.StateValidation)]
         [DataMember(Order = 5, Name = Constants.OAuth.StateName)]
         public string State { get; }
+
+        public virtual string GetRequestPath() => "oauth";
 
         public void Append(UriBuilder uriBuilder)
         {

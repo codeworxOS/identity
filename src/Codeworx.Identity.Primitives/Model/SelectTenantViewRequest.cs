@@ -5,13 +5,16 @@ namespace Codeworx.Identity.Model
 {
     public class SelectTenantViewRequest
     {
-        public SelectTenantViewRequest(AuthorizationRequest request, ClaimsIdentity identity)
+        public SelectTenantViewRequest(AuthorizationRequest request, ClaimsIdentity identity, string requestPath)
         {
             Request = request;
             Identity = identity;
+            RequestPath = requestPath;
         }
 
         public ClaimsIdentity Identity { get; }
+
+        public string RequestPath { get; }
 
         public AuthorizationRequest Request { get; }
     }

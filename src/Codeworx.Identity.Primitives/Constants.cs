@@ -21,9 +21,9 @@ namespace Codeworx.Identity
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
+        public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
-        public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string InvalidCredentialsError = "Username or password is not valid!";
         public const string JsonExtension = ".json";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
@@ -34,23 +34,13 @@ namespace Codeworx.Identity
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
 
-        public static class Token
-        {
-            public const string Jwt = "jwt";
-        }
-
         public static class Claims
         {
+            public const string CurrentTenant = "currenttenant";
             public const string Id = "id";
-            public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Name = "name";
             public const string Role = "role";
-            public const string Tenant = "tenant";
-            public const string CurrentTenant = "currenttenant";
-        }
-
-        public static class Scopes
-        {
+            public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Tenant = "tenant";
         }
 
@@ -58,8 +48,6 @@ namespace Codeworx.Identity
         {
             public const string AccessTokenName = "access_token";
             public const string AccessTokenValidation = VsChars;
-            public const string IdTokenName = "id_token";
-            public const string IdTokenValidation = VsChars;
             public const string AdditionalParameterValidation = GrantTypeValidation;
             public const string ClientIdName = "client_id";
             public const string ClientIdValidation = VsChars;
@@ -78,22 +66,24 @@ namespace Codeworx.Identity
             public const string ExpiresInValidation = @"^[0-9]+$";
             public const string GrantTypeName = "grant_type";
             public const string GrantTypeValidation = @"^((?<grant>" + NameChar + @"+)|(?<grant>" + Uri + @")){1}$";
+            public const string IdTokenName = "id_token";
+            public const string IdTokenValidation = VsChars;
+            public const string NonceName = "nonce";
+            public const string NonceValidation = VsChars;
             public const string PasswordValidation = UnicodeCharsNoCrlf;
             public const string RedirectUriName = "redirect_uri";
             public const string RedirectUriValidation = UriReference;
             public const string RefreshTokenName = "refresh_token";
             public const string RefreshTokenValidation = VsChars;
+            public const string RequestPathName = "request_path";
+            public const string ResponseModeName = "response_mode";
+            public const string ResponseModeValidation = VsChars;
             public const string ResponseTypeName = "response_type";
             public const string ResponseTypeValidation = @"^(?<response>[a-zA-Z0-9_]+){1}(\s{1}(?<response>[a-zA-Z0-9_]+))*$";
             public const string ScopeName = "scope";
             public const string ScopeValidation = @"^(?<scope>" + NqChar + @"+)(\s{1}(?<scope>" + NqChar + @"+))*$";
             public const string StateName = "state";
             public const string StateValidation = VsChars;
-            public const string NonceName = "nonce";
-            public const string NonceValidation = VsChars;
-            public const string ResponseModeName = "response_mode";
-            public const string ResponseModeValidation = VsChars;
-
             public const string TokenTypeName = "token_type";
             public const string TokenTypeValidation = GrantTypeValidation;
 
@@ -137,6 +127,11 @@ namespace Codeworx.Identity
                 public const string Password = "password";
             }
 
+            public class ReservedClaims
+            {
+                public const string UserId = "sub";
+            }
+
             public class ResponseType
             {
                 public const string Code = "code";
@@ -148,26 +143,26 @@ namespace Codeworx.Identity
             {
                 public const string Bearer = "BEARER";
             }
-
-            public class ReservedClaims
-            {
-                public const string UserId = "sub";
-            }
         }
 
         public static class OpenId
         {
             public static class Error
             {
-                public const string InteractionRequired = "interaction_required";
-                public const string LoginRequired = "login_required";
                 public const string AccountSelectionRequired = "account_selection_required";
                 public const string ConsentRequired = "consent_required";
-                public const string InvalidRequestUri = "invalid_request_uri";
+                public const string InteractionRequired = "interaction_required";
                 public const string InvalidRequestObject = "invalid_request_object";
+                public const string InvalidRequestUri = "invalid_request_uri";
+                public const string LoginRequired = "login_required";
+                public const string RegistrationNotSupported = "registration_not_supported";
                 public const string RequestNotSupported = "request_not_supported";
                 public const string RequestUriNotSupported = "request_uri_not_supported";
-                public const string RegistrationNotSupported = "registration_not_supported";
+            }
+
+            public static class ResponseMode
+            {
+                public const string FormPost = "form_post";
             }
 
             public static class ResponseType
@@ -177,15 +172,20 @@ namespace Codeworx.Identity
 
             public static class Scopes
             {
+                public const string OfflineAccess = "offline_access";
                 public const string OpenId = "openid";
                 public const string Profile = "profile";
-                public const string OfflineAccess = "offline_access";
             }
+        }
 
-            public static class ResponseMode
-            {
-                public const string FormPost = "form_post";
-            }
+        public static class Scopes
+        {
+            public const string Tenant = "tenant";
+        }
+
+        public static class Token
+        {
+            public const string Jwt = "jwt";
         }
     }
 }

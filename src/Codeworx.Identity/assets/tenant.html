@@ -7,17 +7,23 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <title>Select tenant</title>
-    {{styles}}
+    {{> Styles}}
 </head>
 <body>
     <form method="post" id="tenantForm">
-        <select id="tenantSelection" name="tenantKey"></select>
+        <select id="tenantSelection" name="tenantKey">
+            {{#Tenants}}
+            <option value="{{Key}}">{{Name}}</option>
+            {{/Tenants}}
+        </select>
         <button type="submit" id="select">Select</button>
+
+        {{#CanSetDefault}}
+        <div>
+            <input type="checkbox" id="setDefault" name="setDefault" />
+            <label htmlFor="setDefault">Set as default</label>
+        </div>
+        {{/CanSetDefault}}
     </form>
-    <script type="text/javascript" src="js/tenant.js"></script>
-    <script type="text/javascript">
-        var tenantForm = new TenantForm();
-        tenantForm.initialize('{{showDefault}}', '{{returnUrl}}');
-    </script>
 </body>
 </html>

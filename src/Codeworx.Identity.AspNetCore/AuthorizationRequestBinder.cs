@@ -10,22 +10,27 @@ namespace Codeworx.Identity.AspNetCore
     {
         public async Task<TRequest> BindAsync(HttpRequest request)
         {
+            await Task.Yield();
+
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
             Dictionary<string, IReadOnlyCollection<string>> dictionary;
-            if (request.HasFormContentType)
-            {
-                var form = await request.ReadFormAsync()
-                                        .ConfigureAwait(false);
-                dictionary = form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
-            }
-            else
-            {
-                dictionary = request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
-            }
+
+            // TODO reimplemnet Post Support
+
+            ////if (request.HasFormContentType)
+            ////{
+            ////    var form = await request.ReadFormAsync()
+            ////                            .ConfigureAwait(false);
+            ////    dictionary = form.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
+            ////}
+            ////else
+            ////{
+            dictionary = request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>);
+            ////}
 
             dictionary.TryGetValue(Constants.OAuth.ClientIdName, out var clientId);
             dictionary.TryGetValue(Constants.OAuth.RedirectUriName, out var redirectUri);
