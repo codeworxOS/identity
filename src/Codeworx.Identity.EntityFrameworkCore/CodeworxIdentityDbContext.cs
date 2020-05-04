@@ -11,6 +11,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
         }
 
+        public DbSet<IdentityCache> IdentityCaches { get; set; }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Role> Roles { get; set; }
@@ -34,9 +36,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new AuthenticationProviderUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new IdentityCacheEntityTypeConfiguration());
 
             modelBuilder.Ignore<ClientScope>();
             modelBuilder.Ignore<ScopeClaim>();
+
+            modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Property);
         }
     }
 }

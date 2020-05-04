@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Codeworx.Identity
 {
+    [DataContract]
     public class IdentityData
     {
         public IdentityData(string identifier, string login, IEnumerable<AssignedClaim> claims = null)
@@ -13,10 +15,13 @@ namespace Codeworx.Identity
             Claims = ImmutableList.CreateRange(claims ?? Enumerable.Empty<AssignedClaim>());
         }
 
+        [DataMember(Order = 3, Name = "claims")]
         public IEnumerable<AssignedClaim> Claims { get; }
 
+        [DataMember(Order = 2, Name = "identifier")]
         public string Identifier { get; }
 
+        [DataMember(Order = 1, Name = "login")]
         public string Login { get; }
 
         public IDictionary<string, object> GetTokenClaims(ClaimTarget target)

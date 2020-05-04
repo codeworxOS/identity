@@ -44,10 +44,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
             }
 
             var loginRegistrations = await authenticationProviderQuery
-                                               .Select(p => p.ToExternalLoginRegistration(_processorTypeLookups, _serviceProvider))
                                                .ToListAsync();
 
-            return loginRegistrations;
+            var result = loginRegistrations
+                            .Select(p => p.ToExternalLoginRegistration(_processorTypeLookups, _serviceProvider))
+                            .ToList();
+
+            return result;
         }
     }
 }

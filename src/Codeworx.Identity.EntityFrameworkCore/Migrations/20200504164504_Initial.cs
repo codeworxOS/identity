@@ -12,15 +12,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "ClientConfiguration",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(nullable: false),
                     ClientSecretHash = table.Column<byte[]>(nullable: true),
                     ClientSecretSalt = table.Column<byte[]>(nullable: true),
-                    Id = table.Column<Guid>(nullable: false),
                     TokenExpiration = table.Column<TimeSpan>(nullable: false),
                     ClientType = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClientConfiguration", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "IdentityCache",
+                columns: table => new
+                {
+                    Key = table.Column<string>(maxLength: 2000, nullable: false),
+                    Value = table.Column<string>(nullable: false),
+                    ValidUntil = table.Column<DateTime>(nullable: false),
+                    CacheType = table.Column<int>(nullable: false),
+                    Disabled = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityCache", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,10 +89,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "ExternalAuthenticationProvider",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(nullable: false),
                     EndpointConfiguration = table.Column<string>(nullable: true),
                     EndpointType = table.Column<string>(maxLength: 100, nullable: false),
                     FilterId = table.Column<Guid>(nullable: true),
-                    Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 200, nullable: false)
                 },
                 constraints: table =>
@@ -98,7 +113,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 500, nullable: false),
                     RoleId = table.Column<Guid>(nullable: true),
-                    Type = table.Column<string>(nullable: false),
+                    Type = table.Column<byte>(nullable: false),
                     TenantId = table.Column<Guid>(nullable: true),
                     DefaultTenantId = table.Column<Guid>(nullable: true),
                     IsDisabled = table.Column<bool>(nullable: true),
@@ -246,6 +261,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AuthenticationProviderUser");
+
+            migrationBuilder.DropTable(
+                name: "IdentityCache");
 
             migrationBuilder.DropTable(
                 name: "TenantUser");

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Runtime.Serialization;
 
 namespace Codeworx.Identity
 {
+    [DataContract]
     public class AssignedClaim
     {
         ////public AssignedClaim(string type, string value, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
@@ -30,12 +32,16 @@ namespace Codeworx.Identity
             TenantUser = User | Tenant,
         }
 
+        [DataMember(Order = 1, Name = "source")]
         public AssignmentSource Source { get; }
 
+        [DataMember(Order = 2, Name = "target")]
         public ClaimTarget Target { get; }
 
+        [DataMember(Order = 3, Name = "type")]
         public string Type { get; }
 
+        [DataMember(Order = 4, Name = "values")]
         public IEnumerable<string> Values { get; }
     }
 }

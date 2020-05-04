@@ -14,7 +14,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113");
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
+                .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property);
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>
                 {
@@ -73,6 +74,26 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.ToTable("ExternalAuthenticationProvider");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IdentityCache", b =>
+                {
+                    b.Property<string>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(2000);
+
+                    b.Property<int>("CacheType");
+
+                    b.Property<bool>("Disabled");
+
+                    b.Property<DateTime>("ValidUntil");
+
+                    b.Property<string>("Value")
+                        .IsRequired();
+
+                    b.HasKey("Key");
+
+                    b.ToTable("IdentityCache");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", b =>
                 {
                     b.Property<Guid>("Id")
@@ -103,8 +124,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<Guid?>("RoleId");
 
-                    b.Property<string>("Type")
-                        .IsRequired();
+                    b.Property<byte>("Type");
 
                     b.HasKey("Id");
 
@@ -112,7 +132,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.ToTable("RightHolder");
 
-                    b.HasDiscriminator<string>("Type").HasValue("RightHolder");
+                    b.HasDiscriminator<byte>("Type");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
@@ -177,8 +197,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<string>("DomainName");
 
-                    b.ToTable("DomainNameProviderFilter");
-
                     b.HasDiscriminator().HasValue("Domain");
                 });
 
@@ -192,8 +210,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.Property<byte[]>("RangeStart")
                         .IsRequired();
 
-                    b.ToTable("IPv4ProviderFilter");
-
                     b.HasDiscriminator().HasValue("IPv4");
                 });
 
@@ -205,9 +221,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("Role");
-
-                    b.HasDiscriminator().HasValue("Role");
+                    b.HasDiscriminator().HasValue((byte)2);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
@@ -224,9 +238,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.HasIndex("DefaultTenantId");
 
-                    b.ToTable("User");
-
-                    b.HasDiscriminator().HasValue("User");
+                    b.HasDiscriminator().HasValue((byte)1);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>

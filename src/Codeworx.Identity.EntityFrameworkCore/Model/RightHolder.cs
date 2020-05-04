@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class RightHolder
+    public abstract class RightHolder
     {
         public RightHolder()
         {

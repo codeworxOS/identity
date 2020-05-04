@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.EntityFrameworkCore.Cache;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.ExternalLogin;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +28,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .Provider<EntityExternalLoginProvider<TContext>>()
                          .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped);
+                         .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped)
+                         .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped);
 
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, WindowsLoginProcessorLookup>();
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>();
