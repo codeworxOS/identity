@@ -1,14 +1,16 @@
-﻿namespace Codeworx.Identity.Model
+﻿using System.Security.Claims;
+
+namespace Codeworx.Identity.Model
 {
     public class SignInResponse
     {
-        public SignInResponse(IdentityData identity, string returnUrl)
+        public SignInResponse(ClaimsIdentity identity, string returnUrl)
         {
             Identity = identity;
             ReturnUrl = returnUrl;
         }
 
-        public IdentityData Identity { get; }
+        public ClaimsIdentity Identity { get; }
 
         public string ReturnUrl { get; }
     }

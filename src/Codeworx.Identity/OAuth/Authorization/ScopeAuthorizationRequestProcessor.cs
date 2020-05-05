@@ -7,12 +7,12 @@ namespace Codeworx.Identity.OAuth.Authorization
 {
     public class ScopeAuthorizationRequestProcessor : IAuthorizationRequestProcessor
     {
-        private readonly ISystemScopeService _systemScopeService;
+        private readonly IEnumerable<ISystemScopeProvider> _systemScopeService;
         private readonly IScopeService _scopeService;
         private readonly ITenantService _tenantService;
 
         public ScopeAuthorizationRequestProcessor(
-            ISystemScopeService systemScopeService,
+            IEnumerable<ISystemScopeProvider> systemScopeService,
             IScopeService scopeService = null,
             ITenantService tenantService = null)
         {
@@ -63,7 +63,11 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             var availableScopes = new List<string>();
 
-            var systemScopes = await _systemScopeService.GetScopes().ConfigureAwait(false);
+            var systemScopesTask = _systemScopeService.Select(p => p.GetScopes());
+
+            await Task.WhenAll(systemScopesTask).ConfigureAwait(false);
+
+            var systemScopes = systemScopesTask.SelectMany(p => p.Result);
 
             availableScopes.AddRange(systemScopes.Select(p => p.ScopeKey));
 

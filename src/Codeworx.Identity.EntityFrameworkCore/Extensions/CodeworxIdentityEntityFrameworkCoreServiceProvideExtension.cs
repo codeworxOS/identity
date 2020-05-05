@@ -214,18 +214,20 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new ExternalOAuthLoginConfiguration
                             {
-                                BaseUri = new Uri("http://srvlinux3.lstelcom.ads:53000/"),
-                                AuthorizationEndpoint = "auth/realms/rainbow/protocol/openid-connect/auth",
-                                TokenEndpoint = "auth/realms/rainbow/protocol/openid-connect/token",
-                                ClientId = "CodeworxIdentityClient",
-                                ClientSecret = "5e1f0486-6923-4fea-bcb3-a79caf7ea807",
+                                BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
+                                AuthorizationEndpoint = "authorize",
+                                TokenEndpoint = "token",
+                                Scope = "openid",
+                                IdentifierClaim = "oid",
+                                ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
+                                ClientSecret = "I1X07k1dq?=ZRx@wodZtKB/_9IAC5-[z",
                             }),
                             Users =
                             {
                                 new AuthenticationProviderUser
                                 {
                                     RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
-                                    ExternalIdentifier = "c4a16c32-ebe2-40bf-aa2b-620fe9df264c",
+                                    ExternalIdentifier = "d4cc0c66-adeb-4d9d-a386-8b61789984a7",
                                 },
                                 new AuthenticationProviderUser
                                 {

@@ -22,9 +22,7 @@ namespace Codeworx.Identity.Test
 
         public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
-            var user = identity.ToIdentityData();
-
-            var id = Guid.Parse(user.Identifier);
+            var id = Guid.Parse(identity.GetUserId());
             if (id == Guid.Parse(Constants.DefaultAdminUserId))
             {
                 return Task.FromResult<IUser>(new DummyUser());

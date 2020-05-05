@@ -34,10 +34,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
-            var data = identity.ToIdentityData();
+            var identifier = identity.GetUserId();
 
             var userSet = _context.Set<User>();
-            var id = Guid.Parse(data.Identifier);
+            var id = Guid.Parse(identifier);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 

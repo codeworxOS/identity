@@ -12,6 +12,7 @@ namespace Codeworx.Identity.Configuration
             OpenIdAuthorizationEndpoint = "/openid10";
             OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
             OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
+            OpenIdWellKnownPrefix = string.Empty;
             UserInfoEndpoint = "/userinfo";
             AccountEndpoint = "/account";
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
@@ -39,6 +40,8 @@ namespace Codeworx.Identity.Configuration
         public string OpenIdAuthorizationEndpoint { get; set; }
 
         public string OpenIdTokenEndpoint { get; set; }
+
+        public string OpenIdWellKnownPrefix { get; set; }
 
         public string OpenIdJsonWebKeyEndpoint { get; set; }
 

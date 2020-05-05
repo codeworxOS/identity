@@ -36,9 +36,9 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public string ResponseMode { get; }
 
-        public IReadOnlyList<string> ResponseTypes { get; }
+        public IEnumerable<string> ResponseTypes { get; }
 
-        public IReadOnlyList<string> Scopes { get; }
+        public IEnumerable<string> Scopes { get; }
 
         public string State { get; }
 

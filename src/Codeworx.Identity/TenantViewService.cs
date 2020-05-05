@@ -20,7 +20,7 @@ namespace Codeworx.Identity
             var tenants = await _tenantService.GetTenantsByIdentityAsync(request.Identity);
             if (_defaultTenantService != null && request.SetDefault)
             {
-                await _defaultTenantService.SetDefaultTenantAsync(request.Identity.ToIdentityData().Identifier, request.TenantKey);
+                await _defaultTenantService.SetDefaultTenantAsync(request.Identity.GetUserId(), request.TenantKey);
             }
 
             var original = request.Request;

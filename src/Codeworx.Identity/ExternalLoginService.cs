@@ -61,9 +61,9 @@ namespace Codeworx.Identity
             var processorInfo = await GetProcessorInfoAsync(providerId);
 
             var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Configuration);
-            var identityData = await _service.LoginExternalAsync(providerId, response.NameIdentifier);
+            var identity = await _service.LoginExternalAsync(providerId, response.NameIdentifier);
 
-            return new SignInResponse(identityData, response.ReturnUrl);
+            return new SignInResponse(identity, response.ReturnUrl);
         }
 
         private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)

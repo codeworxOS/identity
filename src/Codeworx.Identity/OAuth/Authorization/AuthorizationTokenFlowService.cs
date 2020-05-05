@@ -45,11 +45,11 @@ namespace Codeworx.Identity.OAuth.Authorization
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);
 
-            var identityData = await _identityService.GetIdentityAsync(parameters.User);
+            var identityData = await _identityService.GetIdentityAsync(parameters);
             var payload = identityData.GetTokenClaims(ClaimTarget.AccessToken);
             var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 
-            await token.SetPayloadAsync(payload, issuer, parameters.ClientId, parameters.User, string.Join(" ", parameters.Scopes), parameters.Nonce, client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 

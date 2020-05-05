@@ -57,15 +57,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             var authorizationCode = await _authorizationCodeGenerator.GenerateCode(parameters, _options.Value.Length)
                                                                      .ConfigureAwait(false);
 
-            var identity = await _identityService.GetIdentityAsync(parameters.User).ConfigureAwait(false);
-
-            ////var grantInformation = new Dictionary<string, string>
-            ////                       {
-            ////                           { Constants.OAuth.RedirectUriName, parameters.RedirectUri },
-            ////                           { Constants.OAuth.ClientIdName, parameters.ClientId },
-            ////                           { Constants.Claims.Name, parameters.User.ToIdentityData().Login },
-            ////                           { Constants.OAuth.ScopeName, string.Join(" ", parameters.Scopes) },
-            ////                       };
+            var identity = await _identityService.GetIdentityAsync(parameters).ConfigureAwait(false);
 
             await _cache.SetAsync(authorizationCode, identity, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
                     .ConfigureAwait(false);

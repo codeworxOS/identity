@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth
@@ -8,8 +7,8 @@ namespace Codeworx.Identity.OAuth
     {
         string SupportedGrantType { get; }
 
-        Task<string> CreateAccessToken(IDictionary<string, string> cacheData, TimeSpan expiresIn);
+        Task<string> CreateAccessToken(IdentityData data, TimeSpan expiresIn);
 
-        Task<string> CreateIdToken(IDictionary<string, string> cacheData, TimeSpan expiresIn);
+        Task<string> CreateIdToken(IdentityData data, TimeSpan expiresIn);
     }
 }

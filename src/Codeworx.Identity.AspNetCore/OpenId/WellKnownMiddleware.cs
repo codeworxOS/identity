@@ -14,24 +14,28 @@ namespace Codeworx.Identity.AspNetCore.OpenId
     {
         private readonly RequestDelegate _next;
         private readonly IEnumerable<IJwkInformationSerializer> _jwkInformationSerializers;
-        private readonly IdentityOptions _options;
 
-        public WellKnownMiddleware(RequestDelegate next, IOptions<IdentityOptions> identityOptions, IEnumerable<IJwkInformationSerializer> jwkInformationSerializers)
+        public WellKnownMiddleware(
+            RequestDelegate next,
+            IEnumerable<IJwkInformationSerializer> jwkInformationSerializers)
         {
             _next = next;
             _jwkInformationSerializers = jwkInformationSerializers;
-            _options = identityOptions.Value;
         }
 
         public async Task Invoke(
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
-            IScopeService scopeService,
             IEnumerable<IAuthorizationFlowService> supportedFlows,
-            IDefaultSigningKeyProvider keyProvider)
+            IDefaultSigningKeyProvider keyProvider,
+            IOptionsSnapshot<IdentityOptions> identityOptions,
+            IScopeService scopeService)
         {
+            var options = identityOptions.Value;
             var host = baseUriAccessor.BaseUri.OriginalString;
-            var scopes = await scopeService.GetScopes();
+
+            var scopes = await scopeService.GetScopes().ConfigureAwait(false);
+
             var responseTypes = supportedFlows.SelectMany(p => p.SupportedResponseTypes);
 
             var defaultKey = keyProvider.GetKey();
@@ -42,16 +46,16 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             var content = new WellKnownResponse
             {
                 Issuer = host,
-                AuthorizationEndpoint = host + _options.OpenIdAuthorizationEndpoint,
-                TokenEndpoint = host + _options.OpenIdTokenEndpoint,
-                JsonWebKeyEndpoint = host + _options.OpenIdJsonWebKeyEndpoint,
-                UserInfoEndpoint = host + _options.UserInfoEndpoint,
+                AuthorizationEndpoint = host + options.OpenIdAuthorizationEndpoint,
+                TokenEndpoint = host + options.OpenIdTokenEndpoint,
+                JsonWebKeyEndpoint = host + options.OpenIdJsonWebKeyEndpoint,
+                UserInfoEndpoint = host + options.UserInfoEndpoint,
                 ClientRegistrationEndpoint = host + "/notimplemented",
                 SupportedResponseTypes = responseTypes.ToArray(),
                 SupportedIdTokenSigningAlgorithms = supportedSigningAlgorithms.ToArray(),
                 SupportedClaims = new[] { "aud", "sub", "iss", "name" },
                 SupportedSubjectTypes = new[] { "public" },
-                SupportedScopes = scopes.Select(p => p.ScopeKey).ToArray(),
+                SupportedScopes = scopes.Select(p => p.ScopeKey).Distinct().ToArray(),
             };
 
             var responseBinder = context.GetResponseBinder<WellKnownResponse>();

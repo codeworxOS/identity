@@ -23,6 +23,7 @@ using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
@@ -127,7 +128,7 @@ namespace Codeworx.Identity.AspNetCore
             return app
                    .UseAuthentication()
                    .MapWhen(
-                       p => p.Request.Path.Equals("/adfs/.well-known/openid-configuration"),
+                       p => p.Request.Path.Equals($"{options.OpenIdWellKnownPrefix}/.well-known/openid-configuration"),
                        p => p.UseMiddleware<WellKnownMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.UserInfoEndpoint),
@@ -236,17 +237,26 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IAuthorizationRequestProcessor, ScopeAuthorizationRequestProcessor>();
 
             collection.AddTransient<IRequestValidator<TokenRequest>, TokenRequestValidator>();
+
+            collection.AddTransient<IScopeService, ScopeService>();
+            collection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();
+
+            collection.AddTransient<IClaimsService, ClaimsService>();
+            collection.AddScoped<ISystemClaimsProvider, SystemClaimsProvider>();
+            collection.AddScoped<ISystemClaimsProvider, TenantClaimsProvider>();
+            collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
+
             collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
-            collection.AddSingleton<ISystemScopeService, SystemScopeService>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
 
-            collection.AddScoped<IAuthorizationFlowService, AuthorizationCodeFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, Identity.OAuth.Authorization.AuthorizationTokenFlowService>();
+            collection.AddScoped<IAuthorizationFlowService, Identity.OAuth.Authorization.AuthorizationCodeFlowService>();
             collection.AddScoped<IAuthorizationService, AuthorizationService>();
 
             collection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();

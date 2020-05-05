@@ -7,21 +7,26 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <title>Login</title>
-    {{styles}}
+    {{> Styles}}
 </head>
 
 <body>
     <form method="post" id="loginForm">
-        <input type="text" id="username" name="username" value="{{username}}" />
+        <input type="text" id="username" name="username" value="{{Username}}" />
         <input type="password" id="password" name="password" />
-        <div id="error">{{error}}</div>
+        <div id="error">{{Error}}</div>
         <button type="submit" id="login">login</button>
-        <ul id="external"></ul>
     </form>
-    <script type="text/javascript" src="js/login.js"></script>
-    <script type="text/javascript">
+    <ul id="external">
+        {{#Providers}}
+        <li><a href="{{Url}}"><button>{{Name}}</button></a></li>
+        {{/Providers}}
+    </ul>
+
+    <!--<script type="text/javascript" src="js/login.js"></script>-->
+    <!--<script type="text/javascript">
         var loginForm = new LoginForm();
         loginForm.initialize(false, '{{returnUrl}}');
-    </script>
+    </script>-->
 </body>
 </html>

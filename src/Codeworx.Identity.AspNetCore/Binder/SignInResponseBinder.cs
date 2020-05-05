@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
@@ -21,7 +22,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
         public override async Task BindAsync(SignInResponse responseData, HttpResponse response)
         {
-            var principal = responseData.Identity.ToClaimsPrincipal();
+            var principal = new ClaimsPrincipal(responseData.Identity);
 
             var returnUrl = responseData.ReturnUrl;
 

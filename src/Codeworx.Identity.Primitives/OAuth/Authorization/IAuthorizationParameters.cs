@@ -1,26 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Security.Claims;
 using Codeworx.Identity.OAuth;
 
 namespace Codeworx.Identity
 {
-    public interface IAuthorizationParameters
+    public interface IAuthorizationParameters : IIdentityDataParameters
     {
-        string ClientId { get; }
-
-        string Nonce { get; }
-
         string RedirectUri { get; }
 
         string ResponseMode { get; }
 
-        IReadOnlyList<string> ResponseTypes { get; }
-
-        IReadOnlyList<string> Scopes { get; }
-
-        string State { get; }
-
-        ClaimsIdentity User { get; }
+        IEnumerable<string> ResponseTypes { get; }
 
         AuthorizationRequest Request { get; }
     }

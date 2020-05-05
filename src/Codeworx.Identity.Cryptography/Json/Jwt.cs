@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -17,11 +16,6 @@ namespace Codeworx.Identity.Cryptography.Json
         private readonly SecurityKey _signingKey;
         private TimeSpan _expiration;
         private IDictionary<string, object> _payload;
-        private string _audience;
-        private ClaimsIdentity _subject;
-        private string _nonce;
-        private string _issuer;
-        private string _scope;
 
         public Jwt(IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
@@ -54,36 +48,29 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public Task<string> SerializeAsync()
         {
-            _payload.Add(Constants.OAuth.NonceName, _nonce);
-            _payload.Add(Constants.Claims.Subject, _subject?.FindFirst(Constants.Claims.Id)?.Value);
-            _payload.Add(Constants.OAuth.ScopeName, _scope);
+            _payload.TryGetValue(Constants.Claims.Issuer, out var issuer);
+            _payload.TryGetValue(Constants.Claims.Audience, out var audience);
 
             var descriptor = new SecurityTokenDescriptor
             {
-                Issuer = _issuer,
-                Audience = _audience,
-                Subject = _subject, // Is not used in implementation
+                Issuer = issuer?.ToString(),
+                Audience = audience?.ToString(),
                 Claims = _payload,
-                Expires = DateTime.Now + _expiration,
-                IssuedAt = DateTime.Now,
-                NotBefore = DateTime.MinValue,
+                Expires = DateTime.UtcNow + _expiration,
+                IssuedAt = DateTime.UtcNow,
+                NotBefore = DateTime.UtcNow,
                 SigningCredentials = GetSigningCredentials(),
             };
 
             return Task.FromResult(_handler.CreateToken(descriptor));
         }
 
-        public async Task SetPayloadAsync(IDictionary<string, object> data, string issuer, string audience, ClaimsIdentity subject, string scope, string nonce, TimeSpan expiration)
+        public Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
         {
-            await Task.CompletedTask;
-
             _payload = data;
-            _issuer = issuer;
-            _audience = audience;
-            _subject = subject;
-            _scope = scope;
-            _nonce = nonce;
             _expiration = expiration;
+
+            return Task.CompletedTask;
         }
 
         public Task<bool> ValidateAsync()

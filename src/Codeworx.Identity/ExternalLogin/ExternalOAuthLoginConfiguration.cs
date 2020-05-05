@@ -4,7 +4,14 @@ namespace Codeworx.Identity.ExternalLogin
 {
     public class ExternalOAuthLoginConfiguration
     {
+        public ExternalOAuthLoginConfiguration()
+        {
+            IdentifierClaim = Constants.Claims.Subject;
+        }
+
         public Uri BaseUri { get; set; }
+
+        public string IdentifierClaim { get; set; }
 
         public string AuthorizationEndpoint { get; set; }
 

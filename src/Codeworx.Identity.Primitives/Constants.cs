@@ -36,11 +36,14 @@ namespace Codeworx.Identity
 
         public static class Claims
         {
-            public const string CurrentTenant = "currenttenant";
+            public const string CurrentTenant = "current_tenant";
             public const string Id = "id";
             public const string Name = "name";
             public const string Role = "role";
             public const string Subject = JwtRegisteredClaimNames.Sub;
+            public const string Issuer = JwtRegisteredClaimNames.Iss;
+            public const string Audience = JwtRegisteredClaimNames.Aud;
+            public const string Upn = "upn";
             public const string Tenant = "tenant";
         }
 

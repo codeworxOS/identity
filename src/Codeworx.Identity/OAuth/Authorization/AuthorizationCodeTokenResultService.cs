@@ -21,32 +21,21 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public string SupportedGrantType => Constants.OAuth.GrantType.AuthorizationCode;
 
-        public Task<string> CreateAccessToken(IDictionary<string, string> cacheData, TimeSpan expiresIn)
+        public Task<string> CreateAccessToken(IdentityData identityData, TimeSpan expiresIn)
         {
-            return this.CreateToken(cacheData, expiresIn, "jwt", ClaimTarget.AccessToken);
+            return this.CreateToken(identityData, expiresIn, "jwt", ClaimTarget.AccessToken);
         }
 
-        public Task<string> CreateIdToken(IDictionary<string, string> cacheData, TimeSpan expiresIn)
+        public Task<string> CreateIdToken(IdentityData identityData, TimeSpan expiresIn)
         {
-            return this.CreateToken(cacheData, expiresIn, "jwt", ClaimTarget.IdToken);
+            return this.CreateToken(identityData, expiresIn, "jwt", ClaimTarget.IdToken);
         }
 
-        private async Task<string> CreateToken(IDictionary<string, string> cacheData, TimeSpan expiresIn, string tokenType, ClaimTarget target)
+        private async Task<string> CreateToken(IdentityData identityData, TimeSpan expiresIn, string tokenType, ClaimTarget target)
         {
-            if (cacheData == null)
+            if (identityData == null)
             {
                 throw new ArgumentNullException();
-            }
-
-            if (cacheData.ContainsKey(Constants.OAuth.ClientIdName) == false
-                || cacheData.ContainsKey(Constants.OAuth.RedirectUriName) == false)
-            {
-                return null;
-            }
-
-            if (!cacheData.TryGetValue(Constants.Claims.Name, out var login))
-            {
-                return null;
             }
 
             var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == tokenType);
@@ -57,14 +46,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             var token = await tokenProvider.CreateAsync(null);
 
-            var identityData = await _identityService.GetIdentityAsync(login);
-            var payload = identityData.GetTokenClaims(target);
-            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
-            var audience = cacheData[Constants.OAuth.ClientIdName];
-            cacheData.TryGetValue(Constants.OAuth.ScopeName, out var scope);
-            cacheData.TryGetValue(Constants.OAuth.NonceName, out var nonce);
-
-            await token.SetPayloadAsync(payload, issuer, audience, identityData.ToClaimsIdentity(), scope, nonce, expiresIn);
+            await token.SetPayloadAsync(identityData.GetTokenClaims(target), expiresIn).ConfigureAwait(false);
 
             return await token.SerializeAsync();
         }

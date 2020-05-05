@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
@@ -28,7 +27,9 @@ namespace Codeworx.Identity.AspNetCore
                 return;
             }
 
-            var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
+            var user = (ClaimsIdentity)context.User.Identity;
+
+            ////var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
 
             if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out var contentType))
             {
@@ -49,30 +50,30 @@ namespace Codeworx.Identity.AspNetCore
                 {
                     await jsonTextWriter.WriteStartObjectAsync();
 
-                    await jsonTextWriter.WritePropertyNameAsync(nameof(data.Identifier));
-                    await jsonTextWriter.WriteValueAsync(data.Identifier);
+                    await jsonTextWriter.WritePropertyNameAsync(Constants.Claims.Id);
+                    await jsonTextWriter.WriteValueAsync(user.GetUserId());
 
-                    await jsonTextWriter.WritePropertyNameAsync(nameof(data.Login));
-                    await jsonTextWriter.WriteValueAsync(data.Login);
+                    ////await jsonTextWriter.WritePropertyNameAsync(nameof(data.Login));
+                    ////await jsonTextWriter.WriteValueAsync(data.Login);
 
-                    foreach (var item in data.Claims)
-                    {
-                        await jsonTextWriter.WritePropertyNameAsync(item.Type);
-                        if (item.Values.Count() > 1)
-                        {
-                            await jsonTextWriter.WriteStartArrayAsync();
-                        }
+                    ////foreach (var item in data.Claims)
+                    ////{
+                    ////    await jsonTextWriter.WritePropertyNameAsync(item.Type);
+                    ////    if (item.Values.Count() > 1)
+                    ////    {
+                    ////        await jsonTextWriter.WriteStartArrayAsync();
+                    ////    }
 
-                        foreach (var value in item.Values)
-                        {
-                            await jsonTextWriter.WriteValueAsync(value);
-                        }
+                    ////    foreach (var value in item.Values)
+                    ////    {
+                    ////        await jsonTextWriter.WriteValueAsync(value);
+                    ////    }
 
-                        if (item.Values.Count() > 1)
-                        {
-                            await jsonTextWriter.WriteEndArrayAsync();
-                        }
-                    }
+                    ////    if (item.Values.Count() > 1)
+                    ////    {
+                    ////        await jsonTextWriter.WriteEndArrayAsync();
+                    ////    }
+                    ////}
 
                     await jsonTextWriter.WriteEndObjectAsync();
                 }

@@ -21,9 +21,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity identity)
         {
-            var data = identity.ToIdentityData();
-
-            return this.GetTenantInfo(Guid.Parse(data.Identifier));
+            return this.GetTenantInfo(Guid.Parse(identity.GetUserId()));
         }
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)

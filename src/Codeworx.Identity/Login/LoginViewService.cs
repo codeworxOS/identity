@@ -32,9 +32,9 @@ namespace Codeworx.Identity.Login
         {
             try
             {
-                var identityData = await _identityService.LoginAsync(request.UserName, request.Password);
+                var identity = await _identityService.LoginAsync(request.UserName, request.Password);
 
-                return new SignInResponse(identityData, request.ReturnUrl);
+                return new SignInResponse(identity, request.ReturnUrl);
             }
             catch (AuthenticationException)
             {

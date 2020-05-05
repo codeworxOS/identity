@@ -4,7 +4,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
-    public class SystemScopeService : ISystemScopeService
+    public class SystemScopeProvider : ISystemScopeProvider
     {
         public Task<IEnumerable<IScope>> GetScopes()
         {

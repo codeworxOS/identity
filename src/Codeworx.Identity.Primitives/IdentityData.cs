@@ -8,12 +8,16 @@ namespace Codeworx.Identity
     [DataContract]
     public class IdentityData
     {
-        public IdentityData(string identifier, string login, IEnumerable<AssignedClaim> claims = null)
+        public IdentityData(string clientId, string identifier, string login, IEnumerable<AssignedClaim> claims = null)
         {
+            ClientId = clientId;
             Identifier = identifier;
             Login = login;
             Claims = ImmutableList.CreateRange(claims ?? Enumerable.Empty<AssignedClaim>());
         }
+
+        [DataMember(Order = 4, Name = "client_id")]
+        public string ClientId { get; set; }
 
         [DataMember(Order = 3, Name = "claims")]
         public IEnumerable<AssignedClaim> Claims { get; }
@@ -26,20 +30,43 @@ namespace Codeworx.Identity
 
         public IDictionary<string, object> GetTokenClaims(ClaimTarget target)
         {
-            var claims = from p in this.Claims
-                         where p.Target.HasFlag(target)
-                         group p by p.Type into grp
-                         let values = grp.SelectMany(x => x.Values).Distinct().ToArray()
-                         select new
-                         {
-                             Key = grp.Key,
-                             Value = values.Length > 1 ? (object)values : values.FirstOrDefault(),
-                         };
+            var run = 0;
+            var claims = this.Claims.ToList();
 
-            var result = claims.ToDictionary(p => p.Key, p => p.Value);
+            Dictionary<string, object> result = GetClaimsStructure(run, claims);
 
-            result[Constants.Claims.Id] = Identifier;
-            result[Constants.Claims.Name] = Login;
+            return result;
+        }
+
+        private static Dictionary<string, object> GetClaimsStructure(int run, IEnumerable<AssignedClaim> claims)
+        {
+            var result = new Dictionary<string, object>();
+            foreach (var grp in claims.GroupBy(p => p.Type.ElementAt(run)))
+            {
+                var children = new List<AssignedClaim>();
+                var values = new HashSet<object>();
+                foreach (var item in grp.Select(p => p))
+                {
+                    if (item.Type.Count() == run + 1)
+                    {
+                        foreach (var value in item.Values)
+                        {
+                            values.Add(value);
+                        }
+                    }
+                    else
+                    {
+                        children.Add(item);
+                    }
+                }
+
+                if (children.Any())
+                {
+                    values.Add(GetClaimsStructure(run + 1, children));
+                }
+
+                result.Add(grp.Key, values.Count > 1 ? (object)values : values.FirstOrDefault());
+            }
 
             return result;
         }

@@ -55,7 +55,7 @@ namespace Codeworx.Identity.AspNetCore
 
             var payload = await token.GetPayloadAsync();
 
-            payload.TryGetValue(Constants.OAuth.ReservedClaims.UserId, out var userId);
+            payload.TryGetValue(oauthConfiguration.IdentifierClaim, out var userId);
 
             return userId?.ToString();
         }

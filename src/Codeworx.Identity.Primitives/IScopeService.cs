@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Codeworx.Identity.Model;
-
-namespace Codeworx.Identity
+﻿namespace Codeworx.Identity
 {
-    public interface IScopeService
+    public interface IScopeService : IScopeProvider
     {
-        Task<IEnumerable<IScope>> GetScopes();
     }
 }

@@ -6,7 +6,7 @@ namespace Codeworx.Identity
     {
         Task<string> GetLoggedInTemplate(string returnUrl);
 
-        Task<string> GetLoginTemplate(string returnUrl, string username = null, string error = null);
+        Task<string> GetLoginTemplate();
 
         Task<string> GetTenantSelectionTemplate();
 

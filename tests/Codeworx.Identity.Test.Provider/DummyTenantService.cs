@@ -10,8 +10,7 @@ namespace Codeworx.Identity.Test
     {
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity user)
         {
-            var identity = user.ToIdentityData();
-            return GetTenants(identity.Identifier);
+            return GetTenants(user.GetUserId());
         }
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
