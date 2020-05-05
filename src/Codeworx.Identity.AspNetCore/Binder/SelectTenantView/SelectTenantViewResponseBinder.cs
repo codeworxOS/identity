@@ -1,24 +1,21 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Stubble.Core.Builders;
 
 namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
 {
     public partial class SelectTenantViewResponseBinder : ResponseBinder<SelectTenantViewResponse>
     {
-        private readonly IdentityOptions _options;
         private readonly IViewTemplate _view;
         private readonly IContentTypeLookup _lookup;
+        private readonly ITemplateCompiler _templateCompiler;
 
-        public SelectTenantViewResponseBinder(IViewTemplate view, IContentTypeLookup lookup, IOptionsSnapshot<IdentityOptions> options)
+        public SelectTenantViewResponseBinder(ITemplateCompiler templateCompiler, IViewTemplate view, IContentTypeLookup lookup)
         {
-            _options = options.Value;
             _view = view;
             _lookup = lookup;
+            _templateCompiler = templateCompiler;
         }
 
         public override async Task BindAsync(SelectTenantViewResponse responseData, HttpResponse response)
@@ -29,11 +26,8 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
             }
 
             var html = await _view.GetTenantSelectionTemplate();
-            var stubble = new StubbleBuilder()
-                .Configure(p => p.AddToTemplateLoader(new StyleTemplateLoader(_options.Styles)))
-                .Build();
+            var responseBody = await _templateCompiler.RenderAsync(html, responseData);
 
-            var responseBody = await stubble.RenderAsync(html, responseData);
             response.StatusCode = StatusCodes.Status200OK;
 
             await response.WriteAsync(responseBody);
