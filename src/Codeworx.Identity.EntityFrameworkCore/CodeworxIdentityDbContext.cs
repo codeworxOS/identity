@@ -11,6 +11,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
         }
 
+        protected CodeworxIdentityDbContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
         public DbSet<IdentityCache> IdentityCaches { get; set; }
 
         public DbSet<User> Users { get; set; }

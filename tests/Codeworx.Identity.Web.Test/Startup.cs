@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Web.Test
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors();
             app.UseCodeworxIdentity(identityOptions.Value);
             app.UseMvc();
             app.UseStaticFiles();
@@ -49,6 +49,13 @@ namespace Codeworx.Identity.Web.Test
             {
                 DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
             };
+
+            services.AddCors(setup => setup.AddDefaultPolicy(
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                ));
 
             services.AddCodeworxIdentity(_configuration)
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
