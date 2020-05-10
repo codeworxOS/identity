@@ -13,6 +13,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
 {
     public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
     {
+        public static IIdentityServiceBuilder UseDbContext(this IIdentityServiceBuilder builder, Action<IServiceProvider, DbContextOptionsBuilder> contextBuilder)
+        {
+            builder.ServiceCollection.AddDbContext<CodeworxIdentityDbContext>(contextBuilder);
+
+            return builder.UseDbContext<CodeworxIdentityDbContext>();
+        }
+
         public static IIdentityServiceBuilder UseDbContext(this IIdentityServiceBuilder builder, Action<DbContextOptionsBuilder> contextBuilder)
         {
             builder.ServiceCollection.AddDbContext<CodeworxIdentityDbContext>(contextBuilder);

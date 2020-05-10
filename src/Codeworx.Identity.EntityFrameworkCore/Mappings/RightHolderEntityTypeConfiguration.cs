@@ -15,7 +15,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 
             builder.HasDiscriminator<byte>("Type")
                    .HasValue<User>(1)
-                   .HasValue<Role>(2);
+                   .HasValue<Group>(2);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Codeworx.Identity
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string DefaultAdminRoleId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
+        public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAuthenticationCookieName = "identity";
