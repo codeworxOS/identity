@@ -75,7 +75,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             var target = new Uri(redirectUrl);
             if (target.Host.Equals(p.Host, StringComparison.OrdinalIgnoreCase) &&
                 p.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
-                string.IsNullOrWhiteSpace(p.PathAndQuery))
+                p.PathAndQuery == "/")
             {
                 return true;
             }
