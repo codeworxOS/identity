@@ -40,6 +40,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, WindowsLoginProcessorLookup>();
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>();
+            result.ServiceCollection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();
+            result.ServiceCollection.AddTransient<ISystemClaimsProvider, SystemClaimsProvider<TContext>>();
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {

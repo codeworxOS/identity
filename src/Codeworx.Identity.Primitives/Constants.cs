@@ -34,12 +34,14 @@ namespace Codeworx.Identity
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
 
+        public const string Localhost = "localhost";
+
         public static class Claims
         {
             public const string CurrentTenant = "current_tenant";
             public const string Id = "id";
             public const string Name = "name";
-            public const string Role = "role";
+            public const string Group = "group";
             public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Issuer = JwtRegisteredClaimNames.Iss;
             public const string Audience = JwtRegisteredClaimNames.Aud;
@@ -184,6 +186,7 @@ namespace Codeworx.Identity
         public static class Scopes
         {
             public const string Tenant = "tenant";
+            public const string Groups = "groups";
         }
 
         public static class Token

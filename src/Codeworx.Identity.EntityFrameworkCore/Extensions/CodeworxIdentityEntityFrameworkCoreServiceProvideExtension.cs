@@ -181,6 +181,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 {
                                     Url = "https://example.org/redirect",
                                 },
+                                new ValidRedirectUrl
+                                {
+                                    Url = "http://localhost/",
+                                },
                             },
                         });
                     }
