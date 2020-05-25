@@ -32,7 +32,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             IScopeService scopeService)
         {
             var options = identityOptions.Value;
-            var host = baseUriAccessor.BaseUri.OriginalString;
+            var host = baseUriAccessor.BaseUri.ToString().TrimEnd('/');
 
             var scopes = await scopeService.GetScopes().ConfigureAwait(false);
 

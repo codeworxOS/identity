@@ -13,6 +13,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
 {
     public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
     {
+        public static IIdentityServiceBuilder UseDbContext(this IIdentityServiceBuilder builder, Action<IServiceProvider, DbContextOptionsBuilder> contextBuilder)
+        {
+            builder.ServiceCollection.AddDbContext<CodeworxIdentityDbContext>(contextBuilder);
+
+            return builder.UseDbContext<CodeworxIdentityDbContext>();
+        }
+
         public static IIdentityServiceBuilder UseDbContext(this IIdentityServiceBuilder builder, Action<DbContextOptionsBuilder> contextBuilder)
         {
             builder.ServiceCollection.AddDbContext<CodeworxIdentityDbContext>(contextBuilder);
@@ -33,6 +40,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, WindowsLoginProcessorLookup>();
             result.ServiceCollection.AddSingleton<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>();
+            result.ServiceCollection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();
+            result.ServiceCollection.AddTransient<ISystemClaimsProvider, SystemClaimsProvider<TContext>>();
 
             if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
             {

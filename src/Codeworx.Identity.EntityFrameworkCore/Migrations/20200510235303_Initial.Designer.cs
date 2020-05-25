@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20200504164504_Initial")]
+    [Migration("20200510235303_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -124,17 +124,26 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .IsRequired()
                         .HasMaxLength(500);
 
-                    b.Property<Guid?>("RoleId");
-
                     b.Property<byte>("Type");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
                     b.ToTable("RightHolder");
 
                     b.HasDiscriminator<byte>("Type");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>
+                {
+                    b.Property<Guid>("RightHolderId");
+
+                    b.Property<Guid>("GroupId");
+
+                    b.HasKey("RightHolderId", "GroupId");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("RightHolderGroup");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
@@ -162,19 +171,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("TenantUser");
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRole", b =>
-                {
-                    b.Property<Guid>("UserId");
-
-                    b.Property<Guid>("RoleId");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
@@ -215,13 +211,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasDiscriminator().HasValue("IPv4");
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
-
-                    b.Property<Guid>("TenantId");
-
-                    b.HasIndex("TenantId");
 
                     b.HasDiscriminator().HasValue((byte)2);
                 });
@@ -263,11 +255,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .HasForeignKey("FilterId");
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>
                 {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Role")
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Group", "Group")
                         .WithMany("Members")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", "RightHolder")
+                        .WithMany("MemberOf")
+                        .HasForeignKey("RightHolderId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
@@ -283,32 +281,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRole", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Role", "Role")
-                        .WithMany("MemberOf")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
-                        .WithMany("MemberOf")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
                 {
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany("ValidRedirectUrls")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Role", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

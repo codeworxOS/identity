@@ -8,7 +8,7 @@ namespace Codeworx.Identity
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string DefaultAdminRoleId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
+        public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAuthenticationCookieName = "identity";
@@ -34,13 +34,15 @@ namespace Codeworx.Identity
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
 
+        public const string Localhost = "localhost";
+
         public static class Claims
         {
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
             public const string Id = "id";
             public const string Name = "name";
-            public const string Role = "role";
+            public const string Group = "group";
             public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Issuer = JwtRegisteredClaimNames.Iss;
             public const string Audience = JwtRegisteredClaimNames.Aud;
@@ -185,6 +187,7 @@ namespace Codeworx.Identity
         public static class Scopes
         {
             public const string Tenant = "tenant";
+            public const string Groups = "groups";
         }
 
         public static class Token

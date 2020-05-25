@@ -8,12 +8,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
     {
         public RightHolder()
         {
-            this.MemberOf = new HashSet<UserRole>();
+            this.MemberOf = new HashSet<RightHolderGroup>();
         }
 
         public Guid Id { get; set; }
 
-        public ICollection<UserRole> MemberOf { get; }
+        public ICollection<RightHolderGroup> MemberOf { get; }
 
         [StringLength(500)]
         [Required]

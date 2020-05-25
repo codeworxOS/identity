@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
             }
 
-            if (!client.ValidRedirectUrls.Any(p => redirectUrl.StartsWith(p.ToString(), System.StringComparison.OrdinalIgnoreCase)))
+            if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirectUrl, p)))
             {
                 AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName, request.State);
             }
@@ -67,6 +68,19 @@ namespace Codeworx.Identity.OAuth.Authorization
             builder = builder.WithRedirectUri(redirectUrl);
 
             return builder;
+        }
+
+        private bool CheckRedirectUrl(string redirectUrl, Uri p)
+        {
+            var target = new Uri(redirectUrl);
+            if (target.Host.Equals(p.Host, StringComparison.OrdinalIgnoreCase) &&
+                p.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
+                p.PathAndQuery == "/")
+            {
+                return true;
+            }
+
+            return redirectUrl.StartsWith(p.ToString(), System.StringComparison.OrdinalIgnoreCase);
         }
     }
 }

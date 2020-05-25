@@ -38,9 +38,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             PasswordSalt = defaultUserPasswordSalt,
                             MemberOf =
                             {
-                               new UserRole
+                               new RightHolderGroup
                                {
-                                   RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
+                                   GroupId = Guid.Parse(Constants.DefaultAdminGroupId),
                                },
                             },
                         });
@@ -61,9 +61,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             PasswordSalt = multiTenantUserPasswordSalt,
                             MemberOf =
                             {
-                               new UserRole
+                               new RightHolderGroup
                                {
-                                   RoleId = Guid.Parse(Constants.DefaultAdminRoleId),
+                                   GroupId = Guid.Parse(Constants.DefaultAdminGroupId),
                                },
                             },
                         });
@@ -109,15 +109,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    var adminRole = context.Roles.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminRoleId));
+                    var adminRole = context.Groups.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminGroupId));
 
                     if (adminRole == null)
                     {
-                        context.Roles.Add(new Role
+                        context.Groups.Add(new Group
                         {
-                            Id = Guid.Parse(Constants.DefaultAdminRoleId),
+                            Id = Guid.Parse(Constants.DefaultAdminGroupId),
                             Name = "Admin",
-                            TenantId = Guid.Parse(Constants.DefaultSecondTenantId),
                         });
                     }
 
@@ -181,6 +180,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 new ValidRedirectUrl
                                 {
                                     Url = "https://example.org/redirect",
+                                },
+                                new ValidRedirectUrl
+                                {
+                                    Url = "http://localhost/",
                                 },
                             },
                         });
