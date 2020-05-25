@@ -8,6 +8,11 @@ namespace Codeworx.Identity.Test
 {
     public class DummyTenantService : ITenantService
     {
+        public Task<IEnumerable<TenantInfo>> GetTenantsAsync()
+        {
+            return GetTenants(Constants.MultiTenantUserId);
+        }
+
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity user)
         {
             return GetTenants(user.GetUserId());

@@ -37,6 +37,7 @@ namespace Codeworx.Identity
         public static class Claims
         {
             public const string CurrentTenant = "current_tenant";
+            public const string DefaultTenant = "default_tenant";
             public const string Id = "id";
             public const string Name = "name";
             public const string Role = "role";

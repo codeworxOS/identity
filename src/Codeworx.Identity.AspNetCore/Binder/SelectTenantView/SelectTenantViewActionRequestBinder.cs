@@ -50,7 +50,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
             form.TryGetValue("tenantKey", out var tenantKey);
             form.TryGetValue("setDefault", out var setDefault);
 
-            return new SelectTenantViewActionRequest(authorizationRequest, user, requestPath.FirstOrDefault(), tenantKey.FirstOrDefault(), bool.Parse(setDefault.FirstOrDefault() ?? "false"));
+            return new SelectTenantViewActionRequest(authorizationRequest, user, requestPath.FirstOrDefault(), tenantKey.FirstOrDefault(), setDefault.FirstOrDefault() == "on");
         }
     }
 }

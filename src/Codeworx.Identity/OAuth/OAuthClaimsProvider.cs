@@ -5,11 +5,11 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth
 {
-    public class SystemClaimsProvider : ISystemClaimsProvider
+    public class OAuthClaimsProvider : ISystemClaimsProvider
     {
         private readonly IBaseUriAccessor _baseUri;
 
-        public SystemClaimsProvider(IBaseUriAccessor baseUri)
+        public OAuthClaimsProvider(IBaseUriAccessor baseUri)
         {
             _baseUri = baseUri;
         }

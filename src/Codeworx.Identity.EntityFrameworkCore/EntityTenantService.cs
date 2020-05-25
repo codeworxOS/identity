@@ -19,6 +19,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
+        public async Task<IEnumerable<TenantInfo>> GetTenantsAsync()
+        {
+            var tenantSet = _context.Set<Tenant>();
+
+            var tenants = await tenantSet
+                    .Select(p => new TenantInfo
+                    {
+                        Key = p.Id.ToString("N"),
+                        Name = p.Name,
+                    })
+                    .ToListAsync();
+
+            return tenants;
+        }
+
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity identity)
         {
             return this.GetTenantInfo(Guid.Parse(identity.GetUserId()));

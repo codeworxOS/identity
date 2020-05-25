@@ -90,6 +90,10 @@ namespace Codeworx.Identity
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Name, user.Name));
+            if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))
+            {
+                identity.AddClaim(new Claim(Constants.Claims.DefaultTenant, user.DefaultTenantKey));
+            }
 
             return Task.FromResult(identity);
         }

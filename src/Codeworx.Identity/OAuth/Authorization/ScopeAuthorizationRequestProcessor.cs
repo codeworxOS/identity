@@ -1,24 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
     public class ScopeAuthorizationRequestProcessor : IAuthorizationRequestProcessor
     {
-        private readonly IEnumerable<ISystemScopeProvider> _systemScopeService;
         private readonly IScopeService _scopeService;
-        private readonly ITenantService _tenantService;
 
         public ScopeAuthorizationRequestProcessor(
-            IEnumerable<ISystemScopeProvider> systemScopeService,
-            IScopeService scopeService = null,
-            ITenantService tenantService = null)
+            IScopeService scopeService)
         {
-            _systemScopeService = systemScopeService;
             _scopeService = scopeService;
-            _tenantService = tenantService;
         }
 
         public async Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
@@ -28,54 +21,11 @@ namespace Codeworx.Identity.OAuth.Authorization
             var scopes = parameters.Scopes.ToList();
             var newScopes = new List<string>();
 
-            if (scopes.Contains(Constants.Scopes.Tenant))
-            {
-                scopes.Remove(Constants.Scopes.Tenant);
-                newScopes.Add(Constants.Scopes.Tenant);
+            var tempScopes = await _scopeService
+                .GetScopes()
+                .ConfigureAwait(false);
 
-                if (_tenantService == null)
-                {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant, request.State, parameters.RedirectUri);
-                }
-
-                var tenants = (await _tenantService.GetTenantsByIdentityAsync(parameters.User).ConfigureAwait(false)).ToList();
-
-                var foundTenants = tenants.Where(p => scopes.Contains(p.Key)).ToList();
-
-                if (tenants.Count == 0)
-                {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant, request.State, parameters.RedirectUri);
-                }
-                else if (foundTenants.Count == 1)
-                {
-                    scopes.Remove(foundTenants[0].Key);
-                    newScopes.Add(foundTenants[0].Key);
-                }
-                else if (foundTenants.Count == 0 && tenants.Count == 1)
-                {
-                    newScopes.Add(tenants[0].Key);
-                }
-                else
-                {
-                    throw new ErrorResponseException<MissingTenantResponse>(new MissingTenantResponse(request, request.GetRequestPath()));
-                }
-            }
-
-            var availableScopes = new List<string>();
-
-            var systemScopesTask = _systemScopeService.Select(p => p.GetScopes());
-
-            await Task.WhenAll(systemScopesTask).ConfigureAwait(false);
-
-            var systemScopes = systemScopesTask.SelectMany(p => p.Result);
-
-            availableScopes.AddRange(systemScopes.Select(p => p.ScopeKey));
-
-            if (_scopeService != null)
-            {
-                var customScopes = await _scopeService.GetScopes().ConfigureAwait(false);
-                availableScopes.AddRange(customScopes.Select(p => p.ScopeKey));
-            }
+            var availableScopes = tempScopes.Select(p => p.ScopeKey).ToList();
 
             if (scopes.Any(p => !availableScopes.Contains(p)))
             {

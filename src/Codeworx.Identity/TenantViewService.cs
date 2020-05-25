@@ -9,7 +9,7 @@ namespace Codeworx.Identity
         private readonly ITenantService _tenantService;
         private readonly IDefaultTenantService _defaultTenantService;
 
-        public TenantViewService(ITenantService tenantService, IDefaultTenantService defaultTenantService)
+        public TenantViewService(ITenantService tenantService, IDefaultTenantService defaultTenantService = null)
         {
             _tenantService = tenantService ?? throw new System.ArgumentNullException(nameof(tenantService));
             _defaultTenantService = defaultTenantService;

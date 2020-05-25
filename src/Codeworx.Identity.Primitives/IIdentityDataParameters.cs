@@ -9,7 +9,7 @@ namespace Codeworx.Identity
 
         string Nonce { get; }
 
-        IEnumerable<string> Scopes { get; }
+        IReadOnlyCollection<string> Scopes { get; }
 
         string State { get; }
 

@@ -11,8 +11,8 @@ namespace Codeworx.Identity.OAuth.Authorization
             string nonce,
             string redirectUri,
             string responseMode,
-            IEnumerable<string> responseTypes,
-            IEnumerable<string> scopes,
+            IReadOnlyCollection<string> responseTypes,
+            IReadOnlyCollection<string> scopes,
             string state,
             ClaimsIdentity user,
             AuthorizationRequest request)
@@ -36,9 +36,9 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public string ResponseMode { get; }
 
-        public IEnumerable<string> ResponseTypes { get; }
+        public IReadOnlyCollection<string> ResponseTypes { get; }
 
-        public IEnumerable<string> Scopes { get; }
+        public IReadOnlyCollection<string> Scopes { get; }
 
         public string State { get; }
 

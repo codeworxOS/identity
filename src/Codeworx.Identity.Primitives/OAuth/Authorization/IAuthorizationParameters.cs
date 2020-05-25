@@ -9,7 +9,7 @@ namespace Codeworx.Identity
 
         string ResponseMode { get; }
 
-        IEnumerable<string> ResponseTypes { get; }
+        IReadOnlyCollection<string> ResponseTypes { get; }
 
         AuthorizationRequest Request { get; }
     }

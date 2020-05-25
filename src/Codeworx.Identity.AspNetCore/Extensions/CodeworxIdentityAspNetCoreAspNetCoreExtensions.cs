@@ -9,7 +9,6 @@ using Codeworx.Identity.AspNetCore.Binder;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
 using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.AspNetCore.OAuth.Authorization;
 using Codeworx.Identity.AspNetCore.OAuth.Binder;
 using Codeworx.Identity.AspNetCore.OpenId;
 using Codeworx.Identity.AspNetCore.OpenId.Binder;
@@ -235,14 +234,16 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IAuthorizationRequestProcessor, StageOneAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, StageTwoAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, ScopeAuthorizationRequestProcessor>();
+            collection.AddTransient<IAuthorizationRequestProcessor, TenantAuthorizationRequestProcessor>();
 
             collection.AddTransient<IRequestValidator<TokenRequest>, TokenRequestValidator>();
 
             collection.AddTransient<IScopeService, ScopeService>();
             collection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();
+            collection.AddTransient<ISystemScopeProvider, TenantScopeProvider>();
 
             collection.AddTransient<IClaimsService, ClaimsService>();
-            collection.AddScoped<ISystemClaimsProvider, SystemClaimsProvider>();
+            collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, TenantClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
