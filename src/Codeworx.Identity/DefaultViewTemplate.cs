@@ -4,11 +4,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.View;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplate : IViewTemplate, IDisposable
+    public class DefaultViewTemplate : ILoginViewTemplate, ITenantViewTemplate, IFormPostResponseTypeTemplate, IDisposable
     {
         private readonly IDisposable _optionsMonitor;
         private bool _disposedValue = false;
@@ -25,11 +26,9 @@ namespace Codeworx.Identity
             Dispose(true);
         }
 
-        public async Task<string> GetLoggedInTemplate(string returnUrl)
+        public async Task<string> GetLoggedInTemplate()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.loggedin.html"))
-                .Replace("{{returnUrl}}", returnUrl)
-                .Replace("{{styles}}", GetStyles());
+            return await GetTemplateAsString("Codeworx.Identity.assets.loggedin.html");
         }
 
         public async Task<string> GetLoginTemplate()
@@ -42,12 +41,9 @@ namespace Codeworx.Identity
             return await GetTemplateAsString("Codeworx.Identity.assets.tenant.html");
         }
 
-        public async Task<string> GetFormPostTemplate(string redirectUrl, string code, string state)
+        public async Task<string> GetFormPostTemplate()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.form_post.html"))
-                .Replace("{{redirectUrl}}", redirectUrl)
-                .Replace("{{code}}", code)
-                .Replace("{{state}}", state);
+            return await GetTemplateAsString("Codeworx.Identity.assets.form_post.html");
         }
 
         protected virtual void Dispose(bool disposing)

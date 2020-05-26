@@ -1,17 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.View;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
 {
     public partial class SelectTenantViewResponseBinder : ResponseBinder<SelectTenantViewResponse>
     {
-        private readonly IViewTemplate _view;
+        private readonly ITenantViewTemplate _view;
         private readonly IContentTypeLookup _lookup;
         private readonly ITemplateCompiler _templateCompiler;
 
-        public SelectTenantViewResponseBinder(ITemplateCompiler templateCompiler, IViewTemplate view, IContentTypeLookup lookup)
+        public SelectTenantViewResponseBinder(ITemplateCompiler templateCompiler, ITenantViewTemplate view, IContentTypeLookup lookup)
         {
             _view = view;
             _lookup = lookup;

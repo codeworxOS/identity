@@ -6,18 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Login</title>
-    {{styles}}
+    {{> Styles}}
 </head>
 
 <body>
     <div id="loggedin">
-        <input type="text" readonly="readonly" id="username"></input>
-        <ul id="external"></ul>
+        <input type="text" readonly="readonly" id="username" value="{{User.Name}}" />
+        <ul id="external">
+            {{#Providers}}
+            <li><a href="{{Url}}"><button>{{Name}}</button></a></li>
+            {{/Providers}}
+        </ul>
     </div>
-    <script type="text/javascript" src="js/login.js"></script>
-    <script type="text/javascript">
-        var loginForm = new LoginForm();
-        loginForm.initialize(true, '{{returnUrl}}');
-    </script>
 </body>
 </html>

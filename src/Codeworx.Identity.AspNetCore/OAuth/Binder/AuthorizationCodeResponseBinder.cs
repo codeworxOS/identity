@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.View;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
@@ -9,11 +9,13 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 {
     public class AuthorizationCodeResponseBinder : ResponseBinder<AuthorizationCodeResponse>
     {
-        private readonly IViewTemplate _view;
+        private readonly IFormPostResponseTypeTemplate _view;
+        private readonly ITemplateCompiler _templateCompiler;
 
-        public AuthorizationCodeResponseBinder(IViewTemplate view)
+        public AuthorizationCodeResponseBinder(IFormPostResponseTypeTemplate view, ITemplateCompiler templateCompiler)
         {
             _view = view;
+            this._templateCompiler = templateCompiler;
         }
 
         public override async Task BindAsync(AuthorizationCodeResponse responseData, HttpResponse response)
@@ -33,9 +35,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                 response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
                 response.Headers.Add(HeaderNames.CacheControl, "no-store, must-revalidate, max-age=0");
 
-                var encodedCode = HttpUtility.HtmlEncode(responseData.Code);
-
-                await response.WriteAsync(await _view.GetFormPostTemplate(responseData.RedirectUri, encodedCode, responseData.State));
+                var template = await _view.GetFormPostTemplate();
+                var html = await _templateCompiler.RenderAsync(template, responseData);
+                await response.WriteAsync(html);
             }
             else
             {

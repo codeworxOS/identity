@@ -10,12 +10,10 @@ namespace Codeworx.Identity.AspNetCore
     public class LogoutMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IViewTemplate _template;
 
-        public LogoutMiddleware(RequestDelegate next, IViewTemplate template)
+        public LogoutMiddleware(RequestDelegate next)
         {
             _next = next;
-            _template = template;
         }
 
         public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)

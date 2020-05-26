@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.View;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.Binder.LoginView
@@ -9,9 +10,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
     {
         private readonly IContentTypeLookup _lookup;
         private readonly ITemplateCompiler _templateCompiler;
-        private readonly IViewTemplate _view;
+        private readonly ILoginViewTemplate _view;
 
-        public LoginResponseBinder(IViewTemplate view, IContentTypeLookup lookup, ITemplateCompiler templateCompiler)
+        public LoginResponseBinder(ILoginViewTemplate view, IContentTypeLookup lookup, ITemplateCompiler templateCompiler)
         {
             _view = view;
             _lookup = lookup;

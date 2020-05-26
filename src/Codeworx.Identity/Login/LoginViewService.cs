@@ -7,18 +7,21 @@ namespace Codeworx.Identity.Login
     {
         private readonly IExternalLoginService _externalLoginService;
         private readonly IIdentityService _identityService;
+        private readonly IUserService _userService;
 
-        public LoginViewService(IExternalLoginService externalLoginService, IIdentityService identityService)
+        public LoginViewService(IExternalLoginService externalLoginService, IIdentityService identityService, IUserService userService)
         {
             _externalLoginService = externalLoginService;
             _identityService = identityService;
+            _userService = userService;
         }
 
         public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
         {
             var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var user = await _userService.GetUserByIdentifierAsync(request.Identity);
 
-            return new LoggedinResponse(response.Providers, request.ReturnUrl);
+            return new LoggedinResponse(user, response.Providers, request.ReturnUrl);
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)

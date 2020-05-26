@@ -52,12 +52,5 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.RegisterScoped<IUserService, TImplementation>(factory);
             return builder;
         }
-
-        public static IIdentityServiceBuilder View<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IViewTemplate
-        {
-            builder.RegisterSingleton<IViewTemplate, TImplementation>(factory);
-            return builder;
-        }
     }
 }
