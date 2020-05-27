@@ -1,0 +1,87 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+html {
+    background-color: limegreen
+}
+
+body {
+    font-family: Poppins-Regular, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+}
+
+#loginContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 15px;
+}
+
+    #loginContainer .border {
+        width: 450px;
+        background: #fff;
+        border-radius: 3px;
+        padding: 77px 50px 30px 50px;
+        overflow: hidden;
+    }
+
+    #loginContainer .heading {
+        font-family: Raleway-Black;
+        font-size: 30px;
+        color: #333333;
+        line-height: 1.2;
+        text-transform: uppercase;
+        text-align: center;
+        width: 100%;
+        display: block;
+        padding-bottom: 55px;
+    }
+
+    #loginContainer .input {
+        width: 100%;
+        margin-bottom: 16px;
+        position: relative;
+    }
+
+
+        #loginContainer .input input {
+            font-size: 18px;
+            line-height: 1.2;
+            color: #686868;
+            display: block;
+            width: 100%;
+            background: #e6e6e6;
+            height: 62px;
+            border-radius: 3px;
+            padding: 0 30px 0 65px;
+            outline: none;
+            border: none;
+        }
+
+        #loginContainer .input .checkbox {
+            margin-left: 4px;
+        }
+
+        #loginContainer .input .label {
+            font-size: 16px;
+            color: #999999;
+            line-height: 1.2;
+            display: block;
+            position: relative;
+            padding-left: 26px;
+            cursor: pointer;
+        }
+
+#loginForm {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
