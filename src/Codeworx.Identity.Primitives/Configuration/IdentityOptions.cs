@@ -17,7 +17,7 @@ namespace Codeworx.Identity.Configuration
             AccountEndpoint = "/account";
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             CookieExpiration = TimeSpan.FromHours(1);
-            Styles = new HashSet<string>();
+            Styles = new HashSet<string> { Constants.Assets.Css + "/style.css" };
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
             WindowsAuthenticationEnabled = false;

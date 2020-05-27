@@ -34,11 +34,12 @@ namespace Codeworx.Identity
             var assetFolderLookup = _assets[prefix];
 
             var assetFolder = assetFolderLookup.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
-            var reminingPath = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            var remainingPath = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var resourcePath = $"{_assembly.GetName().Name}.{string.Join(".", assetFolder)}.{string.Join(".", reminingPath)}";
-            var resourceName = _assembly.GetManifestResourceNames()
-                                .SingleOrDefault(p => p.Equals(resourcePath, StringComparison.OrdinalIgnoreCase));
+            var resourcePath = $"{_assembly.GetName().Name}.{string.Join(".", assetFolder)}.{string.Join(".", remainingPath)}";
+            var resourceName = _assembly
+                .GetManifestResourceNames()
+                .SingleOrDefault(p => p.Equals(resourcePath, StringComparison.OrdinalIgnoreCase));
 
             if (resourceName == null)
             {

@@ -36,6 +36,12 @@ namespace Codeworx.Identity
 
         public const string Localhost = "localhost";
 
+        public static class Assets
+        {
+            public const string Js = "/identity/js";
+            public const string Css = "/identity/css";
+        }
+
         public static class Claims
         {
             public const string CurrentTenant = "current_tenant";
