@@ -8,80 +8,95 @@ html {
     background-color: limegreen
 }
 
-body {
-    font-family: Poppins-Regular, sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-}
-
 #loginContainer {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    padding: 15px;
+    background: white;
+    margin: 10px auto;
+    padding: 70px 50px 30px 50px;
+    width: 450px;
 }
 
-    #loginContainer .border {
-        width: 450px;
-        background: #fff;
+    #loginContainer form {
+        display: flex;
+        flex-direction: column;
+    }
+
+        #loginContainer form:before {
+            content: "Login";
+            font-family: "Arial Black";
+            font-size: 30px;
+            color: #333333;
+            text-transform: uppercase;
+            text-align: center;
+            padding-bottom: 50px;
+        }
+
+
+    #loginContainer input {
+        color: #686868;
+        background: #e6e6e6;
+        font-size: 18px;
+        border: none;
         border-radius: 3px;
-        padding: 77px 50px 30px 50px;
-        overflow: hidden;
-    }
-
-    #loginContainer .heading {
-        font-family: Raleway-Black;
-        font-size: 30px;
-        color: #333333;
-        line-height: 1.2;
-        text-transform: uppercase;
-        text-align: center;
-        width: 100%;
-        display: block;
-        padding-bottom: 55px;
-    }
-
-    #loginContainer .input {
-        width: 100%;
+        padding: 0 30px 0 65px;
         margin-bottom: 16px;
-        position: relative;
+        height: 60px
+    }
+
+        #loginContainer input[type="checkbox"] {
+            display: none;
+        }
+
+            #loginContainer input[type="checkbox"] + label {
+                font-family: Arial;
+                color: #999999;
+                line-height: 1.2em;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
+            }
+
+                #loginContainer input[type="checkbox"] + label:before {
+                    content: "\f00c";
+                    line-height: 1.2em;
+                    display: flex;
+                    justify-content: center;
+                    border: 2px solid #d33f8d;
+                    border-radius: 3px;
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 8px;
+                    box-sizing: inherit;
+                }
+
+            #loginContainer input[type="checkbox"]:checked + label::before {
+                font-family: Symbol;
+                content: "\d6";
+            }
+
+    #loginContainer button[type="submit"] {
+        font-size: 16px;
+        text-transform: uppercase;
+        color: white;
+        background: #d33f8d;
+        border: none;
+        border-radius: 3px;
+        height: 60px;
+        margin-top: 25px;
     }
 
 
-        #loginContainer .input input {
-            font-size: 18px;
-            line-height: 1.2;
-            color: #686868;
-            display: block;
-            width: 100%;
-            background: #e6e6e6;
-            height: 62px;
-            border-radius: 3px;
-            padding: 0 30px 0 65px;
-            outline: none;
-            border: none;
-        }
+    #loginContainer #external {
+        display: flex;
+        flex-direction: column;
+        /*justify-content: center;*/
+    }
 
-        #loginContainer .input .checkbox {
-            margin-left: 4px;
-        }
-
-        #loginContainer .input .label {
+        #loginContainer #external:before {
+            content: "Or login with";
+            font-family: Arial;
             font-size: 16px;
             color: #999999;
-            line-height: 1.2;
-            display: block;
-            position: relative;
-            padding-left: 26px;
-            cursor: pointer;
+            text-align: center;
+            padding-top: 40px;
+            padding-bottom: 20px;
         }
-
-#loginForm {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}

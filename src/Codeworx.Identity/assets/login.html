@@ -12,23 +12,20 @@
 
 <body>
     <div id="loginContainer">
-        <div class="border">
-            <form method="post" id="loginForm">
-                <span class="heading">Login</span>
-                <div class="input"><input type="text" id="username" name="username" placeholder="User" value="{{Username}}" /></div>
-                <div class="input"><input type="password" id="password" name="password" placeholder="Password" /></div>
-                <div class="input"><input class="checkbox" type="checkbox" id="remember" name="remember" /><label for="remember">Remember me</label></div>
+        <form method="post" id="loginForm">
+            <input type="text" id="username" name="username" placeholder="User" value="{{Username}}" />
+            <input type="password" id="password" name="password" placeholder="Password" />
+            <input type="checkbox" id="remember" name="remember-me" /><label for="remember">Remember me</label>
 
-                <div id="error">{{Error}}</div>
-                <div><button type="submit" id="login">login</button></div>
-            </form>
+            <div id="error">{{Error}}</div>
+            <button type="submit" id="login">login</button>
+        </form>
 
-            <ul id="external">
-                {{#Providers}}
-                <li><a href="{{Url}}"><button>{{Name}}</button></a></li>
-                {{/Providers}}
-            </ul>
-        </div>
+        <ul id="external">
+            {{#Providers}}
+            <li><a href="{{Url}}"><button>{{Name}}</button></a></li>
+            {{/Providers}}
+        </ul>
     </div>
 </body>
 </html>
