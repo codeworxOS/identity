@@ -40,6 +40,7 @@ namespace Codeworx.Identity
         {
             public const string Js = "/identity/js";
             public const string Css = "/identity/css";
+            public const string Images = "/identity/images";
         }
 
         public static class Claims

@@ -5,7 +5,8 @@
 }
 
 html {
-    background-color: limegreen
+    background-color: #af110e;
+    background-image: url("../images/logo-200.svg");
 }
 
 #loginContainer {
@@ -42,36 +43,30 @@ html {
         height: 60px
     }
 
-        #loginContainer input[type="checkbox"] {
-            display: none;
+    #loginContainer input[type="checkbox"] {
+        display: none;
+    }
+
+        #loginContainer input[type="checkbox"] + label {
+            font-family: Arial;
+            color: #999999;
+            line-height: 1.2em;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
         }
 
-            #loginContainer input[type="checkbox"] + label {
-                font-family: Arial;
-                color: #999999;
-                line-height: 1.2em;
-                font-size: 16px;
-                cursor: pointer;
-                display: flex;
+            #loginContainer input[type="checkbox"] + label:before {
+                content: url("../images/unchecked.svg");
+                width: 18px;
+                height: 18px;
+                margin-right: 8px;
+                box-sizing: inherit;
             }
 
-                #loginContainer input[type="checkbox"] + label:before {
-                    content: "\f00c";
-                    line-height: 1.2em;
-                    display: flex;
-                    justify-content: center;
-                    border: 2px solid #d33f8d;
-                    border-radius: 3px;
-                    width: 18px;
-                    height: 18px;
-                    margin-right: 8px;
-                    box-sizing: inherit;
-                }
-
-            #loginContainer input[type="checkbox"]:checked + label::before {
-                font-family: Symbol;
-                content: "\d6";
-            }
+        #loginContainer input[type="checkbox"]:checked + label:before {
+            content: url("../images/checked.svg");
+        }
 
     #loginContainer button[type="submit"] {
         font-size: 16px;
@@ -88,7 +83,7 @@ html {
     #loginContainer #external {
         display: flex;
         flex-direction: column;
-        /*justify-content: center;*/
+        list-style-type: none;
     }
 
         #loginContainer #external:before {

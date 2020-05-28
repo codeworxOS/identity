@@ -15,6 +15,7 @@
     <EmbeddedResource Include="assets\*.html" />
     <EmbeddedResource Include="assets\css\*.css" />
     <EmbeddedResource Include="assets\js\*.js" />
+    <EmbeddedResource Include="assets\images\*" />
   </ItemGroup>
 
   <ItemGroup>
