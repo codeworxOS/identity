@@ -1,12 +1,14 @@
 * {
-    margin: 0px;
-    padding: 0px;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
 html {
-    background-color: #af110e;
-    background-image: url("../images/logo-200.svg");
+    background: #af110e url("../images/logo-white.svg") no-repeat;
+    background-position-x: 25%;
+    background-position-y: 20%;
+    background-size: 120%;
 }
 
 #loginContainer {
@@ -31,7 +33,6 @@ html {
             padding-bottom: 50px;
         }
 
-
     #loginContainer input {
         color: #686868;
         background: #e6e6e6;
@@ -43,55 +44,97 @@ html {
         height: 60px
     }
 
-    #loginContainer input[type="checkbox"] {
-        display: none;
-    }
-
-        #loginContainer input[type="checkbox"] + label {
-            font-family: Arial;
-            color: #999999;
-            line-height: 1.2em;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
+        #loginContainer input[type="checkbox"] {
+            display: none;
         }
 
-            #loginContainer input[type="checkbox"] + label:before {
-                content: url("../images/unchecked.svg");
-                width: 18px;
-                height: 18px;
-                margin-right: 8px;
-                box-sizing: inherit;
+            #loginContainer input[type="checkbox"] + label {
+                font-family: Arial;
+                color: #999999;
+                line-height: 1.2em;
+                font-size: 16px;
+                cursor: pointer;
+                display: flex;
             }
 
-        #loginContainer input[type="checkbox"]:checked + label:before {
-            content: url("../images/checked.svg");
-        }
+                #loginContainer input[type="checkbox"] + label svg {
+                    margin-right: 8px;
+                }
+
+                    #loginContainer input[type="checkbox"] + label svg rect {
+                        stroke: #af110e;
+                    }
+
+                    #loginContainer input[type="checkbox"] + label svg #checked {
+                        stroke: none;
+                    }
+
+            #loginContainer input[type="checkbox"]:checked + label svg #checked {
+                stroke: #af110e;
+            }
 
     #loginContainer button[type="submit"] {
         font-size: 16px;
         text-transform: uppercase;
         color: white;
-        background: #d33f8d;
+        background: #af110e;
         border: none;
         border-radius: 3px;
+        cursor: pointer;
         height: 60px;
         margin-top: 25px;
     }
 
+        #loginContainer button[type="submit"]:hover {
+            background: red;
+        }
+
 
     #loginContainer #external {
         display: flex;
-        flex-direction: column;
+        flex-flow: row wrap;
+        justify-content: space-between;
         list-style-type: none;
+        margin-top: 40px;
     }
 
         #loginContainer #external:before {
             content: "Or login with";
             font-family: Arial;
             font-size: 16px;
+            width: 100%;
             color: #999999;
             text-align: center;
-            padding-top: 40px;
-            padding-bottom: 20px;
+            margin-bottom: 10px;
         }
+
+        #loginContainer #external li {
+            height: 40px;
+            width: calc((100% - 10px) / 2);
+            margin-top: 10px;
+        }
+
+            #loginContainer #external li a {
+                font-family: Arial;
+                text-decoration: none;
+                font-size: 20px;
+                color: #333333;
+                border: 1px solid #e6e6e6;
+                border-radius: 3px;
+                cursor: pointer;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+                #loginContainer #external li a:hover {
+                    color: #af110e;
+                    border-color: red;
+                }
+
+
+                #loginContainer #external li a img {
+                    width: 32px;
+                    margin-right: 10px;
+                }
