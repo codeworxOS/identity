@@ -5,16 +5,21 @@
 }
 
 html {
-    background: #af110e url("../images/logo-white.svg") no-repeat;
-    background-position-x: 25%;
-    background-position-y: 20%;
+    background: #af110e url("../images/logo-white.svg") no-repeat 25% 20%;
     background-size: 120%;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #loginContainer {
     background: white;
-    margin: 10px auto;
-    padding: 70px 50px 30px 50px;
+    padding: 70px 50px 40px 50px;
     width: 450px;
 }
 
@@ -132,7 +137,6 @@ html {
                     color: #af110e;
                     border-color: red;
                 }
-
 
                 #loginContainer #external li a img {
                     width: 32px;
