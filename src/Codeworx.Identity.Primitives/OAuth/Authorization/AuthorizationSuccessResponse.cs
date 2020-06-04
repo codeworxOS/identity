@@ -4,14 +4,22 @@ using System.Runtime.Serialization;
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class AuthorizationTokenResponse : AuthorizationResponse
+    public class AuthorizationSuccessResponse : AuthorizationResponse
     {
-        public AuthorizationTokenResponse(string state, string token, int expiresIn, string redirectUri)
+        public AuthorizationSuccessResponse(string state, string token, int expiresIn, string redirectUri)
             : base(state, redirectUri)
         {
             this.Token = token;
             this.ExpiresIn = expiresIn;
         }
+
+        [Required]
+        [RegularExpression(Constants.OAuth.CodeValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.CodeName)]
+        public string Code { get; }
+
+        [IgnoreDataMember]
+        public string ResponseMode { get; }
 
         [Required]
         [DataMember(Order = 2, Name = Constants.OAuth.ExpiresInName)]

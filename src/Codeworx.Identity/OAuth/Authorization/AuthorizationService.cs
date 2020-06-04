@@ -9,20 +9,20 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
-        private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
+        private readonly IEnumerable<IAuthorizationResponseProcessor> _responseProcessors;
         private readonly IUserService _userService;
 
         public AuthorizationService(
             IEnumerable<IAuthorizationRequestProcessor> requestProcessors,
-            IEnumerable<IAuthorizationFlowService> authorizationFlowServices,
+            IEnumerable<IAuthorizationResponseProcessor> responseProcessors,
             IUserService userService)
         {
             _requestProcessors = requestProcessors;
-            _authorizationFlowServices = authorizationFlowServices;
+            _responseProcessors = responseProcessors;
             _userService = userService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public async Task<AuthorizationSuccessResponse> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -38,24 +38,24 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             var parameters = builder.Parameters;
 
+            IAuthorizationResponseBuilder responseBuilder = null;
+            responseBuilder.WithState(parameters.State)
+                .WithRedirectUri(parameters.RedirectUri);
+
             var currentUser = await _userService.GetUserByIdentifierAsync(parameters.User)
                                          .ConfigureAwait(false);
 
             if (currentUser == null)
             {
-                return new UserNotFoundResult(parameters.State, parameters.RedirectUri);
+                responseBuilder.RaiseError(Constants.OAuth.Error.AccessDenied);
             }
 
-            var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.IsSupported(parameters.ResponseTypes.First()));
-            if (authorizationFlowService == null)
+            foreach (var item in _responseProcessors)
             {
-                return new UnsupportedResponseTypeResult(parameters.State, parameters.RedirectUri);
+                responseBuilder = await item.ProcessAsync(parameters, , responseBuilder);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(parameters)
-                                                                    .ConfigureAwait(false);
-
-            return authorizationResult;
+            return responseBuilder.Response;
         }
     }
 }
