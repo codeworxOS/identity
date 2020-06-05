@@ -1,6 +1,10 @@
 ﻿using System.Reflection;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Authorization;
+using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.OpenId.Authorization;
 using Codeworx.Identity.View;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +30,14 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
+
+            ServiceCollection.AddScoped<IAuthorizationService, AuthorizationService>();
+            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, AccessTokenResponseProcessor>();
+            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, AuthorizationCodeResponseProcessor>();
+            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, IdTokenResponseProcessor>();
+
+            ServiceCollection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
+            ServiceCollection.AddScoped<ITokenService, TokenService>();
         }
 
         public IServiceCollection ServiceCollection { get; }

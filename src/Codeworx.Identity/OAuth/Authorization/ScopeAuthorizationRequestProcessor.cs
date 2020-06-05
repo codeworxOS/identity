@@ -42,7 +42,17 @@ namespace Codeworx.Identity.OAuth.Authorization
                 newScopes.Add(scope);
             }
 
-            return builder.WithScopes(newScopes.ToArray());
+            builder = builder.WithScopes(newScopes.ToArray());
+
+            if (request is OpenId.AuthorizationRequest)
+            {
+                if (!builder.Parameters.Scopes.Contains(Constants.OpenId.Scopes.OpenId))
+                {
+                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.", parameters.State, parameters.RedirectUri);
+                }
+            }
+
+            return builder;
         }
     }
 }

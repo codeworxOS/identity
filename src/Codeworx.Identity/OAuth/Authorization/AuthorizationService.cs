@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -9,20 +8,23 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
-        private readonly IEnumerable<IAuthorizationFlowService> _authorizationFlowServices;
+        private readonly IEnumerable<IAuthorizationResponseProcessor> _responseProcessors;
         private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
 
         public AuthorizationService(
             IEnumerable<IAuthorizationRequestProcessor> requestProcessors,
-            IEnumerable<IAuthorizationFlowService> authorizationFlowServices,
-            IUserService userService)
+            IEnumerable<IAuthorizationResponseProcessor> responseProcessors,
+            IUserService userService,
+            IIdentityService identityService)
         {
             _requestProcessors = requestProcessors;
-            _authorizationFlowServices = authorizationFlowServices;
+            _responseProcessors = responseProcessors;
             _userService = userService;
+            _identityService = identityService;
         }
 
-        public async Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public async Task<AuthorizationSuccessResponse> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -38,24 +40,26 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             var parameters = builder.Parameters;
 
+            IAuthorizationResponseBuilder responseBuilder = new AuthorizationResponseBuilder();
+            responseBuilder.WithState(parameters.State)
+                .WithRedirectUri(parameters.RedirectUri);
+
             var currentUser = await _userService.GetUserByIdentifierAsync(parameters.User)
                                          .ConfigureAwait(false);
 
             if (currentUser == null)
             {
-                return new UserNotFoundResult(parameters.State, parameters.RedirectUri);
+                responseBuilder.RaiseError(Constants.OAuth.Error.AccessDenied);
             }
 
-            var authorizationFlowService = _authorizationFlowServices.FirstOrDefault(p => p.IsSupported(parameters.ResponseTypes.First()));
-            if (authorizationFlowService == null)
+            var data = await _identityService.GetIdentityAsync(parameters).ConfigureAwait(false);
+
+            foreach (var item in _responseProcessors)
             {
-                return new UnsupportedResponseTypeResult(parameters.State, parameters.RedirectUri);
+                responseBuilder = await item.ProcessAsync(parameters, data, responseBuilder).ConfigureAwait(false);
             }
 
-            var authorizationResult = await authorizationFlowService.AuthorizeRequest(parameters)
-                                                                    .ConfigureAwait(false);
-
-            return authorizationResult;
+            return responseBuilder.Response;
         }
     }
 }

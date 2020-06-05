@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -26,7 +25,6 @@ namespace Codeworx.Identity.AspNetCore.OpenId
         public async Task Invoke(
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
-            IEnumerable<IAuthorizationFlowService> supportedFlows,
             IDefaultSigningKeyProvider keyProvider,
             IOptionsSnapshot<IdentityOptions> identityOptions,
             IScopeService scopeService)
@@ -36,7 +34,12 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
             var scopes = await scopeService.GetScopes().ConfigureAwait(false);
 
-            var responseTypes = supportedFlows.SelectMany(p => p.SupportedResponseTypes);
+            var responseTypes = new[]
+            {
+                Constants.OAuth.ResponseType.Code,
+                Constants.OAuth.ResponseType.Token,
+                Constants.OpenId.ResponseType.IdToken,
+            };
 
             var defaultKey = keyProvider.GetKey();
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));

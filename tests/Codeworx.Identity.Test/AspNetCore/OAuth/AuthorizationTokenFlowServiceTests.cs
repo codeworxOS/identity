@@ -39,7 +39,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var scopeServiceStub = new Mock<IScopeService>();
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new ITokenProvider[] { });
+            var instance = new AccessTokenResponseProcessor(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new ITokenProvider[] { });
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var tokenProvidersStub = new Mock<IEnumerable<ITokenProvider>>();
             var identityServiceStub = new Mock<IIdentityService>();
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, tokenProvidersStub.Object);
+            var instance = new AccessTokenResponseProcessor(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, tokenProvidersStub.Object);
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -97,7 +97,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var tokenProvidersStub = new Mock<IEnumerable<ITokenProvider>>();
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, tokenProvidersStub.Object);
+            var instance = new AccessTokenResponseProcessor(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, tokenProvidersStub.Object);
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -152,7 +152,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             identityServiceStub.Setup(p => p.GetIdentityAsync(It.IsAny<ClaimsIdentity>()))
                 .ReturnsAsync(new IdentityData(Constants.DefaultAdminUserId, Constants.DefaultAdminUserName, new[] { new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName } }));
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
+            var instance = new AccessTokenResponseProcessor(identityServiceStub.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -209,7 +209,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<JwtConfiguration>()))
                 .ReturnsAsync(tokenStub.Object);
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
+            var instance = new AccessTokenResponseProcessor(identityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -268,7 +268,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<JwtConfiguration>()))
                 .ReturnsAsync(tokenStub.Object);
 
-            var instance = new AuthorizationTokenFlowService(identityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
+            var instance = new AccessTokenResponseProcessor(identityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
             var identity = GetIdentity();
 
             var result = await instance.AuthorizeRequest(request, identity);
@@ -322,7 +322,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             tokenProviderStub.Setup(p => p.CreateAsync(It.IsAny<object>()))
                 .ReturnsAsync(tokenStub.Object);
 
-            var instance = new AuthorizationTokenFlowService(oauthIdentityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
+            var instance = new AccessTokenResponseProcessor(oauthIdentityServiceStup.Object, oAuthClientServiceStub.Object, scopeServiceStub.Object, new[] { tokenProviderStub.Object });
 
             var identity = GetIdentity();
 

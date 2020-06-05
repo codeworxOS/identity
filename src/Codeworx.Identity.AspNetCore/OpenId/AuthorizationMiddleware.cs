@@ -14,7 +14,11 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder)
+        public async Task Invoke(
+            HttpContext context,
+            IAuthorizationService authorizationService,
+            IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder,
+            IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder)
         {
             var claimsIdentity = context.User?.Identity as ClaimsIdentity;
 
@@ -29,10 +33,8 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 var authorizationRequest = await authorizationRequestBinder.BindAsync(context.Request)
                                                                            .ConfigureAwait(false);
 
-                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity);
-
-                var responseBinder = context.GetResponseBinder(result.Response.GetType());
-                await responseBinder.BindAsync(result.Response, context.Response);
+                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity).ConfigureAwait(false);
+                await authorizationSuccessResponseBinder.BindAsync(result, context.Response).ConfigureAwait(false);
             }
             catch (ErrorResponseException error)
             {

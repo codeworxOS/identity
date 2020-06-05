@@ -213,8 +213,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<NotAcceptableResponse>, NotAcceptableResponseBinder>();
             collection.AddTransient<IResponseBinder<UnauthorizedResponse>, UnauthorizedResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationCodeResponse>, AuthorizationCodeResponseBinder>();
-            collection.AddTransient<IResponseBinder<AuthorizationTokenResponse>, AuthorizationTokenResponseBinder>();
+            collection.AddTransient<IResponseBinder<AuthorizationSuccessResponse>, AuthorizationSuccessResponseBinder>();
             collection.AddTransient<IResponseBinder<ErrorResponse>, ErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
@@ -257,12 +256,6 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
 
-            collection.AddScoped<IAuthorizationFlowService, Identity.OAuth.Authorization.AuthorizationTokenFlowService>();
-            collection.AddScoped<IAuthorizationFlowService, Identity.OAuth.Authorization.AuthorizationCodeFlowService>();
-            collection.AddScoped<IAuthorizationService, AuthorizationService>();
-
-            collection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
-            collection.AddScoped<ITokenService, TokenService>();
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 
             collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();

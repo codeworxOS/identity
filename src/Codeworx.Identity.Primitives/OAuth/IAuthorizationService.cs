@@ -5,6 +5,6 @@ namespace Codeworx.Identity.OAuth
 {
     public interface IAuthorizationService
     {
-        Task<IAuthorizationResult> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user);
+        Task<AuthorizationSuccessResponse> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user);
     }
 }
