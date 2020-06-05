@@ -7,18 +7,18 @@ using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 {
-    public class AuthorizationCodeResponseBinder : ResponseBinder<AuthorizationCodeResponse>
+    public class AuthorizationSuccessResponseBinder : ResponseBinder<AuthorizationSuccessResponse>
     {
         private readonly IFormPostResponseTypeTemplate _view;
         private readonly ITemplateCompiler _templateCompiler;
 
-        public AuthorizationCodeResponseBinder(IFormPostResponseTypeTemplate view, ITemplateCompiler templateCompiler)
+        public AuthorizationSuccessResponseBinder(IFormPostResponseTypeTemplate view, ITemplateCompiler templateCompiler)
         {
             _view = view;
             this._templateCompiler = templateCompiler;
         }
 
-        public override async Task BindAsync(AuthorizationCodeResponse responseData, HttpResponse response)
+        public override async Task BindAsync(AuthorizationSuccessResponse responseData, HttpResponse response)
         {
             if (response == null)
             {
@@ -43,11 +43,29 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             {
                 var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
 
-                redirectUriBuilder.AppendQueryPart(Constants.OAuth.CodeName, responseData.Code);
-
                 if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
                     redirectUriBuilder.AppendQueryPart(Constants.OAuth.StateName, responseData.State);
+                }
+
+                if (!string.IsNullOrWhiteSpace(responseData.Code))
+                {
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.CodeName, responseData.Code);
+                }
+
+                if (!string.IsNullOrWhiteSpace(responseData.Token))
+                {
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.AccessTokenName, responseData.Token);
+                }
+
+                if (responseData.ExpiresIn.HasValue)
+                {
+                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.ExpiresInName, responseData.ExpiresIn.Value.ToString());
+                }
+
+                if (!string.IsNullOrWhiteSpace(responseData.IdToken))
+                {
+                    redirectUriBuilder.AppendQueryPart(Constants.OpenId.IdTokenName, responseData.IdToken);
                 }
 
                 response.Redirect(redirectUriBuilder.Uri.ToString());

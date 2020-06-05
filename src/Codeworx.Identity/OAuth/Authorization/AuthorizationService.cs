@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,15 +10,18 @@ namespace Codeworx.Identity.OAuth.Authorization
         private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
         private readonly IEnumerable<IAuthorizationResponseProcessor> _responseProcessors;
         private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
 
         public AuthorizationService(
             IEnumerable<IAuthorizationRequestProcessor> requestProcessors,
             IEnumerable<IAuthorizationResponseProcessor> responseProcessors,
-            IUserService userService)
+            IUserService userService,
+            IIdentityService identityService)
         {
             _requestProcessors = requestProcessors;
             _responseProcessors = responseProcessors;
             _userService = userService;
+            _identityService = identityService;
         }
 
         public async Task<AuthorizationSuccessResponse> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
@@ -38,7 +40,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             var parameters = builder.Parameters;
 
-            IAuthorizationResponseBuilder responseBuilder = null;
+            IAuthorizationResponseBuilder responseBuilder = new AuthorizationResponseBuilder();
             responseBuilder.WithState(parameters.State)
                 .WithRedirectUri(parameters.RedirectUri);
 
@@ -50,9 +52,11 @@ namespace Codeworx.Identity.OAuth.Authorization
                 responseBuilder.RaiseError(Constants.OAuth.Error.AccessDenied);
             }
 
+            var data = await _identityService.GetIdentityAsync(parameters).ConfigureAwait(false);
+
             foreach (var item in _responseProcessors)
             {
-                responseBuilder = await item.ProcessAsync(parameters, , responseBuilder);
+                responseBuilder = await item.ProcessAsync(parameters, data, responseBuilder).ConfigureAwait(false);
             }
 
             return responseBuilder.Response;

@@ -37,8 +37,8 @@ namespace Codeworx.Identity.OAuth
         [DataMember(Order = 2, Name = Constants.OAuth.TokenTypeName)]
         public string TokenType { get; }
 
-        [RegularExpression(Constants.OAuth.IdTokenValidation)]
-        [DataMember(Order = 6, Name = Constants.OAuth.IdTokenName)]
+        [RegularExpression(Constants.OpenId.IdTokenValidation)]
+        [DataMember(Order = 6, Name = Constants.OpenId.IdTokenName)]
         public string IdToken { get; }
     }
 }

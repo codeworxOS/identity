@@ -6,14 +6,15 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationSuccessResponse : AuthorizationResponse
     {
-        public AuthorizationSuccessResponse(string state, string token, int expiresIn, string redirectUri)
+        public AuthorizationSuccessResponse(string state, string code, string token, int? expiresIn, string identityToken, string redirectUri)
             : base(state, redirectUri)
         {
+            this.Code = code;
             this.Token = token;
+            this.IdToken = identityToken;
             this.ExpiresIn = expiresIn;
         }
 
-        [Required]
         [RegularExpression(Constants.OAuth.CodeValidation)]
         [DataMember(Order = 1, Name = Constants.OAuth.CodeName)]
         public string Code { get; }
@@ -21,12 +22,15 @@ namespace Codeworx.Identity.OAuth
         [IgnoreDataMember]
         public string ResponseMode { get; }
 
-        [Required]
         [DataMember(Order = 2, Name = Constants.OAuth.ExpiresInName)]
-        public int ExpiresIn { get; }
+        public int? ExpiresIn { get; }
 
-        [Required]
-        [DataMember(Order = 1, Name = Constants.OAuth.AccessTokenName)]
+        [DataMember(Order = 3, Name = Constants.OAuth.AccessTokenName)]
+        [RegularExpression(Constants.OAuth.AccessTokenValidation)]
         public string Token { get; }
+
+        [DataMember(Order = 4, Name = Constants.OpenId.IdTokenName)]
+        [RegularExpression(Constants.OpenId.IdTokenValidation)]
+        public string IdToken { get; }
     }
 }

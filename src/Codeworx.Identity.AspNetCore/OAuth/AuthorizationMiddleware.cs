@@ -17,7 +17,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
         public async Task Invoke(
             HttpContext context,
             IAuthorizationService authorizationService,
-            IRequestBinder<AuthorizationRequest> authorizationRequestBinder)
+            IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
+            IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder)
         {
             if (context.User == null)
             {
@@ -32,10 +33,9 @@ namespace Codeworx.Identity.AspNetCore.OAuth
                 var authorizationRequest = await authorizationRequestBinder.BindAsync(context.Request)
                                                                            .ConfigureAwait(false);
 
-                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity);
+                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity).ConfigureAwait(false);
 
-                var responseBinder = context.GetResponseBinder(result.Response.GetType());
-                await responseBinder.BindAsync(result.Response, context.Response);
+                await authorizationSuccessResponseBinder.BindAsync(result, context.Response).ConfigureAwait(false);
             }
             catch (ErrorResponseException error)
             {
