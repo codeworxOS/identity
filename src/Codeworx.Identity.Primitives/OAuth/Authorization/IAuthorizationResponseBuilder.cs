@@ -10,6 +10,8 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         IAuthorizationResponseBuilder WithRedirectUri(string redirectUri);
 
+        IAuthorizationResponseBuilder WithResponseMode(string responseMode);
+
         void RaiseError(string error);
 
         IAuthorizationResponseBuilder WithCode(string authorizationCode);

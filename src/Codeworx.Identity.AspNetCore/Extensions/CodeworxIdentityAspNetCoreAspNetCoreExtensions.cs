@@ -202,7 +202,9 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
             collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
@@ -230,12 +232,13 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<SelectTenantSuccessResponse>, SelectTenantSuccessResponseBinder>();
             collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
 
+            collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
+            collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
+
             collection.AddTransient<IAuthorizationRequestProcessor, StageOneAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, StageTwoAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, ScopeAuthorizationRequestProcessor>();
             collection.AddTransient<IAuthorizationRequestProcessor, TenantAuthorizationRequestProcessor>();
-
-            collection.AddTransient<IRequestValidator<TokenRequest>, TokenRequestValidator>();
 
             collection.AddTransient<IScopeService, ScopeService>();
             collection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();

@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
@@ -33,8 +34,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             if (clientIdValues.Count > 1 ||
                 clientSecretValues.Count > 1 ||
                 redirectUri.Count > 1 ||
-                code.Count > 1 ||
-                grantType.Count > 1)
+                code.Count > 1)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
@@ -61,7 +61,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                                                 clientId,
                                                 redirectUri.FirstOrDefault(),
                                                 code.FirstOrDefault(),
-                                                grantType.FirstOrDefault(),
                                                 clientSecret));
         }
     }

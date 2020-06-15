@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +19,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
 
         public override Task BindAsync(SelectTenantSuccessResponse responseData, HttpResponse response)
         {
-            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             switch (responseData.RequestPath)
             {
                 case "oauth":

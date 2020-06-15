@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
@@ -10,5 +11,7 @@ namespace Codeworx.Identity
         Task<ClaimsIdentity> LoginAsync(string username, string password);
 
         Task<ClaimsIdentity> LoginExternalAsync(string provider, string nameIdentifier);
+
+        Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user);
     }
 }

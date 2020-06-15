@@ -36,8 +36,14 @@ namespace Codeworx.Identity.Configuration
             ServiceCollection.AddScoped<IAuthorizationResponseProcessor, AuthorizationCodeResponseProcessor>();
             ServiceCollection.AddScoped<IAuthorizationResponseProcessor, IdTokenResponseProcessor>();
 
-            ServiceCollection.AddScoped<ITokenResultService, AuthorizationCodeTokenResultService>();
-            ServiceCollection.AddScoped<ITokenService, TokenService>();
+            ServiceCollection.AddScoped<ITokenService<TokenRequest>, TokenService>();
+            ServiceCollection.AddScoped<ITokenService<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenService>();
+            ServiceCollection.AddScoped<ITokenService<ClientCredentialsTokenRequest>, ClientCredentialsTokenService>();
+            ServiceCollection.AddScoped<ITokenServiceSelector, TokenServiceSelector<AuthorizationCodeTokenRequest>>();
+            ServiceCollection.AddScoped<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>();
+
+            ServiceCollection.AddTransient<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>();
+            ServiceCollection.AddTransient<IRequestValidator<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidator>();
         }
 
         public IServiceCollection ServiceCollection { get; }

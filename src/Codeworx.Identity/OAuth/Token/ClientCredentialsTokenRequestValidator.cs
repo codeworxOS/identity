@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Token
 {
-    public class TokenRequestValidator : IRequestValidator<TokenRequest>
+    public class ClientCredentialsTokenRequestValidator : IRequestValidator<ClientCredentialsTokenRequest>
     {
-        public Task ValidateAsync(TokenRequest request)
+        public Task ValidateAsync(ClientCredentialsTokenRequest request)
         {
             var error = false;
 
@@ -20,12 +20,12 @@ namespace Codeworx.Identity.OAuth.Token
                 error = error || true;
             }
 
-            if (!Validator.TryValidateProperty(request.RedirectUri, new ValidationContext(request) { MemberName = nameof(request.RedirectUri) }, new List<ValidationResult>()))
+            if (!Validator.TryValidateProperty(request.ClientSecret, new ValidationContext(request) { MemberName = nameof(request.ClientSecret) }, new List<ValidationResult>()))
             {
                 error = error || true;
             }
 
-            if (!Validator.TryValidateProperty(request.ClientSecret, new ValidationContext(request) { MemberName = nameof(request.ClientSecret) }, new List<ValidationResult>()))
+            if (!Validator.TryValidateProperty(request.Scope, new ValidationContext(request) { MemberName = nameof(request.Scope) }, new List<ValidationResult>()))
             {
                 error = error || true;
             }

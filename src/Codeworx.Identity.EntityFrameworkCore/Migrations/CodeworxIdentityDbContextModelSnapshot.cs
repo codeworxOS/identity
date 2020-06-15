@@ -45,7 +45,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<TimeSpan>("TokenExpiration");
 
+                    b.Property<Guid?>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ClientConfiguration");
                 });
@@ -244,6 +248,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         .WithMany("Providers")
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("Clients")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>

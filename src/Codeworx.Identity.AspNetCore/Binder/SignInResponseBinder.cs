@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
@@ -30,7 +29,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             if (returnUrl == null)
             {
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri);
+                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                 builder.AppendPath($"{_options.AccountEndpoint}/login");
                 returnUrl = builder.ToString();
             }

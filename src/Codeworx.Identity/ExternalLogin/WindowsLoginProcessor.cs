@@ -24,9 +24,9 @@ namespace Codeworx.Identity.ExternalLogin
 
         public Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
         {
-            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin");
-            uriBuilder.AppendQueryPart(Constants.ReturnUrlParameter, request.ReturnUrl);
+            uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
 
             return Task.FromResult(uriBuilder.ToString());
         }

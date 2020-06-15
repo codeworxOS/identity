@@ -7,11 +7,8 @@
 
   <ItemGroup>
     <Compile Remove="OAuth\Binding\**" />
-    <Compile Remove="OAuth\Token\**" />
     <EmbeddedResource Remove="OAuth\Binding\**" />
-    <EmbeddedResource Remove="OAuth\Token\**" />
     <None Remove="OAuth\Binding\**" />
-    <None Remove="OAuth\Token\**" />
   </ItemGroup>
 
   <ItemGroup>

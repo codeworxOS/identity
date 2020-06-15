@@ -84,7 +84,7 @@ namespace Codeworx.Identity
             return result;
         }
 
-        protected virtual Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user)
+        public virtual Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user)
         {
             var identity = new ClaimsIdentity(_options.AuthenticationScheme);
 

@@ -1,4 +1,5 @@
 ﻿using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.Test
 {
@@ -47,7 +48,7 @@ namespace Codeworx.Identity.Test
 
         public AuthorizationCodeTokenRequest Build()
         {
-            return new AuthorizationCodeTokenRequest(_clientId, _redirectUri, _code, _grantType, _clientSecret);
+            return new AuthorizationCodeTokenRequest(_clientId, _redirectUri, _code, _clientSecret);
         }
     }
 }

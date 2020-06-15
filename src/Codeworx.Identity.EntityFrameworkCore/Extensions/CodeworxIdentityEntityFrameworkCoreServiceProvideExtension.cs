@@ -23,6 +23,17 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     context.Database.Migrate();
 
+                    var serviceAccount = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultServiceAccountId));
+
+                    if (serviceAccount == null)
+                    {
+                        context.Users.Add(new User
+                        {
+                            Id = Guid.Parse(Constants.DefaultServiceAccountId),
+                            Name = Constants.DefaultServiceAccountName,
+                        });
+                    }
+
                     var defaultUser = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminUserId));
 
                     if (defaultUser == null)
@@ -120,6 +131,23 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    var serviceAccountClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultServiceAccountClientId));
+
+                    if (serviceAccountClient == null)
+                    {
+                        var salt = hashingProvider.CrateSalt();
+
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(Constants.DefaultServiceAccountClientId),
+                            ClientSecretSalt = salt,
+                            ClientSecretHash = hashingProvider.Hash("clientSecret", salt),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            ClientType = Identity.Model.ClientType.ApiKey,
+                            UserId = Guid.Parse(Constants.DefaultServiceAccountId),
+                        });
+                    }
+
                     var authCodeClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultCodeFlowClientId));
 
                     if (authCodeClient == null)
@@ -183,7 +211,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 },
                                 new ValidRedirectUrl
                                 {
-                                    Url = "http://localhost/",
+                                    Url = "https://localhost:44389/",
                                 },
                             },
                         });

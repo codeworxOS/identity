@@ -33,6 +33,13 @@ namespace Codeworx.Identity.OAuth.Authorization
              _user,
              _request);
 
+        public void Throw(string error, string errorDescription)
+        {
+            var errorResponse = new AuthorizationErrorResponse(error, errorDescription, null, this._state, this._redirectUri, this._responseMode);
+
+            throw new ErrorResponseException<AuthorizationErrorResponse>(errorResponse);
+        }
+
         public IAuthorizationParametersBuilder WithClientId(string clientId)
         {
             _clientId = clientId;

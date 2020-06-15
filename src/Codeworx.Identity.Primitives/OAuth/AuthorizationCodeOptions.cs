@@ -6,7 +6,7 @@ namespace Codeworx.Identity.OAuth
     {
         public double ExpirationInSeconds { get; set; } = TimeSpan.FromMinutes(10).TotalSeconds;
 
-        public int Length { get; set; } = 10;
+        public int Length { get; set; } = 64;
 
         public void CopyTo(AuthorizationCodeOptions target)
         {

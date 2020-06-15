@@ -19,21 +19,21 @@ namespace Codeworx.Identity.OAuth.Authorization
         {
             if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) { MemberName = nameof(request.State) }, new List<ValidationResult>()))
             {
-                AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName, request.State);
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);
             }
 
             builder = builder.WithState(request.State);
 
             if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
             {
-                AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName, request.State);
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
 
             var client = await _clientService.GetById(request.ClientId).ConfigureAwait(false);
 
             if (client == null)
             {
-                AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName, request.State);
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
 
             builder.WithClientId(request.ClientId);
@@ -42,7 +42,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             {
                 if (!Validator.TryValidateProperty(request.RedirectUri, new ValidationContext(request) { MemberName = nameof(request.RedirectUri) }, new List<ValidationResult>()))
                 {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName, request.State);
+                    builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName);
                 }
             }
 
@@ -56,13 +56,13 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
                 else
                 {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName, request.State);
+                    builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName);
                 }
             }
 
             if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirectUrl, p)))
             {
-                AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName, request.State);
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName);
             }
 
             builder = builder.WithRedirectUri(redirectUrl);

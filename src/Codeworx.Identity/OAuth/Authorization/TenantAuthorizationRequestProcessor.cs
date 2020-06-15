@@ -23,7 +23,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             {
                 if (_tenantService == null)
                 {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant, request.State, parameters.RedirectUri);
+                    builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
                 }
 
                 var tenants = (await _tenantService.GetTenantsByIdentityAsync(parameters.User).ConfigureAwait(false)).ToList();
@@ -34,7 +34,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
                 if (tenants.Count == 0)
                 {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant, request.State, parameters.RedirectUri);
+                    builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
                 }
                 else if (foundTenants.Count == 1)
                 {

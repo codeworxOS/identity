@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -20,10 +19,10 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
         public override Task BindAsync(MissingTenantResponse responseData, HttpResponse response)
         {
-            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath($"{_options.SelectTenantEndpoint}");
             responseData.Request.Append(uriBuilder);
-            uriBuilder.AppendQueryPart(Constants.OAuth.RequestPathName, responseData.RequestPath);
+            uriBuilder.AppendQueryParameter(Constants.OAuth.RequestPathName, responseData.RequestPath);
 
             response.Redirect(uriBuilder.ToString());
 

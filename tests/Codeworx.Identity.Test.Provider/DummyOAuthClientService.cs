@@ -61,6 +61,8 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
             public ClientType ClientType { get; }
+
+            public IUser User => null;
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
@@ -79,12 +81,14 @@ namespace Codeworx.Identity.Test
             public byte[] ClientSecretSalt => null;
 
             public Uri DefaultRedirectUri { get; }
-            
+
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
             public ClientType ClientType { get; }
+
+            public IUser User => null;
         }
     }
 }

@@ -6,12 +6,13 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationErrorResponse : AuthorizationResponse
     {
-        public AuthorizationErrorResponse(string error, string errorDescription, string errorUri, string state, string redirectUri = null)
+        public AuthorizationErrorResponse(string error, string errorDescription, string errorUri, string state, string redirectUri = null, string responseMode = null)
             : base(state, redirectUri)
         {
             this.Error = error;
             this.ErrorDescription = errorDescription;
             this.ErrorUri = errorUri;
+            this.ResponseMode = responseMode;
         }
 
         [Required]
@@ -27,9 +28,7 @@ namespace Codeworx.Identity.OAuth
         [DataMember(Order = 3, Name = Constants.OAuth.ErrorUriName)]
         public string ErrorUri { get; }
 
-        public static void Throw(string error, string errorDescription, string state, string redirectUri = null, string errorUri = null)
-        {
-            throw new ErrorResponseException<AuthorizationErrorResponse>(new AuthorizationErrorResponse(error, errorDescription, errorUri, state, redirectUri));
-        }
+        [IgnoreDataMember]
+        public string ResponseMode { get; }
     }
 }

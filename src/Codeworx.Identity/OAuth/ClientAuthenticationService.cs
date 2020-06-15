@@ -16,11 +16,9 @@ namespace Codeworx.Identity.OAuth
             _hashingProvider = hashingProvider;
         }
 
-        public async Task<IClientRegistration> AuthenticateClient(TokenRequest request)
+        public async Task<IClientRegistration> AuthenticateClient(string clientId, string clientSecret)
         {
-            var result = new AuthenticateClientResult();
-
-            var client = await _clientService.GetById(request.ClientId)
+            var client = await _clientService.GetById(clientId)
                                              .ConfigureAwait(false);
 
             if (client == null)
@@ -30,12 +28,12 @@ namespace Codeworx.Identity.OAuth
 
             if (client.ClientSecretHash != null)
             {
-                if (string.IsNullOrWhiteSpace(request.ClientSecret))
+                if (string.IsNullOrWhiteSpace(clientSecret))
                 {
                     ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
                 }
 
-                var secretHash = _hashingProvider.Hash(request.ClientSecret, client.ClientSecretSalt);
+                var secretHash = _hashingProvider.Hash(clientSecret, client.ClientSecretSalt);
                 if (!secretHash.SequenceEqual(client.ClientSecretHash))
                 {
                     ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);

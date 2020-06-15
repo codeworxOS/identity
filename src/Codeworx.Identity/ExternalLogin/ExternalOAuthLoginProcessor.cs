@@ -19,7 +19,7 @@ namespace Codeworx.Identity.ExternalLogin
             _tokenService = tokenService;
             _cache = cache;
 
-            var redirectUirBuilder = new UriBuilder(baseUriAccessor.BaseUri);
+            var redirectUirBuilder = new UriBuilder(baseUriAccessor.BaseUri.ToString());
             redirectUirBuilder.AppendPath($"{options.Value.AccountEndpoint}/oauthlogin");
 
             _redirectUri = redirectUirBuilder.ToString();
@@ -33,24 +33,24 @@ namespace Codeworx.Identity.ExternalLogin
         {
             var oauthConfiguration = this.ToOAuthLoginConfiguration(configuration);
 
-            var codeUriBuilder = new UriBuilder(oauthConfiguration.BaseUri);
+            var codeUriBuilder = new UriBuilder(oauthConfiguration.BaseUri.ToString());
 
             codeUriBuilder.AppendPath(oauthConfiguration.AuthorizationEndpoint);
 
-            codeUriBuilder.AppendQueryPart(Constants.OAuth.ResponseTypeName, Constants.OAuth.ResponseType.Code);
-            codeUriBuilder.AppendQueryPart(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
-            codeUriBuilder.AppendQueryPart(Constants.OAuth.RedirectUriName, _redirectUri);
+            codeUriBuilder.AppendQueryParameter(Constants.OAuth.ResponseTypeName, Constants.OAuth.ResponseType.Code);
+            codeUriBuilder.AppendQueryParameter(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
+            codeUriBuilder.AppendQueryParameter(Constants.OAuth.RedirectUriName, _redirectUri);
 
             if (oauthConfiguration.Scope != null)
             {
-                codeUriBuilder.AppendQueryPart("scope", oauthConfiguration.Scope);
+                codeUriBuilder.AppendQueryParameter("scope", oauthConfiguration.Scope);
             }
 
             var state = Guid.NewGuid().ToString("N");
 
             await _cache.SetStringAsync(state, request.ReturnUrl ?? string.Empty, new DistributedCacheEntryOptions { SlidingExpiration = TimeSpan.FromMinutes(5) });
 
-            codeUriBuilder.AppendQueryPart(Constants.OAuth.StateName, state);
+            codeUriBuilder.AppendQueryParameter(Constants.OAuth.StateName, state);
 
             return codeUriBuilder.ToString();
         }

@@ -31,5 +31,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
 
         public ClientType ClientType { get; set; }
+
+        public Guid? UserId { get; set; }
+
+        public User User { get; set; }
+
+        IUser IClientRegistration.User => this.User;
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.OAuth
 {
-    public interface ITokenService
+    public interface ITokenService<TTokenRequest>
+        where TTokenRequest : TokenRequest
     {
-        Task<TokenResponse> AuthorizeRequest(TokenRequest request);
+        Task<TokenResponse> ProcessAsync(TTokenRequest request);
     }
 }

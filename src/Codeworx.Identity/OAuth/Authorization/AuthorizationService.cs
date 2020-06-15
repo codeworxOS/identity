@@ -42,6 +42,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             IAuthorizationResponseBuilder responseBuilder = new AuthorizationResponseBuilder();
             responseBuilder.WithState(parameters.State)
+                .WithResponseMode(parameters.ResponseMode)
                 .WithRedirectUri(parameters.RedirectUri);
 
             var currentUser = await _userService.GetUserByIdentifierAsync(parameters.User)

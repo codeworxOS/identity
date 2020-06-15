@@ -38,6 +38,7 @@ namespace Codeworx.Identity.Web.Test
             app.UseCors();
             app.UseCodeworxIdentity(identityOptions.Value);
             app.UseMvc();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
         }
 

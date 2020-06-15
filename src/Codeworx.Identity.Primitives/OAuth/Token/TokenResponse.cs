@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace Codeworx.Identity.OAuth
+namespace Codeworx.Identity.OAuth.Token
 {
     [DataContract]
     public class TokenResponse

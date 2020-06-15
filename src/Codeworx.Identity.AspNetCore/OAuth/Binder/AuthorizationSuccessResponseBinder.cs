@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.View;
@@ -43,32 +44,49 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             {
                 var redirectUriBuilder = new UriBuilder(responseData.RedirectUri);
 
+                var parameters = new Dictionary<string, string>();
+
                 if (!string.IsNullOrWhiteSpace(responseData.State))
                 {
-                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.StateName, responseData.State);
+                    parameters.Add(Constants.OAuth.StateName, responseData.State);
                 }
 
                 if (!string.IsNullOrWhiteSpace(responseData.Code))
                 {
-                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.CodeName, responseData.Code);
+                    parameters.Add(Constants.OAuth.CodeName, responseData.Code);
                 }
 
                 if (!string.IsNullOrWhiteSpace(responseData.Token))
                 {
-                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.AccessTokenName, responseData.Token);
+                    parameters.Add(Constants.OAuth.AccessTokenName, responseData.Token);
                 }
 
                 if (responseData.ExpiresIn.HasValue)
                 {
-                    redirectUriBuilder.AppendQueryPart(Constants.OAuth.ExpiresInName, responseData.ExpiresIn.Value.ToString());
+                    parameters.Add(Constants.OAuth.ExpiresInName, responseData.ExpiresIn.Value.ToString());
                 }
 
                 if (!string.IsNullOrWhiteSpace(responseData.IdToken))
                 {
-                    redirectUriBuilder.AppendQueryPart(Constants.OpenId.IdTokenName, responseData.IdToken);
+                    parameters.Add(Constants.OpenId.IdTokenName, responseData.IdToken);
                 }
 
-                response.Redirect(redirectUriBuilder.Uri.ToString());
+                if (responseData.ResponseMode == Constants.OAuth.ResponseMode.Query)
+                {
+                    foreach (var item in parameters)
+                    {
+                        redirectUriBuilder.AppendQueryParameter(item.Key, item.Value);
+                    }
+                }
+                else
+                {
+                    foreach (var item in parameters)
+                    {
+                        redirectUriBuilder.AppendFragment(item.Key, item.Value);
+                    }
+                }
+
+                response.Redirect(redirectUriBuilder.ToString());
             }
         }
     }

@@ -10,6 +10,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         {
             this.Tenants = new HashSet<TenantUser>();
             this.Providers = new HashSet<AuthenticationProviderUser>();
+            this.Clients = new HashSet<ClientConfiguration>();
         }
 
         public Tenant DefaultTenant { get; set; }
@@ -29,5 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public ICollection<TenantUser> Tenants { get; }
 
         public ICollection<AuthenticationProviderUser> Providers { get; }
+
+        public ICollection<ClientConfiguration> Clients { get; }
     }
 }

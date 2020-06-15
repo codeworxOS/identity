@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
@@ -15,14 +16,14 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task Invoke(
             HttpContext context,
-            ITokenService tokenService,
-            IRequestBinder<AuthorizationCodeTokenRequest> tokenRequestBinder,
+            ITokenService<TokenRequest> tokenService,
+            IRequestBinder<TokenRequest> tokenRequestBinder,
             IResponseBinder<TokenResponse> tokenResponseBinder)
         {
             try
             {
-                var tokenRequest = await tokenRequestBinder.BindAsync(context.Request);
-                var result = await tokenService.AuthorizeRequest(tokenRequest);
+                var tokenRequest = await tokenRequestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                var result = await tokenService.ProcessAsync(tokenRequest).ConfigureAwait(false);
 
                 await tokenResponseBinder.BindAsync(result, context.Response);
             }

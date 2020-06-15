@@ -29,5 +29,7 @@ namespace Codeworx.Identity.Configuration.Model
         public IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
         public ClientType ClientType { get; }
+
+        public IUser User => null;
     }
 }

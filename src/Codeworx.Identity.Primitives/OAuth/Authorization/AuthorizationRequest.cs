@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Codeworx.Identity.Validation;
 
@@ -52,41 +51,41 @@ namespace Codeworx.Identity.OAuth
 
         public virtual string GetRequestPath() => "oauth";
 
-        public void Append(UriBuilder uriBuilder)
+        public void Append(Codeworx.Identity.UriBuilder uriBuilder)
         {
             if (!string.IsNullOrEmpty(ClientId))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.ClientIdName, ClientId);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.ClientIdName, ClientId);
             }
 
             if (!string.IsNullOrEmpty(RedirectUri))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.RedirectUriName, RedirectUri);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.RedirectUriName, RedirectUri);
             }
 
             if (!string.IsNullOrEmpty(ResponseType))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.ResponseTypeName, ResponseType);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.ResponseTypeName, ResponseType);
             }
 
             if (!string.IsNullOrEmpty(Scope))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.ScopeName, Scope);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.ScopeName, Scope);
             }
 
             if (!string.IsNullOrEmpty(State))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.StateName, State);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.StateName, State);
             }
 
             if (!string.IsNullOrEmpty(Nonce))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.NonceName, Nonce);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.NonceName, Nonce);
             }
 
             if (!string.IsNullOrEmpty(ResponseMode))
             {
-                uriBuilder.AppendQueryPart(Constants.OAuth.ResponseModeName, ResponseMode);
+                uriBuilder.AppendQueryParameter(Constants.OAuth.ResponseModeName, ResponseMode);
             }
         }
     }

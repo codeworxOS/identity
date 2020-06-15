@@ -8,11 +8,14 @@ namespace Codeworx.Identity
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
+        public const string DefaultServiceAccountId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
+        public const string DefaultServiceAccountName = "service.account";
         public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
+        public const string DefaultServiceAccountClientId = "ADAD0B0F-E136-4726-B49F-FA45253E0DBD";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
         public const string DefaultScopeKey = "all";
@@ -136,6 +139,7 @@ namespace Codeworx.Identity
                 public const string AuthorizationCode = "authorization_code";
 
                 public const string Password = "password";
+                public const string ClientCredentials = "client_credentials";
             }
 
             public class ReservedClaims
@@ -148,6 +152,13 @@ namespace Codeworx.Identity
                 public const string Code = "code";
 
                 public const string Token = "token";
+            }
+
+            public class ResponseMode
+            {
+                public const string Fragment = "fragment";
+
+                public const string Query = "query";
             }
 
             public class TokenType

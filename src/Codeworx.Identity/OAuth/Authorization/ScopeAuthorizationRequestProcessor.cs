@@ -29,7 +29,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             if (scopes.Any(p => !availableScopes.Contains(p)))
             {
-                AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, null, request.State, parameters.RedirectUri);
+                builder.Throw(Constants.OAuth.Error.InvalidScope, null);
             }
 
             foreach (var scope in scopes)
@@ -48,7 +48,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             {
                 if (!builder.Parameters.Scopes.Contains(Constants.OpenId.Scopes.OpenId))
                 {
-                    AuthorizationErrorResponse.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.", parameters.State, parameters.RedirectUri);
+                    builder.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.");
                 }
             }
 

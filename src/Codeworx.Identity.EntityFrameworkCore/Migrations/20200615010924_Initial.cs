@@ -9,21 +9,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ClientConfiguration",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    ClientSecretHash = table.Column<byte[]>(nullable: true),
-                    ClientSecretSalt = table.Column<byte[]>(nullable: true),
-                    TokenExpiration = table.Column<TimeSpan>(nullable: false),
-                    ClientType = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClientConfiguration", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "IdentityCache",
                 columns: table => new
                 {
@@ -64,25 +49,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tenant", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ValidRedirectUrl",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(nullable: false),
-                    ClientId = table.Column<Guid>(nullable: false),
-                    Url = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ValidRedirectUrl", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ValidRedirectUrl_ClientConfiguration_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "ClientConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -155,6 +121,28 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClientConfiguration",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    ClientSecretHash = table.Column<byte[]>(nullable: true),
+                    ClientSecretSalt = table.Column<byte[]>(nullable: true),
+                    TokenExpiration = table.Column<TimeSpan>(nullable: false),
+                    ClientType = table.Column<int>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientConfiguration", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientConfiguration_RightHolder_UserId",
+                        column: x => x.UserId,
+                        principalTable: "RightHolder",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RightHolderGroup",
                 columns: table => new
                 {
@@ -202,10 +190,34 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ValidRedirectUrl",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    ClientId = table.Column<Guid>(nullable: false),
+                    Url = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ValidRedirectUrl", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ValidRedirectUrl_ClientConfiguration_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "ClientConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AuthenticationProviderUser_ProviderId",
                 table: "AuthenticationProviderUser",
                 column: "ProviderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientConfiguration_UserId",
+                table: "ClientConfiguration",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExternalAuthenticationProvider_FilterId",
@@ -254,13 +266,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 name: "ExternalAuthenticationProvider");
 
             migrationBuilder.DropTable(
-                name: "RightHolder");
-
-            migrationBuilder.DropTable(
                 name: "ClientConfiguration");
 
             migrationBuilder.DropTable(
                 name: "ProviderFilter");
+
+            migrationBuilder.DropTable(
+                name: "RightHolder");
 
             migrationBuilder.DropTable(
                 name: "Tenant");

@@ -6,13 +6,14 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationSuccessResponse : AuthorizationResponse
     {
-        public AuthorizationSuccessResponse(string state, string code, string token, int? expiresIn, string identityToken, string redirectUri)
+        public AuthorizationSuccessResponse(string state, string code, string token, int? expiresIn, string identityToken, string redirectUri, string responseMode)
             : base(state, redirectUri)
         {
             this.Code = code;
             this.Token = token;
             this.IdToken = identityToken;
             this.ExpiresIn = expiresIn;
+            this.ResponseMode = responseMode;
         }
 
         [RegularExpression(Constants.OAuth.CodeValidation)]

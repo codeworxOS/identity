@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,14 +14,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         static AuthorizationCodeGenerator()
         {
-            var allowedCharacters = new List<char>();
-
-            for (var i = '\u0020'; i < '\u007e'; i++)
-            {
-                allowedCharacters.Add(i);
-            }
-
-            _allowedCharacters = allowedCharacters;
+            _allowedCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".ToImmutableArray();
         }
 
         public Task<string> GenerateCode(IAuthorizationParameters request, int length)
@@ -34,12 +28,12 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             using (var rng = RandomNumberGenerator.Create())
             {
+                var buffer = new byte[length];
+                rng.GetNonZeroBytes(buffer);
+
                 for (int i = 0; i < length; i++)
                 {
-                    var randomByte = new byte[1];
-                    rng.GetNonZeroBytes(randomByte);
-
-                    var index = randomByte[0] % _allowedCharacters.Count;
+                    var index = buffer[i] % _allowedCharacters.Count;
                     var value = _allowedCharacters.ElementAt(index);
                     authorizationCodeBuilder.Append(value);
                 }

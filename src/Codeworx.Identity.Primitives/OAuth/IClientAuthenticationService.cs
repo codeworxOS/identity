@@ -5,6 +5,6 @@ namespace Codeworx.Identity.OAuth
 {
     public interface IClientAuthenticationService
     {
-        Task<IClientRegistration> AuthenticateClient(TokenRequest request);
+        Task<IClientRegistration> AuthenticateClient(string clientId, string clientSecret);
     }
 }
