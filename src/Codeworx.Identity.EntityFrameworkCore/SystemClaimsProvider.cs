@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
@@ -18,14 +17,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _db = db;
         }
 
-        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IUser user, IIdentityDataParameters parameters)
+        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
             var result = new List<AssignedClaim>();
 
             if (parameters.Scopes.Contains(Constants.Scopes.Groups))
             {
                 var search = new List<Guid>();
-                search.Add(Guid.Parse(user.Identity));
+                search.Add(Guid.Parse(parameters.User.GetUserId()));
 
                 var found = new HashSet<Guid>();
 

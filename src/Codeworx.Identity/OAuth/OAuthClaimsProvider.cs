@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth
 {
@@ -14,11 +13,11 @@ namespace Codeworx.Identity.OAuth
             _baseUri = baseUri;
         }
 
-        public Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IUser user, IIdentityDataParameters parameters)
+        public Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
             var result = new List<AssignedClaim>();
 
-            var subjectClaim = AssignedClaim.Create(Constants.Claims.Subject, user.Identity);
+            var subjectClaim = AssignedClaim.Create(Constants.Claims.Subject, parameters.User.GetUserId());
             result.Add(subjectClaim);
 
             var issuerClaim = AssignedClaim.Create(Constants.Claims.Issuer, _baseUri.BaseUri.ToString().TrimEnd('/'));

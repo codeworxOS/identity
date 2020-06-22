@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
@@ -34,14 +32,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
             return tenants;
         }
 
-        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity identity)
+        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
         {
-            return this.GetTenantInfo(Guid.Parse(identity.GetUserId()));
-        }
-
-        public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
-        {
-            return this.GetTenantInfo(Guid.Parse(user.Identity));
+            return this.GetTenantInfo(Guid.Parse(request.User.GetUserId()));
         }
 
         private async Task<IEnumerable<TenantInfo>> GetTenantInfo(Guid identifier)

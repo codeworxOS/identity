@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration.Infrastructure;
 using Codeworx.Identity.Configuration.Model;
 using Codeworx.Identity.Cryptography;
@@ -8,7 +8,7 @@ namespace Codeworx.Identity.Configuration.Extensions
 {
     public static class CodeworxIdentityConfigurationInternalExtensions
     {
-        public static ClientRegistration ToRegistration(this ClientConfig config, IHashingProvider hashing, string id)
+        public static async Task<ClientRegistration> ToRegistration(this ClientConfig config, IUserService userService, IHashingProvider hashing, string id)
         {
             var urls = config.RedirectUris;
 
@@ -20,18 +20,14 @@ namespace Codeworx.Identity.Configuration.Extensions
                 hash = hashing.Hash(config.Secret, salt);
             }
 
-            var flows = new HashSet<string>();
+            if (config.Type == ClientType.ApiKey)
+            {
+                var user = await userService.GetUserByNameAsync(config.User).ConfigureAwait(false);
 
-            if (config.Type.HasFlag(ClientType.Web))
-            {
-                flows.Add(Constants.OAuth.GrantType.AuthorizationCode);
-            }
-            else if (config.Type.HasFlag(ClientType.Native) || config.Type.HasFlag(ClientType.UserAgent))
-            {
-                flows.Add(Constants.OAuth.ResponseType.Code);
-                flows.Add(Constants.OAuth.GrantType.AuthorizationCode);
-                flows.Add(Constants.OAuth.ResponseType.Token);
-                flows.Add(Constants.OAuth.GrantType.Password);
+                if (user == null)
+                {
+                    throw new AuthenticationException($"The User prvided for client {id} could not be found.");
+                }
             }
 
             ////else if (config.Type.HasFlag(ClientType.Backend))

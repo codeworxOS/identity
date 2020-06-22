@@ -14,7 +14,7 @@ namespace Codeworx.Identity.Configuration
         public static IIdentityServiceBuilder UseConfiguration(this IIdentityServiceBuilder builder, IConfigurationSection configurationSection)
         {
             builder.ServiceCollection.Configure<ClientConfigOptions>(configurationSection.GetSection(Infrastructure.Constants.ClientConfigSectionName));
-            return builder.ReplaceService<IClientService, ConfigurationClientService>(ServiceLifetime.Singleton);
+            return builder.ReplaceService<IClientService, ConfigurationClientService>(ServiceLifetime.Scoped);
         }
     }
 }

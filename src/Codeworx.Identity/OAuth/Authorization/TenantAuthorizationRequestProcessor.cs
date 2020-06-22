@@ -26,7 +26,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                     builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
                 }
 
-                var tenants = (await _tenantService.GetTenantsByIdentityAsync(parameters.User).ConfigureAwait(false)).ToList();
+                var tenants = (await _tenantService.GetTenantsByIdentityAsync(parameters).ConfigureAwait(false)).ToList();
 
                 var foundTenants = tenants.Where(p => scopes.Contains(p.Key)).ToList();
 

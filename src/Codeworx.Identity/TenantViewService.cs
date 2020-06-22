@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Authorization;
 
 namespace Codeworx.Identity
 {
@@ -8,16 +11,21 @@ namespace Codeworx.Identity
     {
         private readonly ITenantService _tenantService;
         private readonly IDefaultTenantService _defaultTenantService;
+        private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
 
-        public TenantViewService(ITenantService tenantService, IDefaultTenantService defaultTenantService = null)
+        public TenantViewService(ITenantService tenantService, IEnumerable<IAuthorizationRequestProcessor> requestProcessors, IDefaultTenantService defaultTenantService = null)
         {
             _tenantService = tenantService ?? throw new System.ArgumentNullException(nameof(tenantService));
             _defaultTenantService = defaultTenantService;
+            _requestProcessors = requestProcessors;
         }
 
         public async Task<SelectTenantSuccessResponse> SelectAsync(SelectTenantViewActionRequest request)
         {
-            var tenants = await _tenantService.GetTenantsByIdentityAsync(request.Identity);
+            var identityDataParameters = await GetIdentityDataParametersAsync(request.Request, request.Identity)
+                                            .ConfigureAwait(false);
+
+            var tenants = await _tenantService.GetTenantsByIdentityAsync(identityDataParameters);
             if (_defaultTenantService != null && request.SetDefault)
             {
                 await _defaultTenantService.SetDefaultTenantAsync(request.Identity.GetUserId(), request.TenantKey);
@@ -39,10 +47,25 @@ namespace Codeworx.Identity
 
         public async Task<SelectTenantViewResponse> ShowAsync(SelectTenantViewRequest request)
         {
-            var tenants = await _tenantService.GetTenantsByIdentityAsync(request.Identity);
+            var identityDataParameters = await GetIdentityDataParametersAsync(request.Request, request.Identity)
+                                .ConfigureAwait(false);
+
+            var tenants = await _tenantService.GetTenantsByIdentityAsync(identityDataParameters);
             var canSetDefault = _defaultTenantService != null;
 
             return new SelectTenantViewResponse(tenants, canSetDefault);
+        }
+
+        private async Task<IIdentityDataParameters> GetIdentityDataParametersAsync(AuthorizationRequest request, ClaimsIdentity user)
+        {
+            IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, user);
+
+            foreach (var processor in _requestProcessors)
+            {
+                builder = await processor.ProcessAsync(builder, request).ConfigureAwait(false);
+            }
+
+            return builder.Parameters;
         }
     }
 }

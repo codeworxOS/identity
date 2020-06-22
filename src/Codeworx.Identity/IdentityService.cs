@@ -45,7 +45,7 @@ namespace Codeworx.Identity
 
             foreach (var cp in _claimsProviders)
             {
-                var c = await cp.GetClaimsAsync(currentUser, identityDataParameters);
+                var c = await cp.GetClaimsAsync(identityDataParameters);
                 claims.AddRange(c);
             }
 

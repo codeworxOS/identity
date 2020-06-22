@@ -18,5 +18,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
         public TimeSpan TokenExpiration { get; set; }
 
         public ClientType Type { get; set; }
+
+        public string User { get; set; }
     }
 }

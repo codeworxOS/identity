@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
@@ -15,13 +14,13 @@ namespace Codeworx.Identity
             _tenantService = tenantService;
         }
 
-        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IUser user, IIdentityDataParameters parameters)
+        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
             var result = new List<AssignedClaim>();
 
             if (_tenantService != null)
             {
-                var tenants = await _tenantService.GetTenantsByUserAsync(user).ConfigureAwait(false);
+                var tenants = await _tenantService.GetTenantsByIdentityAsync(parameters).ConfigureAwait(false);
                 foreach (var item in tenants)
                 {
                     var type = new[] { Constants.Claims.Tenant, item.Key };

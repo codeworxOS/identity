@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration.Extensions;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
@@ -7,46 +6,27 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Configuration.Infrastructure
 {
-    public class ConfigurationClientService : IClientService, IDisposable
+    public class ConfigurationClientService : IClientService
     {
         private readonly IHashingProvider _hashing;
-        private readonly IDisposable _listener;
-        private bool _disposedValue = false;
+        private readonly IUserService _userService;
         private ClientConfigOptions _options;
 
-        public ConfigurationClientService(IOptionsMonitor<ClientConfigOptions> monitor, IHashingProvider hashing)
+        public ConfigurationClientService(IOptionsSnapshot<ClientConfigOptions> options, IHashingProvider hashing, IUserService userService)
         {
-            _options = monitor.CurrentValue;
-            _listener = monitor.OnChange(p => _options = p);
+            _options = options.Value;
             _hashing = hashing;
+            _userService = userService;
         }
 
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-        }
-
-        public Task<IClientRegistration> GetById(string clientIdentifier)
+        public async Task<IClientRegistration> GetById(string clientIdentifier)
         {
             if (_options.TryGetValue(clientIdentifier, out var config))
             {
-                return Task.FromResult<IClientRegistration>(config.ToRegistration(_hashing, clientIdentifier));
+                return await config.ToRegistration(_userService, _hashing, clientIdentifier);
             }
 
-            return Task.FromResult<IClientRegistration>(null);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _listener.Dispose();
-                }
-
-                _disposedValue = true;
-            }
+            return null;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
@@ -16,16 +15,16 @@ namespace Codeworx.Identity
             _claimsProvider = claimsProvider;
         }
 
-        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IUser user, IIdentityDataParameters parameters)
+        public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
-            var systemClaimsTasks = _systemClaimsProviders.Select(p => p.GetClaimsAsync(user, parameters));
+            var systemClaimsTasks = _systemClaimsProviders.Select(p => p.GetClaimsAsync(parameters));
             await Task.WhenAll(systemClaimsTasks).ConfigureAwait(false);
 
             var scopes = systemClaimsTasks.SelectMany(p => p.Result).ToList();
 
             if (_claimsProvider != null)
             {
-                scopes.AddRange(await _claimsProvider.GetClaimsAsync(user, parameters).ConfigureAwait(false));
+                scopes.AddRange(await _claimsProvider.GetClaimsAsync(parameters).ConfigureAwait(false));
             }
 
             return scopes;
