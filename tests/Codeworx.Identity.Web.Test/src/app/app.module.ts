@@ -4,9 +4,10 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OAuthService, AuthConfig, OAuthModule } from 'angular-oauth2-oidc';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthGuard } from './auth-guard';
 import { UrlHandlingStrategy } from '@angular/router';
+import { AuthInterceptor } from './auth-interceptor';
 
 const config: AuthConfig = {
   clientId: 'B45ABA81-AAC1-403F-93DD-1CE42F745ED2',
@@ -28,14 +29,19 @@ const config: AuthConfig = {
     HttpClientModule,
   ],
   providers: [
-    AuthGuard
+    AuthGuard,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { 
+export class AppModule {
   constructor(
-      oauthService :OAuthService,
-    ) {
+    oauthService: OAuthService,
+  ) {
     config.issuer = window.location.origin;
     config.redirectUri = window.location.origin;
     config.logoutUrl = window.location.origin + '/account/logout?returnUrl=' + encodeURIComponent(window.location.origin);

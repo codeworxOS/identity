@@ -10,8 +10,12 @@ export class DashboardComponent
     constructor(private http: HttpClient) {
 
     }
-    ngOnInit(): void {
-        throw new Error("Method not implemented.");
+
+    public name: string;
+
+    async ngOnInit(): Promise<void> {
+        var response = await this.http.get("/api/me", { responseType: 'text' }).toPromise();
+        this.name = response;
     }
 
 

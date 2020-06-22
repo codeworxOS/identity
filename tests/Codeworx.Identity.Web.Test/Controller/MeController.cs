@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codeworx.Identity.Web.Test.Controller
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes =  "JWT")]
+    [Authorize(AuthenticationSchemes = "JWT")]
     public class MeController : ControllerBase
     {
         private readonly IHashingProvider hashing;
@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Web.Test.Controller
         [HttpGet]
         public Task<string> GetName()
         {
-            return Task.FromResult(this.User.Identity.Name);
+            return Task.FromResult(this.User.FindFirst(System.Security.Claims.ClaimTypes.Upn).Value);
         }
     }
 }
