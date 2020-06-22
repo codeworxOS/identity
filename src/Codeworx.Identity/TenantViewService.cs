@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
@@ -11,13 +13,13 @@ namespace Codeworx.Identity
     {
         private readonly ITenantService _tenantService;
         private readonly IDefaultTenantService _defaultTenantService;
-        private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
+        private readonly IReadOnlyCollection<IAuthorizationRequestProcessor> _requestProcessors;
 
         public TenantViewService(ITenantService tenantService, IEnumerable<IAuthorizationRequestProcessor> requestProcessors, IDefaultTenantService defaultTenantService = null)
         {
             _tenantService = tenantService ?? throw new System.ArgumentNullException(nameof(tenantService));
             _defaultTenantService = defaultTenantService;
-            _requestProcessors = requestProcessors;
+            _requestProcessors = requestProcessors.Where(p => !(p is TenantAuthorizationRequestProcessor)).ToImmutableArray();
         }
 
         public async Task<SelectTenantSuccessResponse> SelectAsync(SelectTenantViewActionRequest request)

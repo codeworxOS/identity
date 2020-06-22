@@ -61,12 +61,22 @@ namespace Codeworx.Identity
 
         public void AppendQueryParameter(string parameter, string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
             _query.GetOrAdd(parameter, p => new ConcurrentBag<string>())
                 .Add(value);
         }
 
         public void AppendFragment(string parameter, string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
             _fragment.GetOrAdd(parameter, p => new ConcurrentBag<string>())
                 .Add(value);
         }
@@ -109,7 +119,7 @@ namespace Codeworx.Identity
         {
             var queryParams = from q in queryPart.Split('&')
                               let splitted = q.Split('=')
-                              where splitted.Length == 2
+                              where splitted.Length == 2 && !string.IsNullOrEmpty(splitted[1])
                               select new
                               {
                                   Parameter = Uri.UnescapeDataString(splitted[0]),

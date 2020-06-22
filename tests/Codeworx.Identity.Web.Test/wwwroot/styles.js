@@ -11,7 +11,7 @@
 var ___CSS_LOADER_API_IMPORT___ = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
 exports = ___CSS_LOADER_API_IMPORT___(true);
 // Module
-exports.push([module.i, "/* You can add global styles to this file, and also import other style files */", "",{"version":3,"sources":["D:\\Projects\\cwgit\\Identity\\tests\\Codeworx.Identity.Web.Test/src\\styles.scss"],"names":[],"mappings":"AAAA,8EAAA","file":"styles.scss","sourcesContent":["/* You can add global styles to this file, and also import other style files */\n"]}]);
+exports.push([module.i, "/* You can add global styles to this file, and also import other style files */", "",{"version":3,"sources":["C:\\Projects\\cwgit\\Identity\\tests\\Codeworx.Identity.Web.Test/src\\styles.scss"],"names":[],"mappings":"AAAA,8EAAA","file":"styles.scss","sourcesContent":["/* You can add global styles to this file, and also import other style files */\r\n"]}]);
 // Exports
 module.exports = exports;
 
@@ -441,7 +441,7 @@ module.exports = exported;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\Projects\cwgit\Identity\tests\Codeworx.Identity.Web.Test\src\styles.scss */"./src/styles.scss");
+module.exports = __webpack_require__(/*! C:\Projects\cwgit\Identity\tests\Codeworx.Identity.Web.Test\src\styles.scss */"./src/styles.scss");
 
 
 /***/ })

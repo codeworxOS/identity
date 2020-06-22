@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 using System.IO;
 using System.Reflection;
 using Codeworx.Identity.Cryptography;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -67,9 +69,17 @@ namespace Codeworx.Identity.Web.Test
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
+            services.AddAuthentication()
+                .AddJwtBearer("JWT", ConfigureJwt);
+
             services.AddMvcCore()
                 .AddAuthorization()
                 .AddJsonFormatters();
+        }
+
+        private void ConfigureJwt(JwtBearerOptions options)
+        {
+            options.Authority = "http://localhost:44389";
         }
     }
 }

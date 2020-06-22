@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codeworx.Identity.Web.Test.Controller
 {
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes =  "JWT")]
     public class MeController : ControllerBase
     {
         private readonly IHashingProvider hashing;
