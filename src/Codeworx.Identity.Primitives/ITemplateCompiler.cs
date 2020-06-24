@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 
 namespace Codeworx.Identity
 {
     public interface ITemplateCompiler
     {
-        Task<string> RenderAsync(string template, object data);
+        Func<object, string> Compile(string template);
     }
 }

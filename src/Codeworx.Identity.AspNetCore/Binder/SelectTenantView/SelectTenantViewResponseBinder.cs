@@ -8,15 +8,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
 {
     public partial class SelectTenantViewResponseBinder : ResponseBinder<SelectTenantViewResponse>
     {
-        private readonly ITenantViewTemplate _view;
+        private readonly ITenantViewTemplateCache _view;
         private readonly IContentTypeLookup _lookup;
-        private readonly ITemplateCompiler _templateCompiler;
 
-        public SelectTenantViewResponseBinder(ITemplateCompiler templateCompiler, ITenantViewTemplate view, IContentTypeLookup lookup)
+        public SelectTenantViewResponseBinder(ITenantViewTemplateCache view, IContentTypeLookup lookup)
         {
             _view = view;
             _lookup = lookup;
-            _templateCompiler = templateCompiler;
         }
 
         public override async Task BindAsync(SelectTenantViewResponse responseData, HttpResponse response)
@@ -26,12 +24,11 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
                 response.ContentType = contentType;
             }
 
-            var html = await _view.GetTenantSelectionTemplate();
-            var responseBody = await _templateCompiler.RenderAsync(html, responseData);
+            var html = await _view.GetTenantSelection(response.GetViewContextData(responseData));
 
             response.StatusCode = StatusCodes.Status200OK;
 
-            await response.WriteAsync(responseBody);
+            await response.WriteAsync(html);
         }
     }
 }

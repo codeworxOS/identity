@@ -10,13 +10,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 {
     public class AuthorizationSuccessResponseBinder : ResponseBinder<AuthorizationSuccessResponse>
     {
-        private readonly IFormPostResponseTypeTemplate _view;
-        private readonly ITemplateCompiler _templateCompiler;
+        private readonly IFormPostResponseTypeTemplateCache _view;
 
-        public AuthorizationSuccessResponseBinder(IFormPostResponseTypeTemplate view, ITemplateCompiler templateCompiler)
+        public AuthorizationSuccessResponseBinder(IFormPostResponseTypeTemplateCache view)
         {
             _view = view;
-            this._templateCompiler = templateCompiler;
         }
 
         public override async Task BindAsync(AuthorizationSuccessResponse responseData, HttpResponse response)
@@ -36,8 +34,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                 response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
                 response.Headers.Add(HeaderNames.CacheControl, "no-store, must-revalidate, max-age=0");
 
-                var template = await _view.GetFormPostTemplate();
-                var html = await _templateCompiler.RenderAsync(template, responseData);
+                var html = await _view.GetFormPostView(response.GetViewContextData(responseData));
                 await response.WriteAsync(html);
             }
             else

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
@@ -20,7 +19,6 @@ namespace Codeworx.Identity.AspNetCore
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
-            ////_handlebars.RegisterTemplate("Styles", (w, d) => GetStyles(w, d));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
         }
 
@@ -29,13 +27,11 @@ namespace Codeworx.Identity.AspNetCore
             Dispose(true);
         }
 
-        public Task<string> RenderAsync(string template, object data)
+        public Func<object, string> Compile(string template)
         {
             var compiledTemplate = _handlebars.Compile(template);
 
-            var result = compiledTemplate(data);
-
-            return Task.FromResult(result);
+            return compiledTemplate;
         }
 
         protected virtual void Dispose(bool disposing)

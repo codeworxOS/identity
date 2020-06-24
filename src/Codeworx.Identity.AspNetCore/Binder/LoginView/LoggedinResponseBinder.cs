@@ -9,26 +9,22 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
     public class LoggedinResponseBinder : ResponseBinder<LoggedinResponse>
     {
         private readonly IContentTypeLookup _lookup;
-        private readonly ILoginViewTemplate _view;
-        private readonly ITemplateCompiler _templateCompiler;
+        private readonly ILoginViewTemplateCache _view;
 
-        public LoggedinResponseBinder(ILoginViewTemplate view, ITemplateCompiler templateCompiler, IContentTypeLookup lookup)
+        public LoggedinResponseBinder(ILoginViewTemplateCache view, IContentTypeLookup lookup)
         {
             _view = view;
-            _templateCompiler = templateCompiler;
             _lookup = lookup;
         }
 
         public override async Task BindAsync(LoggedinResponse responseData, HttpResponse response)
         {
-            var template = await _view.GetLoggedInTemplate();
-
             if (_lookup.TryGetContentType(".html", out var contentType))
             {
                 response.ContentType = contentType;
             }
 
-            var html = await _templateCompiler.RenderAsync(template, responseData);
+            var html = await _view.GetLoggedInView(response.GetViewContextData(responseData));
 
             response.StatusCode = StatusCodes.Status200OK;
             await response.WriteAsync(html);

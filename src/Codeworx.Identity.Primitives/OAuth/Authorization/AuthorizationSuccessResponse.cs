@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using Codeworx.Identity.View;
 
 namespace Codeworx.Identity.OAuth
 {
     [DataContract]
-    public class AuthorizationSuccessResponse : AuthorizationResponse
+    public class AuthorizationSuccessResponse : AuthorizationResponse, IViewData
     {
         public AuthorizationSuccessResponse(string state, string code, string token, int? expiresIn, string identityToken, string redirectUri, string responseMode)
             : base(state, redirectUri)
@@ -33,5 +35,16 @@ namespace Codeworx.Identity.OAuth
         [DataMember(Order = 4, Name = Constants.OpenId.IdTokenName)]
         [RegularExpression(Constants.OpenId.IdTokenValidation)]
         public string IdToken { get; }
+
+        public void CopyTo(IDictionary<string, object> target)
+        {
+            target.Add(nameof(State), State);
+            target.Add(nameof(RedirectUri), RedirectUri);
+            target.Add(nameof(Code), Code);
+            target.Add(nameof(Token), Token);
+            target.Add(nameof(IdToken), IdToken);
+            target.Add(nameof(ExpiresIn), ExpiresIn);
+            target.Add(nameof(ResponseMode), ResponseMode);
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                     .WithResponseMode(Constants.OAuth.ResponseMode.Query);
 
             var successResponse = builder.Response;
-            var binder = new AuthorizationSuccessResponseBinder(null, null);
+            var binder = new AuthorizationSuccessResponseBinder(null);
 
             await binder.BindAsync(successResponse, httpResponse);
 
@@ -40,7 +40,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                     .WithResponseMode(Constants.OAuth.ResponseMode.Fragment);
 
             var successResponse = builder.Response;
-            var binder = new AuthorizationSuccessResponseBinder(null, null);
+            var binder = new AuthorizationSuccessResponseBinder(null);
 
             await binder.BindAsync(successResponse, httpResponse);
 

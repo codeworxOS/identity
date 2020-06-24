@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using Codeworx.Identity.View;
 
 namespace Codeworx.Identity.Model
 {
-    public class SelectTenantViewResponse
+    public class SelectTenantViewResponse : IViewData
     {
         public SelectTenantViewResponse(IEnumerable<TenantInfo> tenants, bool canSetDefault)
         {
@@ -14,5 +15,11 @@ namespace Codeworx.Identity.Model
         public bool CanSetDefault { get; }
 
         public IEnumerable<TenantInfo> Tenants { get; }
+
+        public void CopyTo(IDictionary<string, object> target)
+        {
+            target.Add(nameof(CanSetDefault), CanSetDefault);
+            target.Add(nameof(Tenants), Tenants);
+        }
     }
 }

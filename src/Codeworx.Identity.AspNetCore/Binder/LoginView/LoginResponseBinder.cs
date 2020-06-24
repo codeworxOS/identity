@@ -9,14 +9,12 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
     public class LoginResponseBinder : ResponseBinder<LoginResponse>
     {
         private readonly IContentTypeLookup _lookup;
-        private readonly ITemplateCompiler _templateCompiler;
-        private readonly ILoginViewTemplate _view;
+        private readonly ILoginViewTemplateCache _view;
 
-        public LoginResponseBinder(ILoginViewTemplate view, IContentTypeLookup lookup, ITemplateCompiler templateCompiler)
+        public LoginResponseBinder(ILoginViewTemplateCache view, IContentTypeLookup lookup)
         {
             _view = view;
             _lookup = lookup;
-            _templateCompiler = templateCompiler;
         }
 
         public override async Task BindAsync(LoginResponse responseData, HttpResponse response)
@@ -26,9 +24,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 response.ContentType = contentType;
             }
 
-            var html = await _view.GetLoginTemplate();
-
-            var responseBody = await _templateCompiler.RenderAsync(html, responseData);
+            var responseBody = await _view.GetLoginView(response.GetViewContextData(responseData));
 
             response.StatusCode = StatusCodes.Status200OK;
             await response.WriteAsync(responseBody);
