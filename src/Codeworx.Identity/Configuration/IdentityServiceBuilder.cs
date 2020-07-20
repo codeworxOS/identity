@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.OAuth;
@@ -33,22 +34,34 @@ namespace Codeworx.Identity.Configuration
 
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
-            this.ReplaceService<IExternalLoginService, ExternalLoginService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ILoginService, ExternalLoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
 
-            ServiceCollection.AddScoped<IAuthorizationService, AuthorizationService>();
-            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, AccessTokenResponseProcessor>();
-            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, AuthorizationCodeResponseProcessor>();
-            ServiceCollection.AddScoped<IAuthorizationResponseProcessor, IdTokenResponseProcessor>();
+            this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
+            this.ReplaceService<ExternalOAuthLoginProcessor, ExternalOAuthLoginProcessor>(ServiceLifetime.Scoped);
+            this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);
+            this.PasswordValidator<PasswordValidator>();
 
-            ServiceCollection.AddScoped<ITokenService<TokenRequest>, TokenService>();
-            ServiceCollection.AddScoped<ITokenService<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenService>();
-            ServiceCollection.AddScoped<ITokenService<ClientCredentialsTokenRequest>, ClientCredentialsTokenService>();
-            ServiceCollection.AddScoped<ITokenServiceSelector, TokenServiceSelector<AuthorizationCodeTokenRequest>>();
-            ServiceCollection.AddScoped<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>();
+            this.RegisterMultiple<IProcessorTypeLookup, WindowsLoginProcessorLookup>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);
 
-            ServiceCollection.AddTransient<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>();
-            ServiceCollection.AddTransient<IRequestValidator<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidator>();
+            this.ReplaceService<IAuthorizationService, AuthorizationService>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<IAuthorizationResponseProcessor, AccessTokenResponseProcessor>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<IAuthorizationResponseProcessor, AuthorizationCodeResponseProcessor>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<IAuthorizationResponseProcessor, IdTokenResponseProcessor>(ServiceLifetime.Scoped);
+
+            this.ReplaceService<ITokenService<TokenRequest>, TokenService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenService<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenService<ClientCredentialsTokenRequest>, ClientCredentialsTokenService>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<AuthorizationCodeTokenRequest>>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>(ServiceLifetime.Scoped);
+
+            this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidator>(ServiceLifetime.Transient);
+
+            this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
         }
 
         public IServiceCollection ServiceCollection { get; }

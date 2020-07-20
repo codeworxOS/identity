@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Login;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
 
@@ -14,12 +15,24 @@ namespace Codeworx.Identity.AspNetCore
         private bool _disposedValue = false;
         private IdentityOptions _options;
 
-        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor)
+        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates)
         {
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
+            _handlebars.RegisterHelper("RegistrationTemplate", (writer, context, parameters) =>
+            {
+                if (context is ILoginRegistrationGroup info)
+                {
+                    writer.WriteSafeString(info.Template);
+                }
+            });
+
+            foreach (var partial in partialTemplates)
+            {
+                _handlebars.RegisterTemplate(partial.Name, partial.Template);
+            }
         }
 
         public void Dispose()

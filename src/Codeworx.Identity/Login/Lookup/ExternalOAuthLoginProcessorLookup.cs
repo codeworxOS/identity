@@ -1,11 +1,10 @@
 ﻿using System;
-using Codeworx.Identity.ExternalLogin;
 
-namespace Codeworx.Identity.EntityFrameworkCore.ExternalLogin
+namespace Codeworx.Identity.Login
 {
     public class ExternalOAuthLoginProcessorLookup : IProcessorTypeLookup
     {
-        public string Key => "ExternalOAuthLoginProcessor";
+        public string Key => "oauth";
 
         public Type Type => typeof(ExternalOAuthLoginProcessor);
     }

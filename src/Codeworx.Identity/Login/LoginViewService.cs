@@ -5,11 +5,11 @@ namespace Codeworx.Identity.Login
 {
     public class LoginViewService : ILoginViewService
     {
-        private readonly IExternalLoginService _externalLoginService;
+        private readonly ILoginService _externalLoginService;
         private readonly IIdentityService _identityService;
         private readonly IUserService _userService;
 
-        public LoginViewService(IExternalLoginService externalLoginService, IIdentityService identityService, IUserService userService)
+        public LoginViewService(ILoginService externalLoginService, IIdentityService identityService, IUserService userService)
         {
             _externalLoginService = externalLoginService;
             _identityService = identityService;
@@ -18,17 +18,17 @@ namespace Codeworx.Identity.Login
 
         public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
         {
-            var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
             var user = await _userService.GetUserByIdentifierAsync(request.Identity);
 
-            return new LoggedinResponse(user, response.Providers, request.ReturnUrl);
+            return new LoggedinResponse(user, response.Groups, request.ReturnUrl);
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
-            var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
 
-            return new LoginResponse(response.Providers, request.ReturnUrl);
+            return new LoginResponse(response.Groups, request.ReturnUrl);
         }
 
         public async Task<SignInResponse> ProcessLoginFormAsync(LoginFormRequest request)
@@ -41,8 +41,8 @@ namespace Codeworx.Identity.Login
             }
             catch (AuthenticationException)
             {
-                var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
-                var loginResponse = new LoginResponse(response.Providers, request.ReturnUrl, request.UserName, Constants.InvalidCredentialsError);
+                var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
+                var loginResponse = new LoginResponse(response.Groups, request.ReturnUrl, request.UserName, Constants.InvalidCredentialsError);
 
                 throw new ErrorResponseException<LoginResponse>(loginResponse);
             }

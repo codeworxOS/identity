@@ -1,11 +1,10 @@
 ﻿using System;
-using Codeworx.Identity.ExternalLogin;
 
-namespace Codeworx.Identity.EntityFrameworkCore.ExternalLogin
+namespace Codeworx.Identity.Login
 {
     public class WindowsLoginProcessorLookup : IProcessorTypeLookup
     {
-        public string Key => "WindowsLoginProcessor";
+        public string Key => "windows";
 
         public Type Type => typeof(WindowsLoginProcessor);
     }

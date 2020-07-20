@@ -6,6 +6,22 @@ namespace Codeworx.Identity.Configuration.Internal
 {
     public static class CodeworxIdentityPrimitivesInternalIdentityServiceBuilderExtensions
     {
+        public static void RegisterMultiple<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime)
+         where TService : class
+         where TImplementation : class, TService
+        {
+            var config = builder.ServiceCollection.FirstOrDefault(p => p.ServiceType == typeof(TService) && p.ImplementationType == typeof(TImplementation));
+
+            if (config != null)
+            {
+                builder.ServiceCollection.Remove(config);
+            }
+
+            config = new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime);
+
+            builder.ServiceCollection.Add(config);
+        }
+
         public static void Register<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime, Func<IServiceProvider, TImplementation> factory = null)
          where TService : class
          where TImplementation : class, TService

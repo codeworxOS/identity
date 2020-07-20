@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
             }
 
-            return new ExternalOAuthLoginRequest(codeValues, stateValues);
+            return new ExternalOAuthLoginRequest(codeValues, stateValues, Constants.ExternalOAuthProviderId);
         }
     }
 }

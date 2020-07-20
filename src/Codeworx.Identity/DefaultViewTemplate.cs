@@ -26,24 +26,50 @@ namespace Codeworx.Identity
             Dispose(true);
         }
 
+        public async Task<string> GetFormPostTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.form_post.html");
+        }
+
         public async Task<string> GetLoggedInTemplate()
         {
-            return await GetTemplateAsString("Codeworx.Identity.assets.loggedin.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.loggedin.html");
         }
 
         public async Task<string> GetLoginTemplate()
         {
-            return await GetTemplateAsString("Codeworx.Identity.assets.login.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.login.html");
         }
 
         public async Task<string> GetTenantSelectionTemplate()
         {
-            return await GetTemplateAsString("Codeworx.Identity.assets.tenant.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.tenant.html");
         }
 
-        public async Task<string> GetFormPostTemplate()
+        internal static string GetTemplateAsString(string resourceName)
         {
-            return await GetTemplateAsString("Codeworx.Identity.assets.form_post.html");
+            using (var stream = typeof(DefaultViewTemplate)
+                                .GetTypeInfo().Assembly
+                                .GetManifestResourceStream(resourceName))
+            {
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+
+                return Encoding.UTF8.GetString(buffer);
+            }
+        }
+
+        internal static async Task<string> GetTemplateAsStringAsync(string resourceName)
+        {
+            using (var stream = typeof(DefaultViewTemplate)
+                                .GetTypeInfo().Assembly
+                                .GetManifestResourceStream(resourceName))
+            {
+                byte[] buffer = new byte[stream.Length];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                return Encoding.UTF8.GetString(buffer);
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -56,19 +82,6 @@ namespace Codeworx.Identity
                 }
 
                 _disposedValue = true;
-            }
-        }
-
-        private static async Task<string> GetTemplateAsString(string resourceName)
-        {
-            using (var stream = typeof(DefaultViewTemplate)
-                                .GetTypeInfo().Assembly
-                                .GetManifestResourceStream(resourceName))
-            {
-                byte[] buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                return Encoding.UTF8.GetString(buffer);
             }
         }
 

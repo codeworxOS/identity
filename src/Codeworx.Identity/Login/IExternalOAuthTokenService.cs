@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Codeworx.Identity.ExternalLogin
+namespace Codeworx.Identity.Login
 {
     public interface IExternalOAuthTokenService
     {

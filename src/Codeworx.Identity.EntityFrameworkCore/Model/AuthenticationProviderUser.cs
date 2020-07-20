@@ -10,7 +10,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public Guid ProviderId { get; set; }
 
-        public ExternalAuthenticationProvider Provider { get; set; }
+        public AuthenticationProvider Provider { get; set; }
 
         public string ExternalIdentifier { get; set; }
     }

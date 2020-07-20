@@ -24,6 +24,8 @@ namespace Codeworx.Identity
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
+        public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
+        public const string FormsLoginProviderName = "Form";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
@@ -55,6 +57,12 @@ namespace Codeworx.Identity
 
         private const string VsChar = @"[\u0020-\u007e]";
         private const string VsChars = @"^" + VsChar + @"+$";
+
+        public static class Templates
+        {
+            public const string FormsLogin = "formslogin";
+            public const string Redirect = "redirect";
+        }
 
         public static class Assets
         {

@@ -2,7 +2,7 @@
 using Codeworx.Identity;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Configuration.Internal;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,15 +16,15 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         public static IIdentityServiceBuilder Provider<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IExternalLoginProvider
+            where TImplementation : class, ILoginRegistrationProvider
         {
             if (factory == null)
             {
-                builder.ServiceCollection.AddScoped<IExternalLoginProvider, TImplementation>();
+                builder.Register<ILoginRegistrationProvider, TImplementation>(ServiceLifetime.Scoped);
             }
             else
             {
-                builder.ServiceCollection.AddScoped<IExternalLoginProvider, TImplementation>(factory);
+                builder.Register<ILoginRegistrationProvider, TImplementation>(ServiceLifetime.Scoped, factory);
             }
 
             return builder;

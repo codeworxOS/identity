@@ -5,33 +5,39 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
-namespace Codeworx.Identity.ExternalLogin
+namespace Codeworx.Identity.Login
 {
-    public class WindowsLoginProcessor : IExternalLoginProcessor
+    public class WindowsLoginProcessor : ILoginProcessor
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IIdentityService _identityService;
         private readonly IdentityOptions _options;
 
-        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUri)
+        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUri, IIdentityService identityService)
         {
             _options = options.Value;
             _baseUriAccessor = baseUri;
+            _identityService = identityService;
         }
 
         public Type RequestParameterType { get; } = typeof(WindowsLoginRequest);
 
-        public Type ConfigurationType { get; } = null;
+        public Type ConfigurationType => null;
 
-        public Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
+        public string Template => Constants.Templates.Redirect;
+
+        public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin");
             uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
 
-            return Task.FromResult(uriBuilder.ToString());
+            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString());
+
+            return Task.FromResult<ILoginRegistrationInfo>(result);
         }
 
-        public Task<ExternalLoginResponse> ProcessAsync(object request, object configuration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, object configuration)
         {
             if (request == null)
             {
@@ -47,7 +53,9 @@ namespace Codeworx.Identity.ExternalLogin
 
             var sid = loginRequest.WindowsIdentity.FindFirst(ClaimTypes.PrimarySid).Value;
 
-            return Task.FromResult(new ExternalLoginResponse(sid, loginRequest.ReturnUrl));
+            var identity = await _identityService.LoginExternalAsync(request.ProviderId, sid).ConfigureAwait(false);
+
+            return new SignInResponse(identity, loginRequest.ReturnUrl);
         }
     }
 }

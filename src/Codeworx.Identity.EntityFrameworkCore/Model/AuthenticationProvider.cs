@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ExternalAuthenticationProvider
+    public class AuthenticationProvider
     {
-        public ExternalAuthenticationProvider()
+        public AuthenticationProvider()
         {
             this.Users = new HashSet<AuthenticationProviderUser>();
         }
@@ -26,6 +26,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        public int SortOrder { get; set; }
+
+        public bool Enabled { get; set; }
 
         public ICollection<AuthenticationProviderUser> Users { get; }
     }

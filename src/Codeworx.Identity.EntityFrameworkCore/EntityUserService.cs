@@ -21,7 +21,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         public async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
             var userSet = _context.Set<User>();
-            var authenticationProviderSet = _context.Set<ExternalAuthenticationProvider>();
+            var authenticationProviderSet = _context.Set<AuthenticationProvider>();
             var providerId = Guid.Parse(provider);
 
             var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);

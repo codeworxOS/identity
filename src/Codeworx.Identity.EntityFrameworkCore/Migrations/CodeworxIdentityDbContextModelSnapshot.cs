@@ -17,6 +17,34 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                 .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property);
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Enabled");
+
+                    b.Property<string>("EndpointConfiguration");
+
+                    b.Property<string>("EndpointType")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<Guid?>("FilterId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
+                    b.Property<int>("SortOrder");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FilterId");
+
+                    b.ToTable("ExternalAuthenticationProvider");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>
                 {
                     b.Property<Guid>("RightHolderId");
@@ -52,30 +80,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ClientConfiguration");
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("EndpointConfiguration");
-
-                    b.Property<string>("EndpointType")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.Property<Guid?>("FilterId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FilterId");
-
-                    b.ToTable("ExternalAuthenticationProvider");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IdentityCache", b =>
@@ -237,9 +241,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasDiscriminator().HasValue((byte)1);
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", "Filter")
+                        .WithMany()
+                        .HasForeignKey("FilterId");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderUser", b =>
                 {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", "Provider")
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", "Provider")
                         .WithMany("Users")
                         .HasForeignKey("ProviderId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -255,13 +266,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
                         .WithMany("Clients")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ExternalAuthenticationProvider", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", "Filter")
-                        .WithMany()
-                        .HasForeignKey("FilterId");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>

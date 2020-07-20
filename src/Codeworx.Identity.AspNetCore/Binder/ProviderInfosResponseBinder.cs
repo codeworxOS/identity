@@ -8,7 +8,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
-    public class ProviderInfosResponseBinder : ResponseBinder<ProviderInfosResponse>
+    public class ProviderInfosResponseBinder : ResponseBinder<RegistrationInfoResponse>
     {
         private readonly IContentTypeLookup _lookup;
 
@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             _lookup = lookup;
         }
 
-        public override Task BindAsync(ProviderInfosResponse responseData, HttpResponse response)
+        public override Task BindAsync(RegistrationInfoResponse responseData, HttpResponse response)
         {
             if (_lookup.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
@@ -32,7 +32,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             using (var sw = new StreamWriter(response.Body))
             {
-                ser.Serialize(sw, responseData.Providers);
+                ser.Serialize(sw, responseData.Groups);
             }
 
             return Task.CompletedTask;

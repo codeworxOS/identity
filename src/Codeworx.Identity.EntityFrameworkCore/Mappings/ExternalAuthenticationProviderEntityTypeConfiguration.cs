@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 {
-    public class ExternalAuthenticationProviderEntityTypeConfiguration : IEntityTypeConfiguration<ExternalAuthenticationProvider>
+    public class ExternalAuthenticationProviderEntityTypeConfiguration : IEntityTypeConfiguration<AuthenticationProvider>
     {
-        public void Configure(EntityTypeBuilder<ExternalAuthenticationProvider> builder)
+        public void Configure(EntityTypeBuilder<AuthenticationProvider> builder)
         {
             builder.ToTable("ExternalAuthenticationProvider");
         }

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -59,7 +59,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     EndpointConfiguration = table.Column<string>(nullable: true),
                     EndpointType = table.Column<string>(maxLength: 100, nullable: false),
                     FilterId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(maxLength: 200, nullable: false)
+                    Name = table.Column<string>(maxLength: 200, nullable: false),
+                    SortOrder = table.Column<int>(nullable: false),
+                    Enabled = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

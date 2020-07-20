@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Codeworx.Identity.ExternalLogin
+namespace Codeworx.Identity.Login
 {
     public interface IProcessorTypeLookup
     {

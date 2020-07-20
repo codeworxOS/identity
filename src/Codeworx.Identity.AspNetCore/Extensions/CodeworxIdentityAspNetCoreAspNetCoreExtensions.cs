@@ -17,7 +17,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Cryptography.Json;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -220,7 +220,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<TokenResponse>, TokenResponseBinder>();
             collection.AddTransient<IResponseBinder<SignInResponse>, SignInResponseBinder>();
             collection.AddTransient<IResponseBinder<AssetResponse>, AssetResponseBinder>();
-            collection.AddTransient<IResponseBinder<ProviderInfosResponse>, ProviderInfosResponseBinder>();
+            collection.AddTransient<IResponseBinder<RegistrationInfoResponse>, ProviderInfosResponseBinder>();
             collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
             collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();

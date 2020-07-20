@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Codeworx.Identity.Cryptography;
-using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -217,16 +216,33 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    var windowsLoginRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalWindowsProviderId));
+                    var formsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.FormsLoginProviderId));
+
+                    if (formsLoginRegistration == null)
+                    {
+                        context.AuthenticationProviders.Add(new AuthenticationProvider
+                        {
+                            Id = Guid.Parse(Constants.FormsLoginProviderId),
+                            Name = Constants.FormsLoginProviderName,
+                            EndpointType = new FormsLoginProcessorLookup().Key,
+                            EndpointConfiguration = null,
+                            Enabled = true,
+                            SortOrder = 1,
+                        });
+                    }
+
+                    var windowsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalWindowsProviderId));
 
                     if (windowsLoginRegistration == null)
                     {
-                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        context.AuthenticationProviders.Add(new AuthenticationProvider
                         {
                             Id = Guid.Parse(Constants.ExternalWindowsProviderId),
                             Name = Constants.ExternalWindowsProviderName,
                             EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
+                            Enabled = true,
+                            SortOrder = 2,
                             Users =
                             {
                                 new AuthenticationProviderUser
@@ -238,14 +254,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    ExternalAuthenticationProvider oauthRegistration = context.ExternalAuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalOAuthProviderId));
+                    AuthenticationProvider oauthRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalOAuthProviderId));
 
                     if (oauthRegistration == null)
                     {
-                        context.ExternalAuthenticationProviders.Add(new ExternalAuthenticationProvider
+                        context.AuthenticationProviders.Add(new AuthenticationProvider
                         {
                             Id = Guid.Parse(Constants.ExternalOAuthProviderId),
                             Name = "Basic OAuth",
+                            Enabled = true,
+                            SortOrder = 3,
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new ExternalOAuthLoginConfiguration
                             {

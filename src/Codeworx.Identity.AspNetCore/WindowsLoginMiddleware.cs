@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
@@ -14,7 +14,7 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
+        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService externalLogin)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace Codeworx.Identity.AspNetCore
                 ////var binder = context.RequestServices.GetService(typeof(IRequestBinder<>).MakeGenericType(requestType));
 
                 var windowsLoginRequest = await requestBinder.BindAsync(context.Request);
-                var signInResonse = await externalLogin.SignInAsync(Constants.ExternalWindowsProviderId, windowsLoginRequest);
+                var signInResonse = await externalLogin.SignInAsync(windowsLoginRequest);
                 await signInBinder.BindAsync(signInResonse, context.Response);
             }
             catch (ErrorResponseException error)

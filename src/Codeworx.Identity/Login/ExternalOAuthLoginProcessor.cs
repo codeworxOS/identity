@@ -6,18 +6,25 @@ using Codeworx.Identity.Response;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
-namespace Codeworx.Identity.ExternalLogin
+namespace Codeworx.Identity.Login
 {
-    public class ExternalOAuthLoginProcessor : IExternalLoginProcessor
+    public class ExternalOAuthLoginProcessor : ILoginProcessor
     {
         private readonly IDistributedCache _cache;
+        private readonly IIdentityService _identityService;
         private readonly IExternalOAuthTokenService _tokenService;
         private readonly string _redirectUri;
 
-        public ExternalOAuthLoginProcessor(IBaseUriAccessor baseUriAccessor, IExternalOAuthTokenService tokenService, IDistributedCache cache, IOptionsSnapshot<IdentityOptions> options)
+        public ExternalOAuthLoginProcessor(
+            IBaseUriAccessor baseUriAccessor,
+            IExternalOAuthTokenService tokenService,
+            IDistributedCache cache,
+            IOptionsSnapshot<IdentityOptions> options,
+            IIdentityService identityService)
         {
             _tokenService = tokenService;
             _cache = cache;
+            _identityService = identityService;
 
             var redirectUirBuilder = new UriBuilder(baseUriAccessor.BaseUri.ToString());
             redirectUirBuilder.AppendPath($"{options.Value.AccountEndpoint}/oauthlogin");
@@ -29,9 +36,11 @@ namespace Codeworx.Identity.ExternalLogin
 
         public Type ConfigurationType { get; } = typeof(ExternalOAuthLoginConfiguration);
 
-        public async Task<string> GetProcessorUrlAsync(ProviderRequest request, object configuration)
+        public string Template => Constants.Templates.Redirect;
+
+        public async Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
-            var oauthConfiguration = this.ToOAuthLoginConfiguration(configuration);
+            var oauthConfiguration = this.ToOAuthLoginConfiguration(configuration.ProcessorConfiguration);
 
             var codeUriBuilder = new UriBuilder(oauthConfiguration.BaseUri.ToString());
 
@@ -52,10 +61,12 @@ namespace Codeworx.Identity.ExternalLogin
 
             codeUriBuilder.AppendQueryParameter(Constants.OAuth.StateName, state);
 
-            return codeUriBuilder.ToString();
+            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, codeUriBuilder.ToString());
+
+            return result;
         }
 
-        public async Task<ExternalLoginResponse> ProcessAsync(object request, object configuration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, object configuration)
         {
             if (request == null)
             {
@@ -83,7 +94,9 @@ namespace Codeworx.Identity.ExternalLogin
                 returnUrl = null;
             }
 
-            return new ExternalLoginResponse(userId, returnUrl);
+            var identity = await _identityService.LoginExternalAsync(request.ProviderId, userId).ConfigureAwait(false);
+
+            return new SignInResponse(identity, returnUrl);
         }
 
         private ExternalOAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)

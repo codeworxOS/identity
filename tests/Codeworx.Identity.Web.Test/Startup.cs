@@ -1,8 +1,8 @@
-﻿using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
+﻿using System.IO;
+using System.Reflection;
+using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.EntityFrameworkCore;
-using Codeworx.Identity.ExternalLogin;
-using Codeworx.Identity.Test;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
@@ -11,11 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.IO;
-using System.Reflection;
-using Codeworx.Identity.Cryptography;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -38,10 +33,10 @@ namespace Codeworx.Identity.Web.Test
                 app.UseDeveloperExceptionPage();
             }
             app.UseCors();
-            app.UseCodeworxIdentity(identityOptions.Value);
-            app.UseMvc();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseCodeworxIdentity(identityOptions.Value);
+            app.UseMvc();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

@@ -26,7 +26,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<ClientConfiguration> ClientConfigurations { get; set; }
 
-        public DbSet<ExternalAuthenticationProvider> ExternalAuthenticationProviders { get; set; }
+        public DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

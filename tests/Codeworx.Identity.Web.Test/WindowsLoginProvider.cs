@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Web.Test
 {
-    public class WindowsLoginProvider : IExternalLoginProvider
+    public class WindowsLoginProvider : ILoginRegistrationProvider
     {
-        public Task<IEnumerable<IExternalLoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+        public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
         {
-            return Task.FromResult<IEnumerable<IExternalLoginRegistration>>(
+            return Task.FromResult<IEnumerable<ILoginRegistration>>(
                 new[] {
                     new ExternalLoginRegistration
                     {

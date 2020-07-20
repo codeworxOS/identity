@@ -18,12 +18,12 @@ namespace Codeworx.Identity.AspNetCore
             _lookup = lookup;
         }
 
-        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<ProviderRequest> requestBinder, IResponseBinder<ProviderInfosResponse> responseBinder, IExternalLoginService service)
+        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<ProviderRequest> requestBinder, IResponseBinder<RegistrationInfoResponse> responseBinder, ILoginService service)
         {
             try
             {
                 var request = await requestBinder.BindAsync(context.Request);
-                var providerResponse = await service.GetProviderInfosAsync(request);
+                var providerResponse = await service.GetRegistrationInfosAsync(request);
 
                 await responseBinder.BindAsync(providerResponse, context.Response);
                 return;

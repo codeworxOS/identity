@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 
-namespace Codeworx.Identity.ExternalLogin
+namespace Codeworx.Identity.Login
 {
-    public class WindowsLoginRequest
+    public class WindowsLoginRequest : ILoginRequest
     {
         public WindowsLoginRequest(ClaimsIdentity windowsIdentity, string returnUrl)
         {
@@ -13,5 +13,7 @@ namespace Codeworx.Identity.ExternalLogin
         public string ReturnUrl { get; set; }
 
         public ClaimsIdentity WindowsIdentity { get; }
+
+        public string ProviderId => Constants.ExternalWindowsProviderId;
     }
 }

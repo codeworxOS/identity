@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 

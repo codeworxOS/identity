@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
@@ -14,13 +14,13 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<ExternalOAuthLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
+        public async Task Invoke(HttpContext context, IRequestBinder<ExternalOAuthLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService externalLogin)
         {
             try
             {
                 ExternalOAuthLoginRequest oauthLoginRequest = await requestBinder.BindAsync(context.Request);
 
-                SignInResponse signInResponse = await externalLogin.SignInAsync(Constants.ExternalOAuthProviderId, oauthLoginRequest);
+                SignInResponse signInResponse = await externalLogin.SignInAsync(oauthLoginRequest);
 
                 await signInBinder.BindAsync(signInResponse, context.Response);
             }
