@@ -14,19 +14,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
     public class SelectTenantViewActionRequestBinder : IRequestBinder<SelectTenantViewActionRequest>
     {
         private readonly IRequestBinder<AuthorizationRequest> _authorizationRequestBinder;
-        private readonly IDefaultTenantService _defaultTenantService;
-        private readonly ITenantService _tenantService;
         private readonly IdentityOptions _options;
 
         public SelectTenantViewActionRequestBinder(
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
-            ITenantService tenantService,
-            IDefaultTenantService defaultTenantService,
             IOptions<IdentityOptions> options)
         {
             _authorizationRequestBinder = authorizationRequestBinder;
-            _defaultTenantService = defaultTenantService;
-            _tenantService = tenantService;
             _options = options.Value;
         }
 
