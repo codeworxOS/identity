@@ -14,5 +14,11 @@
         public string RedirectUri { get; }
 
         public string ProviderId { get; }
+
+        public bool HasRedirectUri(out string redirectUri)
+        {
+            redirectUri = RedirectUri;
+            return true;
+        }
     }
 }

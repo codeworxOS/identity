@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Login
             return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(request.UserName));
         }
 
-        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, object configuration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration registration)
         {
             if (request == null)
             {

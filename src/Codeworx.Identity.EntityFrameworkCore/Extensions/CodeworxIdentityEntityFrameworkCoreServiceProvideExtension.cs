@@ -3,6 +3,7 @@ using System.Linq;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -265,7 +266,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Enabled = true,
                             SortOrder = 3,
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
-                            EndpointConfiguration = JsonConvert.SerializeObject(new ExternalOAuthLoginConfiguration
+                            EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
                             {
                                 BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",

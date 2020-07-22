@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
@@ -8,8 +9,10 @@ namespace Codeworx.Identity
     {
         Task<Type> GetParameterTypeAsync(string providerId);
 
+        Task<ILoginRegistration> GetLoginRegistrationInfosAsync(string providerId);
+
         Task<RegistrationInfoResponse> GetRegistrationInfosAsync(ProviderRequest request);
 
-        Task<SignInResponse> SignInAsync(ILoginRequest parameter);
+        Task<SignInResponse> SignInAsync(string providerId, ILoginRequest parameter);
     }
 }

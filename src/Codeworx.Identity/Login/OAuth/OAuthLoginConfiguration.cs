@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace Codeworx.Identity.Login
+namespace Codeworx.Identity.Login.OAuth
 {
-    public class ExternalOAuthLoginConfiguration
+    public class OAuthLoginConfiguration
     {
-        public ExternalOAuthLoginConfiguration()
+        public OAuthLoginConfiguration()
         {
             IdentifierClaim = Constants.Claims.Subject;
         }

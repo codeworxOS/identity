@@ -24,16 +24,6 @@ namespace Codeworx.Identity.AspNetCore
 
                 switch (request)
                 {
-                    ////case TenantSelectionRequest tenantSelection:
-                    ////    response = await service.ProcessTenantSelectionAsync(tenantSelection);
-                    ////    responseBinder = context.GetResponseBinder<SignInResponse>();
-                    ////    break;
-
-                    ////case TenantMissingRequest missingTeant:
-                    ////    response = await service.ProcessTenantMissingAsync(missingTeant);
-                    ////    responseBinder = context.GetResponseBinder<TenantMissingResponse>();
-                    ////    break;
-
                     case LoginFormRequest loginForm:
                         response = await service.ProcessLoginFormAsync(loginForm);
                         responseBinder = context.GetResponseBinder<SignInResponse>();

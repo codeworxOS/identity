@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.View;
@@ -19,6 +20,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
         public override async Task BindAsync(LoginResponse responseData, HttpResponse response)
         {
+            var registrations = responseData.Groups.SelectMany(p => p.Registrations).ToList();
+            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri))
+            {
+                response.Redirect(redirectUri);
+                return;
+            }
+
             if (_lookup.TryGetContentType(".html", out var contentType))
             {
                 response.ContentType = contentType;

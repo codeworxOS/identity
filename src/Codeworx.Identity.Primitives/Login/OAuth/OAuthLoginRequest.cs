@@ -1,8 +1,8 @@
-﻿namespace Codeworx.Identity.Login
+﻿namespace Codeworx.Identity.Login.OAuth
 {
-    public class ExternalOAuthLoginRequest : ILoginRequest
+    public class OAuthLoginRequest : ILoginRequest
     {
-        public ExternalOAuthLoginRequest(string code, string state, string providerId)
+        public OAuthLoginRequest(string code, string state, string providerId)
         {
             Code = code;
             State = state;

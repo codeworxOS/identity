@@ -37,7 +37,7 @@ namespace Codeworx.Identity.Login
             return Task.FromResult<ILoginRegistrationInfo>(result);
         }
 
-        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, object configuration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration registration)
         {
             if (request == null)
             {
@@ -53,7 +53,7 @@ namespace Codeworx.Identity.Login
 
             var sid = loginRequest.WindowsIdentity.FindFirst(ClaimTypes.PrimarySid).Value;
 
-            var identity = await _identityService.LoginExternalAsync(request.ProviderId, sid).ConfigureAwait(false);
+            var identity = await _identityService.LoginExternalAsync(registration.Id, sid).ConfigureAwait(false);
 
             return new SignInResponse(identity, loginRequest.ReturnUrl);
         }

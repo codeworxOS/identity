@@ -35,7 +35,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped);
+                         .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped)
+                         .ReplaceService<IStateLookupCache, StateLookupCache<TContext>>(ServiceLifetime.Scoped);
 
             result.RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped);
             result.RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient);

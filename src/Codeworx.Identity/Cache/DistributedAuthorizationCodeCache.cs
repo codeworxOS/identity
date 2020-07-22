@@ -26,6 +26,8 @@ namespace Codeworx.Identity.Cache
 
             var result = JsonConvert.DeserializeObject<IdentityData>(cachedGrantInformation);
 
+            await _cache.RemoveAsync(authorizationCode);
+
             return result;
         }
 

@@ -6,6 +6,8 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Binder;
+using Codeworx.Identity.AspNetCore.Binder.Login;
+using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
 using Codeworx.Identity.AspNetCore.OAuth;
@@ -18,6 +20,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -158,6 +161,12 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
                        p => p.UseMiddleware<LogoutMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/oauth", out var remaining) && remaining.HasValue,
+                       p => p.UseMiddleware<OAuthLoginMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/callback", out var remaining) && remaining.HasValue,
+                       p => p.UseMiddleware<ExternalCallbackMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
@@ -167,7 +176,7 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
-                       p => p.UseMiddleware<ExternalOAuthLoginMiddleware>())
+                       p => p.UseMiddleware<OAuthLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
                        p => p.UseMiddleware<ProvidersMiddleware>())
@@ -199,7 +208,7 @@ namespace Codeworx.Identity.AspNetCore
 
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<ExternalOAuthLoginRequest>, ExternalOAuthLoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<OAuthLoginRequest>, OAuthLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
@@ -209,6 +218,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();
+            collection.AddTransient<IRequestBinder<OAuthRedirectRequest>, OAuthRedirectRequestBinder>();
+            collection.AddTransient<IRequestBinder<ExternalCallbackRequest>, ExternalCallbackRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -231,6 +242,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<SelectTenantViewResponse>, SelectTenantViewResponseBinder>();
             collection.AddTransient<IResponseBinder<SelectTenantSuccessResponse>, SelectTenantSuccessResponseBinder>();
             collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
+            collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
@@ -254,6 +266,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
+            collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
             collection.AddSingleton<ITemplateCompiler, MustacheTemplateCompiler>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();

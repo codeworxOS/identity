@@ -2,6 +2,7 @@
 using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
@@ -38,10 +39,11 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
-            this.ReplaceService<ExternalOAuthLoginProcessor, ExternalOAuthLoginProcessor>(ServiceLifetime.Scoped);
+            this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);
             this.PasswordValidator<PasswordValidator>();
 
+            this.ReplaceService<IOAuthLoginService, OAuthLoginService>(ServiceLifetime.Scoped);
             this.RegisterMultiple<IProcessorTypeLookup, WindowsLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);

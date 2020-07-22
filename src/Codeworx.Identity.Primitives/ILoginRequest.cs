@@ -2,6 +2,5 @@
 {
     public interface ILoginRequest
     {
-        string ProviderId { get; }
     }
 }

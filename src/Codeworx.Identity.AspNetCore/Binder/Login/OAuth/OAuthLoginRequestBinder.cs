@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace Codeworx.Identity.AspNetCore.Binder
+namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 {
-    public class ExternalOAuthLoginRequestBinder : IRequestBinder<ExternalOAuthLoginRequest>
+    public class OAuthLoginRequestBinder : IRequestBinder<OAuthLoginRequest>
     {
         private readonly IAuthenticationSchemeProvider _schemaProvider;
 
-        public ExternalOAuthLoginRequestBinder(IAuthenticationSchemeProvider schemaProvider)
+        public OAuthLoginRequestBinder(IAuthenticationSchemeProvider schemaProvider)
         {
             _schemaProvider = schemaProvider;
         }
 
-        public async Task<ExternalOAuthLoginRequest> BindAsync(HttpRequest request)
+        public async Task<OAuthLoginRequest> BindAsync(HttpRequest request)
         {
             Dictionary<string, StringValues> parameters;
 
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
             }
 
-            return new ExternalOAuthLoginRequest(codeValues, stateValues, Constants.ExternalOAuthProviderId);
+            return new OAuthLoginRequest(codeValues, stateValues, Constants.ExternalOAuthProviderId);
         }
     }
 }

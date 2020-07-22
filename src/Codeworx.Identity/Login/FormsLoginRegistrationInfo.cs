@@ -10,5 +10,11 @@
         public string UserName { get; }
 
         public string ProviderId => Constants.FormsLoginProviderId;
+
+        public bool HasRedirectUri(out string redirectUrl)
+        {
+            redirectUrl = null;
+            return false;
+        }
     }
 }

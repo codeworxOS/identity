@@ -1,4 +1,5 @@
 ﻿using System;
+using Codeworx.Identity.Login.OAuth;
 
 namespace Codeworx.Identity.Login
 {
@@ -6,6 +7,6 @@ namespace Codeworx.Identity.Login
     {
         public string Key => "oauth";
 
-        public Type Type => typeof(ExternalOAuthLoginProcessor);
+        public Type Type => typeof(OAuthLoginProcessor);
     }
 }

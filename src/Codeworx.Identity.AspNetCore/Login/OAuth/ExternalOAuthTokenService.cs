@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Token;
 using Newtonsoft.Json;
 
@@ -22,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore
             _tokenProviders = tokenProviders;
         }
 
-        public async Task<string> GetUserIdAsync(ExternalOAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
+        public async Task<string> GetUserIdAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
             _client.BaseAddress = oauthConfiguration.BaseUri;
 

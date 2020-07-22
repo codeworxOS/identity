@@ -22,6 +22,22 @@ namespace Codeworx.Identity
             _service = service;
         }
 
+        public async Task<ILoginRegistration> GetLoginRegistrationInfosAsync(string providerId)
+        {
+            foreach (var item in _providers)
+            {
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync())
+                {
+                    if (externalLogin.Id == providerId)
+                    {
+                        return externalLogin;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public async Task<Type> GetParameterTypeAsync(string providerId)
         {
             var processorInfo = await GetProcessorInfoAsync(providerId);
@@ -55,11 +71,11 @@ namespace Codeworx.Identity
             return new RegistrationInfoResponse(groups.OrderBy(p => p.Key).Select(p => new LoginRegistrationGroup(p.Key, p.Value)));
         }
 
-        public async Task<SignInResponse> SignInAsync(ILoginRequest parameter)
+        public async Task<SignInResponse> SignInAsync(string providerId, ILoginRequest parameter)
         {
-            var processorInfo = await GetProcessorInfoAsync(parameter.ProviderId);
+            var processorInfo = await GetProcessorInfoAsync(providerId);
 
-            var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Configuration).ConfigureAwait(false);
+            var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Registration).ConfigureAwait(false);
 
             return response;
         }
@@ -76,7 +92,7 @@ namespace Codeworx.Identity
                     {
                         var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as ILoginProcessor;
 
-                        return new ProcessorInfo(processor, registration.ProcessorConfiguration);
+                        return new ProcessorInfo(processor, registration);
                     }
                 }
             }
@@ -86,10 +102,10 @@ namespace Codeworx.Identity
 
         private class ProcessorInfo
         {
-            public ProcessorInfo(ILoginProcessor processor, object configuration)
+            public ProcessorInfo(ILoginProcessor processor, ILoginRegistration registration)
             {
                 Processor = processor;
-                Configuration = configuration;
+                Registration = registration;
             }
 
             public ILoginProcessor Processor
@@ -97,7 +113,7 @@ namespace Codeworx.Identity
                 get;
             }
 
-            public object Configuration
+            public ILoginRegistration Registration
             {
                 get;
             }

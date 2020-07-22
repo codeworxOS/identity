@@ -18,11 +18,8 @@ namespace Codeworx.Identity.AspNetCore
         {
             try
             {
-                ////var requestType = await externalLogin.GetParameterTypeAsync(Constants.ExternalWindowsProviderId);
-                ////var binder = context.RequestServices.GetService(typeof(IRequestBinder<>).MakeGenericType(requestType));
-
                 var windowsLoginRequest = await requestBinder.BindAsync(context.Request);
-                var signInResonse = await externalLogin.SignInAsync(windowsLoginRequest);
+                var signInResonse = await externalLogin.SignInAsync(Constants.ExternalWindowsProviderId, windowsLoginRequest);
                 await signInBinder.BindAsync(signInResonse, context.Response);
             }
             catch (ErrorResponseException error)
