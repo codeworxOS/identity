@@ -2,17 +2,14 @@
 {
     public class OAuthLoginRequest : ILoginRequest
     {
-        public OAuthLoginRequest(string code, string state, string providerId)
+        public OAuthLoginRequest(string code, string state)
         {
             Code = code;
             State = state;
-            ProviderId = providerId;
         }
 
         public string Code { get; }
 
         public string State { get; }
-
-        public string ProviderId { get; }
     }
 }
