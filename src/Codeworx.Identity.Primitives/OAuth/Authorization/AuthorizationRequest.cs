@@ -7,7 +7,7 @@ namespace Codeworx.Identity.OAuth
     [DataContract]
     public class AuthorizationRequest
     {
-        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null, string prompt = null)
         {
             this.ClientId = clientId;
             this.RedirectUri = redirectUri;
@@ -16,6 +16,7 @@ namespace Codeworx.Identity.OAuth
             this.State = state;
             this.Nonce = nonce;
             this.ResponseMode = responseMode;
+            this.Prompt = prompt;
         }
 
         [Required]
@@ -49,6 +50,10 @@ namespace Codeworx.Identity.OAuth
         [DataMember(Order = 5, Name = Constants.OAuth.StateName)]
         public string State { get; }
 
+        [RegularExpression(Constants.OAuth.PromptValidation)]
+        [DataMember(Order = 7, Name = Constants.OAuth.PromptName)]
+        public string Prompt { get; }
+
         public virtual string GetRequestPath() => "oauth";
 
         public void Append(Codeworx.Identity.UriBuilder uriBuilder)
@@ -81,6 +86,11 @@ namespace Codeworx.Identity.OAuth
             if (!string.IsNullOrEmpty(Nonce))
             {
                 uriBuilder.AppendQueryParameter(Constants.OAuth.NonceName, Nonce);
+            }
+
+            if (!string.IsNullOrEmpty(Prompt))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Prompt);
             }
 
             if (!string.IsNullOrEmpty(ResponseMode))

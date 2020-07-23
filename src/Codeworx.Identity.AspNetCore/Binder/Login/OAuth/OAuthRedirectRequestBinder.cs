@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.OAuth;
@@ -22,6 +23,8 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
             {
                 var providerId = remaining.Value.Trim('/');
 
+                string prompt = null;
+
                 if (providerId.Contains("/"))
                 {
                     throw new NotSupportedException($"Invalid uri {request.Path}.");
@@ -32,7 +35,12 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                     throw new NotSupportedException("ReturnUrl Parameter is missing from the request.");
                 }
 
-                var result = new OAuthRedirectRequest(providerId, values[0]);
+                if (request.Query.TryGetValue(Constants.OAuth.PromptName, out var promptValues))
+                {
+                    prompt = promptValues.FirstOrDefault();
+                }
+
+                var result = new OAuthRedirectRequest(providerId, values[0], prompt);
 
                 return Task.FromResult(result);
             }

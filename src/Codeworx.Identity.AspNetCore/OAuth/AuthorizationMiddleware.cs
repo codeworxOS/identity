@@ -20,13 +20,12 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
             IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder)
         {
-            if (context.User == null)
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
-            }
+            ClaimsIdentity claimsIdentity = null;
 
-            var claimsIdentity = context.User.Identity as ClaimsIdentity;
+            if (context.User.Identity.IsAuthenticated)
+            {
+                claimsIdentity = context.User.Identity as ClaimsIdentity;
+            }
 
             try
             {

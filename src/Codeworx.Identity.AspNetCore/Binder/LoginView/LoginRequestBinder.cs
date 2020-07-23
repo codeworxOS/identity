@@ -28,16 +28,23 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 returnUrl = returnUrlValues.First();
             }
 
+            string prompt = null;
+
+            if (request.Query.TryGetValue(Constants.OAuth.PromptName, out var promptValues))
+            {
+                prompt = promptValues.FirstOrDefault();
+            }
+
             var authenticateResult = await request.HttpContext.AuthenticateAsync(_options.AuthenticationScheme);
 
-            if (authenticateResult.Succeeded)
+            if (authenticateResult.Succeeded && !prompt.Contains(Constants.OAuth.Prompt.Login))
             {
-                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl);
+                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, prompt);
             }
 
             if (HttpMethods.IsGet(request.Method))
             {
-                return new LoginRequest(returnUrl);
+                return new LoginRequest(returnUrl, prompt);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
@@ -46,7 +53,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                     var username = request.Form["username"].FirstOrDefault();
                     var password = request.Form["password"].FirstOrDefault();
 
-                    return new LoginFormRequest(returnUrl, username, password);
+                    return new LoginFormRequest(returnUrl, username, password, prompt);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

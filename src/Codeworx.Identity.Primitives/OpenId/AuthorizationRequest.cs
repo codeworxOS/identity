@@ -7,8 +7,8 @@ namespace Codeworx.Identity.OpenId
     [DataContract]
     public class AuthorizationRequest : OAuth.AuthorizationRequest
     {
-        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce, string responseMode)
-            : base(clientId, redirectUri, responseType, scope, state, nonce, responseMode)
+        public AuthorizationRequest(string clientId, string redirectUri, string responseType, string scope, string state, string nonce, string responseMode, string prompt)
+            : base(clientId, redirectUri, responseType, scope, state, nonce, responseMode, prompt)
         {
         }
 

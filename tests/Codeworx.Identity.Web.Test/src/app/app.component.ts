@@ -25,7 +25,20 @@ export class AppComponent {
   constructor(private oauthService: OAuthService, private router: Router) {
   }
 
-  public logout() : void{
-    this.oauthService.logOut(false);
+    public async logout(): Promise<void>
+    {
+        await this.oauthService.loadDiscoveryDocument();
+        this.oauthService.logOut(true);
+
+        let urlPromise: Promise<string> = (<any>this.oauthService).createLoginUrl({}, '', null, false, { "prompt": "select_account"});
+        let url = await urlPromise;
+
+        let identityUrl: string = this.oauthService.issuer;
+        identityUrl = identityUrl.toLowerCase();
+
+        this.oauthService.logoutUrl = identityUrl + '/account/logout?returnUrl=' + encodeURIComponent(url);
+        this.oauthService.postLogoutRedirectUri = this.oauthService.logoutUrl;
+
+        window.location.href = this.oauthService.logoutUrl;
   }
 }

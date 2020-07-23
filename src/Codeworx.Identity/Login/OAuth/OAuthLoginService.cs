@@ -52,7 +52,7 @@ namespace Codeworx.Identity.Login.OAuth
             var endpointBuilder = new UriBuilder(config.BaseUri.ToString());
             endpointBuilder.AppendPath(config.AuthorizationEndpoint);
 
-            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, callbackUriBuilder.ToString(), scopes);
+            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, callbackUriBuilder.ToString(), scopes, request.Prompt);
 
             return response;
         }

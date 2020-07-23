@@ -144,7 +144,6 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.Equals(options.OauthAuthorizationEndpoint),
                        p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<OAuth.AuthorizationMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.OpenIdTokenEndpoint),
@@ -152,7 +151,6 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.Equals(options.OpenIdAuthorizationEndpoint),
                        p => p
-                           .UseMiddleware<AuthenticationMiddleware>()
                            .UseMiddleware<OpenId.AuthorizationMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
@@ -243,6 +241,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<SelectTenantSuccessResponse>, SelectTenantSuccessResponseBinder>();
             collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
+            collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
