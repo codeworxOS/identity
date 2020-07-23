@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
             }
 
-            return new OAuthLoginRequest(codeValues, stateValues, Constants.ExternalOAuthProviderId);
+            return new OAuthLoginRequest(codeValues, stateValues);
         }
     }
 }
