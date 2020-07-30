@@ -2,8 +2,8 @@
 {
     public class LoginFormRequest : LoginRequest
     {
-        public LoginFormRequest(string returnUrl, string userName, string password)
-        : base(returnUrl)
+        public LoginFormRequest(string returnUrl, string userName, string password, string prompt)
+        : base(returnUrl, prompt)
         {
             UserName = userName;
             Password = password;

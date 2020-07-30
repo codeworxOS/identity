@@ -16,6 +16,8 @@
 
         IAuthorizationParametersBuilder WithScopes(params string[] scopes);
 
+        IAuthorizationParametersBuilder WithPrompts(params string[] prompts);
+
         IAuthorizationParametersBuilder WithState(string state);
 
         void Throw(string error, string errorDescription);

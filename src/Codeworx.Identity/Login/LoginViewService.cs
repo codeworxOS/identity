@@ -18,7 +18,7 @@ namespace Codeworx.Identity.Login
 
         public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
         {
-            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl, request.Prompt));
             var user = await _userService.GetUserByIdentifierAsync(request.Identity);
 
             return new LoggedinResponse(user, response.Groups, request.ReturnUrl);
@@ -26,7 +26,7 @@ namespace Codeworx.Identity.Login
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
-            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl, request.Prompt));
 
             return new LoginResponse(response.Groups, request.ReturnUrl);
         }
@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Login
             }
             catch (AuthenticationException)
             {
-                var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl));
+                var response = await _externalLoginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl, request.Prompt));
                 var loginResponse = new LoginResponse(response.Groups, request.ReturnUrl, request.UserName, Constants.InvalidCredentialsError);
 
                 throw new ErrorResponseException<LoginResponse>(loginResponse);

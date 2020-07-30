@@ -13,13 +13,15 @@ namespace Codeworx.Identity.OAuth.Authorization
         private string[] _responseTypes;
         private string[] _scopes;
         private string _state;
+        private string[] _prompts;
 
         public AuthorizationParametersBuilder(AuthorizationRequest request, ClaimsIdentity user)
         {
             _user = user;
-            _request = request;
+            _request = request ?? throw new System.ArgumentNullException(nameof(request));
             _scopes = new string[] { };
             _responseTypes = new string[] { };
+            _prompts = new string[] { };
         }
 
         public IAuthorizationParameters Parameters => new AuthorizationParameters(
@@ -29,6 +31,7 @@ namespace Codeworx.Identity.OAuth.Authorization
              _responseMode,
              _responseTypes,
              _scopes,
+             _prompts,
              _state,
              _user,
              _request);
@@ -49,6 +52,12 @@ namespace Codeworx.Identity.OAuth.Authorization
         public IAuthorizationParametersBuilder WithNonce(string nonce)
         {
             _nonce = nonce;
+            return this;
+        }
+
+        public IAuthorizationParametersBuilder WithPrompts(params string[] prompts)
+        {
+            _prompts = prompts;
             return this;
         }
 

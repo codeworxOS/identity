@@ -110,6 +110,8 @@ namespace Codeworx.Identity
             public const string NonceName = "nonce";
             public const string NonceValidation = VsChars;
             public const string PasswordValidation = UnicodeCharsNoCrlf;
+            public const string PromptName = "prompt";
+            public const string PromptValidation = @"^(?<prompt>" + NqChar + @"+)(\s{1}(?<prompt>" + NqChar + @"+))*$";
             public const string RedirectUriName = "redirect_uri";
             public const string RedirectUriValidation = UriReference;
             public const string RefreshTokenName = "refresh_token";
@@ -148,6 +150,14 @@ namespace Codeworx.Identity
 
                 public const string Password = "password";
                 public const string ClientCredentials = "client_credentials";
+            }
+
+            public class Prompt
+            {
+                public const string None = "none";
+                public const string Login = "login";
+                public const string Consent = "consent";
+                public const string SelectAccount = "select_account";
             }
 
             public class ReservedClaims

@@ -21,6 +21,11 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 
             uriBuilder.AppendQueryParameter(Constants.OAuth.StateName, responseData.State);
 
+            if (!string.IsNullOrEmpty(responseData.Prompt))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, responseData.Prompt);
+            }
+
             response.Redirect(uriBuilder.ToString());
 
             return Task.CompletedTask;

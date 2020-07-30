@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Codeworx.Identity.Response;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
@@ -17,6 +18,32 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public async Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
         {
+            if (!Validator.TryValidateProperty(request.Prompt, new ValidationContext(request) { MemberName = nameof(request.Prompt) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
+            }
+
+            builder = builder.WithPrompts(request.Prompt?.Split(' ') ?? new string[] { });
+
+            var parameters = builder.Parameters;
+
+            if (parameters.Prompts.Contains(Constants.OAuth.Prompt.None))
+            {
+                if (parameters.Prompts.Count > 1)
+                {
+                    builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
+                }
+                else if (parameters.User == null)
+                {
+                    builder.Throw(Constants.OpenId.Error.LoginRequired, null);
+                }
+            }
+
+            if (parameters.User == null)
+            {
+                throw new ErrorResponseException<LoginChallengeResponse>(new LoginChallengeResponse(request.Prompt));
+            }
+
             if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) { MemberName = nameof(request.State) }, new List<ValidationResult>()))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);

@@ -13,6 +13,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             string responseMode,
             IReadOnlyCollection<string> responseTypes,
             IReadOnlyCollection<string> scopes,
+            IReadOnlyCollection<string> prompts,
             string state,
             ClaimsIdentity user,
             AuthorizationRequest request)
@@ -23,6 +24,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             ResponseMode = responseMode;
             ResponseTypes = ImmutableArray.CreateRange(responseTypes);
             Scopes = ImmutableArray.CreateRange(scopes);
+            Prompts = ImmutableArray.CreateRange(prompts);
             State = state;
             User = user;
             Request = request;
@@ -32,7 +34,11 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public string Nonce { get; }
 
+        public IReadOnlyCollection<string> Prompts { get; }
+
         public string RedirectUri { get; }
+
+        public AuthorizationRequest Request { get; }
 
         public string ResponseMode { get; }
 
@@ -43,7 +49,5 @@ namespace Codeworx.Identity.OAuth.Authorization
         public string State { get; }
 
         public ClaimsIdentity User { get; }
-
-        public AuthorizationRequest Request { get; }
     }
 }

@@ -11,6 +11,8 @@ namespace Codeworx.Identity
 
         IReadOnlyCollection<string> ResponseTypes { get; }
 
+        IReadOnlyCollection<string> Prompts { get; }
+
         AuthorizationRequest Request { get; }
     }
 }

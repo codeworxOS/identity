@@ -39,6 +39,7 @@ namespace Codeworx.Identity.AspNetCore
             dictionary.TryGetValue(Constants.OAuth.StateName, out var state);
             dictionary.TryGetValue(Constants.OAuth.NonceName, out var nonce);
             dictionary.TryGetValue(Constants.OAuth.ResponseModeName, out var responseMode);
+            dictionary.TryGetValue(Constants.OAuth.PromptName, out var prompt);
 
             if (clientId?.Count > 1)
             {
@@ -75,6 +76,11 @@ namespace Codeworx.Identity.AspNetCore
                 throw this.GetErrorResponse(Constants.OAuth.ResponseModeName, state?.FirstOrDefault());
             }
 
+            if (prompt?.Count > 1)
+            {
+                throw this.GetErrorResponse(Constants.OAuth.PromptName, state?.FirstOrDefault());
+            }
+
             return this.GetResult(
                 clientId?.FirstOrDefault(),
                 redirectUri?.FirstOrDefault(),
@@ -82,11 +88,12 @@ namespace Codeworx.Identity.AspNetCore
                 scope?.FirstOrDefault(),
                 state?.FirstOrDefault(),
                 nonce?.FirstOrDefault(),
-                responseMode?.FirstOrDefault());
+                responseMode?.FirstOrDefault(),
+                prompt?.FirstOrDefault());
         }
 
         protected abstract ErrorResponseException GetErrorResponse(string errorDescription, string state);
 
-        protected abstract TRequest GetResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null);
+        protected abstract TRequest GetResult(string clientId, string redirectUri, string responseType, string scope, string state, string nonce = null, string responseMode = null, string prompt = null);
     }
 }

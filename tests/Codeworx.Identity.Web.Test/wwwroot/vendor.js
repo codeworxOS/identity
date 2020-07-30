@@ -65270,7 +65270,7 @@ const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["Version"]('9.1.1
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AUTH_CONFIG", function() { return AUTH_CONFIG; });
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AUTH_CONFIG", function() { return AUTH_CONFIG; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AbstractValidationHandler", function() { return AbstractValidationHandler; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AuthConfig", function() { return AuthConfig; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DefaultOAuthInterceptor", function() { return DefaultOAuthInterceptor; });
@@ -65297,15 +65297,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ɵb", function() { return DefaultHashHandler; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ɵc", function() { return createDefaultLogger; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ɵd", function() { return createDefaultStorage; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
-/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! tslib */ "./node_modules/angular-oauth2-oidc/node_modules/tslib/tslib.es6.js");
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
 /* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs/operators */ "./node_modules/rxjs/_esm2015/operators/index.js");
-/* harmony import */ var js_sha256__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! js-sha256 */ "./node_modules/js-sha256/src/sha256.js");
-/* harmony import */ var js_sha256__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(js_sha256__WEBPACK_IMPORTED_MODULE_6__);
-
 
 
 
@@ -65345,7 +65342,7 @@ class OAuthLogger {
  */
 class OAuthStorage {
 }
-let MemoryStorage = class MemoryStorage {
+class MemoryStorage {
     constructor() {
         this.data = new Map();
     }
@@ -65358,9 +65355,12 @@ let MemoryStorage = class MemoryStorage {
     setItem(key, data) {
         this.data.set(key, data);
     }
-};
+}
 MemoryStorage.ɵfac = function MemoryStorage_Factory(t) { return new (t || MemoryStorage)(); };
-MemoryStorage.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: MemoryStorage, factory: MemoryStorage.ɵfac });
+MemoryStorage.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: MemoryStorage, factory: MemoryStorage.ɵfac });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MemoryStorage, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], function () { return []; }, null); })();
 /**
  * Represents the received tokens, the received state
  * and the parsed claims from the id-token.
@@ -65402,7 +65402,7 @@ class AbstractValidationHandler {
      * Validates the at_hash in an id_token against the received access_token.
      */
     validateAtHash(params) {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_3__["__awaiter"])(this, void 0, void 0, function* () {
             let hashAlg = this.inferHashAlgorithm(params.idTokenHeader);
             let tokenHash = yield this.calcHash(params.accessToken, hashAlg); // sha256(accessToken, { asString: true });
             let leftMostHalf = tokenHash.substr(0, tokenHash.length / 2);
@@ -65430,7 +65430,7 @@ class AbstractValidationHandler {
     }
 }
 
-let UrlHelperService = class UrlHelperService {
+class UrlHelperService {
     getHashFragmentParams(customHashFragment) {
         let hash = customHashFragment || window.location.hash;
         hash = decodeURIComponent(hash);
@@ -65473,9 +65473,12 @@ let UrlHelperService = class UrlHelperService {
         }
         return data;
     }
-};
+}
 UrlHelperService.ɵfac = function UrlHelperService_Factory(t) { return new (t || UrlHelperService)(); };
-UrlHelperService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: UrlHelperService, factory: UrlHelperService.ɵfac });
+UrlHelperService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UrlHelperService, factory: UrlHelperService.ɵfac });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UrlHelperService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], null, null); })();
 
 class OAuthEvent {
     constructor(type) {
@@ -65726,17 +65729,508 @@ class WebHttpUrlEncodingCodec {
 }
 
 /**
+ * [js-sha256]{@link https://github.com/emn178/js-sha256}
+ *
+ * @version 0.9.0
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2017
+ * @license MIT
+ */
+/*jslint bitwise: true */
+var ERROR = 'input is invalid type';
+var WINDOW = typeof window === 'object';
+var root = WINDOW ? window : {};
+if (root.JS_SHA256_NO_WINDOW) {
+    WINDOW = false;
+}
+var WEB_WORKER = !WINDOW && typeof self === 'object';
+var NODE_JS = !root.JS_SHA256_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
+if (NODE_JS) {
+    root = global;
+}
+else if (WEB_WORKER) {
+    root = self;
+}
+var COMMON_JS = !root.JS_SHA256_NO_COMMON_JS && typeof module === 'object' && module.exports;
+var AMD = typeof define === 'function' && __webpack_require__(/*! !webpack amd options */ "./node_modules/webpack/buildin/amd-options.js");
+var ARRAY_BUFFER = !root.JS_SHA256_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
+var HEX_CHARS = '0123456789abcdef'.split('');
+var EXTRA = [-2147483648, 8388608, 32768, 128];
+var SHIFT = [24, 16, 8, 0];
+var K = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+];
+var OUTPUT_TYPES = ['hex', 'array', 'digest', 'arrayBuffer'];
+var blocks = [];
+if (root.JS_SHA256_NO_NODE_JS || !Array.isArray) {
+    Array.isArray = function (obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+}
+if (ARRAY_BUFFER && (root.JS_SHA256_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+    ArrayBuffer.isView = function (obj) {
+        return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
+    };
+}
+var createOutputMethod = function (outputType, is224) {
+    return function (message) {
+        return new Sha256(is224, true).update(message)[outputType]();
+    };
+};
+const ɵ0 = createOutputMethod;
+var createMethod = function (is224) {
+    var method = createOutputMethod('hex', is224);
+    if (NODE_JS) {
+        method = nodeWrap(method, is224);
+    }
+    method.create = function () {
+        return new Sha256(is224);
+    };
+    method.update = function (message) {
+        return method.create().update(message);
+    };
+    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+        var type = OUTPUT_TYPES[i];
+        method[type] = createOutputMethod(type, is224);
+    }
+    return method;
+};
+const ɵ1 = createMethod;
+var nodeWrap = function (method, is224) {
+    var crypto = eval("require('crypto')");
+    var Buffer = eval("require('buffer').Buffer");
+    var algorithm = is224 ? 'sha224' : 'sha256';
+    var nodeMethod = function (message) {
+        if (typeof message === 'string') {
+            return crypto.createHash(algorithm).update(message, 'utf8').digest('hex');
+        }
+        else {
+            if (message === null || message === undefined) {
+                throw new Error(ERROR);
+            }
+            else if (message.constructor === ArrayBuffer) {
+                message = new Uint8Array(message);
+            }
+        }
+        if (Array.isArray(message) || ArrayBuffer.isView(message) ||
+            message.constructor === Buffer) {
+            return crypto.createHash(algorithm).update(new Buffer(message)).digest('hex');
+        }
+        else {
+            return method(message);
+        }
+    };
+    return nodeMethod;
+};
+const ɵ2 = nodeWrap;
+var createHmacOutputMethod = function (outputType, is224) {
+    return function (key, message) {
+        return new HmacSha256(key, is224, true).update(message)[outputType]();
+    };
+};
+const ɵ3 = createHmacOutputMethod;
+var createHmacMethod = function (is224) {
+    var method = createHmacOutputMethod('hex', is224);
+    method.create = function (key) {
+        return new HmacSha256(key, is224);
+    };
+    method.update = function (key, message) {
+        return method.create(key).update(message);
+    };
+    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+        var type = OUTPUT_TYPES[i];
+        method[type] = createHmacOutputMethod(type, is224);
+    }
+    return method;
+};
+const ɵ4 = createHmacMethod;
+function Sha256(is224, sharedMemory) {
+    if (sharedMemory) {
+        blocks[0] = blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+            blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+                blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+                    blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+        this.blocks = blocks;
+    }
+    else {
+        this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+    if (is224) {
+        this.h0 = 0xc1059ed8;
+        this.h1 = 0x367cd507;
+        this.h2 = 0x3070dd17;
+        this.h3 = 0xf70e5939;
+        this.h4 = 0xffc00b31;
+        this.h5 = 0x68581511;
+        this.h6 = 0x64f98fa7;
+        this.h7 = 0xbefa4fa4;
+    }
+    else { // 256
+        this.h0 = 0x6a09e667;
+        this.h1 = 0xbb67ae85;
+        this.h2 = 0x3c6ef372;
+        this.h3 = 0xa54ff53a;
+        this.h4 = 0x510e527f;
+        this.h5 = 0x9b05688c;
+        this.h6 = 0x1f83d9ab;
+        this.h7 = 0x5be0cd19;
+    }
+    this.block = this.start = this.bytes = this.hBytes = 0;
+    this.finalized = this.hashed = false;
+    this.first = true;
+    this.is224 = is224;
+}
+Sha256.prototype.update = function (message) {
+    if (this.finalized) {
+        return;
+    }
+    var notString, type = typeof message;
+    if (type !== 'string') {
+        if (type === 'object') {
+            if (message === null) {
+                throw new Error(ERROR);
+            }
+            else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+                message = new Uint8Array(message);
+            }
+            else if (!Array.isArray(message)) {
+                if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+                    throw new Error(ERROR);
+                }
+            }
+        }
+        else {
+            throw new Error(ERROR);
+        }
+        notString = true;
+    }
+    var code, index = 0, i, length = message.length, blocks = this.blocks;
+    while (index < length) {
+        if (this.hashed) {
+            this.hashed = false;
+            blocks[0] = this.block;
+            blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+                blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+                    blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+                        blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+        }
+        if (notString) {
+            for (i = this.start; index < length && i < 64; ++index) {
+                blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+            }
+        }
+        else {
+            for (i = this.start; index < length && i < 64; ++index) {
+                code = message.charCodeAt(index);
+                if (code < 0x80) {
+                    blocks[i >> 2] |= code << SHIFT[i++ & 3];
+                }
+                else if (code < 0x800) {
+                    blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+                }
+                else if (code < 0xd800 || code >= 0xe000) {
+                    blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+                }
+                else {
+                    code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+                    blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+                    blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+                }
+            }
+        }
+        this.lastByteIndex = i;
+        this.bytes += i - this.start;
+        if (i >= 64) {
+            this.block = blocks[16];
+            this.start = i - 64;
+            this.hash();
+            this.hashed = true;
+        }
+        else {
+            this.start = i;
+        }
+    }
+    if (this.bytes > 4294967295) {
+        this.hBytes += this.bytes / 4294967296 << 0;
+        this.bytes = this.bytes % 4294967296;
+    }
+    return this;
+};
+Sha256.prototype.finalize = function () {
+    if (this.finalized) {
+        return;
+    }
+    this.finalized = true;
+    var blocks = this.blocks, i = this.lastByteIndex;
+    blocks[16] = this.block;
+    blocks[i >> 2] |= EXTRA[i & 3];
+    this.block = blocks[16];
+    if (i >= 56) {
+        if (!this.hashed) {
+            this.hash();
+        }
+        blocks[0] = this.block;
+        blocks[16] = blocks[1] = blocks[2] = blocks[3] =
+            blocks[4] = blocks[5] = blocks[6] = blocks[7] =
+                blocks[8] = blocks[9] = blocks[10] = blocks[11] =
+                    blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
+    }
+    blocks[14] = this.hBytes << 3 | this.bytes >>> 29;
+    blocks[15] = this.bytes << 3;
+    this.hash();
+};
+Sha256.prototype.hash = function () {
+    var a = this.h0, b = this.h1, c = this.h2, d = this.h3, e = this.h4, f = this.h5, g = this.h6, h = this.h7, blocks = this.blocks, j, s0, s1, maj, t1, t2, ch, ab, da, cd, bc;
+    for (j = 16; j < 64; ++j) {
+        // rightrotate
+        t1 = blocks[j - 15];
+        s0 = ((t1 >>> 7) | (t1 << 25)) ^ ((t1 >>> 18) | (t1 << 14)) ^ (t1 >>> 3);
+        t1 = blocks[j - 2];
+        s1 = ((t1 >>> 17) | (t1 << 15)) ^ ((t1 >>> 19) | (t1 << 13)) ^ (t1 >>> 10);
+        blocks[j] = blocks[j - 16] + s0 + blocks[j - 7] + s1 << 0;
+    }
+    bc = b & c;
+    for (j = 0; j < 64; j += 4) {
+        if (this.first) {
+            if (this.is224) {
+                ab = 300032;
+                t1 = blocks[0] - 1413257819;
+                h = t1 - 150054599 << 0;
+                d = t1 + 24177077 << 0;
+            }
+            else {
+                ab = 704751109;
+                t1 = blocks[0] - 210244248;
+                h = t1 - 1521486534 << 0;
+                d = t1 + 143694565 << 0;
+            }
+            this.first = false;
+        }
+        else {
+            s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+            s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+            ab = a & b;
+            maj = ab ^ (a & c) ^ bc;
+            ch = (e & f) ^ (~e & g);
+            t1 = h + s1 + ch + K[j] + blocks[j];
+            t2 = s0 + maj;
+            h = d + t1 << 0;
+            d = t1 + t2 << 0;
+        }
+        s0 = ((d >>> 2) | (d << 30)) ^ ((d >>> 13) | (d << 19)) ^ ((d >>> 22) | (d << 10));
+        s1 = ((h >>> 6) | (h << 26)) ^ ((h >>> 11) | (h << 21)) ^ ((h >>> 25) | (h << 7));
+        da = d & a;
+        maj = da ^ (d & b) ^ ab;
+        ch = (h & e) ^ (~h & f);
+        t1 = g + s1 + ch + K[j + 1] + blocks[j + 1];
+        t2 = s0 + maj;
+        g = c + t1 << 0;
+        c = t1 + t2 << 0;
+        s0 = ((c >>> 2) | (c << 30)) ^ ((c >>> 13) | (c << 19)) ^ ((c >>> 22) | (c << 10));
+        s1 = ((g >>> 6) | (g << 26)) ^ ((g >>> 11) | (g << 21)) ^ ((g >>> 25) | (g << 7));
+        cd = c & d;
+        maj = cd ^ (c & a) ^ da;
+        ch = (g & h) ^ (~g & e);
+        t1 = f + s1 + ch + K[j + 2] + blocks[j + 2];
+        t2 = s0 + maj;
+        f = b + t1 << 0;
+        b = t1 + t2 << 0;
+        s0 = ((b >>> 2) | (b << 30)) ^ ((b >>> 13) | (b << 19)) ^ ((b >>> 22) | (b << 10));
+        s1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7));
+        bc = b & c;
+        maj = bc ^ (b & d) ^ cd;
+        ch = (f & g) ^ (~f & h);
+        t1 = e + s1 + ch + K[j + 3] + blocks[j + 3];
+        t2 = s0 + maj;
+        e = a + t1 << 0;
+        a = t1 + t2 << 0;
+    }
+    this.h0 = this.h0 + a << 0;
+    this.h1 = this.h1 + b << 0;
+    this.h2 = this.h2 + c << 0;
+    this.h3 = this.h3 + d << 0;
+    this.h4 = this.h4 + e << 0;
+    this.h5 = this.h5 + f << 0;
+    this.h6 = this.h6 + g << 0;
+    this.h7 = this.h7 + h << 0;
+};
+Sha256.prototype.hex = function () {
+    this.finalize();
+    var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3, h4 = this.h4, h5 = this.h5, h6 = this.h6, h7 = this.h7;
+    var hex = HEX_CHARS[(h0 >> 28) & 0x0F] + HEX_CHARS[(h0 >> 24) & 0x0F] +
+        HEX_CHARS[(h0 >> 20) & 0x0F] + HEX_CHARS[(h0 >> 16) & 0x0F] +
+        HEX_CHARS[(h0 >> 12) & 0x0F] + HEX_CHARS[(h0 >> 8) & 0x0F] +
+        HEX_CHARS[(h0 >> 4) & 0x0F] + HEX_CHARS[h0 & 0x0F] +
+        HEX_CHARS[(h1 >> 28) & 0x0F] + HEX_CHARS[(h1 >> 24) & 0x0F] +
+        HEX_CHARS[(h1 >> 20) & 0x0F] + HEX_CHARS[(h1 >> 16) & 0x0F] +
+        HEX_CHARS[(h1 >> 12) & 0x0F] + HEX_CHARS[(h1 >> 8) & 0x0F] +
+        HEX_CHARS[(h1 >> 4) & 0x0F] + HEX_CHARS[h1 & 0x0F] +
+        HEX_CHARS[(h2 >> 28) & 0x0F] + HEX_CHARS[(h2 >> 24) & 0x0F] +
+        HEX_CHARS[(h2 >> 20) & 0x0F] + HEX_CHARS[(h2 >> 16) & 0x0F] +
+        HEX_CHARS[(h2 >> 12) & 0x0F] + HEX_CHARS[(h2 >> 8) & 0x0F] +
+        HEX_CHARS[(h2 >> 4) & 0x0F] + HEX_CHARS[h2 & 0x0F] +
+        HEX_CHARS[(h3 >> 28) & 0x0F] + HEX_CHARS[(h3 >> 24) & 0x0F] +
+        HEX_CHARS[(h3 >> 20) & 0x0F] + HEX_CHARS[(h3 >> 16) & 0x0F] +
+        HEX_CHARS[(h3 >> 12) & 0x0F] + HEX_CHARS[(h3 >> 8) & 0x0F] +
+        HEX_CHARS[(h3 >> 4) & 0x0F] + HEX_CHARS[h3 & 0x0F] +
+        HEX_CHARS[(h4 >> 28) & 0x0F] + HEX_CHARS[(h4 >> 24) & 0x0F] +
+        HEX_CHARS[(h4 >> 20) & 0x0F] + HEX_CHARS[(h4 >> 16) & 0x0F] +
+        HEX_CHARS[(h4 >> 12) & 0x0F] + HEX_CHARS[(h4 >> 8) & 0x0F] +
+        HEX_CHARS[(h4 >> 4) & 0x0F] + HEX_CHARS[h4 & 0x0F] +
+        HEX_CHARS[(h5 >> 28) & 0x0F] + HEX_CHARS[(h5 >> 24) & 0x0F] +
+        HEX_CHARS[(h5 >> 20) & 0x0F] + HEX_CHARS[(h5 >> 16) & 0x0F] +
+        HEX_CHARS[(h5 >> 12) & 0x0F] + HEX_CHARS[(h5 >> 8) & 0x0F] +
+        HEX_CHARS[(h5 >> 4) & 0x0F] + HEX_CHARS[h5 & 0x0F] +
+        HEX_CHARS[(h6 >> 28) & 0x0F] + HEX_CHARS[(h6 >> 24) & 0x0F] +
+        HEX_CHARS[(h6 >> 20) & 0x0F] + HEX_CHARS[(h6 >> 16) & 0x0F] +
+        HEX_CHARS[(h6 >> 12) & 0x0F] + HEX_CHARS[(h6 >> 8) & 0x0F] +
+        HEX_CHARS[(h6 >> 4) & 0x0F] + HEX_CHARS[h6 & 0x0F];
+    if (!this.is224) {
+        hex += HEX_CHARS[(h7 >> 28) & 0x0F] + HEX_CHARS[(h7 >> 24) & 0x0F] +
+            HEX_CHARS[(h7 >> 20) & 0x0F] + HEX_CHARS[(h7 >> 16) & 0x0F] +
+            HEX_CHARS[(h7 >> 12) & 0x0F] + HEX_CHARS[(h7 >> 8) & 0x0F] +
+            HEX_CHARS[(h7 >> 4) & 0x0F] + HEX_CHARS[h7 & 0x0F];
+    }
+    return hex;
+};
+Sha256.prototype.toString = Sha256.prototype.hex;
+Sha256.prototype.digest = function () {
+    this.finalize();
+    var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3, h4 = this.h4, h5 = this.h5, h6 = this.h6, h7 = this.h7;
+    var arr = [
+        (h0 >> 24) & 0xFF, (h0 >> 16) & 0xFF, (h0 >> 8) & 0xFF, h0 & 0xFF,
+        (h1 >> 24) & 0xFF, (h1 >> 16) & 0xFF, (h1 >> 8) & 0xFF, h1 & 0xFF,
+        (h2 >> 24) & 0xFF, (h2 >> 16) & 0xFF, (h2 >> 8) & 0xFF, h2 & 0xFF,
+        (h3 >> 24) & 0xFF, (h3 >> 16) & 0xFF, (h3 >> 8) & 0xFF, h3 & 0xFF,
+        (h4 >> 24) & 0xFF, (h4 >> 16) & 0xFF, (h4 >> 8) & 0xFF, h4 & 0xFF,
+        (h5 >> 24) & 0xFF, (h5 >> 16) & 0xFF, (h5 >> 8) & 0xFF, h5 & 0xFF,
+        (h6 >> 24) & 0xFF, (h6 >> 16) & 0xFF, (h6 >> 8) & 0xFF, h6 & 0xFF
+    ];
+    if (!this.is224) {
+        arr.push((h7 >> 24) & 0xFF, (h7 >> 16) & 0xFF, (h7 >> 8) & 0xFF, h7 & 0xFF);
+    }
+    return arr;
+};
+Sha256.prototype.array = Sha256.prototype.digest;
+Sha256.prototype.arrayBuffer = function () {
+    this.finalize();
+    var buffer = new ArrayBuffer(this.is224 ? 28 : 32);
+    var dataView = new DataView(buffer);
+    dataView.setUint32(0, this.h0);
+    dataView.setUint32(4, this.h1);
+    dataView.setUint32(8, this.h2);
+    dataView.setUint32(12, this.h3);
+    dataView.setUint32(16, this.h4);
+    dataView.setUint32(20, this.h5);
+    dataView.setUint32(24, this.h6);
+    if (!this.is224) {
+        dataView.setUint32(28, this.h7);
+    }
+    return buffer;
+};
+function HmacSha256(key, is224, sharedMemory) {
+    var i, type = typeof key;
+    if (type === 'string') {
+        var bytes = [], length = key.length, index = 0, code;
+        for (i = 0; i < length; ++i) {
+            code = key.charCodeAt(i);
+            if (code < 0x80) {
+                bytes[index++] = code;
+            }
+            else if (code < 0x800) {
+                bytes[index++] = (0xc0 | (code >> 6));
+                bytes[index++] = (0x80 | (code & 0x3f));
+            }
+            else if (code < 0xd800 || code >= 0xe000) {
+                bytes[index++] = (0xe0 | (code >> 12));
+                bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
+                bytes[index++] = (0x80 | (code & 0x3f));
+            }
+            else {
+                code = 0x10000 + (((code & 0x3ff) << 10) | (key.charCodeAt(++i) & 0x3ff));
+                bytes[index++] = (0xf0 | (code >> 18));
+                bytes[index++] = (0x80 | ((code >> 12) & 0x3f));
+                bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
+                bytes[index++] = (0x80 | (code & 0x3f));
+            }
+        }
+        key = bytes;
+    }
+    else {
+        if (type === 'object') {
+            if (key === null) {
+                throw new Error(ERROR);
+            }
+            else if (ARRAY_BUFFER && key.constructor === ArrayBuffer) {
+                key = new Uint8Array(key);
+            }
+            else if (!Array.isArray(key)) {
+                if (!ARRAY_BUFFER || !ArrayBuffer.isView(key)) {
+                    throw new Error(ERROR);
+                }
+            }
+        }
+        else {
+            throw new Error(ERROR);
+        }
+    }
+    if (key.length > 64) {
+        key = (new Sha256(is224, true)).update(key).array();
+    }
+    var oKeyPad = [], iKeyPad = [];
+    for (i = 0; i < 64; ++i) {
+        var b = key[i] || 0;
+        oKeyPad[i] = 0x5c ^ b;
+        iKeyPad[i] = 0x36 ^ b;
+    }
+    Sha256.call(this, is224, sharedMemory);
+    this.update(iKeyPad);
+    this.oKeyPad = oKeyPad;
+    this.inner = true;
+    this.sharedMemory = sharedMemory;
+}
+HmacSha256.prototype = new Sha256();
+HmacSha256.prototype.finalize = function () {
+    Sha256.prototype.finalize.call(this);
+    if (this.inner) {
+        this.inner = false;
+        var innerHash = this.array();
+        Sha256.call(this, this.is224, this.sharedMemory);
+        this.update(this.oKeyPad);
+        this.update(innerHash);
+        Sha256.prototype.finalize.call(this);
+    }
+};
+var exports = createMethod();
+exports.sha256 = exports;
+exports.sha224 = createMethod(true);
+exports.sha256.hmac = createHmacMethod();
+exports.sha224.hmac = createHmacMethod(true);
+
+/**
  * Abstraction for crypto algorithms
  */
 class HashHandler {
 }
-let DefaultHashHandler = class DefaultHashHandler {
+class DefaultHashHandler {
     calcHash(valueToHash, algorithm) {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_3__["__awaiter"])(this, void 0, void 0, function* () {
             // const encoder = new TextEncoder();
             // const hashArray = await window.crypto.subtle.digest(algorithm, data);
             // const data = encoder.encode(valueToHash);
-            const hashArray = js_sha256__WEBPACK_IMPORTED_MODULE_6__["sha256"].array(valueToHash);
+            const hashArray = exports.array(valueToHash);
             // const hashString = this.toHashString(hashArray);
             const hashString = this.toHashString2(hashArray);
             return hashString;
@@ -65757,18 +66251,21 @@ let DefaultHashHandler = class DefaultHashHandler {
         }
         return result;
     }
-};
+}
 DefaultHashHandler.ɵfac = function DefaultHashHandler_Factory(t) { return new (t || DefaultHashHandler)(); };
-DefaultHashHandler.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: DefaultHashHandler, factory: DefaultHashHandler.ɵfac });
+DefaultHashHandler.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: DefaultHashHandler, factory: DefaultHashHandler.ɵfac });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DefaultHashHandler, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], null, null); })();
 
 /**
  * Service for logging in and logging out with
  * OIDC and OAuth2. Supports implicit flow and
  * password flow.
  */
-let OAuthService = class OAuthService extends AuthConfig {
+class OAuthService extends AuthConfig {
     constructor(ngZone, http, storage, tokenValidationHandler, config, urlHelper, logger, crypto, document) {
-        var _a, _b, _c, _d;
+        var _a;
         super();
         this.ngZone = ngZone;
         this.http = http;
@@ -65776,7 +66273,6 @@ let OAuthService = class OAuthService extends AuthConfig {
         this.urlHelper = urlHelper;
         this.logger = logger;
         this.crypto = crypto;
-        this.document = document;
         /**
          * @internal
          * Deprecated:  use property events instead
@@ -65792,7 +66288,12 @@ let OAuthService = class OAuthService extends AuthConfig {
         this.grantTypesSupported = [];
         this.inImplicitFlow = false;
         this.saveNoncesInLocalStorage = false;
-        this.debug('angular-oauth2-oidc v8-beta');
+        this.debug('angular-oauth2-oidc v10');
+        // See https://github.com/manfredsteyer/angular-oauth2-oidc/issues/773 for why this is needed
+        this.document = document;
+        if (!config) {
+            config = {};
+        }
         this.discoveryDocumentLoaded$ = this.discoveryDocumentLoadedSubject.asObservable();
         this.events = this.eventsSubject.asObservable();
         if (tokenValidationHandler) {
@@ -65816,8 +66317,8 @@ let OAuthService = class OAuthService extends AuthConfig {
         // in IE, sessionStorage does not always survive a redirect
         if (typeof window !== 'undefined' &&
             typeof window['localStorage'] !== 'undefined') {
-            const ua = (_b = (_a = window) === null || _a === void 0 ? void 0 : _a.navigator) === null || _b === void 0 ? void 0 : _b.userAgent;
-            const msie = ((_c = ua) === null || _c === void 0 ? void 0 : _c.includes('MSIE ')) || ((_d = ua) === null || _d === void 0 ? void 0 : _d.includes('Trident'));
+            const ua = (_a = window === null || window === void 0 ? void 0 : window.navigator) === null || _a === void 0 ? void 0 : _a.userAgent;
+            const msie = (ua === null || ua === void 0 ? void 0 : ua.includes('MSIE ')) || (ua === null || ua === void 0 ? void 0 : ua.includes('Trident'));
             if (msie) {
                 this.saveNoncesInLocalStorage = true;
             }
@@ -65913,17 +66414,11 @@ let OAuthService = class OAuthService extends AuthConfig {
      * @param options LoginOptions to pass through to `tryLogin(...)`
      */
     loadDiscoveryDocumentAndLogin(options = null) {
-        if (!options) {
-            options = { state: '' };
-        }
+        options = options || {};
         return this.loadDiscoveryDocumentAndTryLogin(options).then(_ => {
             if (!this.hasValidIdToken() || !this.hasValidAccessToken()) {
-                if (this.responseType === 'code') {
-                    this.initCodeFlow(options.state);
-                }
-                else {
-                    this.initImplicitFlow(options.state);
-                }
+                const state = typeof options.state === 'string' ? options.state : '';
+                this.initLoginFlow(state);
                 return false;
             }
             else {
@@ -66215,7 +66710,7 @@ let OAuthService = class OAuthService extends AuthConfig {
      * @param password
      * @param headers Optional additional http-headers.
      */
-    fetchTokenUsingPasswordFlowAndLoadUserProfile(userName, password, headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]()) {
+    fetchTokenUsingPasswordFlowAndLoadUserProfile(userName, password, headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]()) {
         return this.fetchTokenUsingPasswordFlow(userName, password, headers).then(() => this.loadUserProfile());
     }
     /**
@@ -66232,7 +66727,7 @@ let OAuthService = class OAuthService extends AuthConfig {
             throw new Error("userinfoEndpoint must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS).");
         }
         return new Promise((resolve, reject) => {
-            const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]().set('Authorization', 'Bearer ' + this.getAccessToken());
+            const headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]().set('Authorization', 'Bearer ' + this.getAccessToken());
             this.http
                 .get(this.userinfoEndpoint, { headers })
                 .subscribe(info => {
@@ -66265,7 +66760,7 @@ let OAuthService = class OAuthService extends AuthConfig {
      * @param password
      * @param headers Optional additional http-headers.
      */
-    fetchTokenUsingPasswordFlow(userName, password, headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]()) {
+    fetchTokenUsingPasswordFlow(userName, password, headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]()) {
         this.assertUrlNotNullAndCorrectProtocol(this.tokenEndpoint, 'tokenEndpoint');
         return new Promise((resolve, reject) => {
             /**
@@ -66274,7 +66769,7 @@ let OAuthService = class OAuthService extends AuthConfig {
              *
              * @stable
              */
-            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]({ encoder: new WebHttpUrlEncodingCodec() })
+            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpParams"]({ encoder: new WebHttpUrlEncodingCodec() })
                 .set('grant_type', 'password')
                 .set('scope', this.scope)
                 .set('username', userName)
@@ -66320,11 +66815,11 @@ let OAuthService = class OAuthService extends AuthConfig {
     refreshToken() {
         this.assertUrlNotNullAndCorrectProtocol(this.tokenEndpoint, 'tokenEndpoint');
         return new Promise((resolve, reject) => {
-            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]()
+            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpParams"]()
                 .set('grant_type', 'refresh_token')
                 .set('scope', this.scope)
                 .set('refresh_token', this._storage.getItem('refresh_token'));
-            let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
+            let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
             if (this.useHttpBasicAuth) {
                 const header = btoa(`${this.clientId}:${this.dummyClientSecret}`);
                 headers = headers.set('Authorization', 'Basic ' + header);
@@ -66395,15 +66890,15 @@ let OAuthService = class OAuthService extends AuthConfig {
         if (!this.validateUrlForHttps(this.loginUrl)) {
             throw new Error("loginUrl  must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS).");
         }
-        if (typeof document === 'undefined') {
+        if (typeof this.document === 'undefined') {
             throw new Error('silent refresh is not supported on this platform');
         }
-        const existingIframe = document.getElementById(this.silentRefreshIFrameName);
+        const existingIframe = this.document.getElementById(this.silentRefreshIFrameName);
         if (existingIframe) {
-            document.body.removeChild(existingIframe);
+            this.document.body.removeChild(existingIframe);
         }
         this.silentRefreshSubject = claims['sub'];
-        const iframe = document.createElement('iframe');
+        const iframe = this.document.createElement('iframe');
         iframe.id = this.silentRefreshIFrameName;
         this.setupSilentRefreshEventListener();
         const redirectUri = this.silentRefreshRedirectUri || this.redirectUri;
@@ -66412,7 +66907,7 @@ let OAuthService = class OAuthService extends AuthConfig {
             if (!this.silentRefreshShowIFrame) {
                 iframe.style['display'] = 'none';
             }
-            document.body.appendChild(iframe);
+            this.document.body.appendChild(iframe);
         });
         const errors = this.events.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["filter"])(e => e instanceof OAuthErrorEvent), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])());
         const success = this.events.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["filter"])(e => e.type === 'token_received'), Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["first"])());
@@ -66535,7 +67030,7 @@ let OAuthService = class OAuthService extends AuthConfig {
             console.warn('sessionChecksEnabled is activated but there is no session_state');
             return false;
         }
-        if (typeof document === 'undefined') {
+        if (typeof this.document === 'undefined') {
             return false;
         }
         return true;
@@ -66626,17 +67121,17 @@ let OAuthService = class OAuthService extends AuthConfig {
         if (!this.canPerformSessionCheck()) {
             return;
         }
-        const existingIframe = document.getElementById(this.sessionCheckIFrameName);
+        const existingIframe = this.document.getElementById(this.sessionCheckIFrameName);
         if (existingIframe) {
-            document.body.removeChild(existingIframe);
+            this.document.body.removeChild(existingIframe);
         }
-        const iframe = document.createElement('iframe');
+        const iframe = this.document.createElement('iframe');
         iframe.id = this.sessionCheckIFrameName;
         this.setupSessionCheckEventListener();
         const url = this.sessionCheckIFrameUrl;
         iframe.setAttribute('src', url);
         iframe.style.display = 'none';
-        document.body.appendChild(iframe);
+        this.document.body.appendChild(iframe);
         this.startSessionCheckTimer();
     }
     startSessionCheckTimer() {
@@ -66652,7 +67147,7 @@ let OAuthService = class OAuthService extends AuthConfig {
         }
     }
     checkSession() {
-        const iframe = document.getElementById(this.sessionCheckIFrameName);
+        const iframe = this.document.getElementById(this.sessionCheckIFrameName);
         if (!iframe) {
             this.logger.warn('checkSession did not find iframe', this.sessionCheckIFrameName);
         }
@@ -66664,7 +67159,7 @@ let OAuthService = class OAuthService extends AuthConfig {
         iframe.contentWindow.postMessage(message, this.issuer);
     }
     createLoginUrl(state = '', loginHint = '', customRedirectUri = '', noPrompt = false, params = {}) {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_3__["__awaiter"])(this, void 0, void 0, function* () {
             const that = this;
             let redirectUri;
             if (customRedirectUri) {
@@ -66715,14 +67210,14 @@ let OAuthService = class OAuthService extends AuthConfig {
                 encodeURIComponent(redirectUri) +
                 '&scope=' +
                 encodeURIComponent(scope);
-            if (this.responseType === 'code' && !this.disablePKCE) {
+            if (this.responseType.includes('code') && !this.disablePKCE) {
                 const [challenge, verifier] = yield this.createChallangeVerifierPairForPKCE();
                 if (this.saveNoncesInLocalStorage &&
                     typeof window['localStorage'] !== 'undefined') {
-                    localStorage.setItem('PKCI_verifier', verifier);
+                    localStorage.setItem('PKCE_verifier', verifier);
                 }
                 else {
-                    this._storage.setItem('PKCI_verifier', verifier);
+                    this._storage.setItem('PKCE_verifier', verifier);
                 }
                 url += '&code_challenge=' + challenge;
                 url += '&code_challenge_method=S256';
@@ -66920,31 +67415,31 @@ let OAuthService = class OAuthService extends AuthConfig {
      * Get token using an intermediate code. Works for the Authorization Code flow.
      */
     getTokenFromCode(code, options) {
-        let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]()
+        let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpParams"]()
             .set('grant_type', 'authorization_code')
             .set('code', code)
             .set('redirect_uri', options.customRedirectUri || this.redirectUri);
         if (!this.disablePKCE) {
-            let pkciVerifier;
+            let PKCEVerifier;
             if (this.saveNoncesInLocalStorage &&
                 typeof window['localStorage'] !== 'undefined') {
-                pkciVerifier = localStorage.getItem('PKCI_verifier');
+                PKCEVerifier = localStorage.getItem('PKCE_verifier');
             }
             else {
-                pkciVerifier = this._storage.getItem('PKCI_verifier');
+                PKCEVerifier = this._storage.getItem('PKCE_verifier');
             }
-            if (!pkciVerifier) {
-                console.warn('No PKCI verifier found in oauth storage!');
+            if (!PKCEVerifier) {
+                console.warn('No PKCE verifier found in oauth storage!');
             }
             else {
-                params = params.set('code_verifier', pkciVerifier);
+                params = params.set('code_verifier', PKCEVerifier);
             }
         }
         return this.fetchAndProcessToken(params);
     }
     fetchAndProcessToken(params) {
         this.assertUrlNotNullAndCorrectProtocol(this.tokenEndpoint, 'tokenEndpoint');
-        let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
+        let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
         if (this.useHttpBasicAuth) {
             const header = btoa(`${this.clientId}:${this.dummyClientSecret}`);
             headers = headers.set('Authorization', 'Basic ' + header);
@@ -67212,7 +67707,8 @@ let OAuthService = class OAuthService extends AuthConfig {
         // addressing https://github.com/manfredsteyer/angular-oauth2-oidc/issues/661
         // i.e. Based on spec the at_hash check is only true for implicit code flow on Ping Federate
         // https://www.pingidentity.com/developer/en/resources/openid-connect-developers-guide.html
-        if (this.hasOwnProperty('responseType') && this.responseType === 'code') {
+        if (this.hasOwnProperty('responseType') &&
+            (this.responseType === 'code' || this.responseType === 'id_token')) {
             this.disableAtHashCheck = true;
         }
         if (!this.disableAtHashCheck &&
@@ -67405,25 +67901,23 @@ let OAuthService = class OAuthService extends AuthConfig {
     authorizationHeader() {
         return 'Bearer ' + this.getAccessToken();
     }
-    /**
-     * Removes all tokens and logs the user out.
-     * If a logout url is configured, the user is
-     * redirected to it with optional state parameter.
-     * @param noRedirectToLogoutUrl
-     * @param state
-     */
-    logOut(noRedirectToLogoutUrl = false, state = '') {
+    logOut(customParameters = {}, state = '') {
+        let noRedirectToLogoutUrl = false;
+        if (typeof customParameters === 'boolean') {
+            noRedirectToLogoutUrl = customParameters;
+            customParameters = {};
+        }
         const id_token = this.getIdToken();
         this._storage.removeItem('access_token');
         this._storage.removeItem('id_token');
         this._storage.removeItem('refresh_token');
         if (this.saveNoncesInLocalStorage) {
             localStorage.removeItem('nonce');
-            localStorage.removeItem('PKCI_verifier');
+            localStorage.removeItem('PKCE_verifier');
         }
         else {
             this._storage.removeItem('nonce');
-            this._storage.removeItem('PKCI_verifier');
+            this._storage.removeItem('PKCE_verifier');
         }
         this._storage.removeItem('expires_at');
         this._storage.removeItem('id_token_claims_obj');
@@ -67457,7 +67951,7 @@ let OAuthService = class OAuthService extends AuthConfig {
                 .replace(/\{\{client_id\}\}/, this.clientId);
         }
         else {
-            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]();
+            let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpParams"]();
             if (id_token) {
                 params = params.set('id_token_hint', id_token);
             }
@@ -67467,6 +67961,9 @@ let OAuthService = class OAuthService extends AuthConfig {
                 if (state) {
                     params = params.set('state', state);
                 }
+            }
+            for (let key in customParameters) {
+                params = params.set(key, customParameters[key]);
             }
             logoutUrl =
                 this.logoutUrl +
@@ -67548,7 +68045,7 @@ let OAuthService = class OAuthService extends AuthConfig {
         });
     }
     checkAtHash(params) {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_3__["__awaiter"])(this, void 0, void 0, function* () {
             if (!this.tokenValidationHandler) {
                 this.logger.warn('No tokenValidationHandler configured. Cannot check at_hash.');
                 return true;
@@ -67601,7 +68098,7 @@ let OAuthService = class OAuthService extends AuthConfig {
         });
     }
     createChallangeVerifierPairForPKCE() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_3__["__awaiter"])(this, void 0, void 0, function* () {
             if (!this.crypto) {
                 throw new Error('PKCE support for code flow needs a CryptoHander. Did you import the OAuthModule using forRoot() ?');
             }
@@ -67628,15 +68125,15 @@ let OAuthService = class OAuthService extends AuthConfig {
      * of the token issued allowing the authorization server to clean
      * up any security credentials associated with the authorization
      */
-    revokeTokenAndLogout() {
+    revokeTokenAndLogout(customParameters = {}, ignoreCorsIssues = false) {
         let revokeEndpoint = this.revocationEndpoint;
         let accessToken = this.getAccessToken();
         let refreshToken = this.getRefreshToken();
         if (!accessToken) {
             return;
         }
-        let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpParams"]();
-        let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
+        let params = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpParams"]();
+        let headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]().set('Content-Type', 'application/x-www-form-urlencoded');
         if (this.useHttpBasicAuth) {
             const header = btoa(`${this.clientId}:${this.dummyClientSecret}`);
             headers = headers.set('Authorization', 'Basic ' + header);
@@ -67673,8 +68170,22 @@ let OAuthService = class OAuthService extends AuthConfig {
             else {
                 revokeRefreshToken = Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["of"])(null);
             }
+            if (ignoreCorsIssues) {
+                revokeAccessToken = revokeAccessToken.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["catchError"])((err) => {
+                    if (err.status === 0) {
+                        return Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["of"])(null);
+                    }
+                    return Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["throwError"])(err);
+                }));
+                revokeRefreshToken = revokeRefreshToken.pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["catchError"])((err) => {
+                    if (err.status === 0) {
+                        return Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["of"])(null);
+                    }
+                    return Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["throwError"])(err);
+                }));
+            }
             Object(rxjs__WEBPACK_IMPORTED_MODULE_4__["combineLatest"])([revokeAccessToken, revokeRefreshToken]).subscribe(res => {
-                this.logOut();
+                this.logOut(customParameters);
                 resolve(res);
                 this.logger.info('Token successfully revoked');
             }, err => {
@@ -67684,35 +68195,34 @@ let OAuthService = class OAuthService extends AuthConfig {
             });
         });
     }
-};
-OAuthService.ɵfac = function OAuthService_Factory(t) { return new (t || OAuthService)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthStorage, 8), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](ValidationHandler, 8), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](AuthConfig, 8), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](UrlHelperService), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthLogger), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](HashHandler, 8), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_2__["DOCUMENT"])); };
-OAuthService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: OAuthService, factory: OAuthService.ɵfac });
+}
+OAuthService.ɵfac = function OAuthService_Factory(t) { return new (t || OAuthService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthStorage, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](ValidationHandler, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](AuthConfig, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](UrlHelperService), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthLogger), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](HashHandler, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_1__["DOCUMENT"])); };
+OAuthService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: OAuthService, factory: OAuthService.ɵfac });
 OAuthService.ctorParameters = () => [
-    { type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"] },
-    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] },
-    { type: OAuthStorage, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"] }] },
-    { type: ValidationHandler, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"] }] },
-    { type: AuthConfig, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"] }] },
+    { type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"] },
+    { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] },
+    { type: OAuthStorage, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"] }] },
+    { type: ValidationHandler, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"] }] },
+    { type: AuthConfig, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"] }] },
     { type: UrlHelperService },
     { type: OAuthLogger },
-    { type: HashHandler, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"] }] },
-    { type: Document, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"], args: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["DOCUMENT"],] }] }
+    { type: HashHandler, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"] }] },
+    { type: undefined, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"], args: [_angular_common__WEBPACK_IMPORTED_MODULE_1__["DOCUMENT"],] }] }
 ];
-OAuthService = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(2, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"])()),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"])()),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(4, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"])()),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(7, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"])()),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(8, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"])(_angular_common__WEBPACK_IMPORTED_MODULE_2__["DOCUMENT"])),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:paramtypes", [_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"],
-        _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"],
-        OAuthStorage,
-        ValidationHandler,
-        AuthConfig,
-        UrlHelperService,
-        OAuthLogger,
-        HashHandler,
-        Document])
-], OAuthService);
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](OAuthService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], function () { return [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"] }, { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"] }, { type: OAuthStorage, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"]
+            }] }, { type: ValidationHandler, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"]
+            }] }, { type: AuthConfig, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"]
+            }] }, { type: UrlHelperService }, { type: OAuthLogger }, { type: HashHandler, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"]
+            }] }, { type: undefined, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Inject"],
+                args: [_angular_common__WEBPACK_IMPORTED_MODULE_1__["DOCUMENT"]]
+            }] }]; }, null); })();
 
 class OAuthModuleConfig {
 }
@@ -67727,7 +68237,7 @@ class OAuthNoopResourceServerErrorHandler {
     }
 }
 
-let DefaultOAuthInterceptor = class DefaultOAuthInterceptor {
+class DefaultOAuthInterceptor {
     constructor(authStorage, oAuthService, errorHandler, moduleConfig) {
         this.authStorage = authStorage;
         this.oAuthService = oAuthService;
@@ -67768,21 +68278,20 @@ let DefaultOAuthInterceptor = class DefaultOAuthInterceptor {
                 .pipe(Object(rxjs_operators__WEBPACK_IMPORTED_MODULE_5__["catchError"])(err => this.errorHandler.handleError(err)));
         }));
     }
-};
-DefaultOAuthInterceptor.ɵfac = function DefaultOAuthInterceptor_Factory(t) { return new (t || DefaultOAuthInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthStorage), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthService), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthResourceServerErrorHandler), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](OAuthModuleConfig, 8)); };
-DefaultOAuthInterceptor.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: DefaultOAuthInterceptor, factory: DefaultOAuthInterceptor.ɵfac });
+}
+DefaultOAuthInterceptor.ɵfac = function DefaultOAuthInterceptor_Factory(t) { return new (t || DefaultOAuthInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthStorage), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthService), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthResourceServerErrorHandler), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](OAuthModuleConfig, 8)); };
+DefaultOAuthInterceptor.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: DefaultOAuthInterceptor, factory: DefaultOAuthInterceptor.ɵfac });
 DefaultOAuthInterceptor.ctorParameters = () => [
     { type: OAuthStorage },
     { type: OAuthService },
     { type: OAuthResourceServerErrorHandler },
-    { type: OAuthModuleConfig, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"] }] }
+    { type: OAuthModuleConfig, decorators: [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"] }] }
 ];
-DefaultOAuthInterceptor = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([ Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__param"])(3, Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"])()),
-    Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"])("design:paramtypes", [OAuthStorage,
-        OAuthService,
-        OAuthResourceServerErrorHandler,
-        OAuthModuleConfig])
-], DefaultOAuthInterceptor);
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DefaultOAuthInterceptor, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], function () { return [{ type: OAuthStorage }, { type: OAuthService }, { type: OAuthResourceServerErrorHandler }, { type: OAuthModuleConfig, decorators: [{
+                type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Optional"]
+            }] }]; }, null); })();
 
 /**
  * A validation handler that isn't validating nothing.
@@ -67806,11 +68315,10 @@ function createDefaultStorage() {
         : new MemoryStorage();
 }
 
-var OAuthModule_1;
-let OAuthModule = OAuthModule_1 = class OAuthModule {
+class OAuthModule {
     static forRoot(config = null, validationHandlerClass = NullValidationHandler) {
         return {
-            ngModule: OAuthModule_1,
+            ngModule: OAuthModule,
             providers: [
                 OAuthService,
                 UrlHelperService,
@@ -67824,49 +68332,21 @@ let OAuthModule = OAuthModule_1 = class OAuthModule {
                 },
                 { provide: OAuthModuleConfig, useValue: config },
                 {
-                    provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HTTP_INTERCEPTORS"],
+                    provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HTTP_INTERCEPTORS"],
                     useClass: DefaultOAuthInterceptor,
                     multi: true
                 }
             ]
         };
     }
-};
-OAuthModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineNgModule"]({ type: OAuthModule });
-OAuthModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({ factory: function OAuthModule_Factory(t) { return new (t || OAuthModule)(); }, imports: [[_angular_common__WEBPACK_IMPORTED_MODULE_2__["CommonModule"]]] });
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MemoryStorage, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"]
-    }], function () { return []; }, null); })();
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](UrlHelperService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"]
-    }], null, null); })();
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](DefaultHashHandler, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"]
-    }], null, null); })();
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](OAuthService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"]
-    }], function () { return [{ type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgZone"] }, { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: OAuthStorage, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"]
-            }] }, { type: ValidationHandler, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"]
-            }] }, { type: AuthConfig, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"]
-            }] }, { type: UrlHelperService }, { type: OAuthLogger }, { type: HashHandler, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"]
-            }] }, { type: Document, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Inject"],
-                args: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["DOCUMENT"]]
-            }] }]; }, null); })();
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](DefaultOAuthInterceptor, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"]
-    }], function () { return [{ type: OAuthStorage }, { type: OAuthService }, { type: OAuthResourceServerErrorHandler }, { type: OAuthModuleConfig, decorators: [{
-                type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Optional"]
-            }] }]; }, null); })();
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵsetNgModuleScope"](OAuthModule, { imports: function () { return [_angular_common__WEBPACK_IMPORTED_MODULE_2__["CommonModule"]]; } }); })();
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](OAuthModule, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["NgModule"],
+}
+OAuthModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({ type: OAuthModule });
+OAuthModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({ factory: function OAuthModule_Factory(t) { return new (t || OAuthModule)(); }, imports: [[_angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"]]] });
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsetNgModuleScope"](OAuthModule, { imports: function () { return [_angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"]]; } }); })();
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](OAuthModule, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"],
         args: [{
-                imports: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["CommonModule"]],
+                imports: [_angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"]],
                 declarations: [],
                 exports: []
             }]
@@ -67900,7 +68380,7 @@ class JwksValidationHandler extends NullValidationHandler {
     }
 }
 
-const AUTH_CONFIG = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["InjectionToken"]('AUTH_CONFIG');
+const AUTH_CONFIG = new _angular_core__WEBPACK_IMPORTED_MODULE_0__["InjectionToken"]('AUTH_CONFIG');
 
 /**
  * Generated bundle index. Do not edit.
@@ -67909,535 +68389,269 @@ const AUTH_CONFIG = new _angular_core__WEBPACK_IMPORTED_MODULE_1__["InjectionTok
 
 
 //# sourceMappingURL=angular-oauth2-oidc.js.map
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
 
-/***/ "./node_modules/js-sha256/src/sha256.js":
-/*!**********************************************!*\
-  !*** ./node_modules/js-sha256/src/sha256.js ***!
-  \**********************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./node_modules/angular-oauth2-oidc/node_modules/tslib/tslib.es6.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/angular-oauth2-oidc/node_modules/tslib/tslib.es6.js ***!
+  \**************************************************************************/
+/*! exports provided: __extends, __assign, __rest, __decorate, __param, __metadata, __awaiter, __generator, __createBinding, __exportStar, __values, __read, __spread, __spreadArrays, __await, __asyncGenerator, __asyncDelegator, __asyncValues, __makeTemplateObject, __importStar, __importDefault, __classPrivateFieldGet, __classPrivateFieldSet */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_RESULT__;/**
- * [js-sha256]{@link https://github.com/emn178/js-sha256}
- *
- * @version 0.9.0
- * @author Chen, Yi-Cyuan [emn178@gmail.com]
- * @copyright Chen, Yi-Cyuan 2014-2017
- * @license MIT
- */
-/*jslint bitwise: true */
-(function () {
-  'use strict';
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__extends", function() { return __extends; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__assign", function() { return __assign; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__rest", function() { return __rest; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__decorate", function() { return __decorate; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__param", function() { return __param; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__metadata", function() { return __metadata; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__awaiter", function() { return __awaiter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__generator", function() { return __generator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__createBinding", function() { return __createBinding; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__exportStar", function() { return __exportStar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__values", function() { return __values; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__read", function() { return __read; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__spread", function() { return __spread; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__spreadArrays", function() { return __spreadArrays; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__await", function() { return __await; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__asyncGenerator", function() { return __asyncGenerator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__asyncDelegator", function() { return __asyncDelegator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__asyncValues", function() { return __asyncValues; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__makeTemplateObject", function() { return __makeTemplateObject; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__importStar", function() { return __importStar; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__importDefault", function() { return __importDefault; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldGet", function() { return __classPrivateFieldGet; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__classPrivateFieldSet", function() { return __classPrivateFieldSet; });
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
 
-  var ERROR = 'input is invalid type';
-  var WINDOW = typeof window === 'object';
-  var root = WINDOW ? window : {};
-  if (root.JS_SHA256_NO_WINDOW) {
-    WINDOW = false;
-  }
-  var WEB_WORKER = !WINDOW && typeof self === 'object';
-  var NODE_JS = !root.JS_SHA256_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
-  if (NODE_JS) {
-    root = global;
-  } else if (WEB_WORKER) {
-    root = self;
-  }
-  var COMMON_JS = !root.JS_SHA256_NO_COMMON_JS && typeof module === 'object' && module.exports;
-  var AMD =  true && __webpack_require__(/*! !webpack amd options */ "./node_modules/webpack/buildin/amd-options.js");
-  var ARRAY_BUFFER = !root.JS_SHA256_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
-  var HEX_CHARS = '0123456789abcdef'.split('');
-  var EXTRA = [-2147483648, 8388608, 32768, 128];
-  var SHIFT = [24, 16, 8, 0];
-  var K = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-  ];
-  var OUTPUT_TYPES = ['hex', 'array', 'digest', 'arrayBuffer'];
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-  var blocks = [];
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise */
 
-  if (root.JS_SHA256_NO_NODE_JS || !Array.isArray) {
-    Array.isArray = function (obj) {
-      return Object.prototype.toString.call(obj) === '[object Array]';
-    };
-  }
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
 
-  if (ARRAY_BUFFER && (root.JS_SHA256_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
-    ArrayBuffer.isView = function (obj) {
-      return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
-    };
-  }
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
 
-  var createOutputMethod = function (outputType, is224) {
-    return function (message) {
-      return new Sha256(is224, true).update(message)[outputType]();
-    };
-  };
-
-  var createMethod = function (is224) {
-    var method = createOutputMethod('hex', is224);
-    if (NODE_JS) {
-      method = nodeWrap(method, is224);
-    }
-    method.create = function () {
-      return new Sha256(is224);
-    };
-    method.update = function (message) {
-      return method.create().update(message);
-    };
-    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-      var type = OUTPUT_TYPES[i];
-      method[type] = createOutputMethod(type, is224);
-    }
-    return method;
-  };
-
-  var nodeWrap = function (method, is224) {
-    var crypto = eval("require('crypto')");
-    var Buffer = eval("require('buffer').Buffer");
-    var algorithm = is224 ? 'sha224' : 'sha256';
-    var nodeMethod = function (message) {
-      if (typeof message === 'string') {
-        return crypto.createHash(algorithm).update(message, 'utf8').digest('hex');
-      } else {
-        if (message === null || message === undefined) {
-          throw new Error(ERROR);
-        } else if (message.constructor === ArrayBuffer) {
-          message = new Uint8Array(message);
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
         }
-      }
-      if (Array.isArray(message) || ArrayBuffer.isView(message) ||
-        message.constructor === Buffer) {
-        return crypto.createHash(algorithm).update(new Buffer(message)).digest('hex');
-      } else {
-        return method(message);
-      }
+        return t;
+    }
+    return __assign.apply(this, arguments);
+}
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __metadata(metadataKey, metadataValue) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
+
+var __createBinding = Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+});
+
+function __exportStar(m, exports) {
+    for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
+}
+
+function __values(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
     };
-    return nodeMethod;
-  };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+}
 
-  var createHmacOutputMethod = function (outputType, is224) {
-    return function (key, message) {
-      return new HmacSha256(key, is224, true).update(message)[outputType]();
-    };
-  };
-
-  var createHmacMethod = function (is224) {
-    var method = createHmacOutputMethod('hex', is224);
-    method.create = function (key) {
-      return new HmacSha256(key, is224);
-    };
-    method.update = function (key, message) {
-      return method.create(key).update(message);
-    };
-    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
-      var type = OUTPUT_TYPES[i];
-      method[type] = createHmacOutputMethod(type, is224);
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
     }
-    return method;
-  };
-
-  function Sha256(is224, sharedMemory) {
-    if (sharedMemory) {
-      blocks[0] = blocks[16] = blocks[1] = blocks[2] = blocks[3] =
-        blocks[4] = blocks[5] = blocks[6] = blocks[7] =
-        blocks[8] = blocks[9] = blocks[10] = blocks[11] =
-        blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
-      this.blocks = blocks;
-    } else {
-      this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    }
-
-    if (is224) {
-      this.h0 = 0xc1059ed8;
-      this.h1 = 0x367cd507;
-      this.h2 = 0x3070dd17;
-      this.h3 = 0xf70e5939;
-      this.h4 = 0xffc00b31;
-      this.h5 = 0x68581511;
-      this.h6 = 0x64f98fa7;
-      this.h7 = 0xbefa4fa4;
-    } else { // 256
-      this.h0 = 0x6a09e667;
-      this.h1 = 0xbb67ae85;
-      this.h2 = 0x3c6ef372;
-      this.h3 = 0xa54ff53a;
-      this.h4 = 0x510e527f;
-      this.h5 = 0x9b05688c;
-      this.h6 = 0x1f83d9ab;
-      this.h7 = 0x5be0cd19;
-    }
-
-    this.block = this.start = this.bytes = this.hBytes = 0;
-    this.finalized = this.hashed = false;
-    this.first = true;
-    this.is224 = is224;
-  }
-
-  Sha256.prototype.update = function (message) {
-    if (this.finalized) {
-      return;
-    }
-    var notString, type = typeof message;
-    if (type !== 'string') {
-      if (type === 'object') {
-        if (message === null) {
-          throw new Error(ERROR);
-        } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
-          message = new Uint8Array(message);
-        } else if (!Array.isArray(message)) {
-          if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
-            throw new Error(ERROR);
-          }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
         }
-      } else {
-        throw new Error(ERROR);
-      }
-      notString = true;
+        finally { if (e) throw e.error; }
     }
-    var code, index = 0, i, length = message.length, blocks = this.blocks;
+    return ar;
+}
 
-    while (index < length) {
-      if (this.hashed) {
-        this.hashed = false;
-        blocks[0] = this.block;
-        blocks[16] = blocks[1] = blocks[2] = blocks[3] =
-          blocks[4] = blocks[5] = blocks[6] = blocks[7] =
-          blocks[8] = blocks[9] = blocks[10] = blocks[11] =
-          blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
-      }
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
+}
 
-      if (notString) {
-        for (i = this.start; index < length && i < 64; ++index) {
-          blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
-        }
-      } else {
-        for (i = this.start; index < length && i < 64; ++index) {
-          code = message.charCodeAt(index);
-          if (code < 0x80) {
-            blocks[i >> 2] |= code << SHIFT[i++ & 3];
-          } else if (code < 0x800) {
-            blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          } else if (code < 0xd800 || code >= 0xe000) {
-            blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          } else {
-            code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
-            blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
-            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
-          }
-        }
-      }
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 
-      this.lastByteIndex = i;
-      this.bytes += i - this.start;
-      if (i >= 64) {
-        this.block = blocks[16];
-        this.start = i - 64;
-        this.hash();
-        this.hashed = true;
-      } else {
-        this.start = i;
-      }
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r); }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+    var i, p;
+    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+    function verb(n, f) { i[n] = o[n] ? function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; } : f; }
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+}
+
+function __makeTemplateObject(cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+
+var __setModuleDefault = Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+};
+
+function __importStar(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+}
+
+function __importDefault(mod) {
+    return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+function __classPrivateFieldGet(receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
     }
-    if (this.bytes > 4294967295) {
-      this.hBytes += this.bytes / 4294967296 << 0;
-      this.bytes = this.bytes % 4294967296;
+    return privateMap.get(receiver);
+}
+
+function __classPrivateFieldSet(receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
     }
-    return this;
-  };
-
-  Sha256.prototype.finalize = function () {
-    if (this.finalized) {
-      return;
-    }
-    this.finalized = true;
-    var blocks = this.blocks, i = this.lastByteIndex;
-    blocks[16] = this.block;
-    blocks[i >> 2] |= EXTRA[i & 3];
-    this.block = blocks[16];
-    if (i >= 56) {
-      if (!this.hashed) {
-        this.hash();
-      }
-      blocks[0] = this.block;
-      blocks[16] = blocks[1] = blocks[2] = blocks[3] =
-        blocks[4] = blocks[5] = blocks[6] = blocks[7] =
-        blocks[8] = blocks[9] = blocks[10] = blocks[11] =
-        blocks[12] = blocks[13] = blocks[14] = blocks[15] = 0;
-    }
-    blocks[14] = this.hBytes << 3 | this.bytes >>> 29;
-    blocks[15] = this.bytes << 3;
-    this.hash();
-  };
-
-  Sha256.prototype.hash = function () {
-    var a = this.h0, b = this.h1, c = this.h2, d = this.h3, e = this.h4, f = this.h5, g = this.h6,
-      h = this.h7, blocks = this.blocks, j, s0, s1, maj, t1, t2, ch, ab, da, cd, bc;
-
-    for (j = 16; j < 64; ++j) {
-      // rightrotate
-      t1 = blocks[j - 15];
-      s0 = ((t1 >>> 7) | (t1 << 25)) ^ ((t1 >>> 18) | (t1 << 14)) ^ (t1 >>> 3);
-      t1 = blocks[j - 2];
-      s1 = ((t1 >>> 17) | (t1 << 15)) ^ ((t1 >>> 19) | (t1 << 13)) ^ (t1 >>> 10);
-      blocks[j] = blocks[j - 16] + s0 + blocks[j - 7] + s1 << 0;
-    }
-
-    bc = b & c;
-    for (j = 0; j < 64; j += 4) {
-      if (this.first) {
-        if (this.is224) {
-          ab = 300032;
-          t1 = blocks[0] - 1413257819;
-          h = t1 - 150054599 << 0;
-          d = t1 + 24177077 << 0;
-        } else {
-          ab = 704751109;
-          t1 = blocks[0] - 210244248;
-          h = t1 - 1521486534 << 0;
-          d = t1 + 143694565 << 0;
-        }
-        this.first = false;
-      } else {
-        s0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
-        s1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
-        ab = a & b;
-        maj = ab ^ (a & c) ^ bc;
-        ch = (e & f) ^ (~e & g);
-        t1 = h + s1 + ch + K[j] + blocks[j];
-        t2 = s0 + maj;
-        h = d + t1 << 0;
-        d = t1 + t2 << 0;
-      }
-      s0 = ((d >>> 2) | (d << 30)) ^ ((d >>> 13) | (d << 19)) ^ ((d >>> 22) | (d << 10));
-      s1 = ((h >>> 6) | (h << 26)) ^ ((h >>> 11) | (h << 21)) ^ ((h >>> 25) | (h << 7));
-      da = d & a;
-      maj = da ^ (d & b) ^ ab;
-      ch = (h & e) ^ (~h & f);
-      t1 = g + s1 + ch + K[j + 1] + blocks[j + 1];
-      t2 = s0 + maj;
-      g = c + t1 << 0;
-      c = t1 + t2 << 0;
-      s0 = ((c >>> 2) | (c << 30)) ^ ((c >>> 13) | (c << 19)) ^ ((c >>> 22) | (c << 10));
-      s1 = ((g >>> 6) | (g << 26)) ^ ((g >>> 11) | (g << 21)) ^ ((g >>> 25) | (g << 7));
-      cd = c & d;
-      maj = cd ^ (c & a) ^ da;
-      ch = (g & h) ^ (~g & e);
-      t1 = f + s1 + ch + K[j + 2] + blocks[j + 2];
-      t2 = s0 + maj;
-      f = b + t1 << 0;
-      b = t1 + t2 << 0;
-      s0 = ((b >>> 2) | (b << 30)) ^ ((b >>> 13) | (b << 19)) ^ ((b >>> 22) | (b << 10));
-      s1 = ((f >>> 6) | (f << 26)) ^ ((f >>> 11) | (f << 21)) ^ ((f >>> 25) | (f << 7));
-      bc = b & c;
-      maj = bc ^ (b & d) ^ cd;
-      ch = (f & g) ^ (~f & h);
-      t1 = e + s1 + ch + K[j + 3] + blocks[j + 3];
-      t2 = s0 + maj;
-      e = a + t1 << 0;
-      a = t1 + t2 << 0;
-    }
-
-    this.h0 = this.h0 + a << 0;
-    this.h1 = this.h1 + b << 0;
-    this.h2 = this.h2 + c << 0;
-    this.h3 = this.h3 + d << 0;
-    this.h4 = this.h4 + e << 0;
-    this.h5 = this.h5 + f << 0;
-    this.h6 = this.h6 + g << 0;
-    this.h7 = this.h7 + h << 0;
-  };
-
-  Sha256.prototype.hex = function () {
-    this.finalize();
-
-    var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3, h4 = this.h4, h5 = this.h5,
-      h6 = this.h6, h7 = this.h7;
-
-    var hex = HEX_CHARS[(h0 >> 28) & 0x0F] + HEX_CHARS[(h0 >> 24) & 0x0F] +
-      HEX_CHARS[(h0 >> 20) & 0x0F] + HEX_CHARS[(h0 >> 16) & 0x0F] +
-      HEX_CHARS[(h0 >> 12) & 0x0F] + HEX_CHARS[(h0 >> 8) & 0x0F] +
-      HEX_CHARS[(h0 >> 4) & 0x0F] + HEX_CHARS[h0 & 0x0F] +
-      HEX_CHARS[(h1 >> 28) & 0x0F] + HEX_CHARS[(h1 >> 24) & 0x0F] +
-      HEX_CHARS[(h1 >> 20) & 0x0F] + HEX_CHARS[(h1 >> 16) & 0x0F] +
-      HEX_CHARS[(h1 >> 12) & 0x0F] + HEX_CHARS[(h1 >> 8) & 0x0F] +
-      HEX_CHARS[(h1 >> 4) & 0x0F] + HEX_CHARS[h1 & 0x0F] +
-      HEX_CHARS[(h2 >> 28) & 0x0F] + HEX_CHARS[(h2 >> 24) & 0x0F] +
-      HEX_CHARS[(h2 >> 20) & 0x0F] + HEX_CHARS[(h2 >> 16) & 0x0F] +
-      HEX_CHARS[(h2 >> 12) & 0x0F] + HEX_CHARS[(h2 >> 8) & 0x0F] +
-      HEX_CHARS[(h2 >> 4) & 0x0F] + HEX_CHARS[h2 & 0x0F] +
-      HEX_CHARS[(h3 >> 28) & 0x0F] + HEX_CHARS[(h3 >> 24) & 0x0F] +
-      HEX_CHARS[(h3 >> 20) & 0x0F] + HEX_CHARS[(h3 >> 16) & 0x0F] +
-      HEX_CHARS[(h3 >> 12) & 0x0F] + HEX_CHARS[(h3 >> 8) & 0x0F] +
-      HEX_CHARS[(h3 >> 4) & 0x0F] + HEX_CHARS[h3 & 0x0F] +
-      HEX_CHARS[(h4 >> 28) & 0x0F] + HEX_CHARS[(h4 >> 24) & 0x0F] +
-      HEX_CHARS[(h4 >> 20) & 0x0F] + HEX_CHARS[(h4 >> 16) & 0x0F] +
-      HEX_CHARS[(h4 >> 12) & 0x0F] + HEX_CHARS[(h4 >> 8) & 0x0F] +
-      HEX_CHARS[(h4 >> 4) & 0x0F] + HEX_CHARS[h4 & 0x0F] +
-      HEX_CHARS[(h5 >> 28) & 0x0F] + HEX_CHARS[(h5 >> 24) & 0x0F] +
-      HEX_CHARS[(h5 >> 20) & 0x0F] + HEX_CHARS[(h5 >> 16) & 0x0F] +
-      HEX_CHARS[(h5 >> 12) & 0x0F] + HEX_CHARS[(h5 >> 8) & 0x0F] +
-      HEX_CHARS[(h5 >> 4) & 0x0F] + HEX_CHARS[h5 & 0x0F] +
-      HEX_CHARS[(h6 >> 28) & 0x0F] + HEX_CHARS[(h6 >> 24) & 0x0F] +
-      HEX_CHARS[(h6 >> 20) & 0x0F] + HEX_CHARS[(h6 >> 16) & 0x0F] +
-      HEX_CHARS[(h6 >> 12) & 0x0F] + HEX_CHARS[(h6 >> 8) & 0x0F] +
-      HEX_CHARS[(h6 >> 4) & 0x0F] + HEX_CHARS[h6 & 0x0F];
-    if (!this.is224) {
-      hex += HEX_CHARS[(h7 >> 28) & 0x0F] + HEX_CHARS[(h7 >> 24) & 0x0F] +
-        HEX_CHARS[(h7 >> 20) & 0x0F] + HEX_CHARS[(h7 >> 16) & 0x0F] +
-        HEX_CHARS[(h7 >> 12) & 0x0F] + HEX_CHARS[(h7 >> 8) & 0x0F] +
-        HEX_CHARS[(h7 >> 4) & 0x0F] + HEX_CHARS[h7 & 0x0F];
-    }
-    return hex;
-  };
-
-  Sha256.prototype.toString = Sha256.prototype.hex;
-
-  Sha256.prototype.digest = function () {
-    this.finalize();
-
-    var h0 = this.h0, h1 = this.h1, h2 = this.h2, h3 = this.h3, h4 = this.h4, h5 = this.h5,
-      h6 = this.h6, h7 = this.h7;
-
-    var arr = [
-      (h0 >> 24) & 0xFF, (h0 >> 16) & 0xFF, (h0 >> 8) & 0xFF, h0 & 0xFF,
-      (h1 >> 24) & 0xFF, (h1 >> 16) & 0xFF, (h1 >> 8) & 0xFF, h1 & 0xFF,
-      (h2 >> 24) & 0xFF, (h2 >> 16) & 0xFF, (h2 >> 8) & 0xFF, h2 & 0xFF,
-      (h3 >> 24) & 0xFF, (h3 >> 16) & 0xFF, (h3 >> 8) & 0xFF, h3 & 0xFF,
-      (h4 >> 24) & 0xFF, (h4 >> 16) & 0xFF, (h4 >> 8) & 0xFF, h4 & 0xFF,
-      (h5 >> 24) & 0xFF, (h5 >> 16) & 0xFF, (h5 >> 8) & 0xFF, h5 & 0xFF,
-      (h6 >> 24) & 0xFF, (h6 >> 16) & 0xFF, (h6 >> 8) & 0xFF, h6 & 0xFF
-    ];
-    if (!this.is224) {
-      arr.push((h7 >> 24) & 0xFF, (h7 >> 16) & 0xFF, (h7 >> 8) & 0xFF, h7 & 0xFF);
-    }
-    return arr;
-  };
-
-  Sha256.prototype.array = Sha256.prototype.digest;
-
-  Sha256.prototype.arrayBuffer = function () {
-    this.finalize();
-
-    var buffer = new ArrayBuffer(this.is224 ? 28 : 32);
-    var dataView = new DataView(buffer);
-    dataView.setUint32(0, this.h0);
-    dataView.setUint32(4, this.h1);
-    dataView.setUint32(8, this.h2);
-    dataView.setUint32(12, this.h3);
-    dataView.setUint32(16, this.h4);
-    dataView.setUint32(20, this.h5);
-    dataView.setUint32(24, this.h6);
-    if (!this.is224) {
-      dataView.setUint32(28, this.h7);
-    }
-    return buffer;
-  };
-
-  function HmacSha256(key, is224, sharedMemory) {
-    var i, type = typeof key;
-    if (type === 'string') {
-      var bytes = [], length = key.length, index = 0, code;
-      for (i = 0; i < length; ++i) {
-        code = key.charCodeAt(i);
-        if (code < 0x80) {
-          bytes[index++] = code;
-        } else if (code < 0x800) {
-          bytes[index++] = (0xc0 | (code >> 6));
-          bytes[index++] = (0x80 | (code & 0x3f));
-        } else if (code < 0xd800 || code >= 0xe000) {
-          bytes[index++] = (0xe0 | (code >> 12));
-          bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
-          bytes[index++] = (0x80 | (code & 0x3f));
-        } else {
-          code = 0x10000 + (((code & 0x3ff) << 10) | (key.charCodeAt(++i) & 0x3ff));
-          bytes[index++] = (0xf0 | (code >> 18));
-          bytes[index++] = (0x80 | ((code >> 12) & 0x3f));
-          bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
-          bytes[index++] = (0x80 | (code & 0x3f));
-        }
-      }
-      key = bytes;
-    } else {
-      if (type === 'object') {
-        if (key === null) {
-          throw new Error(ERROR);
-        } else if (ARRAY_BUFFER && key.constructor === ArrayBuffer) {
-          key = new Uint8Array(key);
-        } else if (!Array.isArray(key)) {
-          if (!ARRAY_BUFFER || !ArrayBuffer.isView(key)) {
-            throw new Error(ERROR);
-          }
-        }
-      } else {
-        throw new Error(ERROR);
-      }
-    }
-
-    if (key.length > 64) {
-      key = (new Sha256(is224, true)).update(key).array();
-    }
-
-    var oKeyPad = [], iKeyPad = [];
-    for (i = 0; i < 64; ++i) {
-      var b = key[i] || 0;
-      oKeyPad[i] = 0x5c ^ b;
-      iKeyPad[i] = 0x36 ^ b;
-    }
-
-    Sha256.call(this, is224, sharedMemory);
-
-    this.update(iKeyPad);
-    this.oKeyPad = oKeyPad;
-    this.inner = true;
-    this.sharedMemory = sharedMemory;
-  }
-  HmacSha256.prototype = new Sha256();
-
-  HmacSha256.prototype.finalize = function () {
-    Sha256.prototype.finalize.call(this);
-    if (this.inner) {
-      this.inner = false;
-      var innerHash = this.array();
-      Sha256.call(this, this.is224, this.sharedMemory);
-      this.update(this.oKeyPad);
-      this.update(innerHash);
-      Sha256.prototype.finalize.call(this);
-    }
-  };
-
-  var exports = createMethod();
-  exports.sha256 = exports;
-  exports.sha224 = createMethod(true);
-  exports.sha256.hmac = createHmacMethod();
-  exports.sha224.hmac = createHmacMethod(true);
-
-  if (COMMON_JS) {
-    module.exports = exports;
-  } else {
-    root.sha256 = exports.sha256;
-    root.sha224 = exports.sha224;
-    if (AMD) {
-      !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
-        return exports;
-      }).call(exports, __webpack_require__, exports, module),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    }
-  }
-})();
+    privateMap.set(receiver, value);
+    return value;
+}
 
 
 /***/ }),
@@ -79779,6 +79993,41 @@ function __classPrivateFieldSet(receiver, privateMap, value) {
 module.exports = __webpack_amd_options__;
 
 /* WEBPACK VAR INJECTION */}.call(this, {}))
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/harmony-module.js":
+/*!*******************************************!*\
+  !*** (webpack)/buildin/harmony-module.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function(originalModule) {
+	if (!originalModule.webpackPolyfill) {
+		var module = Object.create(originalModule);
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		Object.defineProperty(module, "exports", {
+			enumerable: true
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
 
 /***/ })
 

@@ -55,7 +55,7 @@ namespace Codeworx.Identity.Test
 
         public AuthorizationRequest Build()
         {
-            return new AuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce, null);
+            return new AuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce, null, null);
         }
     }
 }

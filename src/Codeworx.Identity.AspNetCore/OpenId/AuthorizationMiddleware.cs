@@ -20,12 +20,11 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder,
             IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder)
         {
-            var claimsIdentity = context.User?.Identity as ClaimsIdentity;
+            ClaimsIdentity claimsIdentity = null;
 
-            if (claimsIdentity == null)
+            if (context.User.Identity.IsAuthenticated)
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
+                claimsIdentity = context.User.Identity as ClaimsIdentity;
             }
 
             try
