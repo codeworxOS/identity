@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -18,13 +21,18 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             HttpContext context,
             IAuthorizationService authorizationService,
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
-            IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder)
+            IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder,
+            IOptionsSnapshot<IdentityOptions> options)
         {
             ClaimsIdentity claimsIdentity = null;
 
-            if (context.User.Identity.IsAuthenticated)
+            var schema = options.Value.AuthenticationScheme;
+
+            var authResponse = await context.AuthenticateAsync(schema);
+
+            if (authResponse.Succeeded)
             {
-                claimsIdentity = context.User.Identity as ClaimsIdentity;
+                claimsIdentity = authResponse.Principal.Identity as ClaimsIdentity;
             }
 
             try

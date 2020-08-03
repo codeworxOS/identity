@@ -249,7 +249,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 new AuthenticationProviderUser
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
-                                    ExternalIdentifier = "S-1-5-21-2583907123-3048486745-1937933167-1875",
+                                    ExternalIdentifier = "S-1-12-1-3570142310-1302179307-1636533923-2810485112",
                                 },
                             },
                         });
