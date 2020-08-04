@@ -45,7 +45,11 @@ namespace Codeworx.Identity.Login.OAuth
             redirectUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
             redirectUriBuilder.AppendPath("oauth");
             redirectUriBuilder.AppendPath(configuration.Id);
-            redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
+
+            var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/login";
+
+            redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+
             if (!string.IsNullOrEmpty(request.Prompt))
             {
                 redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);

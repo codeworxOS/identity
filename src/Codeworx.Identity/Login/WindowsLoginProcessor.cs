@@ -30,7 +30,10 @@ namespace Codeworx.Identity.Login
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin");
-            uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
+
+            var returnUrl = request.ReturnUrl ?? $"{_options.AccountEndpoint}/login";
+
+            uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
 
             var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString());
 
