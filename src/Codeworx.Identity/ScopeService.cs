@@ -18,7 +18,7 @@ namespace Codeworx.Identity
 
         public async Task<IEnumerable<IScope>> GetScopes()
         {
-            var systemScopeTasks = _systemScopeProviders.Select(p => p.GetScopes());
+            var systemScopeTasks = _systemScopeProviders.Select(p => p.GetScopes()).ToList();
             await Task.WhenAll(systemScopeTasks).ConfigureAwait(false);
 
             var scopes = systemScopeTasks.SelectMany(p => p.Result).ToList();

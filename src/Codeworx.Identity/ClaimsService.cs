@@ -17,17 +17,17 @@ namespace Codeworx.Identity
 
         public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
-            var systemClaimsTasks = _systemClaimsProviders.Select(p => p.GetClaimsAsync(parameters));
+            var systemClaimsTasks = _systemClaimsProviders.Select(p => p.GetClaimsAsync(parameters)).ToList();
             await Task.WhenAll(systemClaimsTasks).ConfigureAwait(false);
 
-            var scopes = systemClaimsTasks.SelectMany(p => p.Result).ToList();
+            var claims = systemClaimsTasks.SelectMany(p => p.Result).ToList();
 
             if (_claimsProvider != null)
             {
-                scopes.AddRange(await _claimsProvider.GetClaimsAsync(parameters).ConfigureAwait(false));
+                claims.AddRange(await _claimsProvider.GetClaimsAsync(parameters).ConfigureAwait(false));
             }
 
-            return scopes;
+            return claims;
         }
     }
 }
