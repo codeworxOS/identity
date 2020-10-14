@@ -16,8 +16,12 @@ namespace Codeworx.Identity.OpenId
 
             if (parameters.Scopes.Contains(Constants.OpenId.Scopes.OpenId))
             {
-                var upnClaim = AssignedClaim.Create(Constants.Claims.Upn, parameters.User.Name);
-                result.Add(upnClaim);
+                var upnSourceClaim = parameters.User.FindFirst(Constants.Claims.Upn);
+                if (upnSourceClaim != null)
+                {
+                    var upnClaim = AssignedClaim.Create(Constants.Claims.Upn, upnSourceClaim.Value);
+                    result.Add(upnClaim);
+                }
             }
 
             return Task.FromResult<IEnumerable<AssignedClaim>>(result);

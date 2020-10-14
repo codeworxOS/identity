@@ -89,7 +89,7 @@ namespace Codeworx.Identity
             var identity = new ClaimsIdentity(_options.AuthenticationScheme);
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
-            identity.AddClaim(new Claim(Constants.Claims.Name, user.Name));
+            identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
             if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))
             {
                 identity.AddClaim(new Claim(Constants.Claims.DefaultTenant, user.DefaultTenantKey));
