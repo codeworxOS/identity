@@ -4,7 +4,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
-    public class TenantAuthorizationRequestProcessor : IAuthorizationRequestProcessor
+    public class TenantAuthorizationRequestProcessor : IIdentityRequestProcessor<IIdentityDataParameters, object>
     {
         private readonly ITenantService _tenantService;
 
@@ -13,7 +13,9 @@ namespace Codeworx.Identity.OAuth.Authorization
             _tenantService = tenantService;
         }
 
-        public async Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
+        public int SortOrder => 400;
+
+        public async Task ProcessAsync(IIdentityDataParametersBuilder<IIdentityDataParameters> builder, object request)
         {
             var parameters = builder.Parameters;
 
@@ -49,11 +51,16 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
                 else
                 {
-                    throw new ErrorResponseException<MissingTenantResponse>(new MissingTenantResponse(request, request.GetRequestPath()));
+                    if (request is AuthorizationRequest authorizationRequest)
+                    {
+                        throw new ErrorResponseException<MissingTenantResponse>(new MissingTenantResponse(authorizationRequest, authorizationRequest.GetRequestPath()));
+                    }
+
+                    builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
                 }
             }
 
-            return builder.WithScopes(scopes.ToArray());
+            builder.WithScopes(scopes.ToArray());
         }
     }
 }

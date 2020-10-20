@@ -19,7 +19,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
 
         public async Task Invoke(
             HttpContext context,
-            IAuthorizationService authorizationService,
+            IAuthorizationService<Identity.OpenId.AuthorizationRequest> authorizationService,
             IRequestBinder<Identity.OpenId.AuthorizationRequest> authorizationRequestBinder,
             IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder,
             IOptionsSnapshot<IdentityOptions> options)

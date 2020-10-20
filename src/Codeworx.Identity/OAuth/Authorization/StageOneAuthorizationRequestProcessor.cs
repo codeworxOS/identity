@@ -7,7 +7,7 @@ using Codeworx.Identity.Response;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
-    public class StageOneAuthorizationRequestProcessor : IAuthorizationRequestProcessor
+    public class StageOneAuthorizationRequestProcessor : IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>
     {
         private readonly IClientService _clientService;
 
@@ -16,7 +16,9 @@ namespace Codeworx.Identity.OAuth.Authorization
             _clientService = clientService;
         }
 
-        public async Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
+        public int SortOrder => 100;
+
+        public async Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
             if (!Validator.TryValidateProperty(request.Prompt, new ValidationContext(request) { MemberName = nameof(request.Prompt) }, new List<ValidationResult>()))
             {
@@ -93,8 +95,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             }
 
             builder = builder.WithRedirectUri(redirectUrl);
-
-            return builder;
         }
 
         private bool CheckRedirectUrl(string redirectUrl, Uri p)

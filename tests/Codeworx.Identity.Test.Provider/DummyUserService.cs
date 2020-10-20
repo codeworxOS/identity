@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Test
             return Task.CompletedTask;
         }
 
-        private class DummyUser : IUser
+        public class DummyUser : IUser
         {
             public string DefaultTenantKey => null;
 
@@ -77,7 +77,7 @@ namespace Codeworx.Identity.Test
             public byte[] PasswordSalt => null;
         }
 
-        private class MultiTenantDummyUser : IUser
+        public class MultiTenantDummyUser : IUser
         {
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {

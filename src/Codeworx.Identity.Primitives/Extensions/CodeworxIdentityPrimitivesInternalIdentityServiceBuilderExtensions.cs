@@ -45,6 +45,20 @@ namespace Codeworx.Identity.Configuration.Internal
             builder.ServiceCollection.Add(config);
         }
 
+        public static void Register(this IIdentityServiceBuilder builder, Type serviceType, Type implementationType, ServiceLifetime lifetime)
+        {
+            var config = builder.ServiceCollection.FirstOrDefault(p => p.ServiceType == serviceType);
+
+            if (config != null)
+            {
+                builder.ServiceCollection.Remove(config);
+            }
+
+            config = new ServiceDescriptor(serviceType, implementationType, lifetime);
+
+            builder.ServiceCollection.Add(config);
+        }
+
         public static void RegisterScoped<TService, TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory)
             where TService : class
             where TImplementation : class, TService

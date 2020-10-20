@@ -13,9 +13,9 @@ namespace Codeworx.Identity
     {
         private readonly ITenantService _tenantService;
         private readonly IDefaultTenantService _defaultTenantService;
-        private readonly IReadOnlyCollection<IAuthorizationRequestProcessor> _requestProcessors;
+        private readonly IReadOnlyCollection<IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>> _requestProcessors;
 
-        public TenantViewService(ITenantService tenantService, IEnumerable<IAuthorizationRequestProcessor> requestProcessors, IDefaultTenantService defaultTenantService = null)
+        public TenantViewService(ITenantService tenantService, IEnumerable<IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>> requestProcessors, IDefaultTenantService defaultTenantService = null)
         {
             _tenantService = tenantService ?? throw new System.ArgumentNullException(nameof(tenantService));
             _defaultTenantService = defaultTenantService;
@@ -64,7 +64,7 @@ namespace Codeworx.Identity
 
             foreach (var processor in _requestProcessors)
             {
-                builder = await processor.ProcessAsync(builder, request).ConfigureAwait(false);
+                await processor.ProcessAsync(builder, request).ConfigureAwait(false);
             }
 
             return builder.Parameters;

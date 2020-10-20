@@ -8,29 +8,30 @@ namespace Codeworx.Identity
 
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string DefaultServiceAccountId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
-        public const string DefaultServiceAccountName = "service.account";
         public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
-        public const string DefaultServiceAccountClientId = "ADAD0B0F-E136-4726-B49F-FA45253E0DBD";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
         public const string DefaultSecondTenantName = "Sendond Tenant";
+        public const string DefaultServiceAccountClientId = "ADAD0B0F-E136-4726-B49F-FA45253E0DBD";
+        public const string DefaultServiceAccountId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
+        public const string DefaultServiceAccountName = "service.account";
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
-        public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
-        public const string FormsLoginProviderName = "Form";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
+        public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
+        public const string FormsLoginProviderName = "Form";
         public const string InvalidCredentialsError = "Username or password is not valid!";
         public const string JsonExtension = ".json";
+        public const string Localhost = "localhost";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
         public const string ProductName = "CodeworxIdentity";
@@ -38,9 +39,6 @@ namespace Codeworx.Identity
         public const string TenantNameProperty = "tenantName";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
-
-        public const string Localhost = "localhost";
-
         private const string NameChar = @"[a-zA-Z0-9_]";
         private const string NqChar = @"[\u0021\u0023-\u005b\u005d-\u007e]";
 
@@ -58,31 +56,25 @@ namespace Codeworx.Identity
         private const string VsChar = @"[\u0020-\u007e]";
         private const string VsChars = @"^" + VsChar + @"+$";
 
-        public static class Templates
-        {
-            public const string FormsLogin = "formslogin";
-            public const string Redirect = "redirect";
-        }
-
         public static class Assets
         {
-            public const string Js = "/identity/js";
             public const string Css = "/identity/css";
             public const string Images = "/identity/images";
+            public const string Js = "/identity/js";
         }
 
         public static class Claims
         {
+            public const string Audience = JwtRegisteredClaimNames.Aud;
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
-            public const string Id = "id";
-            public const string Name = "name";
             public const string Group = "group";
-            public const string Subject = JwtRegisteredClaimNames.Sub;
+            public const string Id = "id";
             public const string Issuer = JwtRegisteredClaimNames.Iss;
-            public const string Audience = JwtRegisteredClaimNames.Aud;
-            public const string Upn = "upn";
+            public const string Name = "name";
+            public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Tenant = "tenant";
+            public const string Upn = "upn";
         }
 
         public static class OAuth
@@ -148,15 +140,15 @@ namespace Codeworx.Identity
             {
                 public const string AuthorizationCode = "authorization_code";
 
-                public const string Password = "password";
                 public const string ClientCredentials = "client_credentials";
+                public const string Password = "password";
             }
 
             public class Prompt
             {
-                public const string None = "none";
-                public const string Login = "login";
                 public const string Consent = "consent";
+                public const string Login = "login";
+                public const string None = "none";
                 public const string SelectAccount = "select_account";
             }
 
@@ -165,18 +157,18 @@ namespace Codeworx.Identity
                 public const string UserId = "sub";
             }
 
-            public class ResponseType
-            {
-                public const string Code = "code";
-
-                public const string Token = "token";
-            }
-
             public class ResponseMode
             {
                 public const string Fragment = "fragment";
 
                 public const string Query = "query";
+            }
+
+            public class ResponseType
+            {
+                public const string Code = "code";
+
+                public const string Token = "token";
             }
 
             public class TokenType
@@ -223,8 +215,14 @@ namespace Codeworx.Identity
 
         public static class Scopes
         {
-            public const string Tenant = "tenant";
             public const string Groups = "groups";
+            public const string Tenant = "tenant";
+        }
+
+        public static class Templates
+        {
+            public const string FormsLogin = "formslogin";
+            public const string Redirect = "redirect";
         }
 
         public static class Token

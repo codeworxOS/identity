@@ -1,4 +1,5 @@
 ﻿using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.Test
@@ -11,7 +12,8 @@ namespace Codeworx.Identity.Test
                 .PasswordValidator<DummyPasswordValidator>()
                 .ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped)
                 .ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped)
-                .ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped);
+                .ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped)
+                .ReplaceService<IBaseUriAccessor, DummyBaseUriAccessor>(ServiceLifetime.Singleton);
         }
     }
 }

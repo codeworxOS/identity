@@ -48,7 +48,7 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);
 
-            this.ReplaceService<IAuthorizationService, AuthorizationService>(ServiceLifetime.Scoped);
+            this.ReplaceService(typeof(IAuthorizationService<>), typeof(AuthorizationService<>), ServiceLifetime.Scoped);
             this.RegisterMultiple<IAuthorizationResponseProcessor, AccessTokenResponseProcessor>(ServiceLifetime.Scoped);
             this.RegisterMultiple<IAuthorizationResponseProcessor, AuthorizationCodeResponseProcessor>(ServiceLifetime.Scoped);
             this.RegisterMultiple<IAuthorizationResponseProcessor, IdTokenResponseProcessor>(ServiceLifetime.Scoped);
@@ -60,7 +60,6 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
-            this.ReplaceService<IRequestValidator<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidator>(ServiceLifetime.Transient);
 
             this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);

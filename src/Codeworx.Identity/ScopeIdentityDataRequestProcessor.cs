@@ -2,19 +2,21 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Codeworx.Identity.OAuth.Authorization
+namespace Codeworx.Identity
 {
-    public class ScopeAuthorizationRequestProcessor : IAuthorizationRequestProcessor
+    public class ScopeIdentityDataRequestProcessor : IIdentityRequestProcessor<IIdentityDataParameters, object>
     {
         private readonly IScopeService _scopeService;
 
-        public ScopeAuthorizationRequestProcessor(
+        public ScopeIdentityDataRequestProcessor(
             IScopeService scopeService)
         {
             _scopeService = scopeService;
         }
 
-        public async Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
+        public int SortOrder => 300;
+
+        public async Task ProcessAsync(IIdentityDataParametersBuilder<IIdentityDataParameters> builder, object request)
         {
             var parameters = builder.Parameters;
 
@@ -51,8 +53,6 @@ namespace Codeworx.Identity.OAuth.Authorization
                     builder.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.");
                 }
             }
-
-            return builder;
         }
     }
 }

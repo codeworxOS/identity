@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
@@ -36,59 +37,44 @@ namespace Codeworx.Identity.OAuth.Authorization
              _user,
              _request);
 
+        public void SetValue(string property, object value)
+        {
+            switch (property)
+            {
+                case nameof(AuthorizationParameters.ClientId):
+                    _clientId = (string)value;
+                    break;
+                case nameof(AuthorizationParameters.Nonce):
+                    _nonce = (string)value;
+                    break;
+                case nameof(AuthorizationParameters.Prompts):
+                    _prompts = (string[])value;
+                    break;
+                case nameof(AuthorizationParameters.RedirectUri):
+                    _redirectUri = (string)value;
+                    break;
+                case nameof(AuthorizationParameters.ResponseMode):
+                    _responseMode = (string)value;
+                    break;
+                case nameof(AuthorizationParameters.ResponseTypes):
+                    _responseTypes = (string[])value;
+                    break;
+                case nameof(AuthorizationParameters.Scopes):
+                    _scopes = (string[])value;
+                    break;
+                case nameof(AuthorizationParameters.State):
+                    _state = (string)value;
+                    break;
+                default:
+                    throw new NotSupportedException($"Unknown property {property}.");
+            }
+        }
+
         public void Throw(string error, string errorDescription)
         {
             var errorResponse = new AuthorizationErrorResponse(error, errorDescription, null, this._state, this._redirectUri, this._responseMode);
 
             throw new ErrorResponseException<AuthorizationErrorResponse>(errorResponse);
-        }
-
-        public IAuthorizationParametersBuilder WithClientId(string clientId)
-        {
-            _clientId = clientId;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithNonce(string nonce)
-        {
-            _nonce = nonce;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithPrompts(params string[] prompts)
-        {
-            _prompts = prompts;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithRedirectUri(string redirectUri)
-        {
-            _redirectUri = redirectUri;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithResponseMode(string responseMode)
-        {
-            _responseMode = responseMode;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithResponseTypes(params string[] responseTypes)
-        {
-            _responseTypes = responseTypes;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithScopes(params string[] scopes)
-        {
-            _scopes = scopes;
-            return this;
-        }
-
-        public IAuthorizationParametersBuilder WithState(string state)
-        {
-            _state = state;
-            return this;
         }
     }
 }

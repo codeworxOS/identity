@@ -189,6 +189,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
         }
 
+
         [Fact]
         public async Task AuthenticateClient_UnknownClientOnRequest_ReturnsInvalidClient()
         {

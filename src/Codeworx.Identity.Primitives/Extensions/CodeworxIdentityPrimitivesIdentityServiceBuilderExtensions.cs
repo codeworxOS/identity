@@ -30,6 +30,12 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
+        public static IIdentityServiceBuilder ReplaceService(this IIdentityServiceBuilder builder, Type serviceType, Type implementationType, ServiceLifetime lifeTime)
+        {
+            builder.Register(serviceType, implementationType, lifeTime);
+            return builder;
+        }
+
         public static IIdentityServiceBuilder ReplaceService<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifeTime, Func<IServiceProvider, TImplementation> factory)
             where TService : class
             where TImplementation : class, TService

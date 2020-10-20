@@ -19,7 +19,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth
 
         public async Task Invoke(
             HttpContext context,
-            IAuthorizationService authorizationService,
+            IAuthorizationService<AuthorizationRequest> authorizationService,
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
             IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder,
             IOptionsSnapshot<IdentityOptions> options)

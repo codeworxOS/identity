@@ -20,6 +20,7 @@ namespace Codeworx.Identity.Test
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
+                                                new ServiceAccountClientRegistration(hash, salt),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
         }
@@ -89,6 +90,34 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => null;
+        }
+
+        private class ServiceAccountClientRegistration : IClientRegistration
+        {
+            public ServiceAccountClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+            {
+                this.ClientType = ClientType.ApiKey;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.ClientSecretHash = clientSecretHash;
+                this.ClientSecretSalt = clientSecretSalt;
+            }
+
+            public string ClientId => Constants.DefaultServiceAccountClientId;
+
+            public byte[] ClientSecretHash { get; }
+
+            public byte[] ClientSecretSalt { get; }
+
+            public Uri DefaultRedirectUri { get; }
+
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => new DummyUserService.DummyUser();
         }
     }
 }

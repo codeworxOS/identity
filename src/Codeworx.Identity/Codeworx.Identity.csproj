@@ -27,6 +27,10 @@
     <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="OpenId\Token\" />
+  </ItemGroup>
+
   <!--<Target Name="TypeScriptCompile" BeforeTargets="Build">
     <Exec Command="tsc" WorkingDirectory="assets" />
   </Target>-->

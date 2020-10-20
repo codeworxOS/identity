@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
-    public class StageTwoAuthorizationRequestProcessor : IAuthorizationRequestProcessor
+    public class StageTwoAuthorizationRequestProcessor : IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>
     {
-        public Task<IAuthorizationParametersBuilder> ProcessAsync(IAuthorizationParametersBuilder builder, AuthorizationRequest request)
+        public int SortOrder => 200;
+
+        public Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
             var parameters = builder.Parameters;
 
@@ -52,7 +54,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             builder = builder.WithNonce(request.Nonce);
 
-            return Task.FromResult(builder);
+            return Task.CompletedTask;
         }
     }
 }

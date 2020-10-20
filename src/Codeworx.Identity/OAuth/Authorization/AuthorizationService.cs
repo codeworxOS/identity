@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
-    public class AuthorizationService : IAuthorizationService
+    public class AuthorizationService<TRequest> : IAuthorizationService<TRequest>
+        where TRequest : AuthorizationRequest
     {
-        private readonly IEnumerable<IAuthorizationRequestProcessor> _requestProcessors;
+        private readonly IEnumerable<IIdentityRequestProcessor<IAuthorizationParameters, TRequest>> _requestProcessors;
         private readonly IEnumerable<IAuthorizationResponseProcessor> _responseProcessors;
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
 
         public AuthorizationService(
-            IEnumerable<IAuthorizationRequestProcessor> requestProcessors,
+            IEnumerable<IIdentityRequestProcessor<IAuthorizationParameters, TRequest>> requestProcessors,
             IEnumerable<IAuthorizationResponseProcessor> responseProcessors,
             IUserService userService,
             IIdentityService identityService)
@@ -24,7 +26,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             _identityService = identityService;
         }
 
-        public async Task<AuthorizationSuccessResponse> AuthorizeRequest(AuthorizationRequest request, ClaimsIdentity user)
+        public async Task<AuthorizationSuccessResponse> AuthorizeRequest(TRequest request, ClaimsIdentity user)
         {
             if (request == null)
             {
@@ -33,9 +35,9 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, user);
 
-            foreach (var processor in _requestProcessors)
+            foreach (var processor in _requestProcessors.OrderBy(p => p.SortOrder))
             {
-                builder = await processor.ProcessAsync(builder, request).ConfigureAwait(false);
+                await processor.ProcessAsync(builder, request).ConfigureAwait(false);
             }
 
             var parameters = builder.Parameters;
