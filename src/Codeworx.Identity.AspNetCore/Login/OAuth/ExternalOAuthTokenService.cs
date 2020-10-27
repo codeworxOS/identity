@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Login;
@@ -23,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore
             _tokenProviders = tokenProviders;
         }
 
-        public async Task<string> GetUserIdAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
+        public async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
             _client.BaseAddress = oauthConfiguration.BaseUri;
 
@@ -56,9 +57,28 @@ namespace Codeworx.Identity.AspNetCore
 
             var payload = await token.GetPayloadAsync();
 
-            payload.TryGetValue(oauthConfiguration.IdentifierClaim, out var userId);
+            var identity = new ClaimsIdentity();
 
-            return userId?.ToString();
+            foreach (var item in payload)
+            {
+                if (item.Value is string stringValue)
+                {
+                    identity.AddClaim(new Claim(item.Key, stringValue));
+                }
+                else if (item.Value is IEnumerable<string> stringEnumerable)
+                {
+                    foreach (var value in stringEnumerable)
+                    {
+                        identity.AddClaim(new Claim(item.Key, value));
+                    }
+                }
+                else
+                {
+                    identity.AddClaim(new Claim(item.Key, item.Value.ToString()));
+                }
+            }
+
+            return identity;
         }
 
         private class ResponseType

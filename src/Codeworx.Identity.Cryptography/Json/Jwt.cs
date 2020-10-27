@@ -38,7 +38,6 @@ namespace Codeworx.Identity.Cryptography.Json
             }
 
             var token = _handler.ReadJsonWebToken(value);
-
             var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
 
             _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode);

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
@@ -10,7 +12,8 @@ namespace Codeworx.Identity
 {
     public class IdentityService : IIdentityService
     {
-        private readonly ImmutableList<IClaimsService> _claimsProviders;
+        private readonly IClaimsService _claimsService;
+        private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
         private readonly IdentityOptions _options;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IUserService _userService;
@@ -18,12 +21,14 @@ namespace Codeworx.Identity
         public IdentityService(
             IUserService userService,
             IPasswordValidator passwordValidator,
-            IEnumerable<IClaimsService> claimsProvider,
+            IClaimsService claimsService,
+            IEnumerable<IExternalLoginEvent> loginEvents,
             IOptionsSnapshot<IdentityOptions> options)
         {
             _userService = userService;
             _passwordValidator = passwordValidator;
-            _claimsProviders = ImmutableList.CreateRange(claimsProvider);
+            _claimsService = claimsService;
+            _loginEvents = loginEvents.ToImmutableList();
             _options = options.Value;
         }
 
@@ -43,11 +48,8 @@ namespace Codeworx.Identity
 
             var claims = new List<AssignedClaim>();
 
-            foreach (var cp in _claimsProviders)
-            {
-                var c = await cp.GetClaimsAsync(identityDataParameters);
-                claims.AddRange(c);
-            }
+            var c = await _claimsService.GetClaimsAsync(identityDataParameters);
+            claims.AddRange(c);
 
             var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims);
 
@@ -70,13 +72,39 @@ namespace Codeworx.Identity
             return await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
         }
 
-        public async Task<ClaimsIdentity> LoginExternalAsync(string provider, string nameIdentifier)
+        public async Task<ClaimsIdentity> LoginExternalAsync(IExternalLoginData externalLoginData)
         {
+            foreach (var item in _loginEvents)
+            {
+                await item.BeginLoginAsync(externalLoginData).ConfigureAwait(false);
+            }
+
+            var provider = externalLoginData.LoginRegistration.Id;
+            var nameIdentifier = await externalLoginData.GetExternalIdentifierAsync().ConfigureAwait(false);
+
             var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier).ConfigureAwait(false);
 
             if (user == null)
             {
-                throw new AuthenticationException();
+                foreach (var item in _loginEvents)
+                {
+                    await item.UnknownLoginAsync(externalLoginData);
+                }
+
+                if (_loginEvents.Any())
+                {
+                    user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier).ConfigureAwait(false);
+                }
+
+                if (user == null)
+                {
+                    throw new AuthenticationException();
+                }
+            }
+
+            foreach (var item in _loginEvents)
+            {
+                await item.LoginSuccessAsync(externalLoginData, user).ConfigureAwait(false);
             }
 
             var result = await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);

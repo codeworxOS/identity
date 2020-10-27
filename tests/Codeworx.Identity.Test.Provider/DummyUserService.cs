@@ -1,8 +1,9 @@
-﻿using Codeworx.Identity.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Test
 {
@@ -10,43 +11,31 @@ namespace Codeworx.Identity.Test
     {
         private static string _defaultTenantMultiTenantCache;
 
-        public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
-        {
-            if (provider == Constants.ExternalWindowsProviderId)
-            {
-                return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
-            }
+        private List<IDummyUser> _users;
 
-            return Task.FromResult<IUser>(null);
+        public List<IDummyUser> Users => _users;
+
+        public DummyUserService()
+        {
+            _users = new List<IDummyUser>();
+            _users.Add(new DummyUser());
+            _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
         }
 
-        public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+        {
+            return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier ));
+        }
+
+        public Task<Model.IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
         {
             var id = Guid.Parse(identity.GetUserId());
-            if (id == Guid.Parse(Constants.DefaultAdminUserId))
-            {
-                return Task.FromResult<IUser>(new DummyUser());
-            }
-            else if (id == Guid.Parse(Constants.MultiTenantUserId))
-            {
-                return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
-            }
-
-            return Task.FromResult<IUser>(null);
+            return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));
         }
 
-        public Task<IUser> GetUserByNameAsync(string userName)
+        public Task<Model.IUser> GetUserByNameAsync(string userName)
         {
-            if (userName.Equals(Constants.DefaultAdminUserName, StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.FromResult<IUser>(new DummyUser());
-            }
-            else if (userName.Equals(Constants.MultiTenantUserName, StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.FromResult<IUser>(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
-            }
-
-            return Task.FromResult<IUser>(null);
+            return Task.FromResult<IUser>(_users.FirstOrDefault(p => p.Name == userName));
         }
 
         public Task SetDefaultTenantAsync(string identifier, string tenantKey)
@@ -64,7 +53,12 @@ namespace Codeworx.Identity.Test
             return Task.CompletedTask;
         }
 
-        public class DummyUser : IUser
+        public interface IDummyUser : IUser
+        {
+            IDictionary<string, string> ExternalIdentifiers { get; }
+        }
+
+        public class DummyUser : IDummyUser
         {
             public string DefaultTenantKey => null;
 
@@ -75,9 +69,11 @@ namespace Codeworx.Identity.Test
             public byte[] PasswordHash => null;
 
             public byte[] PasswordSalt => null;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
         }
 
-        public class MultiTenantDummyUser : IUser
+        public class MultiTenantDummyUser : IDummyUser
         {
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
@@ -93,6 +89,8 @@ namespace Codeworx.Identity.Test
             public byte[] PasswordHash => null;
 
             public byte[] PasswordSalt => null;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Codeworx.Identity.Login
+namespace Codeworx.Identity.Login.Windows
 {
     public class WindowsLoginRequest : ILoginRequest
     {

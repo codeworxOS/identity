@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Windows;
 
 namespace Codeworx.Identity.Web.Test
 {

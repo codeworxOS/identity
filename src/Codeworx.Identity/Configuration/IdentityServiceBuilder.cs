@@ -3,6 +3,7 @@ using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
+using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;

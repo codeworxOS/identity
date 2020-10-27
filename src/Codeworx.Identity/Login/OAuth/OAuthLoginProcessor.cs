@@ -87,9 +87,11 @@ namespace Codeworx.Identity.Login.OAuth
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(registration.Id);
 
-            var userId = await _tokenService.GetUserIdAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
+            var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
 
-            var identity = await _identityService.LoginExternalAsync(registration.Id, userId).ConfigureAwait(false);
+            var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, returnUrl);
+
+            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 
             return new SignInResponse(identity, returnUrl);
         }

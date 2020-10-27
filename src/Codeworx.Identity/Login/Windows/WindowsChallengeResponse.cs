@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.Login
+﻿namespace Codeworx.Identity.Login.Windows
 {
     public class WindowsChallengeResponse
     {

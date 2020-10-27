@@ -10,6 +10,7 @@ namespace Codeworx.Identity.Test
         {
             return builder.UserProvider<DummyUserService>()
                 .PasswordValidator<DummyPasswordValidator>()
+                .Provider<DummyLoginRegistrationProvider>()
                 .ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped)
                 .ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped)
                 .ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped)

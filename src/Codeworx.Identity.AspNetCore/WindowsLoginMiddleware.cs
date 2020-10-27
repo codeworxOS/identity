@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 

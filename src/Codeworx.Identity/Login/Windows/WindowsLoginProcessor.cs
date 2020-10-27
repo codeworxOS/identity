@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
-namespace Codeworx.Identity.Login
+namespace Codeworx.Identity.Login.Windows
 {
     public class WindowsLoginProcessor : ILoginProcessor
     {
@@ -54,9 +53,9 @@ namespace Codeworx.Identity.Login
                 throw new ArgumentException($"The argument ist not of type {RequestParameterType}", nameof(request));
             }
 
-            var sid = loginRequest.WindowsIdentity.FindFirst(ClaimTypes.PrimarySid).Value;
+            var loginData = new WindowsLoginData(registration, loginRequest.WindowsIdentity, loginRequest.ReturnUrl);
 
-            var identity = await _identityService.LoginExternalAsync(registration.Id, sid).ConfigureAwait(false);
+            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 
             return new SignInResponse(identity, loginRequest.ReturnUrl);
         }
