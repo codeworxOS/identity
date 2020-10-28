@@ -26,6 +26,11 @@ namespace Codeworx.Identity
             Dispose(true);
         }
 
+        public async Task<string> GetChallengeResponse()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.challenge_response.html");
+        }
+
         public async Task<string> GetFormPostTemplate()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.form_post.html");

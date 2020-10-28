@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             }
             else if (result.Failure == null)
             {
-                throw new ErrorResponseException<WindowsChallengeResponse>(new WindowsChallengeResponse());
+                throw new ErrorResponseException<WindowsChallengeResponse>(new WindowsChallengeResponse(returnUrl));
             }
 
             throw new ErrorResponseException<UnauthorizedResponse>(new UnauthorizedResponse());

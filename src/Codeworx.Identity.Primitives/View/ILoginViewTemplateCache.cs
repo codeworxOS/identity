@@ -8,5 +8,7 @@ namespace Codeworx.Identity.View
         Task<string> GetLoggedInView(IDictionary<string, object> data);
 
         Task<string> GetLoginView(IDictionary<string, object> data);
+
+        Task<string> GetChallengeResponse(IDictionary<string, object> data);
     }
 }

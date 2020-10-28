@@ -7,5 +7,7 @@ namespace Codeworx.Identity.View
         Task<string> GetLoggedInTemplate();
 
         Task<string> GetLoginTemplate();
+
+        Task<string> GetChallengeResponse();
     }
 }

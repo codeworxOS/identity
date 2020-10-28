@@ -15,6 +15,7 @@ namespace Codeworx.Identity
         private Func<object, string> _tenant;
         private Func<object, string> _formPost;
         private Func<object, string> _loggedin;
+        private Func<object, string> _challengeResponse;
 
         public DefaultViewTemplateCache(
             ITemplateCompiler compiler,
@@ -26,6 +27,20 @@ namespace Codeworx.Identity
             _loginViewTemplate = loginViewTemplate;
             _tenantViewTemplate = tenantViewTemplate;
             _formPostResponseTypeTemplate = formPostResponseTypeTemplate;
+        }
+
+        public async Task<string> GetChallengeResponse(IDictionary<string, object> data)
+        {
+            if (_challengeResponse == null)
+            {
+                var template = await _loginViewTemplate.GetChallengeResponse();
+                if (_challengeResponse == null)
+                {
+                    _challengeResponse = _compiler.Compile(template);
+                }
+            }
+
+            return _challengeResponse(data);
         }
 
         public async Task<string> GetFormPostView(IDictionary<string, object> data)
