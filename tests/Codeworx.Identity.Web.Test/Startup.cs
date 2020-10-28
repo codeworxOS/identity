@@ -26,8 +26,6 @@ namespace Codeworx.Identity.Web.Test
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
         {
-            loggerFactory.AddConsole();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -36,7 +34,8 @@ namespace Codeworx.Identity.Web.Test
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseCodeworxIdentity(identityOptions.Value);
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -52,8 +51,10 @@ namespace Codeworx.Identity.Web.Test
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
                 ));
+
+            services.AddRouting();
+            services.AddControllers();
 
             services.AddCodeworxIdentity(_configuration)
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
@@ -65,11 +66,12 @@ namespace Codeworx.Identity.Web.Test
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddAuthentication()
+                .AddNegotiate("Windows",p => { })
                 .AddJwtBearer("JWT", ConfigureJwt);
 
             services.AddMvcCore()
                 .AddAuthorization()
-                .AddJsonFormatters();
+                .AddNewtonsoftJson();
         }
 
         private void ConfigureJwt(JwtBearerOptions options)

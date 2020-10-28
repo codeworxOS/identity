@@ -12,6 +12,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             if (responseData.DoChallenge)
             {
                 await response.HttpContext.ChallengeAsync(Constants.WindowsAuthenticationSchema);
+                await response.HttpContext.Response.WriteAsync("Windows login not supported!");
             }
         }
     }
