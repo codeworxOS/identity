@@ -2,9 +2,11 @@
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.EntityFrameworkCore;
+using Codeworx.Identity.Web.Test.Tenant;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -54,6 +56,18 @@ namespace Codeworx.Identity.Web.Test
                     .AllowAnyHeader()
                 ));
 
+            services.AddDbContext<DemoContext>((sp, builder) =>
+            {
+                var tenant = sp.GetRequiredService<IHttpContextAccessor>().HttpContext.User.FindFirst("current_tenant").Value;
+
+                var connectionStringBuilder = new SqliteConnectionStringBuilder
+                {
+                    DataSource = Path.Combine(Path.GetTempPath(), $"{tenant}.db")
+                };
+
+                builder.UseSqlite(connectionStringBuilder.ConnectionString);
+            });
+
             services.AddRouting();
             services.AddControllers();
 
@@ -73,7 +87,9 @@ namespace Codeworx.Identity.Web.Test
             services.AddAuthorization();
 
             services.AddMvcCore()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options => {
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
+                });
         }
 
         private void ConfigureJwt(JwtBearerOptions options)

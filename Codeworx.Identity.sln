@@ -16,9 +16,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AB02A07B-9A72-4605-BCC3-C2C46357DC0F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2E062D53-102F-4971-99B0-5D7F40FC78D6}"
-	ProjectSection(SolutionItems) = preProject
-		src\Codeworx.Identity.Primitives\UriBuilder.cs = src\Codeworx.Identity.Primitives\UriBuilder.cs
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Test", "tests\Codeworx.Identity.Test\Codeworx.Identity.Test.csproj", "{079B7667-28FD-489F-96A2-03656CB67FFC}"
 EndProject

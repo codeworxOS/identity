@@ -12,6 +12,8 @@ import { TenantSelectorComponent } from './tenant-selector.component';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppRootComponent } from './app-root.component';
+import { OrderListComponent } from './order/order-list.component';
+import { OrderDetailComponent } from './order/order-detail.component';
 
 const config: AuthConfig = {
   clientId: 'B45ABA81-AAC1-403F-93DD-1CE42F745ED2',
@@ -29,6 +31,8 @@ const config: AuthConfig = {
     TenantSelectorComponent,
     DashboardComponent,
     AppRootComponent,
+    OrderListComponent,
+    OrderDetailComponent
   ],
   imports: [
     BrowserModule,

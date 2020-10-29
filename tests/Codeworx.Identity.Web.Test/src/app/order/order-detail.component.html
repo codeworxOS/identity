@@ -1,0 +1,15 @@
+<form>
+    <div class="form-group">
+      <label for="orderNumber">Nr</label>
+      <input type="text" class="form-control" id="orderNumber" name="orderNumber" [(ngModel)]="order.orderNumber">
+    </div>
+    <div class="form-group">
+      <label for="orderDescription">Description</label>
+      <textarea class="form-control" id="orderDescription"  name="orderDescription"  [(ngModel)]="order.orderDescription" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="orderDate">Date</label>
+        <input type="date" class="form-control" id="orderDate" name="orderDate" [(ngModel)]="order.orderDate">
+      </div>
+      <button (click)="save()">save</button>
+  </form>
