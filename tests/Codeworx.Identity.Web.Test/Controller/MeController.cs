@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Web.Test.Controller
         [HttpGet]
         public Task<string> GetName()
         {
-            return Task.FromResult(this.User.FindFirst(System.Security.Claims.ClaimTypes.Upn).Value);
+            return Task.FromResult(this.User.FindFirst("current_tenant").Value);
         }
     }
 }

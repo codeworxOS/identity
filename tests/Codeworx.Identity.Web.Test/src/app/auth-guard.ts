@@ -4,31 +4,26 @@ import { OAuthService } from 'angular-oauth2-oidc'
 
 @Injectable()
 export class AuthGuard
-    implements CanActivate
-{
+    implements CanActivate {
     constructor(private oauthService: OAuthService) {
-            
+
     }
 
     public async canActivate(
-        route: ActivatedRouteSnapshot, 
-        state: RouterStateSnapshot): Promise<boolean> 
-    {
+        route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot): Promise<boolean> {
         await this.oauthService.loadDiscoveryDocument();
-    
-        if(this.oauthService.hasValidAccessToken()){
-          return true;
-        }
-    
-        var loggedin = await this.oauthService.tryLogin()
-      
-        debugger
 
-        if(loggedin && this.oauthService.hasValidAccessToken())
-        {
+        if (this.oauthService.hasValidAccessToken()) {
             return true;
         }
-    
+
+        var loggedin = await this.oauthService.tryLogin()
+
+        if (loggedin && this.oauthService.hasValidAccessToken()) {
+            return true;
+        }
+
         this.oauthService.initLoginFlow();
         return false;
     }

@@ -3,9 +3,12 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app',
   template: `
-    <!--The content below is only a placeholder and can be replaced.-->
+    <div style="margin-right:10px; margin-top:10px">
+      <tenant-selector></tenant-selector>
+    </div>
+    
     <div style="text-align:center" class="content">
       <h1>
         Welcome to {{title}}!

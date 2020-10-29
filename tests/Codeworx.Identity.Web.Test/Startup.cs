@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Web.Test
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddAuthentication()
-                //.AddNegotiate("Windows", p => { })
+                .AddNegotiate("Windows", p => { })
                 .AddJwtBearer("JWT", ConfigureJwt);
 
             services.AddAuthorization();
@@ -78,7 +78,7 @@ namespace Codeworx.Identity.Web.Test
 
         private void ConfigureJwt(JwtBearerOptions options)
         {
-            options.Authority = "https://localhost:44389";
+            options.Authority = "https://localhost:5001";
             options.Audience = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         }
     }

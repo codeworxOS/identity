@@ -8,6 +8,10 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthGuard } from './auth-guard';
 import { UrlHandlingStrategy } from '@angular/router';
 import { AuthInterceptor } from './auth-interceptor';
+import { TenantSelectorComponent } from './tenant-selector.component';
+import { FormsModule } from '@angular/forms';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { AppRootComponent } from './app-root.component';
 
 const config: AuthConfig = {
   clientId: 'B45ABA81-AAC1-403F-93DD-1CE42F745ED2',
@@ -15,18 +19,23 @@ const config: AuthConfig = {
   postLogoutRedirectUri: 'abc',
   oidc: true,
   responseType: 'code',
-  requireHttps: true
+  requireHttps: true,
+  scope: 'openid profile tenant'
 }
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TenantSelectorComponent,
+    DashboardComponent,
+    AppRootComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     OAuthModule.forRoot(),
     HttpClientModule,
+    FormsModule,
   ],
   providers: [
     AuthGuard,
@@ -36,7 +45,7 @@ const config: AuthConfig = {
       multi: true
     }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppRootComponent]
 })
 export class AppModule {
   constructor(
