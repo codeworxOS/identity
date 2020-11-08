@@ -38,15 +38,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     if (defaultUser == null)
                     {
-                        var defaultUserPasswordSalt = new byte[] { 123 };
-                        var defaultUserPasswordHash = hashingProvider.Hash(Constants.DefaultAdminUserName, defaultUserPasswordSalt);
+                        var hash = hashingProvider.Create(Constants.DefaultAdminUserName);
 
                         context.Users.Add(new User
                         {
                             Id = Guid.Parse(Constants.DefaultAdminUserId),
                             Name = Constants.DefaultAdminUserName,
-                            PasswordHash = defaultUserPasswordHash,
-                            PasswordSalt = defaultUserPasswordSalt,
+                            PasswordHash = hash,
                             MemberOf =
                             {
                                new RightHolderGroup
@@ -61,15 +59,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     if (multiTenantUser == null)
                     {
-                        var multiTenantUserPasswordSalt = new byte[] { 234 };
-                        var multiTenantUserPasswordHash = hashingProvider.Hash(Constants.MultiTenantUserName, multiTenantUserPasswordSalt);
+                        var hash = hashingProvider.Create(Constants.MultiTenantUserName);
 
                         context.Users.Add(new User
                         {
                             Id = Guid.Parse(Constants.MultiTenantUserId),
                             Name = Constants.MultiTenantUserName,
-                            PasswordHash = multiTenantUserPasswordHash,
-                            PasswordSalt = multiTenantUserPasswordSalt,
+                            PasswordHash = hash,
                             MemberOf =
                             {
                                new RightHolderGroup
@@ -135,13 +131,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     if (serviceAccountClient == null)
                     {
-                        var salt = hashingProvider.CrateSalt();
-
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
                             Id = Guid.Parse(Constants.DefaultServiceAccountClientId),
-                            ClientSecretSalt = salt,
-                            ClientSecretHash = hashingProvider.Hash("clientSecret", salt),
+                            ClientSecretHash = hashingProvider.Create("clientSecret"),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.ApiKey,
                             UserId = Guid.Parse(Constants.DefaultServiceAccountId),
@@ -152,13 +145,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     if (authCodeClient == null)
                     {
-                        var salt = hashingProvider.CrateSalt();
-
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
                             Id = Guid.Parse(Constants.DefaultCodeFlowClientId),
-                            ClientSecretSalt = salt,
-                            ClientSecretHash = hashingProvider.Hash("clientSecret", salt),
+                            ClientSecretHash = hashingProvider.Create("clientSecret"),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.WebBackend,
                             ValidRedirectUrls =

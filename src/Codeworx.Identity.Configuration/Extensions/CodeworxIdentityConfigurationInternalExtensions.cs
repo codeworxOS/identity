@@ -12,14 +12,6 @@ namespace Codeworx.Identity.Configuration.Extensions
         {
             var urls = config.RedirectUris;
 
-            byte[] salt = null, hash = null;
-
-            if (!string.IsNullOrWhiteSpace(config.Secret))
-            {
-                salt = hashing.CrateSalt();
-                hash = hashing.Hash(config.Secret, salt);
-            }
-
             if (config.Type == ClientType.ApiKey)
             {
                 var user = await userService.GetUserByNameAsync(config.User).ConfigureAwait(false);
@@ -37,7 +29,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             ////{
             ////}
 
-            return new ClientRegistration(id, hash, salt, ClientType.Native, config.TokenExpiration, urls);
+            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, urls);
         }
     }
 }

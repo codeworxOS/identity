@@ -113,9 +113,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 public string Name { get; }
 
-                public byte[] PasswordHash => null;
-
-                public byte[] PasswordSalt => null;
+                public string PasswordHash => null;
             }
         }
     }

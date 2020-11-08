@@ -2,8 +2,8 @@
 {
     public interface IHashingProvider
     {
-        byte[] CrateSalt();
+        string Create(string plaintext);
 
-        byte[] Hash(string text, byte[] salt);
+        bool Validate(string plaintext, string hashValue);
     }
 }
