@@ -2,8 +2,6 @@
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.Cryptography;
-using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Web.Test.Tenant;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -77,7 +75,8 @@ namespace Codeworx.Identity.Web.Test
                     //.Pbkdf2()
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
-                    .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
+                 
+                .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
                     .UseConfiguration(_configuration);
 

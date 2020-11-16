@@ -21,8 +21,6 @@ namespace Codeworx.Identity.Login.Windows
 
         public Type RequestParameterType { get; } = typeof(WindowsLoginRequest);
 
-        public Type ConfigurationType => null;
-
         public string Template => Constants.Templates.Redirect;
 
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)

@@ -7,5 +7,7 @@ namespace Codeworx.Identity.Login
         string Key { get; }
 
         Type Type { get; }
+
+        Type ConfigurationType { get; }
     }
 }

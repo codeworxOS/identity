@@ -17,7 +17,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
             using (var scope = serviceProvider.CreateScope())
             {
                 var services = scope.ServiceProvider;
-                using (var context = services.GetRequiredService<CodeworxIdentityDbContext>())
+                var context = services.GetService<CodeworxIdentityDbContext>();
+
+                if (context != null)
                 {
                     var hashingProvider = services.GetRequiredService<IHashingProvider>();
 

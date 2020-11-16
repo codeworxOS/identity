@@ -44,7 +44,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);
             this.PasswordValidator<PasswordValidator>();
 
-            this.ReplaceService<IOAuthLoginService, OAuthLoginService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IOAuthLoginService, OAuthLoginService>(ServiceLifetime.Transient);
             this.RegisterMultiple<IProcessorTypeLookup, WindowsLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);

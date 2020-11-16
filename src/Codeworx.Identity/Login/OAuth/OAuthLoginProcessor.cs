@@ -33,8 +33,6 @@ namespace Codeworx.Identity.Login.OAuth
 
         public Type RequestParameterType { get; } = typeof(OAuthLoginRequest);
 
-        public Type ConfigurationType { get; } = typeof(OAuthLoginConfiguration);
-
         public string Template => Constants.Templates.Redirect;
 
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
@@ -102,7 +100,7 @@ namespace Codeworx.Identity.Login.OAuth
 
             if (oauthConfiguration == null)
             {
-                throw new ArgumentException($"The argument ist not of type {ConfigurationType}", nameof(configuration));
+                throw new ArgumentException($"The argument ist not of type OAuthLoginConfiguration", nameof(configuration));
             }
 
             return oauthConfiguration;

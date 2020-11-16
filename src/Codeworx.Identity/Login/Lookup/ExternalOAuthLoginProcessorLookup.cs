@@ -8,5 +8,7 @@ namespace Codeworx.Identity.Login
         public string Key => "oauth";
 
         public Type Type => typeof(OAuthLoginProcessor);
+
+        public Type ConfigurationType => typeof(OAuthLoginConfiguration);
     }
 }

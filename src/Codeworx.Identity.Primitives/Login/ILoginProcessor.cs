@@ -8,8 +8,6 @@ namespace Codeworx.Identity.Login
     {
         Type RequestParameterType { get; }
 
-        Type ConfigurationType { get; }
-
         string Template { get; }
 
         Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration registration);

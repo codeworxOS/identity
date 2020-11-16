@@ -7,5 +7,7 @@ namespace Codeworx.Identity.Login
         public string Key => "forms";
 
         public Type Type => typeof(FormsLoginProcessor);
+
+        public Type ConfigurationType => null;
     }
 }

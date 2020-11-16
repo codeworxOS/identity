@@ -13,21 +13,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
     {
         public static ILoginRegistration ToExternalLoginRegistration(this AuthenticationProvider provider, IEnumerable<IProcessorTypeLookup> processorTypeLookups, IServiceProvider serviceProvider)
         {
-            var processorType = processorTypeLookups.FirstOrDefault(t => t.Key == provider.EndpointType)?.Type;
-            var processor = serviceProvider.GetRequiredService(processorType) as ILoginProcessor;
+            var processorType = processorTypeLookups.FirstOrDefault(t => t.Key == provider.EndpointType);
+            var processor = serviceProvider.GetRequiredService(processorType.Type) as ILoginProcessor;
 
             object processorConfiguration = null;
 
-            if (provider.EndpointConfiguration != null && processor?.ConfigurationType != null)
+            if (provider.EndpointConfiguration != null && processorType?.ConfigurationType != null)
             {
-                processorConfiguration = JsonConvert.DeserializeObject(provider.EndpointConfiguration, processor.ConfigurationType);
+                processorConfiguration = JsonConvert.DeserializeObject(provider.EndpointConfiguration, processorType.ConfigurationType);
             }
 
             return new ExternalLoginRegistration
             {
                 Id = provider.Id.ToString("N").ToLower(),
                 Name = provider.Name,
-                ProcessorType = processorType,
+                ProcessorType = processorType.Type,
                 ProcessorConfiguration = processorConfiguration,
             };
         }
