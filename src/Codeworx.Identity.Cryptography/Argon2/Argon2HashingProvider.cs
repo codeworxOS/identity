@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Isopoh.Cryptography.Argon2;
 
 namespace Codeworx.Identity.Cryptography.Argon2
 {
@@ -22,20 +23,26 @@ namespace Codeworx.Identity.Cryptography.Argon2
 
             var password = Encoding.UTF8.GetBytes(plaintext);
 
-            var argon = GetArgon2Implementation(_options.Argon2Mode, password);
-            argon.Iterations = _options.Iterations;
-            argon.MemorySize = _options.MemorySize;
-            argon.DegreeOfParallelism = _options.DegreeOfParallelism;
+            var argon = GetArgon2Config(_options.Argon2Mode);
+            argon.Version = Argon2Version.Nineteen;
+            argon.TimeCost = _options.Iterations;
+            argon.MemoryCost = _options.MemorySize;
+            argon.Lanes = _options.DegreeOfParallelism;
+            argon.Threads = _options.DegreeOfParallelism;
+            argon.Password = password;
             argon.Salt = salt;
+            argon.HashLength = _options.HashLength;
 
-            var hash = argon.GetBytes(_options.HashLength);
+            var hasher = new Isopoh.Cryptography.Argon2.Argon2(argon);
 
-            var encodedSalt = Convert.ToBase64String(salt).TrimEnd('=');
-            var encodedHash = Convert.ToBase64String(hash).TrimEnd('=');
+            using (var hash = hasher.Hash())
+            {
+                var encodedSalt = Convert.ToBase64String(salt).TrimEnd('=');
+                var encodedHash = Convert.ToBase64String(hash.Buffer).TrimEnd('=');
 
-            var result = $"${_options.Argon2Mode.ToString().ToLower()}$v=19$m={_options.MemorySize},t={_options.Iterations},p={_options.DegreeOfParallelism}${encodedSalt}${encodedHash}";
-
-            return result;
+                var result = $"${_options.Argon2Mode.ToString().ToLower()}$v=19$m={_options.MemorySize},t={_options.Iterations},p={_options.DegreeOfParallelism}${encodedSalt}${encodedHash}";
+                return result;
+            }
         }
 
         public bool Validate(string plaintext, string hashValue)
@@ -79,15 +86,22 @@ namespace Codeworx.Identity.Cryptography.Argon2
             var salt = DecodeBase64(input[4]);
             var hash = DecodeBase64(input[5]);
 
-            var argon = GetArgon2Implementation(mode, password);
-            argon.Iterations = iterations;
-            argon.MemorySize = memorySize;
-            argon.DegreeOfParallelism = degreeOfParallelism;
+            var argon = GetArgon2Config(mode);
+            argon.Version = Argon2Version.Nineteen;
+            argon.TimeCost = iterations;
+            argon.MemoryCost = memorySize;
+            argon.Lanes = degreeOfParallelism;
+            argon.Threads = degreeOfParallelism;
+            argon.Password = password;
             argon.Salt = salt;
+            argon.HashLength = hash.Length;
 
-            var compareHash = argon.GetBytes(hash.Length);
+            var hasher = new Isopoh.Cryptography.Argon2.Argon2(argon);
 
-            return compareHash.SequenceEqual(hash);
+            using (var compareHash = hasher.Hash())
+            {
+                return compareHash.Buffer.SequenceEqual(hash);
+            }
         }
 
         private static byte[] DecodeBase64(string encoded)
@@ -118,26 +132,26 @@ namespace Codeworx.Identity.Cryptography.Argon2
             return Encoding.UTF8.GetBytes(result.ToString());
         }
 
-        private Konscious.Security.Cryptography.Argon2 GetArgon2Implementation(string mode, byte[] password)
+        private Argon2Config GetArgon2Config(string mode)
         {
             if (Enum.TryParse<Argon2Mode>(mode, true, out var modeEnum))
             {
-                return GetArgon2Implementation(modeEnum, password);
+                return GetArgon2Config(modeEnum);
             }
 
             throw new NotSupportedException($"Mode {mode} not supported!");
         }
 
-        private Konscious.Security.Cryptography.Argon2 GetArgon2Implementation(Argon2Mode mode, byte[] password)
+        private Argon2Config GetArgon2Config(Argon2Mode mode)
         {
             switch (mode)
             {
                 case Argon2Mode.Argon2i:
-                    return new Konscious.Security.Cryptography.Argon2i(password);
+                    return new Argon2Config { Type = Argon2Type.DataIndependentAddressing };
                 case Argon2Mode.Argon2d:
-                    return new Konscious.Security.Cryptography.Argon2d(password);
+                    return new Argon2Config { Type = Argon2Type.DataDependentAddressing };
                 case Argon2Mode.Argon2id:
-                    return new Konscious.Security.Cryptography.Argon2id(password);
+                    return new Argon2Config { Type = Argon2Type.HybridAddressing };
             }
 
             throw new NotSupportedException($"Mode {mode} not supported!");
