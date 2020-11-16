@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Web.Test.Tenant;
@@ -78,8 +79,7 @@ namespace Codeworx.Identity.Web.Test
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
-            //.UseConfiguration(_configuration);
+                    .UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
