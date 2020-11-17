@@ -2,13 +2,13 @@
 {
     public class ExternalCallbackRequest
     {
-        public ExternalCallbackRequest(ILoginRequest loginRequest, string providerId)
+        public ExternalCallbackRequest(string providerId, object loginRequest)
         {
             LoginRequest = loginRequest;
             ProviderId = providerId;
         }
 
-        public ILoginRequest LoginRequest { get; }
+        public object LoginRequest { get; }
 
         public string ProviderId { get; }
     }

@@ -18,7 +18,7 @@ namespace Codeworx.Identity.Configuration.Extensions
 
                 if (user == null)
                 {
-                    throw new AuthenticationException($"The User prvided for client {id} could not be found.");
+                    throw new AuthenticationException($"The User provided for client {id} could not be found.");
                 }
             }
 

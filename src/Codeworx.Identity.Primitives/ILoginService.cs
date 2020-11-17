@@ -13,6 +13,6 @@ namespace Codeworx.Identity
 
         Task<RegistrationInfoResponse> GetRegistrationInfosAsync(ProviderRequest request);
 
-        Task<SignInResponse> SignInAsync(string providerId, ILoginRequest parameter);
+        Task<SignInResponse> SignInAsync(string providerId, object parameter);
     }
 }

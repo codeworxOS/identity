@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Response;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -11,11 +10,8 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 {
     public class OAuthLoginRequestBinder : IRequestBinder<OAuthLoginRequest>
     {
-        private readonly IAuthenticationSchemeProvider _schemaProvider;
-
-        public OAuthLoginRequestBinder(IAuthenticationSchemeProvider schemaProvider)
+        public OAuthLoginRequestBinder()
         {
-            _schemaProvider = schemaProvider;
         }
 
         public async Task<OAuthLoginRequest> BindAsync(HttpRequest request)

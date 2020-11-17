@@ -53,12 +53,18 @@ namespace Codeworx.Identity.Login.OAuth
                 redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);
             }
 
-            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, redirectUriBuilder.ToString());
+            string error = null;
+            if (request.ProviderErrors.ContainsKey(configuration.Id))
+            {
+                error = string.Format(Constants.ExternalLoginErrorMessage, configuration.Name);
+            }
+
+            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, redirectUriBuilder.ToString(), error);
 
             return Task.FromResult<ILoginRegistrationInfo>(result);
         }
 
-        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration registration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRegistration registration, object request)
         {
             if (request == null)
             {

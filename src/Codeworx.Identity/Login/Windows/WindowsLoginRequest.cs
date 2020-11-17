@@ -2,18 +2,19 @@
 
 namespace Codeworx.Identity.Login.Windows
 {
-    public class WindowsLoginRequest : ILoginRequest
+    public class WindowsLoginRequest
     {
-        public WindowsLoginRequest(ClaimsIdentity windowsIdentity, string returnUrl)
+        public WindowsLoginRequest(string providerId, ClaimsIdentity windowsIdentity, string returnUrl)
         {
             WindowsIdentity = windowsIdentity;
             ReturnUrl = returnUrl;
+            ProviderId = providerId;
         }
 
         public string ReturnUrl { get; set; }
 
         public ClaimsIdentity WindowsIdentity { get; }
 
-        public string ProviderId => Constants.ExternalWindowsProviderId;
+        public string ProviderId { get; }
     }
 }

@@ -22,7 +22,14 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             var userName = userNameValues.FirstOrDefault();
 
-            return Task.FromResult(new ProviderRequest(returnUrl, userName));
+            var providerRequest = new ProviderRequest(returnUrl, userName);
+
+            if (request.Query.TryGetValue(Constants.ProviderLoginErrorParameter, out var providerLoginError))
+            {
+                providerRequest.ProviderErrors.Add(providerLoginError, Constants.GenericLoginError);
+            }
+
+            return Task.FromResult(providerRequest);
         }
     }
 }

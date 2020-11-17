@@ -71,12 +71,10 @@ namespace Codeworx.Identity
             return new RegistrationInfoResponse(groups.OrderBy(p => p.Key).Select(p => new LoginRegistrationGroup(p.Key, p.Value)));
         }
 
-        public async Task<SignInResponse> SignInAsync(string providerId, ILoginRequest parameter)
+        public async Task<SignInResponse> SignInAsync(string providerId, object parameter)
         {
             var processorInfo = await GetProcessorInfoAsync(providerId);
-
-            var response = await processorInfo.Processor.ProcessAsync(parameter, processorInfo.Registration).ConfigureAwait(false);
-
+            var response = await processorInfo.Processor.ProcessAsync(processorInfo.Registration, parameter).ConfigureAwait(false);
             return response;
         }
 

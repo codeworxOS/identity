@@ -171,7 +171,7 @@ namespace Codeworx.Identity.AspNetCore
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<ProfileMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/winlogin"),
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/winlogin", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
@@ -243,6 +243,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();
+            collection.AddTransient<IResponseBinder<LoginRedirectResponse>, LoginRedirectResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
