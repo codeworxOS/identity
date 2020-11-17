@@ -11,6 +11,8 @@
 
         public string ProviderId => Constants.FormsLoginProviderId;
 
+        public string Error => null;
+
         public bool HasRedirectUri(out string redirectUrl)
         {
             redirectUrl = null;

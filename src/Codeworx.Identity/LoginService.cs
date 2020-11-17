@@ -9,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity
 {
-    public class ExternalLoginService : ILoginService
+    public class LoginService : ILoginService
     {
         private readonly IEnumerable<ILoginRegistrationProvider> _providers;
         private readonly IIdentityService _service;
         private readonly IServiceProvider _serviceProvider;
 
-        public ExternalLoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service)
+        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service)
         {
             _providers = providers;
             _serviceProvider = serviceProvider;

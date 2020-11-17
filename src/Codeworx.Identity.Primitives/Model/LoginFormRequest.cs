@@ -1,6 +1,6 @@
 ﻿namespace Codeworx.Identity.Model
 {
-    public class LoginFormRequest : LoginRequest
+    public class LoginFormRequest : LoginRequest, ILoginRequest
     {
         public LoginFormRequest(string returnUrl, string userName, string password, string prompt)
         : base(returnUrl, prompt)
