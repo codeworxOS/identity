@@ -8,13 +8,22 @@ namespace Codeworx.Identity.Configuration.Model
 {
     public class ClientRegistration : IClientRegistration
     {
-        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls)
+        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls = null, IUser user = null)
         {
             ClientId = clientId;
             ClientSecretHash = clientSecretHash;
             ClientType = clientType;
             TokenExpiration = tokenExpiration;
-            ValidRedirectUrls = validRedirectUrls.Select(p => new Uri(p)).ToImmutableList();
+            if (validRedirectUrls != null)
+            {
+                ValidRedirectUrls = validRedirectUrls.Select(p => new Uri(p)).ToImmutableList();
+            }
+            else
+            {
+                ValidRedirectUrls = ImmutableList.Create<Uri>();
+            }
+
+            User = user;
         }
 
         public string ClientId { get; }
@@ -27,6 +36,6 @@ namespace Codeworx.Identity.Configuration.Model
 
         public ClientType ClientType { get; }
 
-        public IUser User => null;
+        public IUser User { get; }
     }
 }

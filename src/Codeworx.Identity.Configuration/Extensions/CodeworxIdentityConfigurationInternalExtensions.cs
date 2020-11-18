@@ -11,10 +11,11 @@ namespace Codeworx.Identity.Configuration.Extensions
         public static async Task<ClientRegistration> ToRegistration(this ClientConfig config, IUserService userService, IHashingProvider hashing, string id)
         {
             var urls = config.RedirectUris;
+            IUser user = null;
 
             if (config.Type == ClientType.ApiKey)
             {
-                var user = await userService.GetUserByNameAsync(config.User).ConfigureAwait(false);
+                user = await userService.GetUserByNameAsync(config.User).ConfigureAwait(false);
 
                 if (user == null)
                 {
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             ////{
             ////}
 
-            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, urls);
+            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, urls, user);
         }
     }
 }
