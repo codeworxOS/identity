@@ -26,18 +26,24 @@ namespace Codeworx.Identity.Login.Windows
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
-            uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin");
+            uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
 
             var returnUrl = request.ReturnUrl ?? $"{_options.AccountEndpoint}/login";
 
             uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
 
-            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString());
+            string error = null;
+            if (request.ProviderErrors.ContainsKey(configuration.Id))
+            {
+                error = string.Format(Constants.ExternalLoginErrorMessage, configuration.Name);
+            }
+
+            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString(), error);
 
             return Task.FromResult<ILoginRegistrationInfo>(result);
         }
 
-        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration registration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRegistration registration, object request)
         {
             if (request == null)
             {

@@ -1,6 +1,6 @@
 ﻿namespace Codeworx.Identity.Login.OAuth
 {
-    public class OAuthLoginRequest : ILoginRequest
+    public class OAuthLoginRequest
     {
         public OAuthLoginRequest(string code, string state)
         {

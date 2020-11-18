@@ -26,7 +26,13 @@ namespace Codeworx.Identity.Login
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
-            var response = await _loginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl, request.Prompt));
+            var providerRequest = new ProviderRequest(request.ReturnUrl, request.Prompt);
+            if (request.ProviderLoginError != null)
+            {
+                providerRequest.ProviderErrors.Add(request.ProviderLoginError, Constants.GenericLoginError);
+            }
+
+            var response = await _loginService.GetRegistrationInfosAsync(providerRequest);
 
             return new LoginResponse(response.Groups, request.ReturnUrl);
         }
@@ -35,12 +41,14 @@ namespace Codeworx.Identity.Login
         {
             try
             {
-                var response = await _loginService.SignInAsync(Constants.FormsLoginProviderId, request);
+                var response = await _loginService.SignInAsync(request.ProviderId, request);
                 return response;
             }
-            catch (AuthenticationException)
+            catch (AuthenticationException ex)
             {
-                var response = await _loginService.GetRegistrationInfosAsync(new ProviderRequest(request.ReturnUrl, request.Prompt));
+                var providerRequest = new ProviderRequest(request.ReturnUrl, request.Prompt);
+                providerRequest.ProviderErrors.Add(request.ProviderId, ex.Message);
+                var response = await _loginService.GetRegistrationInfosAsync(providerRequest);
                 var loginResponse = new LoginResponse(response.Groups, request.ReturnUrl, request.UserName, Constants.InvalidCredentialsError);
 
                 throw new ErrorResponseException<LoginResponse>(loginResponse);

@@ -12,6 +12,6 @@ namespace Codeworx.Identity.Login
 
         Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration registration);
 
-        Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration configuration);
+        Task<SignInResponse> ProcessAsync(ILoginRegistration configuration, object request);
     }
 }
