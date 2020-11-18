@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20200710105920_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20201108210614_InitalCreate")]
+    partial class InitalCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -67,9 +67,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<byte[]>("ClientSecretHash");
-
-                    b.Property<byte[]>("ClientSecretSalt");
+                    b.Property<string>("ClientSecretHash")
+                        .HasMaxLength(512);
 
                     b.Property<int>("ClientType");
 
@@ -234,9 +233,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations
 
                     b.Property<bool>("IsDisabled");
 
-                    b.Property<byte[]>("PasswordHash");
-
-                    b.Property<byte[]>("PasswordSalt");
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(512);
 
                     b.HasIndex("DefaultTenantId");
 

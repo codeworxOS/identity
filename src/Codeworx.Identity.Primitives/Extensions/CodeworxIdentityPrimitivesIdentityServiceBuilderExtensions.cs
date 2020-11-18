@@ -15,17 +15,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServiceBuilder Provider<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
+        public static IIdentityServiceBuilder LoginRegistrations<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, ILoginRegistrationProvider
         {
-            if (factory == null)
-            {
-                builder.Register<ILoginRegistrationProvider, TImplementation>(ServiceLifetime.Scoped);
-            }
-            else
-            {
-                builder.Register<ILoginRegistrationProvider, TImplementation>(ServiceLifetime.Scoped, factory);
-            }
+            builder.Register<ILoginRegistrationProvider, TImplementation>(lifetime, factory);
 
             return builder;
         }
@@ -52,10 +45,24 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServiceBuilder UserProvider<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
+        public static IIdentityServiceBuilder Users<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IUserService
         {
-            builder.RegisterScoped<IUserService, TImplementation>(factory);
+            builder.Register<IUserService, TImplementation>(lifetime, factory);
+            return builder;
+        }
+
+        public static IIdentityServiceBuilder Tenants<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, ITenantService
+        {
+            builder.Register<ITenantService, TImplementation>(lifetime, factory);
+            return builder;
+        }
+
+        public static IIdentityServiceBuilder Clients<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, IClientService
+        {
+            builder.Register<IClientService, TImplementation>(lifetime, factory);
             return builder;
         }
     }

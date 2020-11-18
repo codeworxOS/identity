@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
 
@@ -33,8 +32,7 @@ namespace Codeworx.Identity.OAuth
                     ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
                 }
 
-                var secretHash = _hashingProvider.Hash(clientSecret, client.ClientSecretSalt);
-                if (!secretHash.SequenceEqual(client.ClientSecretHash))
+                if (!_hashingProvider.Validate(clientSecret, client.ClientSecretHash))
                 {
                     ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
                 }

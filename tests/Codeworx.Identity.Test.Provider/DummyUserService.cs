@@ -66,9 +66,7 @@ namespace Codeworx.Identity.Test
 
             public string Name => Constants.DefaultAdminUserName;
 
-            public byte[] PasswordHash => null;
-
-            public byte[] PasswordSalt => null;
+            public string PasswordHash => null;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
         }
@@ -86,9 +84,7 @@ namespace Codeworx.Identity.Test
 
             public string Name => Constants.MultiTenantUserName;
 
-            public byte[] PasswordHash => null;
-
-            public byte[] PasswordSalt => null;
+            public string PasswordHash => null;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
         }

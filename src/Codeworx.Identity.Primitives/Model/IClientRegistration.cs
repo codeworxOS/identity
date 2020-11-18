@@ -7,9 +7,7 @@ namespace Codeworx.Identity.Model
     {
         string ClientId { get; }
 
-        byte[] ClientSecretHash { get; }
-
-        byte[] ClientSecretSalt { get; }
+        string ClientSecretHash { get; }
 
         ClientType ClientType { get; }
 

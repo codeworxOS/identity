@@ -29,13 +29,16 @@ namespace Codeworx.Identity
         public const string ExternalWindowsProviderName = "Windows";
         public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
         public const string FormsLoginProviderName = "Form";
+        public const string GenericLoginError = "login_error";
         public const string InvalidCredentialsError = "Username or password is not valid!";
+        public const string ExternalLoginErrorMessage = "Could not process login for {0}.";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
+        public const string ProviderLoginErrorParameter = "provider_login_error";
         public const string TenantNameProperty = "tenantName";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";

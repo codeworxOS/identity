@@ -30,20 +30,19 @@ namespace Codeworx.Identity.EntityFrameworkCore
             where TContext : DbContext
         {
             var result = builder
-                         .UserProvider<EntityUserService<TContext>>()
-                         .Provider<LoginRegistrationProvider<TContext>>()
-                         .ReplaceService<ITenantService, EntityTenantService<TContext>>(ServiceLifetime.Scoped)
+                         .Users<EntityUserService<TContext>>()
+                         .LoginRegistrations<LoginRegistrationProvider<TContext>>()
+                         .Tenants<EntityTenantService<TContext>>()
+                         .Clients<EntityClientService<TContext>>()
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IClientService, EntityClientService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IStateLookupCache, StateLookupCache<TContext>>(ServiceLifetime.Scoped);
+                         .ReplaceService<IStateLookupCache, StateLookupCache<TContext>>(ServiceLifetime.Scoped)
+                         .RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped)
+                         .RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient);
 
-            result.RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped);
-            result.RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient);
-
-            if (result.ServiceCollection.All(p => p.ServiceType != typeof(Pbkdf2Options)))
+            if (!result.ServiceCollection.Any(p => p.ServiceType == typeof(IHashingProvider)))
             {
-                result = result.Pbkdf2();
+                result = result.Argon2();
             }
 
             return result;

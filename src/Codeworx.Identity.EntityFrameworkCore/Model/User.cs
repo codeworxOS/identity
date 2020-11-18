@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
@@ -23,9 +24,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public bool IsDisabled { get; set; }
 
-        public byte[] PasswordHash { get; set; }
-
-        public byte[] PasswordSalt { get; set; }
+        [StringLength(512)]
+        public string PasswordHash { get; set; }
 
         public ICollection<TenantUser> Tenants { get; }
 

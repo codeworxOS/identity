@@ -6,7 +6,7 @@ namespace Codeworx.Identity.Configuration.Internal
 {
     public static class CodeworxIdentityPrimitivesInternalIdentityServiceBuilderExtensions
     {
-        public static void RegisterMultiple<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime)
+        public static IIdentityServiceBuilder RegisterMultiple<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime)
          where TService : class
          where TImplementation : class, TService
         {
@@ -20,6 +20,8 @@ namespace Codeworx.Identity.Configuration.Internal
             config = new ServiceDescriptor(typeof(TService), typeof(TImplementation), lifetime);
 
             builder.ServiceCollection.Add(config);
+
+            return builder;
         }
 
         public static void Register<TService, TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime, Func<IServiceProvider, TImplementation> factory = null)

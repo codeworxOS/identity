@@ -28,13 +28,13 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
         [Fact]
         public void UserProvider_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<IUserService>(p => p.UserProvider<DummyUserService>());
+            this.CheckServiceRegistration<IUserService>(p => p.Users<DummyUserService>());
         }
 
         [Fact]
         public void UserProviderFactory_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<IUserService>(p => p.UserProvider(a => new DummyUserService()));
+            this.CheckServiceRegistration<IUserService>(p => p.Users<DummyUserService>(ServiceLifetime.Scoped, a => new DummyUserService()));
         }
 
         [Fact]
@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
-            serviceBuilder.UserProvider<DummyUserService>();
+            serviceBuilder.Users<DummyUserService>();
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -84,7 +84,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
-            serviceBuilder.UserProvider(p => new DummyUserService());
+            serviceBuilder.Users(ServiceLifetime.Scoped, p => new DummyUserService());
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
