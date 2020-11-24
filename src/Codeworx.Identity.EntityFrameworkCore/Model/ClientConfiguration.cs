@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Codeworx.Identity.Model;
 
@@ -18,9 +19,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public string ClientId => this.Id.ToString("N");
 
-        public byte[] ClientSecretHash { get; set; }
-
-        public byte[] ClientSecretSalt { get; set; }
+        [StringLength(512)]
+        public string ClientSecretHash { get; set; }
 
         public Guid Id { get; set; }
 

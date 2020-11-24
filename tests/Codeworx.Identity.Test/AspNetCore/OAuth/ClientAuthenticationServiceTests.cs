@@ -19,15 +19,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
-                                  .Returns(new byte[] { 1, 2, 3 });
+                                  .Returns("1234");
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
             var hashingProviderStub = new Mock<IHashingProvider>();
-            hashingProviderStub.Setup(p => p.Hash(It.IsAny<string>(), It.IsAny<byte[]>()))
-                               .Returns(new byte[] { 1, 2, 3 });
+            hashingProviderStub.Setup(p => p.Validate(It.IsAny<string>(), It.IsAny<string>()))
+                                .Returns(true);
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
@@ -45,15 +45,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
-                                  .Returns(new byte[] { 1, 2, 3 });
+                                  .Returns("1234");
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
             var hashingProviderStub = new Mock<IHashingProvider>();
-            hashingProviderStub.Setup(p => p.Hash(It.IsAny<string>(), It.IsAny<byte[]>()))
-                               .Returns(new byte[] { 1, 2, 3 });
+            hashingProviderStub.Setup(p => p.Validate(It.IsAny<string>(), It.IsAny<string>()))
+                               .Returns(true);
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
@@ -71,15 +71,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
-                                  .Returns(new byte[] { 1, 2, 3 });
+                                  .Returns("1234");
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
             var hashingProviderStub = new Mock<IHashingProvider>();
-            hashingProviderStub.Setup(p => p.Hash(It.IsAny<string>(), It.IsAny<byte[]>()))
-                               .Returns(new byte[] { 11, 12, 13 });
+            hashingProviderStub.Setup(p => p.Validate(It.IsAny<string>(), It.IsAny<string>()))
+                               .Returns(false);
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
@@ -97,15 +97,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var clientRegistrationStub = new Mock<IClientRegistration>();
 
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
-                                  .Returns(new byte[] { 1, 2, 3 });
+                                  .Returns("1234");
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
             var hashingProviderStub = new Mock<IHashingProvider>();
-            hashingProviderStub.Setup(p => p.Hash(It.IsAny<string>(), It.IsAny<byte[]>()))
-                               .Returns(new byte[] { 11, 12, 13 });
+            hashingProviderStub.Setup(p => p.Validate(It.IsAny<string>(), It.IsAny<string>()))
+                               .Returns(false);
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 
@@ -155,15 +155,15 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
-                                  .Returns(new byte[] { 1, 2, 3 });
+                                  .Returns("1234");
 
             var clientServiceStub = new Mock<IClientService>();
             clientServiceStub.Setup(p => p.GetById(It.IsAny<string>()))
                              .ReturnsAsync(clientRegistrationStub.Object);
 
             var hashingProviderStub = new Mock<IHashingProvider>();
-            hashingProviderStub.Setup(p => p.Hash(It.IsAny<string>(), It.IsAny<byte[]>()))
-                               .Returns(new byte[] { 1, 2, 3 });
+            hashingProviderStub.Setup(p => p.Validate(It.IsAny<string>(), It.IsAny<string>()))
+                               .Returns(false);
 
             var instance = new ClientAuthenticationService(clientServiceStub.Object, hashingProviderStub.Object);
 

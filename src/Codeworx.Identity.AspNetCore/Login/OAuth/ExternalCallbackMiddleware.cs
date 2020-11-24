@@ -14,12 +14,12 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<ExternalCallbackRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService externalLogin)
+        public async Task Invoke(HttpContext context, IRequestBinder<ExternalCallbackRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService loginService)
         {
             try
             {
                 ExternalCallbackRequest callbackRequest = await requestBinder.BindAsync(context.Request);
-                SignInResponse signInResponse = await externalLogin.SignInAsync(callbackRequest.ProviderId, callbackRequest.LoginRequest);
+                SignInResponse signInResponse = await loginService.SignInAsync(callbackRequest.ProviderId, callbackRequest.LoginRequest);
                 await signInBinder.BindAsync(signInResponse, context.Response);
             }
             catch (ErrorResponseException error)

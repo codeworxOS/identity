@@ -8,5 +8,7 @@ namespace Codeworx.Identity.Login
         public string Key => "windows";
 
         public Type Type => typeof(WindowsLoginProcessor);
+
+        public Type ConfigurationType => null;
     }
 }

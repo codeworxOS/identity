@@ -1,4 +1,6 @@
 ﻿using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Cryptography.Argon2;
+using Codeworx.Identity.Cryptography.Pbkdf2;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +12,12 @@ namespace Codeworx.Identity.Cryptography
         {
             return builder.ReplaceService<IHashingProvider, Pbkdf2HashingProvider>(ServiceLifetime.Singleton)
                         .ReplaceService<Pbkdf2Options, Pbkdf2Options>(ServiceLifetime.Singleton, sp => new Pbkdf2Options { HashAlgorithm = algorithm, Iterations = iterations, SaltLength = saltLength, OutputLength = outputLength });
+        }
+
+        public static IIdentityServiceBuilder Argon2(this IIdentityServiceBuilder builder, Argon2Options options = null)
+        {
+            return builder.ReplaceService<IHashingProvider, Argon2HashingProvider>(ServiceLifetime.Singleton)
+                        .ReplaceService<Argon2Options, Argon2Options>(ServiceLifetime.Singleton, sp => options ?? new Argon2Options());
         }
     }
 }

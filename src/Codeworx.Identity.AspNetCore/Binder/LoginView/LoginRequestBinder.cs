@@ -44,7 +44,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             if (HttpMethods.IsGet(request.Method))
             {
-                return new LoginRequest(returnUrl, prompt);
+                string providerError = null;
+                if (request.Query.TryGetValue(Constants.ProviderLoginErrorParameter, out var values))
+                {
+                    providerError = values.FirstOrDefault();
+                }
+
+                return new LoginRequest(returnUrl, prompt, providerError);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
@@ -52,8 +58,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 {
                     var username = request.Form["username"].FirstOrDefault();
                     var password = request.Form["password"].FirstOrDefault();
+                    var providerId = request.Form["provider-id"].FirstOrDefault();
 
-                    return new LoginFormRequest(returnUrl, username, password, prompt);
+                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

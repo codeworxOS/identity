@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
-namespace Codeworx.Identity.Cryptography
+namespace Codeworx.Identity.Cryptography.Pbkdf2
 {
     public class Pbkdf2Options
     {

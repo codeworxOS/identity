@@ -14,13 +14,12 @@ namespace Codeworx.Identity.Test
 
         public DummyOAuthClientService(IHashingProvider hashingProvider)
         {
-            var salt = hashingProvider.CrateSalt();
-            var hash = hashingProvider.Hash("clientSecret", salt);
+            var hashValue = hashingProvider.Create("clientSecret");
 
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
-                                                new ServiceAccountClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new ServiceAccountClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
         }
@@ -38,10 +37,9 @@ namespace Codeworx.Identity.Test
 
         private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
         {
-            public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+            public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
             {
-                this.ClientSecretHash = clientSecretHash;
-                this.ClientSecretSalt = clientSecretSalt;
+                this.ClientSecretHash = hashValue;
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.ClientType = ClientType.Web;
@@ -51,12 +49,8 @@ namespace Codeworx.Identity.Test
 
             public string ClientId => Constants.DefaultCodeFlowClientId;
 
-            public byte[] ClientSecretHash { get; }
-
-            public byte[] ClientSecretSalt { get; }
-
             public Uri DefaultRedirectUri { get; }
-
+            public string ClientSecretHash { get; }
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
@@ -77,9 +71,7 @@ namespace Codeworx.Identity.Test
 
             public string ClientId => Constants.DefaultTokenFlowClientId;
 
-            public byte[] ClientSecretHash => null;
-
-            public byte[] ClientSecretSalt => null;
+            public string ClientSecretHash => null;
 
             public Uri DefaultRedirectUri { get; }
 
@@ -94,20 +86,17 @@ namespace Codeworx.Identity.Test
 
         private class ServiceAccountClientRegistration : IClientRegistration
         {
-            public ServiceAccountClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+            public ServiceAccountClientRegistration(string hashValue)
             {
                 this.ClientType = ClientType.ApiKey;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
-                this.ClientSecretHash = clientSecretHash;
-                this.ClientSecretSalt = clientSecretSalt;
+                this.ClientSecretHash = hashValue;
             }
 
             public string ClientId => Constants.DefaultServiceAccountClientId;
 
-            public byte[] ClientSecretHash { get; }
-
-            public byte[] ClientSecretSalt { get; }
+            public string ClientSecretHash { get; }
 
             public Uri DefaultRedirectUri { get; }
 

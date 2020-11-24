@@ -15,16 +15,17 @@ namespace Codeworx.Identity.Login
 
         public Type RequestParameterType { get; } = typeof(LoginFormRequest);
 
-        public Type ConfigurationType => null;
-
         public string Template => Constants.Templates.FormsLogin;
 
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
-            return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(request.UserName));
+            string error = null;
+            request.ProviderErrors.TryGetValue(configuration.Id, out error);
+
+            return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error));
         }
 
-        public async Task<SignInResponse> ProcessAsync(ILoginRequest request, ILoginRegistration registration)
+        public async Task<SignInResponse> ProcessAsync(ILoginRegistration registration, object request)
         {
             if (request == null)
             {

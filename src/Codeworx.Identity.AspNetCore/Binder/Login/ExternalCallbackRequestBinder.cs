@@ -13,7 +13,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
 {
     public class ExternalCallbackRequestBinder : IRequestBinder<ExternalCallbackRequest>
     {
-        private static readonly ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<ILoginRequest>>> _parameterTypeCache;
+        private static readonly ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<object>>> _parameterTypeCache;
         private static readonly MethodInfo _bindMethod;
 
         private readonly IServiceProvider _serviceProvider;
@@ -22,9 +22,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
 
         static ExternalCallbackRequestBinder()
         {
-            _parameterTypeCache = new ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<ILoginRequest>>>();
+            _parameterTypeCache = new ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<object>>>();
 
-            Expression<Func<IServiceProvider, HttpRequest, Task<ILoginRequest>>> exp = (sp, req) => BindLoginRequest<ILoginRequest>(sp, req);
+            Expression<Func<IServiceProvider, HttpRequest, Task<object>>> exp = (sp, req) => BindLoginRequest<object>(sp, req);
             _bindMethod = ((MethodCallExpression)exp.Body).Method.GetGenericMethodDefinition();
         }
 
@@ -56,25 +56,24 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
                 var factory = _parameterTypeCache.GetOrAdd(parameterType, CreateFactory);
                 var loginRequest = await factory(_serviceProvider, request).ConfigureAwait(false);
 
-                return new ExternalCallbackRequest(loginRequest, providerId);
+                return new ExternalCallbackRequest(providerId, loginRequest);
             }
 
             throw new NotSupportedException("Invalid Uri.");
         }
 
-        private static async Task<ILoginRequest> BindLoginRequest<T>(IServiceProvider sp, HttpRequest request)
-            where T : ILoginRequest
+        private static async Task<object> BindLoginRequest<T>(IServiceProvider sp, HttpRequest request)
         {
             var binder = sp.GetRequiredService<IRequestBinder<T>>();
             return await binder.BindAsync(request).ConfigureAwait(false);
         }
 
-        private static Func<IServiceProvider, HttpRequest, Task<ILoginRequest>> CreateFactory(Type key)
+        private static Func<IServiceProvider, HttpRequest, Task<object>> CreateFactory(Type key)
         {
             var serviceProviderParam = Expression.Parameter(typeof(IServiceProvider), "sp");
             var requestParam = Expression.Parameter(typeof(HttpRequest), "req");
 
-            var expression = Expression.Lambda<Func<IServiceProvider, HttpRequest, Task<ILoginRequest>>>(
+            var expression = Expression.Lambda<Func<IServiceProvider, HttpRequest, Task<object>>>(
                                     Expression.Call(
                                             _bindMethod.MakeGenericMethod(key),
                                             serviceProviderParam,

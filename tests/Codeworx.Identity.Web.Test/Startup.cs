@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Web.Test.Tenant;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,11 +59,11 @@ namespace Codeworx.Identity.Web.Test
 
             services.AddDbContext<DemoContext>((sp, builder) =>
             {
-                var tenant = sp.GetRequiredService<IHttpContextAccessor>().HttpContext.User.FindFirst("current_tenant").Value;
+                var tenant = sp.GetService<IHttpContextAccessor>()?.HttpContext?.User?.FindFirst("current_tenant")?.Value;
 
                 var connectionStringBuilder = new SqliteConnectionStringBuilder
                 {
-                    DataSource = Path.Combine(Path.GetTempPath(), $"{tenant}.db")
+                    DataSource = Path.Combine(Path.GetTempPath(), $"{tenant ?? "default"}.db")
                 };
 
                 builder.UseSqlite(connectionStringBuilder.ConnectionString);
@@ -72,22 +73,24 @@ namespace Codeworx.Identity.Web.Test
             services.AddControllers();
 
             services.AddCodeworxIdentity(_configuration)
+                    //.Pbkdf2()
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
-            //.UseConfiguration(_configuration);
+                    //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
+                    .UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddAuthentication()
-                .AddNegotiate("Windows", p => { })
+                //.AddNegotiate("Windows", p => { })
                 .AddJwtBearer("JWT", ConfigureJwt);
 
             services.AddAuthorization();
 
             services.AddMvcCore()
-                .AddNewtonsoftJson(options => {
+                .AddNewtonsoftJson(options =>
+                {
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
         }
