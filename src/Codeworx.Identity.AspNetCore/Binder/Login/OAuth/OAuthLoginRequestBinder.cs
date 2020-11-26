@@ -36,14 +36,14 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("Code parameter missing"));
             }
 
-            var stateAvailable = parameters.TryGetValue("state", out StringValues stateValues);
+            string state = null;
 
-            if (stateAvailable == false)
+            if (parameters.TryGetValue("state", out StringValues stateValues))
             {
-                throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("State parameter missing"));
+                state = stateValues.First();
             }
 
-            return new OAuthLoginRequest(codeValues, stateValues);
+            return new OAuthLoginRequest(codeValues, state);
         }
     }
 }

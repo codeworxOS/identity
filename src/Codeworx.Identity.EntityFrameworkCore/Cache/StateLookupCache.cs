@@ -64,8 +64,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     throw new CacheEntryNotFoundException();
                 }
 
-                entry.Disabled = true;
-                await _context.SaveChangesAsync().ConfigureAwait(false);
                 transaction.Commit();
 
                 return entry.Value;

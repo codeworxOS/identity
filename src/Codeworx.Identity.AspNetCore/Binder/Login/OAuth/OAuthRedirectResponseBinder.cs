@@ -19,7 +19,15 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 uriBuilder.AppendQueryParameter(Constants.OAuth.ScopeName, string.Join(" ", responseData.Scopes));
             }
 
-            uriBuilder.AppendQueryParameter(Constants.OAuth.StateName, responseData.State);
+            if (!string.IsNullOrWhiteSpace(responseData.State))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.StateName, responseData.State);
+            }
+
+            if (!string.IsNullOrWhiteSpace(responseData.Nonce))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.NonceName, responseData.Nonce);
+            }
 
             if (!string.IsNullOrEmpty(responseData.Prompt))
             {

@@ -74,24 +74,30 @@ namespace Codeworx.Identity.Login.OAuth
             var loginRequest = ToOAuthLoginRequest(request);
             var oauthConfiguration = this.ToOAuthLoginConfiguration(registration.ProcessorConfiguration);
 
-            var returnUrl = await _stateCache.GetAsync(loginRequest.State);
-
-            if (string.IsNullOrWhiteSpace(returnUrl))
-            {
-                returnUrl = null;
-            }
-
-            if (returnUrl == null)
-            {
-                throw new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
-            }
-
             var callbackUriBuilder = new UriBuilder(_baseUri);
             callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(registration.Id);
 
             var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
+
+            var cacheKey = loginRequest.State;
+            string returnUrl = null;
+
+            if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
+            {
+                cacheKey = externalIdentity.FindFirst(Constants.OAuth.NonceName)?.Value;
+            }
+
+            if (cacheKey != null)
+            {
+                returnUrl = await _stateCache.GetAsync(cacheKey);
+            }
+
+            if (string.IsNullOrWhiteSpace(returnUrl))
+            {
+                throw new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
+            }
 
             var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, returnUrl);
 

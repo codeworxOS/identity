@@ -7,7 +7,10 @@ namespace Codeworx.Identity.Login.OAuth
         public OAuthLoginConfiguration()
         {
             IdentifierClaim = Constants.Claims.Subject;
+            RedirectCacheMethod = RedirectCacheMethod.UseState;
         }
+
+        public RedirectCacheMethod RedirectCacheMethod { get; set; }
 
         public Uri BaseUri { get; set; }
 

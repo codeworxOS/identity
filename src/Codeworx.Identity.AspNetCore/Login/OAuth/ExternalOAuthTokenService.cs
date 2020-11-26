@@ -78,6 +78,17 @@ namespace Codeworx.Identity.AspNetCore
                 }
             }
 
+            if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
+            {
+                var identityToken = await provider.CreateAsync(null);
+                await identityToken.ParseAsync(responseValues.IdToken);
+                var identityPayload = await identityToken.GetPayloadAsync();
+                if (identityPayload.TryGetValue(Constants.OAuth.NonceName, out var nonceValue))
+                {
+                    identity.AddClaim(new Claim(Constants.OAuth.NonceName, nonceValue.ToString()));
+                }
+            }
+
             return identity;
         }
 
@@ -85,6 +96,9 @@ namespace Codeworx.Identity.AspNetCore
         {
             [JsonProperty(Constants.OAuth.AccessTokenName)]
             public string AccessToken { get; set; }
+
+            [JsonProperty(Constants.OpenId.IdTokenName)]
+            public string IdToken { get; set; }
 
             [JsonProperty(Constants.OAuth.RefreshTokenName)]
             public string RefreshToken { get; set; }

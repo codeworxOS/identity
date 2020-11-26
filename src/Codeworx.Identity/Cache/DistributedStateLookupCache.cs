@@ -23,8 +23,6 @@ namespace Codeworx.Identity.Cache
                 return null;
             }
 
-            await _cache.RemoveAsync(state);
-
             return lookup;
         }
 

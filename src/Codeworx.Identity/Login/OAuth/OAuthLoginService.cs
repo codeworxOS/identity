@@ -26,6 +26,7 @@ namespace Codeworx.Identity.Login.OAuth
         public async Task<OAuthRedirectResponse> RedirectAsync(OAuthRedirectRequest request)
         {
             var state = Guid.NewGuid().ToString("N");
+            string nonce = null;
             await _stateLookupCache.SetAsync(state, request.ReturnUrl);
 
             var callbackUriBuilder = new UriBuilder(_baseUri);
@@ -52,7 +53,13 @@ namespace Codeworx.Identity.Login.OAuth
             var endpointBuilder = new UriBuilder(config.BaseUri.ToString());
             endpointBuilder.AppendPath(config.AuthorizationEndpoint);
 
-            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, callbackUriBuilder.ToString(), scopes, request.Prompt);
+            if (config.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
+            {
+                nonce = state;
+                state = null;
+            }
+
+            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, nonce, callbackUriBuilder.ToString(), scopes, request.Prompt);
 
             return response;
         }
