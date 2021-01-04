@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -30,6 +31,7 @@ using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -42,15 +44,16 @@ namespace Codeworx.Identity.AspNetCore
 {
     public static class CodeworxIdentityAspNetCoreAspNetCoreExtensions
     {
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration, Action<CookieAuthenticationOptions> cookieOptions = null)
         {
             return AddCodeworxIdentity(
                 collection,
                 configuration.GetSection("Identity"),
-                configuration.GetSection("AuthorizationCode"));
+                configuration.GetSection("AuthorizationCode"),
+                cookieOptions);
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection, Action<CookieAuthenticationOptions> cookieOptions = null)
         {
             collection.Configure<IdentityOptions>(identitySection);
             collection.Configure<AuthorizationCodeOptions>(authCodeSection);
@@ -60,10 +63,11 @@ namespace Codeworx.Identity.AspNetCore
 
             return AddCodeworxIdentity(
                 collection,
-                options);
+                options,
+                cookieOptions);
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions, Action<CookieAuthenticationOptions> cookieOptions = null)
         {
             collection.AddOptions();
             collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(identityOptions.CopyTo));
@@ -71,7 +75,8 @@ namespace Codeworx.Identity.AspNetCore
 
             return AddCodeworxIdentity(
                 collection,
-                identityOptions);
+                identityOptions,
+                cookieOptions);
         }
 
         public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings, bool useQueryStringOnPost = false)
@@ -187,7 +192,7 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.UseMiddleware<EmbeddedResourceMiddleware>());
         }
 
-        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions)
+        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
             builder.Argon2();
@@ -200,6 +205,7 @@ namespace Codeworx.Identity.AspNetCore
                                      p.Cookie.Name = identityOptions.AuthenticationCookie;
                                      p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
+                                     cookieOptions?.Invoke(p);
                                  });
 
             collection.AddDistributedMemoryCache();

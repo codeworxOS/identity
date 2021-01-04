@@ -78,7 +78,7 @@ namespace Codeworx.Identity.Web.Test
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()));
-                    //.UseConfiguration(_configuration);
+            //.UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
