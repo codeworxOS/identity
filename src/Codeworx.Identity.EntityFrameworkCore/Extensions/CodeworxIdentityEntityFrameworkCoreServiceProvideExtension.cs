@@ -182,6 +182,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 {
                                     Url = "http://localhost/token",
                                 },
+                                new ValidRedirectUrl
+                                {
+                                    Url = "/account/redirect",
+                                },
                             },
                         });
                     }

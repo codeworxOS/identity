@@ -10,10 +10,12 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class StageOneAuthorizationRequestProcessor : IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>
     {
         private readonly IClientService _clientService;
+        private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public StageOneAuthorizationRequestProcessor(IClientService clientService)
+        public StageOneAuthorizationRequestProcessor(IClientService clientService, IBaseUriAccessor baseUriAccessor)
         {
             _clientService = clientService;
+            _baseUriAccessor = baseUriAccessor;
         }
 
         public int SortOrder => 100;
@@ -97,17 +99,22 @@ namespace Codeworx.Identity.OAuth.Authorization
             builder = builder.WithRedirectUri(redirectUrl);
         }
 
-        private bool CheckRedirectUrl(string redirectUrl, Uri p)
+        private bool CheckRedirectUrl(string redirectUrl, Uri compare)
         {
+            if (!compare.IsAbsoluteUri)
+            {
+                compare = new Uri(_baseUriAccessor.BaseUri, compare);
+            }
+
             var target = new Uri(redirectUrl);
-            if (target.Host.Equals(p.Host, StringComparison.OrdinalIgnoreCase) &&
-                p.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
-                p.PathAndQuery == "/")
+            if (target.Host.Equals(compare.Host, StringComparison.OrdinalIgnoreCase) &&
+                compare.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
+                compare.PathAndQuery == "/")
             {
                 return true;
             }
 
-            return redirectUrl.StartsWith(p.ToString(), System.StringComparison.OrdinalIgnoreCase);
+            return redirectUrl.StartsWith(compare.ToString(), System.StringComparison.OrdinalIgnoreCase);
         }
     }
 }

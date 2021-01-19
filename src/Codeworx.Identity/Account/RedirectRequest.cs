@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Codeworx.Identity.Account
+﻿namespace Codeworx.Identity.Account
 {
-    class RedirectRequest
+    public class RedirectRequest
     {
+        public RedirectRequest(string error = null, string errorDescription = null)
+        {
+            Error = error;
+            ErrorDescription = errorDescription;
+        }
+
+        public string Error { get; }
+
+        public string ErrorDescription { get; }
     }
 }

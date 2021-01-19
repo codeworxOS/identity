@@ -26,7 +26,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public TimeSpan TokenExpiration { get; set; }
 
-        IReadOnlyList<Uri> IClientRegistration.ValidRedirectUrls => this.ValidRedirectUrls.Select(p => new Uri(p.Url)).ToImmutableList();
+        IReadOnlyList<Uri> IClientRegistration.ValidRedirectUrls => this.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList();
 
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
 

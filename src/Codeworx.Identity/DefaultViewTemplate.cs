@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplate : ILoginViewTemplate, ITenantViewTemplate, IFormPostResponseTypeTemplate, IDisposable
+    public class DefaultViewTemplate : ILoginViewTemplate, ITenantViewTemplate, IRedirectViewTemplate, IFormPostResponseTypeTemplate, IDisposable
     {
         private readonly IDisposable _optionsMonitor;
         private bool _disposedValue = false;
@@ -38,17 +38,22 @@ namespace Codeworx.Identity
 
         public async Task<string> GetLoggedInTemplate()
         {
-            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.loggedin.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.loggedin.html");
         }
 
         public async Task<string> GetLoginTemplate()
         {
-            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.login.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.login.html");
+        }
+
+        public async Task<string> GetRedirectTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.redirect.html");
         }
 
         public async Task<string> GetTenantSelectionTemplate()
         {
-            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.tenant.html");
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.tenant.html");
         }
 
         internal static string GetTemplateAsString(string resourceName)
