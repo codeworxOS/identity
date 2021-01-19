@@ -6,7 +6,10 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Codeworx.Identity.Account;
+using Codeworx.Identity.AspNetCore.Account;
 using Codeworx.Identity.AspNetCore.Binder;
+using Codeworx.Identity.AspNetCore.Binder.Account;
 using Codeworx.Identity.AspNetCore.Binder.Login;
 using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
@@ -171,6 +174,9 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/callback", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<ExternalCallbackMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
+                       p => p.UseMiddleware<RedirectMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
@@ -225,6 +231,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();
             collection.AddTransient<IRequestBinder<OAuthRedirectRequest>, OAuthRedirectRequestBinder>();
             collection.AddTransient<IRequestBinder<ExternalCallbackRequest>, ExternalCallbackRequestBinder>();
+            collection.AddTransient<IRequestBinder<RedirectRequest>, RedirectRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -250,6 +257,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginRedirectResponse>, LoginRedirectResponseBinder>();
+            collection.AddTransient<IResponseBinder<RedirectViewResponse>, RedirectViewResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
