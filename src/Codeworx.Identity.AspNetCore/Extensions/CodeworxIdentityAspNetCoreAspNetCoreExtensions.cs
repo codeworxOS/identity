@@ -171,6 +171,10 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/callback", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<ExternalCallbackMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
+                       p => p
+                            .UseMiddleware<RedirectMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
