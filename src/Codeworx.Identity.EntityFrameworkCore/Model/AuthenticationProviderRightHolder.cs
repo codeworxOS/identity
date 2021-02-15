@@ -2,11 +2,11 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class AuthenticationProviderUser
+    public class AuthenticationProviderRightHolder
     {
         public Guid RightHolderId { get; set; }
 
-        public User User { get; set; }
+        public RightHolder RightHolder { get; set; }
 
         public Guid ProviderId { get; set; }
 

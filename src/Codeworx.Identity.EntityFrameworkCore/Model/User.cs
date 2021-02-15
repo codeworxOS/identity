@@ -10,7 +10,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public User()
         {
             this.Tenants = new HashSet<TenantUser>();
-            this.Providers = new HashSet<AuthenticationProviderUser>();
             this.Clients = new HashSet<ClientConfiguration>();
         }
 
@@ -24,12 +23,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public bool IsDisabled { get; set; }
 
+        public bool ForceChangePassword { get; set; }
+
+        public DateTime Created { get; set; }
+
+        public DateTime PasswordChanged { get; set; }
+
+        public DateTime? LastFailedLoginAttempt { get; set; }
+
+        public int FailedLoginCount { get; set; }
+
         [StringLength(512)]
         public string PasswordHash { get; set; }
 
         public ICollection<TenantUser> Tenants { get; }
-
-        public ICollection<AuthenticationProviderUser> Providers { get; }
 
         public ICollection<ClientConfiguration> Clients { get; }
     }
