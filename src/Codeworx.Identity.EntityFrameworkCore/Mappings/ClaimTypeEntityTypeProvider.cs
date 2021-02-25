@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 {
-    public class UserRoleEntityTypeConfiguration : IEntityTypeConfiguration<RightHolderGroup>
+    public class ClaimTypeEntityTypeProvider : IEntityTypeConfiguration<ClaimType>
     {
-        public void Configure(EntityTypeBuilder<RightHolderGroup> builder)
+        public void Configure(EntityTypeBuilder<ClaimType> builder)
         {
-            builder.HasKey(p => new { p.RightHolderId, p.GroupId });
+            builder.ToTable("ClaimType");
         }
     }
 }

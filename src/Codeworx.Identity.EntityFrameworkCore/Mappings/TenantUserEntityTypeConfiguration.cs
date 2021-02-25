@@ -12,7 +12,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 
             builder.HasOne(p => p.User)
                    .WithMany(p => p.Tenants)
-                   .HasForeignKey(p => p.RightHolderId);
+                   .HasForeignKey(p => p.RightHolderId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Tenant)
+                   .WithMany(p => p.Users)
+                   .HasForeignKey(p => p.TenantId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

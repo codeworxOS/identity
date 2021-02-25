@@ -6,5 +6,6 @@
         RefreshToken = 0x01,
         AccessToken = 0x02,
         Lookup = 0x04,
+        Invitation = 0x08,
     }
 }

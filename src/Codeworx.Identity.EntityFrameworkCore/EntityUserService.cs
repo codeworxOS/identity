@@ -29,7 +29,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
-            return user;
+            return ToUser(user);
         }
 
         public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
@@ -41,7 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 
-            return user;
+            return ToUser(user);
         }
 
         public virtual async Task<IUser> GetUserByNameAsync(string username)
@@ -50,7 +50,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
 
-            return user;
+            return ToUser(user);
         }
 
         public async Task SetDefaultTenantAsync(string identifier, string tenantKey)
@@ -66,6 +66,18 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        private Data.User ToUser(User user)
+        {
+            return new Data.User
+            {
+                Identity = user.Id.ToString("N"),
+                DefaultTenantKey = user.DefaultTenantId?.ToString("N"),
+                ForceChangePassword = user.ForceChangePassword,
+                Name = user.Name,
+                PasswordHash = user.PasswordHash,
+            };
         }
     }
 }

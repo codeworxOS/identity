@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class User : RightHolder, IUser
+    public class User : RightHolder
     {
         public User()
         {
@@ -16,10 +15,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public Tenant DefaultTenant { get; set; }
 
         public Guid? DefaultTenantId { get; set; }
-
-        public string DefaultTenantKey => DefaultTenantId?.ToString("N");
-
-        public string Identity => Id.ToString("N");
 
         public bool IsDisabled { get; set; }
 

@@ -26,7 +26,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             var authenticationProviderQuery = _context.Set<AuthenticationProvider>() as IQueryable<AuthenticationProvider>;
 
-            authenticationProviderQuery = authenticationProviderQuery.Where(p => p.Enabled);
+            authenticationProviderQuery = authenticationProviderQuery.Where(p => !p.IsDisabled);
 
             var loginRegistrations = await authenticationProviderQuery
                                                 .OrderBy(p => p.SortOrder)

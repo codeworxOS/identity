@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Model;
@@ -20,10 +22,24 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             var id = Guid.Parse(clientIdentifier);
 
-            return await _context.Set<ClientConfiguration>()
+            var result = await _context.Set<ClientConfiguration>()
                 .Include(p => p.ValidRedirectUrls)
                 .Include(p => p.User)
                 .SingleOrDefaultAsync(p => p.Id == id);
+
+            if (result == null)
+            {
+                return null;
+            }
+
+            return new Data.ClientRegistration
+            {
+                ClientId = result.Id.ToString("N"),
+                ClientSecretHash = result.ClientSecretHash,
+                ClientType = result.ClientType,
+                TokenExpiration = result.TokenExpiration,
+                ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url)).ToImmutableList(),
+            };
         }
     }
 }

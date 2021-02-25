@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 {
-    public class ValidRedirectUrlEntityTypeConfiguration : IEntityTypeConfiguration<ValidRedirectUrl>
+    public class ClientScopeEntityTypeConfiguration : IEntityTypeConfiguration<ClientScope>
     {
-        public void Configure(EntityTypeBuilder<ValidRedirectUrl> builder)
+        public void Configure(EntityTypeBuilder<ClientScope> builder)
         {
-            builder.ToTable("ValidRedirectUrl");
+            builder.ToTable("ClientScope");
 
             builder.HasOne(p => p.Client)
-                .WithMany(p => p.ValidRedirectUrls)
+                .WithMany()
                 .HasForeignKey(p => p.ClientId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

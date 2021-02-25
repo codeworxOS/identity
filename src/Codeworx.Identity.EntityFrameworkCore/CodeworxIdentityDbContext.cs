@@ -28,24 +28,35 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
+        public DbSet<AvailableLicense> AvailableLicenses { get; set; }
+
+        public DbSet<ClaimType> CleimTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new UserRoleEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AuthenticationProviderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AuthenticationProviderRightHolderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AvailableLicenseEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClaimTypeEntityTypeProvider());
+            modelBuilder.ApplyConfiguration(new ClaimValueEntityTypeProvider());
             modelBuilder.ApplyConfiguration(new ClientConfigurationEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ExternalAuthenticationProviderEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new AuthenticationProviderUserEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientLicenseEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ClientScopeEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new IdentityCacheEntityTypeConfiguration());
-
-            modelBuilder.Ignore<ClientScope>();
-            modelBuilder.Ignore<ScopeClaim>();
-
+            modelBuilder.ApplyConfiguration(new LicenseEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new LicenseAssignmentEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new RightHolderGroupConfiguration());
+            modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ScopeAssignmentEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ScopeClaimEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ScopeHierarchyEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
             modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Property);
         }
     }

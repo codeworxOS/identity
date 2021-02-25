@@ -8,7 +8,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
     {
         public AuthenticationProvider()
         {
-            this.Users = new HashSet<AuthenticationProviderUser>();
+            this.RightHolders = new HashSet<AuthenticationProviderRightHolder>();
         }
 
         public string EndpointConfiguration { get; set; }
@@ -29,8 +29,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public int SortOrder { get; set; }
 
-        public bool Enabled { get; set; }
+        public bool IsDisabled { get; set; }
 
-        public ICollection<AuthenticationProviderUser> Users { get; }
+        public ICollection<AuthenticationProviderRightHolder> RightHolders { get; }
     }
 }

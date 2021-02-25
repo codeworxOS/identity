@@ -117,6 +117,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 public string Name { get; }
 
                 public string PasswordHash => null;
+
+                public bool ForceChangePassword => false;
             }
         }
     }

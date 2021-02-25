@@ -223,7 +223,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Name = Constants.FormsLoginProviderName,
                             EndpointType = new FormsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
-                            Enabled = true,
                             SortOrder = 1,
                         });
                     }
@@ -238,11 +237,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Name = Constants.ExternalWindowsProviderName,
                             EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
-                            Enabled = true,
                             SortOrder = 2,
-                            Users =
+                            RightHolders =
                             {
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = "S-1-12-1-3570142310-1302179307-1636533923-2810485112",
@@ -259,7 +257,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.ExternalOAuthProviderId),
                             Name = "Basic OAuth",
-                            Enabled = true,
                             SortOrder = 3,
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
@@ -272,14 +269,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
                                 ClientSecret = "I1X07k1dq?=ZRx@wodZtKB/_9IAC5-[z",
                             }),
-                            Users =
+                            RightHolders =
                             {
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
                                     ExternalIdentifier = "d4cc0c66-adeb-4d9d-a386-8b61789984a7",
                                 },
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = Constants.MultiTenantUserId,

@@ -18,5 +18,7 @@ namespace Codeworx.Identity.Configuration.Model
         public string Name { get; }
 
         public string PasswordHash { get; }
+
+        public bool ForceChangePassword => false;
     }
 }

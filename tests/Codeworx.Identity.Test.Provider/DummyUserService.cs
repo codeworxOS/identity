@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Test
 
         public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
-            return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier ));
+            return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier));
         }
 
         public Task<Model.IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
@@ -69,6 +69,8 @@ namespace Codeworx.Identity.Test
             public string PasswordHash => null;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => false;
         }
 
         public class MultiTenantDummyUser : IDummyUser
@@ -87,6 +89,8 @@ namespace Codeworx.Identity.Test
             public string PasswordHash => null;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => false;
         }
     }
 }
