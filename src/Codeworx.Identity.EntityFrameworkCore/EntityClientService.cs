@@ -18,7 +18,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public async Task<IClientRegistration> GetById(string clientIdentifier)
+        public virtual async Task<IClientRegistration> GetById(string clientIdentifier)
         {
             var id = Guid.Parse(clientIdentifier);
 

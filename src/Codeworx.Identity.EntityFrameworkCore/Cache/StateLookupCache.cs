@@ -24,7 +24,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logKeyExists = LoggerMessage.Define<string>(LogLevel.Error, new EventId(14101), "The State {Key}, already exists.");
             _logKeyExpired = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14102), "The State {Key} is expired");
             _logKeyAlreadyUsed = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14103), "The State {Key} has already been used");
-            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14104), "The State {Key} not found!");
+            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14104), "The State {Key} was not found!");
         }
 
         public StateLookupCache(TContext context, ILogger<AuthorizationCodeCache<TContext>> logger)

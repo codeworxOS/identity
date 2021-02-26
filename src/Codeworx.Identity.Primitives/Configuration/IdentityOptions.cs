@@ -17,6 +17,7 @@ namespace Codeworx.Identity.Configuration
             AccountEndpoint = "/account";
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             CookieExpiration = TimeSpan.FromHours(1);
+            InvitationValidity = TimeSpan.FromDays(60);
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
@@ -32,6 +33,8 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
+
+        public TimeSpan InvitationValidity { get; set; }
 
         public string OauthAuthorizationEndpoint { get; set; }
 
@@ -59,6 +62,7 @@ namespace Codeworx.Identity.Configuration
 
             target.AccountEndpoint = this.AccountEndpoint;
             target.CookieExpiration = this.CookieExpiration;
+            target.InvitationValidity = this.InvitationValidity;
             target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;
             target.OauthTokenEndpoint = this.OauthTokenEndpoint;
             target.OpenIdAuthorizationEndpoint = this.OpenIdAuthorizationEndpoint;
