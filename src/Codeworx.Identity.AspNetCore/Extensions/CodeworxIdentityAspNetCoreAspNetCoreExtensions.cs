@@ -15,6 +15,7 @@ using Codeworx.Identity.AspNetCore.Binder.Login;
 using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
+using Codeworx.Identity.AspNetCore.Invitation;
 using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.AspNetCore.OAuth.Binder;
 using Codeworx.Identity.AspNetCore.OpenId;
@@ -174,6 +175,9 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/callback", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<ExternalCallbackMiddleware>())
+                   .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue,
+                       p => p.UseMiddleware<InvitationMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
                        p => p.UseMiddleware<RedirectMiddleware>())

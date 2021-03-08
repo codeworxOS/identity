@@ -12,6 +12,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 {
     public static class CodeworxIdentityEntityFrameworkCoreServiceProvideExtension
     {
+        private static Guid _invitationUserId = Guid.Parse("{6554B541-8601-4258-8D11-661CA55C7277}");
+
         public static IServiceProvider MigrateDatabase(this IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -283,6 +285,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 },
                             },
                         });
+                    }
+
+                    var invitationUser = context.Users.FirstOrDefault(p => p.Id == _invitationUserId);
+
+                    if (invitationUser == null)
+                    {
+                        invitationUser = new User { Id = _invitationUserId, Name = "invitation@example.com" };
+
+                        context.Users.Add(invitationUser);
+
+                        context.TenantUsers.AddRange(
+                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultTenantId), RightHolderId = invitationUser.Id },
+                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultSecondTenantId), RightHolderId = invitationUser.Id });
+
+                        context.UserInvitations.Add(new UserInvitation { UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }
 
                     context.SaveChanges();

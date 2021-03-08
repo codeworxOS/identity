@@ -337,6 +337,56 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.ToTable("TenantUser");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
+                {
+                    b.Property<string>("InvitationCode")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(4000);
+
+                    b.Property<bool>("CanChangeLogin");
+
+                    b.Property<bool>("IsDisabled");
+
+                    b.Property<string>("RedirectUri")
+                        .HasMaxLength(2000);
+
+                    b.Property<Guid>("UserId");
+
+                    b.Property<DateTime>("ValidUntil");
+
+                    b.HasKey("InvitationCode");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserInvitation");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
+                {
+                    b.Property<string>("Token")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(4000);
+
+                    b.Property<Guid>("ClientId");
+
+                    b.Property<string>("IdentityData")
+                        .IsRequired();
+
+                    b.Property<bool>("IsDisabled");
+
+                    b.Property<Guid>("UserId");
+
+                    b.Property<DateTime>("ValidUntil");
+
+                    b.HasKey("Token");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRefreshToken");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
                 {
                     b.Property<Guid>("Id")
@@ -570,6 +620,27 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .WithMany("Users")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("Invitations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>

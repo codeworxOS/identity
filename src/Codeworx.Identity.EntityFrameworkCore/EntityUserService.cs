@@ -32,16 +32,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
             return ToUser(user);
         }
 
-        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public async Task<IUser> GetUserByIdAsync(string userId)
         {
-            var identifier = identity.GetUserId();
-
             var userSet = _context.Set<User>();
-            var id = Guid.Parse(identifier);
+            var id = Guid.Parse(userId);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 
             return ToUser(user);
+        }
+
+        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        {
+            var identifier = identity.GetUserId();
+
+            return await GetUserByIdAsync(identifier);
         }
 
         public virtual async Task<IUser> GetUserByNameAsync(string username)

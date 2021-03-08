@@ -20,7 +20,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
         {
             if (request.Path.StartsWithSegments(_options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue)
             {
-                var code = remaining.Value;
+                var code = remaining.Value.TrimStart('/');
                 return Task.FromResult(new InvitationViewRequest(code));
             }
 

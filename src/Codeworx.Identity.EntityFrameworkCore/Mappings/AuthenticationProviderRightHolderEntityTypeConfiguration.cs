@@ -8,6 +8,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
     {
         public void Configure(EntityTypeBuilder<AuthenticationProviderRightHolder> builder)
         {
+            builder.ToTable("AuthenticationProviderRightHolder");
+
             builder.HasKey(p => new { p.RightHolderId, p.ProviderId });
 
             builder.HasOne(p => p.RightHolder)

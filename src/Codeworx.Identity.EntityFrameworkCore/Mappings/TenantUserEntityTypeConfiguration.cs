@@ -8,6 +8,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
     {
         public void Configure(EntityTypeBuilder<TenantUser> builder)
         {
+            builder.ToTable("TenantUser");
             builder.HasKey(p => new { p.RightHolderId, p.TenantId });
 
             builder.HasOne(p => p.User)

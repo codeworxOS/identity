@@ -304,6 +304,28 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserInvitation",
+                columns: table => new
+                {
+                    InvitationCode = table.Column<string>(maxLength: 4000, nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    CanChangeLogin = table.Column<bool>(nullable: false),
+                    RedirectUri = table.Column<string>(maxLength: 2000, nullable: true),
+                    ValidUntil = table.Column<DateTime>(nullable: false),
+                    IsDisabled = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserInvitation", x => x.InvitationCode);
+                    table.ForeignKey(
+                        name: "FK_UserInvitation_RightHolder_UserId",
+                        column: x => x.UserId,
+                        principalTable: "RightHolder",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClientLicense",
                 columns: table => new
                 {
@@ -345,6 +367,34 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         principalTable: "ClientConfiguration",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRefreshToken",
+                columns: table => new
+                {
+                    Token = table.Column<string>(maxLength: 4000, nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
+                    IdentityData = table.Column<string>(nullable: false),
+                    ClientId = table.Column<Guid>(nullable: false),
+                    ValidUntil = table.Column<DateTime>(nullable: false),
+                    IsDisabled = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRefreshToken", x => x.Token);
+                    table.ForeignKey(
+                        name: "FK_UserRefreshToken_ClientConfiguration_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "ClientConfiguration",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRefreshToken_RightHolder_UserId",
+                        column: x => x.UserId,
+                        principalTable: "RightHolder",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -524,6 +574,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 column: "TenantId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserInvitation_UserId",
+                table: "UserInvitation",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRefreshToken_ClientId",
+                table: "UserRefreshToken",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRefreshToken_UserId",
+                table: "UserRefreshToken",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ValidRedirectUrl_ClientId",
                 table: "ValidRedirectUrl",
                 column: "ClientId");
@@ -563,6 +628,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "TenantUser");
+
+            migrationBuilder.DropTable(
+                name: "UserInvitation");
+
+            migrationBuilder.DropTable(
+                name: "UserRefreshToken");
 
             migrationBuilder.DropTable(
                 name: "ValidRedirectUrl");

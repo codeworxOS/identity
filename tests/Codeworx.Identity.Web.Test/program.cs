@@ -16,8 +16,6 @@ namespace Codeworx.Identity.Web.Test
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
 
-            AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
-
             BuildWebHost(args)
                 .MigrateDatabase()
                 .Run();

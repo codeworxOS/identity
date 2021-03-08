@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
@@ -42,6 +43,9 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
+
+            this.ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);

@@ -53,6 +53,12 @@ namespace Codeworx.Identity.Test
             return Task.CompletedTask;
         }
 
+        public Task<IUser> GetUserByIdAsync(string userId)
+        {
+            var id = Guid.Parse(userId);
+            return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));
+        }
+
         public interface IDummyUser : IUser
         {
             IDictionary<string, string> ExternalIdentifiers { get; }

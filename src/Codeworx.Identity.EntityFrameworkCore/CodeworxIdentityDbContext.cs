@@ -24,6 +24,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<Tenant> Tenants { get; set; }
 
+        public DbSet<TenantUser> TenantUsers { get; set; }
+
         public DbSet<ClientConfiguration> ClientConfigurations { get; set; }
 
         public DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
@@ -31,6 +33,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
         public DbSet<AvailableLicense> AvailableLicenses { get; set; }
 
         public DbSet<ClaimType> CleimTypes { get; set; }
+
+        public DbSet<UserInvitation> UserInvitations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -56,7 +60,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ScopeHierarchyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserInvitationEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRefreshTokenEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
+
             modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Property);
         }
     }

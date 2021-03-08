@@ -6,7 +6,6 @@ using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Invitation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Cache
 {
@@ -35,20 +34,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public async Task UpdateAsync(string code, Action<InvitationItem> update)
+        public async Task<InvitationItem> RedeemAsync(string code)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var cacheSet = _context.Set<IdentityCache>();
+                var cacheSet = _context.Set<UserInvitation>();
 
                 var entry = await GetEntryAsync(code, cacheSet);
-                var item = JsonConvert.DeserializeObject<InvitationItem>(entry.Value);
-                update(item);
-                entry.Value = JsonConvert.SerializeObject(item);
+                entry.IsDisabled = true;
 
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
                 transaction.Commit();
+
+                return new InvitationItem
+                {
+                    UserId = entry.UserId.ToString("N"),
+                    RedirectUri = entry.RedirectUri,
+                };
             }
         }
 
@@ -56,21 +59,23 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var cacheSet = _context.Set<IdentityCache>();
+                var cacheSet = _context.Set<UserInvitation>();
 
-                if (await cacheSet.AnyAsync(p => p.Key == code).ConfigureAwait(false))
+                if (await cacheSet.AnyAsync(p => p.InvitationCode == code).ConfigureAwait(false))
                 {
                     var exception = new CacheKeyAlreadyExistsException();
                     _logKeyExists(_logger, code, exception);
                     throw exception;
                 }
 
-                var entry = new IdentityCache
+                var entry = new UserInvitation
                 {
-                    Key = code,
-                    CacheType = CacheType.Invitation,
+                    InvitationCode = code,
+                    CanChangeLogin = false,
+                    IsDisabled = false,
                     ValidUntil = DateTime.UtcNow.Add(validity),
-                    Value = JsonConvert.SerializeObject(factory),
+                    RedirectUri = factory.RedirectUri,
+                    UserId = Guid.Parse(factory.UserId),
                 };
 
                 await cacheSet.AddAsync(entry).ConfigureAwait(false);
@@ -85,42 +90,40 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var cacheSet = _context.Set<IdentityCache>();
-                IdentityCache entry = await GetEntryAsync(code, cacheSet).ConfigureAwait(false);
+                var cacheSet = _context.Set<UserInvitation>();
+                UserInvitation entry = await GetEntryAsync(code, cacheSet).ConfigureAwait(false);
 
                 transaction.Commit();
 
-                var result = JsonConvert.DeserializeObject<InvitationItem>(entry.Value);
-
-                return result;
+                return new InvitationItem
+                {
+                    UserId = entry.UserId.ToString("N"),
+                    RedirectUri = entry.RedirectUri,
+                };
             }
         }
 
-        private async Task<IdentityCache> GetEntryAsync(string code, DbSet<IdentityCache> cacheSet)
+        private async Task<UserInvitation> GetEntryAsync(string code, DbSet<UserInvitation> cacheSet)
         {
             var entry = await cacheSet
-                                            .Where(p => p.CacheType == CacheType.Invitation && p.Key == code)
+                                            .Where(p => p.InvitationCode == code)
                                             .FirstOrDefaultAsync()
                                             .ConfigureAwait(false);
 
             if (entry == null)
             {
                 _logKeyNotFound(_logger, code, null);
+                throw new InvitationNotFoundException();
             }
-            else if (entry.Disabled)
+            else if (entry.IsDisabled)
             {
                 _logKeyAlreadyUsed(_logger, code, null);
-                entry = null;
+                throw new InvitationAlreadyRedeemedException();
             }
             else if (entry.ValidUntil < DateTime.UtcNow)
             {
                 _logKeyExpired(_logger, code, null);
-                entry = null;
-            }
-
-            if (entry == null)
-            {
-                throw new CacheEntryNotFoundException();
+                throw new InvitationExpiredException();
             }
 
             return entry;

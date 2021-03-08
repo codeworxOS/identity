@@ -10,6 +10,6 @@ namespace Codeworx.Identity.Cache
 
         Task AddAsync(string code, InvitationItem factory, TimeSpan validity);
 
-        Task UpdateAsync(string code, Action<InvitationItem> update);
+        Task<InvitationItem> RedeemAsync(string code);
     }
 }

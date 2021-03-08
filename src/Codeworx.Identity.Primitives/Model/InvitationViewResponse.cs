@@ -7,7 +7,7 @@ namespace Codeworx.Identity.Model
 {
     public class InvitationViewResponse : IViewData
     {
-        public InvitationViewResponse(IEnumerable<ILoginRegistrationGroup> groups, string error)
+        public InvitationViewResponse(IEnumerable<ILoginRegistrationGroup> groups, string error = null)
         {
             Error = error;
             Groups = groups.ToImmutableList();
