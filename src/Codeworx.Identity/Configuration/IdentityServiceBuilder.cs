@@ -43,6 +43,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped);
             this.ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped);
@@ -72,6 +73,7 @@ namespace Codeworx.Identity.Configuration
 
             this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
         }
 
         public IServiceCollection ServiceCollection { get; }

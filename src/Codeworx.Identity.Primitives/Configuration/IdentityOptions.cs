@@ -22,6 +22,9 @@ namespace Codeworx.Identity.Configuration
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
             WindowsAuthenticationEnabled = false;
+
+            PasswordRegex = Constants.DefaultPasswordRegex;
+            PasswordDescription = Constants.DefaultPasswordDescription;
         }
 
         public string AccountEndpoint { get; set; }
@@ -49,6 +52,10 @@ namespace Codeworx.Identity.Configuration
         public string OpenIdJsonWebKeyEndpoint { get; set; }
 
         public string UserInfoEndpoint { get; set; }
+
+        public string PasswordRegex { get; set; }
+
+        public string PasswordDescription { get; set; }
 
         public List<string> Styles { get; }
 

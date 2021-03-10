@@ -21,8 +21,6 @@ namespace Codeworx.Identity.Login.Windows
 
         public Type RequestParameterType { get; } = typeof(WindowsLoginRequest);
 
-        public string Template => Constants.Templates.Redirect;
-
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());

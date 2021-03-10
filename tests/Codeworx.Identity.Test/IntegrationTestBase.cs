@@ -34,6 +34,7 @@ namespace Codeworx.Identity.Test
             var response = await this.TestClient.PostAsync(options.Value.AccountEndpoint + "/login",
                                                            new FormUrlEncodedContent(new Dictionary<string, string>
                                                                                      {
+                                                                                         {"provider-id", Constants.FormsLoginProviderId},
                                                                                          {"username", Constants.DefaultAdminUserName},
                                                                                          {"password", "admin"}
                                                                                      }));

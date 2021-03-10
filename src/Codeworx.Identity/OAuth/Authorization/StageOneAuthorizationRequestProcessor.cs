@@ -22,43 +22,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public async Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
-            if (!Validator.TryValidateProperty(request.Prompt, new ValidationContext(request) { MemberName = nameof(request.Prompt) }, new List<ValidationResult>()))
-            {
-                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
-            }
-
-            builder = builder.WithPrompts(request.Prompt?.Split(' ') ?? new string[] { });
-
-            var parameters = builder.Parameters;
-
-            if (parameters.Prompts.Contains(Constants.OAuth.Prompt.None))
-            {
-                if (parameters.Prompts.Count > 1)
-                {
-                    builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
-                }
-                else if (parameters.User == null)
-                {
-                    builder.Throw(Constants.OpenId.Error.LoginRequired, null);
-                }
-            }
-
-            if (parameters.User == null)
-            {
-                throw new ErrorResponseException<LoginChallengeResponse>(new LoginChallengeResponse(request.Prompt));
-            }
-
-            if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) { MemberName = nameof(request.State) }, new List<ValidationResult>()))
-            {
-                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);
-            }
-
-            builder = builder.WithState(request.State);
-
-            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
-            {
-                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
-            }
+            builder.WithClientId(request.ClientId);
 
             var client = await _clientService.GetById(request.ClientId).ConfigureAwait(false);
 
@@ -66,8 +30,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
-
-            builder.WithClientId(request.ClientId);
 
             if (request.RedirectUri != null)
             {
@@ -97,6 +59,44 @@ namespace Codeworx.Identity.OAuth.Authorization
             }
 
             builder = builder.WithRedirectUri(redirectUrl);
+
+            if (!Validator.TryValidateProperty(request.Prompt, new ValidationContext(request) { MemberName = nameof(request.Prompt) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
+            }
+
+            builder = builder.WithPrompts(request.Prompt?.Split(' ') ?? new string[] { });
+
+            var parameters = builder.Parameters;
+
+            if (parameters.Prompts.Contains(Constants.OAuth.Prompt.None))
+            {
+                if (parameters.Prompts.Count > 1)
+                {
+                    builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.PromptName);
+                }
+                else if (parameters.User == null)
+                {
+                    builder.Throw(Constants.OpenId.Error.LoginRequired, null);
+                }
+            }
+
+            if (parameters.User == null)
+            {
+                throw new ErrorResponseException<LoginChallengeResponse>(new LoginChallengeResponse(request.Prompt));
+            }
+
+            builder = builder.WithState(request.State);
+
+            if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) { MemberName = nameof(request.State) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);
+            }
+
+            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
+            }
         }
 
         private bool CheckRedirectUrl(string redirectUrl, Uri compare)

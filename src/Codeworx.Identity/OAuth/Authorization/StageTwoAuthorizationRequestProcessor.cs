@@ -45,7 +45,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ScopeName);
             }
 
-            builder = builder.WithScopes(request.Scope?.Split(' ') ?? new string[] { });
+            builder = builder.WithScopes(request.Scope?.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries) ?? new string[] { });
 
             if (!Validator.TryValidateProperty(request.Nonce, new ValidationContext(request) { MemberName = nameof(request.Nonce) }, new List<ValidationResult>()))
             {

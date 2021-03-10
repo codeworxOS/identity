@@ -21,7 +21,18 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
             if (request.Path.StartsWithSegments(_options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue)
             {
                 var code = remaining.Value.TrimStart('/');
-                return Task.FromResult(new InvitationViewRequest(code));
+                if (HttpMethods.IsGet(request.Method))
+                {
+                    return Task.FromResult(new InvitationViewRequest(code));
+                }
+                else if (HttpMethods.IsPost(request.Method))
+                {
+                    request.Form.TryGetValue(Constants.Forms.ProviderId, out var providerIdValue);
+                    request.Form.TryGetValue(Constants.Forms.Password, out var passwordValue);
+                    request.Form.TryGetValue(Constants.Forms.ConfirmPassword, out var confirmPasswordValue);
+
+                    return Task.FromResult<InvitationViewRequest>(new ProcessInvitationViewRequest(code, passwordValue, confirmPasswordValue, providerIdValue));
+                }
             }
 
             throw new NotSupportedException("Invalid invitation request");

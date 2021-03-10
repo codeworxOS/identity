@@ -14,14 +14,25 @@ namespace Codeworx.Identity.AspNetCore.Invitation
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<InvitationViewRequest> requestBinder, IResponseBinder<InvitationViewResponse> responseBinder, IInvitationViewService service)
+        public async Task Invoke(
+            HttpContext context,
+            IRequestBinder<InvitationViewRequest> requestBinder,
+            IResponseBinder<InvitationViewResponse> responseBinder,
+            IResponseBinder<SignInResponse> signinResponseBinder,
+            IInvitationViewService service)
         {
             try
             {
                 var request = await requestBinder.BindAsync(context.Request);
 
-                var response = await service.ProcessAsync(request);
+                if (request is ProcessInvitationViewRequest processRequest)
+                {
+                    var signInResponse = await service.ProcessAsync(processRequest);
+                    await signinResponseBinder.BindAsync(signInResponse, context.Response);
+                    return;
+                }
 
+                var response = await service.ShowAsync(request);
                 await responseBinder.BindAsync(response, context.Response);
             }
             catch (ErrorResponseException error)

@@ -8,7 +8,10 @@
             RedirectUri = redirectUri;
             ProviderId = providerId;
             Error = error;
+            Template = Constants.Templates.Redirect;
         }
+
+        public string Template { get; }
 
         public string Name { get; }
 

@@ -193,9 +193,6 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
                        p => p.UseMiddleware<OAuthLoginMiddleware>())
                    .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/providers"),
-                       p => p.UseMiddleware<ProvidersMiddleware>())
-                   .MapWhen(
                        p => p.Request.Path.Equals(options.SelectTenantEndpoint),
                        p => p.UseMiddleware<TenantsMiddleware>())
                    .MapWhen(
@@ -230,7 +227,6 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
-            collection.AddTransient<IRequestBinder<ProviderRequest>, ProviderRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();

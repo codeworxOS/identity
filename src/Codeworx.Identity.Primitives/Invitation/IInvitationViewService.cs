@@ -5,6 +5,8 @@ namespace Codeworx.Identity.Invitation
 {
     public interface IInvitationViewService
     {
-        Task<InvitationViewResponse> ProcessAsync(InvitationViewRequest request);
+        Task<SignInResponse> ProcessAsync(ProcessInvitationViewRequest request);
+
+        Task<InvitationViewResponse> ShowAsync(InvitationViewRequest request);
     }
 }

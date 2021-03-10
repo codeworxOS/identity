@@ -62,8 +62,7 @@ namespace Codeworx.Identity
 
                     var info = await processor.GetRegistrationInfoAsync(request, externalLogin);
 
-                    var infos = groups.GetOrAdd(processor.Template, p => new List<ILoginRegistrationInfo>());
-
+                    var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
                     infos.Add(info);
                 }
             }

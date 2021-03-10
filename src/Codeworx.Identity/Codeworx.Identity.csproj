@@ -23,6 +23,7 @@
     <None Remove="assets\account\invitation.html" />
     <None Remove="assets\account\redirect.html" />
     <None Remove="assets\challenge_response.html" />
+    <None Remove="assets\formsinvitation.html" />
     <None Remove="assets\formslogin.html" />
     <None Remove="assets\redirect_link.html" />
   </ItemGroup>

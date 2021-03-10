@@ -33,8 +33,6 @@ namespace Codeworx.Identity.Login.OAuth
 
         public Type RequestParameterType { get; } = typeof(OAuthLoginRequest);
 
-        public string Template => Constants.Templates.Redirect;
-
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             var oauthConfiguration = this.ToOAuthLoginConfiguration(configuration.ProcessorConfiguration);
@@ -44,7 +42,7 @@ namespace Codeworx.Identity.Login.OAuth
             redirectUriBuilder.AppendPath("oauth");
             redirectUriBuilder.AppendPath(configuration.Id);
 
-            var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/login";
+            var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/me";
 
             redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
 

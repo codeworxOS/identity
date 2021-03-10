@@ -1,8 +1,8 @@
 ﻿namespace Codeworx.Identity.Login
 {
-    internal class FormsLoginRegistrationInfo : ILoginRegistrationInfo
+    internal class FormsInvitationRegistrationInfo : ILoginRegistrationInfo
     {
-        public FormsLoginRegistrationInfo(string providerId, string userName, string error = null)
+        public FormsInvitationRegistrationInfo(string providerId, string userName, string error = null)
         {
             UserName = userName;
             ProviderId = providerId;
@@ -15,7 +15,7 @@
 
         public string Error { get; }
 
-        public string Template => Constants.Templates.FormsLogin;
+        public string Template => Constants.Templates.FormsInvitation;
 
         public bool HasRedirectUri(out string redirectUrl)
         {
