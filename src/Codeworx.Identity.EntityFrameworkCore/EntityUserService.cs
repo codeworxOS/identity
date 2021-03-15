@@ -18,23 +18,23 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
+        public virtual async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
-            var userSet = _context.Set<User>();
+            IQueryable<User> userQuery = GetUserQuery();
             var authenticationProviderSet = _context.Set<AuthenticationProvider>();
             var providerId = Guid.Parse(provider);
 
             var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);
             var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
 
-            var user = await userSet.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
+            var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
             return ToUser(user);
         }
 
-        public async Task<IUser> GetUserByIdAsync(string userId)
+        public virtual async Task<IUser> GetUserByIdAsync(string userId)
         {
-            var userSet = _context.Set<User>();
+            var userSet = GetUserQuery();
             var id = Guid.Parse(userId);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
@@ -51,16 +51,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public virtual async Task<IUser> GetUserByNameAsync(string username)
         {
-            var userSet = _context.Set<User>();
+            var userSet = GetUserQuery();
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
 
             return ToUser(user);
         }
 
-        public async Task SetDefaultTenantAsync(string identifier, string tenantKey)
+        public virtual async Task SetDefaultTenantAsync(string identifier, string tenantKey)
         {
-            var userSet = _context.Set<User>();
+            var userSet = GetUserQuery();
             var userId = Guid.Parse(identifier);
 
             var user = await userSet.Where(p => p.Id == userId).SingleOrDefaultAsync();
@@ -71,6 +71,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        protected virtual IQueryable<User> GetUserQuery()
+        {
+            return _context.Set<User>().Where(p => !p.IsDisabled);
         }
 
         private Data.User ToUser(User user)

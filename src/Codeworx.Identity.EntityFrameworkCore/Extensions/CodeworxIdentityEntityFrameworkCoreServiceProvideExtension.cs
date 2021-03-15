@@ -266,7 +266,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
-                                Scope = "openid",
+                                Scope = "openid 6c2cf5a9-ff71-4049-8035-4958df58b3bc/.default",
                                 IdentifierClaim = "oid",
                                 ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
                                 ClientSecret = "I1X07k1dq?=ZRx@wodZtKB/_9IAC5-[z",

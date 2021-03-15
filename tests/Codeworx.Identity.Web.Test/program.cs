@@ -1,6 +1,4 @@
-﻿using System;
-using Codeworx.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Codeworx.Identity.Web.Test
