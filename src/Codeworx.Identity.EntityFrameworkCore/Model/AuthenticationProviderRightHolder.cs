@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -12,6 +13,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public AuthenticationProvider Provider { get; set; }
 
+        [StringLength(4000)]
+        [Required]
         public string ExternalIdentifier { get; set; }
     }
 }

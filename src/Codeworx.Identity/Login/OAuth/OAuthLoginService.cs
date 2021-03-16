@@ -27,14 +27,14 @@ namespace Codeworx.Identity.Login.OAuth
         {
             var state = Guid.NewGuid().ToString("N");
             string nonce = null;
-            await _stateLookupCache.SetAsync(state, request.ReturnUrl);
+            await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode });
 
             var callbackUriBuilder = new UriBuilder(_baseUri);
             callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(request.ProviderId);
 
-            var info = await _loginService.GetLoginRegistrationInfosAsync(request.ProviderId);
+            var info = await _loginService.GetLoginRegistrationInfoAsync(request.ProviderId);
 
             if (info == null)
             {

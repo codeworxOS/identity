@@ -14,7 +14,7 @@ namespace Codeworx.Identity
         {
         }
 
-        public AuthenticationException(string message, Exception innerException)
+        protected AuthenticationException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Login.OAuth;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.Cache
 {
@@ -13,7 +15,7 @@ namespace Codeworx.Identity.Cache
             _cache = cache;
         }
 
-        public async Task<string> GetAsync(string state)
+        public async Task<StateLookupItem> GetAsync(string state)
         {
             var lookup = await _cache.GetStringAsync(state)
                                                      .ConfigureAwait(false);
@@ -23,14 +25,14 @@ namespace Codeworx.Identity.Cache
                 return null;
             }
 
-            return lookup;
+            return JsonConvert.DeserializeObject<StateLookupItem>(lookup);
         }
 
-        public async Task SetAsync(string state, string value)
+        public async Task SetAsync(string state, StateLookupItem value)
         {
             await _cache.SetStringAsync(
                 state,
-                value,
+                JsonConvert.SerializeObject(value),
                 new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) })
             .ConfigureAwait(false);
         }

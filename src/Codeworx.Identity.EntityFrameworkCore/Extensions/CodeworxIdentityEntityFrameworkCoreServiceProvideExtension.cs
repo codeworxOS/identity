@@ -299,7 +299,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         new TenantUser { TenantId = Guid.Parse(Constants.DefaultTenantId), RightHolderId = invitationUser.Id },
                         new TenantUser { TenantId = Guid.Parse(Constants.DefaultSecondTenantId), RightHolderId = invitationUser.Id });
 
-                        context.UserInvitations.Add(new UserInvitation { UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
+                        context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }
 
                     context.SaveChanges();

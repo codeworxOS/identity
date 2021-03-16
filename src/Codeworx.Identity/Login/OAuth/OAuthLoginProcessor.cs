@@ -42,9 +42,15 @@ namespace Codeworx.Identity.Login.OAuth
             redirectUriBuilder.AppendPath("oauth");
             redirectUriBuilder.AppendPath(configuration.Id);
 
-            var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/me";
-
-            redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+            if (request.Type == ProviderRequestType.Invitation)
+            {
+                redirectUriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
+            }
+            else
+            {
+                var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/me";
+                redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+            }
 
             if (!string.IsNullOrEmpty(request.Prompt))
             {
@@ -52,10 +58,7 @@ namespace Codeworx.Identity.Login.OAuth
             }
 
             string error = null;
-            if (request.ProviderErrors.ContainsKey(configuration.Id))
-            {
-                error = string.Format(Constants.ExternalLoginErrorMessage, configuration.Name);
-            }
+            request.ProviderErrors.TryGetValue(configuration.Id, out error);
 
             var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, redirectUriBuilder.ToString(), error);
 
@@ -80,7 +83,7 @@ namespace Codeworx.Identity.Login.OAuth
             var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
 
             var cacheKey = loginRequest.State;
-            string returnUrl = null;
+            StateLookupItem stateItem = null;
 
             if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
             {
@@ -89,19 +92,19 @@ namespace Codeworx.Identity.Login.OAuth
 
             if (cacheKey != null)
             {
-                returnUrl = await _stateCache.GetAsync(cacheKey);
+                stateItem = await _stateCache.GetAsync(cacheKey);
             }
 
-            if (string.IsNullOrWhiteSpace(returnUrl))
+            if (stateItem == null)
             {
                 throw new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
             }
 
-            var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, returnUrl);
+            var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
 
             var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 
-            return new SignInResponse(identity, returnUrl);
+            return new SignInResponse(identity, stateItem.ReturnUrl);
         }
 
         private OAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)

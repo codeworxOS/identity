@@ -75,7 +75,10 @@ namespace Codeworx.Identity.AspNetCore
                     ////    }
                     ////}
 
-                    await jsonTextWriter.WriteEndObjectAsync();
+                    await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+
+                    await jsonTextWriter.FlushAsync().ConfigureAwait(false);
+                    await jsonTextWriter.CloseAsync().ConfigureAwait(false);
                 }
             }
         }

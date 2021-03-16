@@ -44,13 +44,19 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             if (HttpMethods.IsGet(request.Method))
             {
+                string providerId = null;
                 string providerError = null;
-                if (request.Query.TryGetValue(Constants.ProviderLoginErrorParameter, out var values))
+                if (request.Query.TryGetValue(Constants.LoginProviderIdParameter, out var providerIdValues))
                 {
-                    providerError = values.FirstOrDefault();
+                    providerId = providerIdValues.FirstOrDefault();
                 }
 
-                return new LoginRequest(returnUrl, prompt, providerError);
+                if (request.Query.TryGetValue(Constants.LoginProviderErrorParameter, out var errorValues))
+                {
+                    providerError = errorValues.FirstOrDefault();
+                }
+
+                return new LoginRequest(returnUrl, prompt, providerId, providerError);
             }
             else if (HttpMethods.IsPost(request.Method))
             {

@@ -28,13 +28,17 @@ namespace Codeworx.Identity.Login.Windows
 
             var returnUrl = request.ReturnUrl ?? $"{_options.AccountEndpoint}/login";
 
-            uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+            if (request.Type == ProviderRequestType.Invitation)
+            {
+                uriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
+            }
+            else
+            {
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+            }
 
             string error = null;
-            if (request.ProviderErrors.ContainsKey(configuration.Id))
-            {
-                error = string.Format(Constants.ExternalLoginErrorMessage, configuration.Name);
-            }
+            request.ProviderErrors.TryGetValue(configuration.Id, out error);
 
             var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString(), error);
 
@@ -55,7 +59,7 @@ namespace Codeworx.Identity.Login.Windows
                 throw new ArgumentException($"The argument ist not of type {RequestParameterType}", nameof(request));
             }
 
-            var loginData = new WindowsLoginData(registration, loginRequest.WindowsIdentity, loginRequest.ReturnUrl);
+            var loginData = new WindowsLoginData(registration, loginRequest.WindowsIdentity, loginRequest.ReturnUrl, loginRequest.InvitationCode);
 
             var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 

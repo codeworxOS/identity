@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,8 @@ namespace Codeworx.Identity
         private readonly IClaimsService _claimsService;
         private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
         private readonly IdentityOptions _options;
+        private readonly IInvitationService _invitationService;
+        private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IUserService _userService;
 
@@ -23,13 +26,17 @@ namespace Codeworx.Identity
             IPasswordValidator passwordValidator,
             IClaimsService claimsService,
             IEnumerable<IExternalLoginEvent> loginEvents,
-            IOptionsSnapshot<IdentityOptions> options)
+            IOptionsSnapshot<IdentityOptions> options,
+            IInvitationService invitationService = null,
+            ILinkUserService linkUserService = null)
         {
             _userService = userService;
             _passwordValidator = passwordValidator;
             _claimsService = claimsService;
             _loginEvents = loginEvents.ToImmutableList();
             _options = options.Value;
+            _invitationService = invitationService;
+            _linkUserService = linkUserService;
         }
 
         public async Task<IdentityData> GetIdentityAsync(IIdentityDataParameters identityDataParameters)
@@ -84,7 +91,24 @@ namespace Codeworx.Identity
 
             var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier).ConfigureAwait(false);
 
-            if (user == null)
+            if (externalLoginData.InvitationCode != null)
+            {
+                if (_invitationService == null || _linkUserService == null)
+                {
+                    throw new AuthenticationException(Constants.InvitationNotSupported);
+                }
+
+                if (user != null)
+                {
+                    throw new AuthenticationException(Constants.ExternalAccountAlreadyLinkedError);
+                }
+
+                var invitation = await _invitationService.RedeemInvitationAsync(externalLoginData.InvitationCode).ConfigureAwait(false);
+
+                user = await _userService.GetUserByIdAsync(invitation.UserId);
+                await _linkUserService.LinkUserAsync(user, externalLoginData).ConfigureAwait(false);
+            }
+            else if (user == null)
             {
                 foreach (var item in _loginEvents)
                 {
@@ -98,7 +122,7 @@ namespace Codeworx.Identity
 
                 if (user == null)
                 {
-                    throw new AuthenticationException();
+                    throw new AuthenticationException(Constants.ExternalAccountNotLinked);
                 }
             }
 

@@ -2,14 +2,17 @@
 {
     public class LoginRedirectResponse
     {
-        public LoginRedirectResponse(string providerError, string redirectUri)
+        public LoginRedirectResponse(string providerId = null, string providerError = null, string redirectUri = null)
         {
             ProviderError = providerError;
             RedirectUri = redirectUri;
+            ProviderId = providerId;
         }
 
         public string ProviderError { get; }
 
-        public string RedirectUri { get; set; }
+        public string ProviderId { get; }
+
+        public string RedirectUri { get; }
     }
 }

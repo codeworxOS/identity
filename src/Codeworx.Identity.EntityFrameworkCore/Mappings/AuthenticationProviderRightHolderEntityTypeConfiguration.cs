@@ -16,6 +16,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                    .WithMany(p => p.Providers)
                    .HasForeignKey(p => p.RightHolderId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(p => p.ExternalIdentifier)
+                .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")
+                .IsUnique(true);
         }
     }
 }

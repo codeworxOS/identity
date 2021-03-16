@@ -3,14 +3,13 @@ using System;
 using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
+namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20210308093122_InitialCreate")]
+    [Migration("20210316164907_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,9 +17,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
-                .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property)
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property);
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
                 {
@@ -56,9 +53,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
                     b.Property<Guid>("ProviderId");
 
-                    b.Property<string>("ExternalIdentifier");
+                    b.Property<string>("ExternalIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(4000);
 
                     b.HasKey("RightHolderId", "ProviderId");
+
+                    b.HasIndex("ExternalIdentifier")
+                        .IsUnique()
+                        .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique");
 
                     b.HasIndex("ProviderId");
 

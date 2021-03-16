@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
+namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
     public partial class InitialCreate : Migration
     {
@@ -158,7 +158,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                 {
                     RightHolderId = table.Column<Guid>(nullable: false),
                     ProviderId = table.Column<Guid>(nullable: false),
-                    ExternalIdentifier = table.Column<string>(nullable: true)
+                    ExternalIdentifier = table.Column<string>(maxLength: 4000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -492,6 +492,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                 name: "IX_AuthenticationProvider_FilterId",
                 table: "AuthenticationProvider",
                 column: "FilterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuthenticationProviderRightHolder_ExternalId_Unique",
+                table: "AuthenticationProviderRightHolder",
+                column: "ExternalIdentifier",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AuthenticationProviderRightHolder_ProviderId",

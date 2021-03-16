@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
@@ -25,15 +26,25 @@ namespace Codeworx.Identity.AspNetCore
                 var signInResonse = await loginService.SignInAsync(windowsLoginRequest.ProviderId, windowsLoginRequest);
                 await signInBinder.BindAsync(signInResonse, context.Response);
             }
-            catch (AuthenticationException)
+            catch (AuthenticationException ex)
             {
-                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, windowsLoginRequest.ReturnUrl);
+                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, ex.Message, windowsLoginRequest.ReturnUrl);
+                await loginRedirectBinder.BindAsync(data, context.Response);
+            }
+            catch (LoginProviderNotFoundException)
+            {
+                var data = new LoginRedirectResponse(providerError: Constants.UnknownLoginProviderError, redirectUri: windowsLoginRequest.ReturnUrl);
                 await loginRedirectBinder.BindAsync(data, context.Response);
             }
             catch (ErrorResponseException error)
             {
                 var binder = context.GetResponseBinder(error.ResponseType);
                 await binder.BindAsync(error.Response, context.Response);
+            }
+            catch (Exception)
+            {
+                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, Constants.GenericLoginError, windowsLoginRequest.ReturnUrl);
+                await loginRedirectBinder.BindAsync(data, context.Response);
             }
         }
     }

@@ -9,7 +9,7 @@ namespace Codeworx.Identity.Login
 
         ClaimsIdentity Identity { get; }
 
-        string ReturnUrl { get; }
+        string InvitationCode { get; }
 
         Task<string> GetExternalIdentifierAsync();
     }

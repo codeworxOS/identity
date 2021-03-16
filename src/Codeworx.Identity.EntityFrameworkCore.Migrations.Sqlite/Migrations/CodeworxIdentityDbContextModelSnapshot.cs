@@ -51,9 +51,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<Guid>("ProviderId");
 
-                    b.Property<string>("ExternalIdentifier");
+                    b.Property<string>("ExternalIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(4000);
 
                     b.HasKey("RightHolderId", "ProviderId");
+
+                    b.HasIndex("ExternalIdentifier")
+                        .IsUnique()
+                        .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique");
 
                     b.HasIndex("ProviderId");
 

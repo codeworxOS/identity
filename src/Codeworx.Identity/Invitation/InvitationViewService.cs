@@ -82,7 +82,7 @@ namespace Codeworx.Identity.Invitation
                 var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
-            catch (InvitationCodeAlreadyUsedException)
+            catch (InvitationAlreadyRedeemedException)
             {
                 var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
                 throw new ErrorResponseException<InvitationViewResponse>(response);
@@ -97,7 +97,7 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code);
 
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name);
+                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, request.Code);
 
                 if (!string.IsNullOrWhiteSpace(request.Provider))
                 {
@@ -116,7 +116,7 @@ namespace Codeworx.Identity.Invitation
             {
                 response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
             }
-            catch (InvitationCodeAlreadyUsedException)
+            catch (InvitationAlreadyRedeemedException)
             {
                 response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
             }
