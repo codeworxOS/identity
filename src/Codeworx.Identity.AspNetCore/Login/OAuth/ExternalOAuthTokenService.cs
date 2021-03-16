@@ -108,8 +108,10 @@ namespace Codeworx.Identity.AspNetCore
             {
                 claim = new Claim(key, JsonConvert.SerializeObject(dictionary), "json");
             }
-
-            claim = new Claim(key, value.ToString());
+            else
+            {
+                claim = new Claim(key, value.ToString());
+            }
 
             claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
 
