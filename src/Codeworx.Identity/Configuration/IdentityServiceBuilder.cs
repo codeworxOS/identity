@@ -45,9 +45,6 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
 
-            this.ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped);
-            this.ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped);
-
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);

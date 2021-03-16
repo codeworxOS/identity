@@ -5,6 +5,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Cache;
+using Codeworx.Identity.Invitation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -34,6 +35,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .LoginRegistrations<LoginRegistrationProvider<TContext>>()
                          .Tenants<EntityTenantService<TContext>>()
                          .Clients<EntityClientService<TContext>>()
+                         .ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped)
+                         .ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped)
                          .ReplaceService<IChangePasswordService, EntityChangePasswordService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<ILinkUserService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
