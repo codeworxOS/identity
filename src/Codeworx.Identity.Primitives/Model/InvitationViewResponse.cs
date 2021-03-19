@@ -17,7 +17,7 @@ namespace Codeworx.Identity.Model
 
         public IReadOnlyCollection<ILoginRegistrationGroup> Groups { get; }
 
-        public bool HasError => !string.IsNullOrEmpty(Error);
+        public bool HasError => !string.IsNullOrWhiteSpace(Error);
 
         public void CopyTo(IDictionary<string, object> target)
         {

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Cache
 {
+    // EventIds 141xx
     public class StateLookupCache<TContext> : IStateLookupCache
         where TContext : DbContext
     {
