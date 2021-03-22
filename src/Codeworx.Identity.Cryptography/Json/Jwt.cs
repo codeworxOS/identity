@@ -6,6 +6,7 @@ using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Codeworx.Identity.Cryptography.Json
 {
@@ -40,7 +41,7 @@ namespace Codeworx.Identity.Cryptography.Json
             var token = _handler.ReadJsonWebToken(value);
             var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
 
-            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode);
+            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode, new ArraySubObjectConverter());
 
             await Task.CompletedTask;
         }
@@ -145,6 +146,39 @@ namespace Codeworx.Identity.Cryptography.Json
             }
 
             return new SigningCredentials(_signingKey, algorithm);
+        }
+
+        private class ArraySubObjectConverter : JsonConverter
+        {
+            public override bool CanWrite => false;
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(object);
+            }
+
+            public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                switch (reader.TokenType)
+                {
+                    case Newtonsoft.Json.JsonToken.StartArray:
+                        return JToken.Load(reader).ToObject<List<object>>();
+                    case Newtonsoft.Json.JsonToken.StartObject:
+                        return JToken.Load(reader).ToObject<ConcurrentDictionary<string, object>>();
+                    default:
+                        if (reader.ValueType == null && reader.TokenType != Newtonsoft.Json.JsonToken.Null)
+                        {
+                            throw new NotImplementedException("Token not supported!");
+                        }
+
+                        return reader.Value;
+                }
+            }
+
+            public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException("Read Only Converter.");
+            }
         }
     }
 }

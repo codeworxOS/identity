@@ -6,24 +6,63 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Codeworx.Identity
 {
+    // EventIds 143xx
     public class LoginService : ILoginService
     {
+        private static readonly Action<ILogger, string, Exception> _processorNotFoundMessage;
+        private static readonly Action<ILogger, string, Exception> _loginFailed;
+        private static readonly Action<ILogger, ProviderRequestType, string, string, string, Exception> _getRegistrationInfos;
+        private static readonly Action<ILogger, string, Exception> _getLoginRegistrationInfo;
+        private static readonly Action<ILogger, string, Exception> _getParameterType;
+        private static readonly Action<ILogger, string, Exception> _signIn;
+        private static readonly Action<ILogger, string, Exception> _unhandledErrorProcessingLogin;
         private readonly IEnumerable<ILoginRegistrationProvider> _providers;
         private readonly IIdentityService _service;
+        private readonly ILogger<LoginService> _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service)
+        static LoginService()
+        {
+            _processorNotFoundMessage = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14301), "Provider {providerId} not found!");
+            _loginFailed = LoggerMessage.Define<string>(LogLevel.Information, new EventId(14302), "Login failed for provider {provider}");
+            _getRegistrationInfos = LoggerMessage.Define<ProviderRequestType, string, string, string>(
+                LogLevel.Information,
+                new EventId(14303),
+                "GetRegistrationInfosAsync: {requestType}, {returnUrl}, {prompt}, {username}");
+            _getLoginRegistrationInfo = LoggerMessage.Define<string>(
+                LogLevel.Information,
+                new EventId(14304),
+                "GetLoginRegistrationInfoAsync: {providerId}");
+            _getParameterType = LoggerMessage.Define<string>(
+                LogLevel.Information,
+                new EventId(14305),
+                "GetParameterTypeAsync: {providerId}");
+            _signIn = LoggerMessage.Define<string>(
+                LogLevel.Information,
+                new EventId(14306),
+                "SignInAsync: {providerId}");
+            _unhandledErrorProcessingLogin = LoggerMessage.Define<string>(
+                LogLevel.Warning,
+                new EventId(14307),
+                "There was an unhandled error Processing the login for provider {providerId}.");
+        }
+
+        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service, ILogger<LoginService> logger)
         {
             _providers = providers;
             _serviceProvider = serviceProvider;
             _service = service;
+            _logger = logger;
         }
 
-        public async Task<ILoginRegistration> GetLoginRegistrationInfosAsync(string providerId)
+        public async Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId)
         {
+            _getLoginRegistrationInfo(_logger, providerId, null);
+
             foreach (var item in _providers)
             {
                 foreach (var externalLogin in await item.GetLoginRegistrationsAsync())
@@ -40,6 +79,8 @@ namespace Codeworx.Identity
 
         public async Task<Type> GetParameterTypeAsync(string providerId)
         {
+            _getParameterType(_logger, providerId, null);
+
             var processorInfo = await GetProcessorInfoAsync(providerId);
 
             return processorInfo.Processor.RequestParameterType;
@@ -47,6 +88,8 @@ namespace Codeworx.Identity
 
         public async Task<RegistrationInfoResponse> GetRegistrationInfosAsync(ProviderRequest request)
         {
+            _getRegistrationInfos(_logger, request.Type, request.ReturnUrl, request.Prompt, request.UserName, null);
+
             var groups = new ConcurrentDictionary<string, List<ILoginRegistrationInfo>>();
 
             foreach (var item in _providers)
@@ -62,8 +105,7 @@ namespace Codeworx.Identity
 
                     var info = await processor.GetRegistrationInfoAsync(request, externalLogin);
 
-                    var infos = groups.GetOrAdd(processor.Template, p => new List<ILoginRegistrationInfo>());
-
+                    var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
                     infos.Add(info);
                 }
             }
@@ -73,9 +115,29 @@ namespace Codeworx.Identity
 
         public async Task<SignInResponse> SignInAsync(string providerId, object parameter)
         {
-            var processorInfo = await GetProcessorInfoAsync(providerId);
-            var response = await processorInfo.Processor.ProcessAsync(processorInfo.Registration, parameter).ConfigureAwait(false);
-            return response;
+            _signIn(_logger, providerId, null);
+
+            try
+            {
+                var processorInfo = await GetProcessorInfoAsync(providerId);
+                var response = await processorInfo.Processor.ProcessAsync(processorInfo.Registration, parameter).ConfigureAwait(false);
+                return response;
+            }
+            catch (AuthenticationException authException)
+            {
+                _loginFailed(_logger, providerId, authException);
+                throw;
+            }
+            catch (LoginProviderNotFoundException)
+            {
+                _processorNotFoundMessage(_logger, providerId, null);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _unhandledErrorProcessingLogin(_logger, providerId, ex);
+                throw;
+            }
         }
 
         private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)
@@ -95,7 +157,7 @@ namespace Codeworx.Identity
                 }
             }
 
-            throw new KeyNotFoundException($"Provider {providerId} not found!");
+            throw new LoginProviderNotFoundException(providerId);
         }
 
         private class ProcessorInfo

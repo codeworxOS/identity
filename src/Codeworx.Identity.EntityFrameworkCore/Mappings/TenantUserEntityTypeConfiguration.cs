@@ -8,11 +8,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
     {
         public void Configure(EntityTypeBuilder<TenantUser> builder)
         {
+            builder.ToTable("TenantUser");
             builder.HasKey(p => new { p.RightHolderId, p.TenantId });
 
             builder.HasOne(p => p.User)
                    .WithMany(p => p.Tenants)
-                   .HasForeignKey(p => p.RightHolderId);
+                   .HasForeignKey(p => p.RightHolderId)
+                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Tenant)
+                   .WithMany(p => p.Users)
+                   .HasForeignKey(p => p.TenantId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

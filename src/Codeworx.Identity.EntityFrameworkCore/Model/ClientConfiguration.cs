@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ClientConfiguration : IClientRegistration
+    public class ClientConfiguration
     {
         public ClientConfiguration()
         {
-            this.AllowedScopes = new HashSet<ClientScope>();
-            this.ValidRedirectUrls = new HashSet<ValidRedirectUrl>();
+            ScopeAssignments = new HashSet<ScopeAssignment>();
+            ValidRedirectUrls = new HashSet<ValidRedirectUrl>();
         }
 
-        public ICollection<ClientScope> AllowedScopes { get; }
-
-        public string ClientId => this.Id.ToString("N");
+        public ICollection<ScopeAssignment> ScopeAssignments { get; set; }
 
         [StringLength(512)]
         public string ClientSecretHash { get; set; }
@@ -26,8 +22,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public TimeSpan TokenExpiration { get; set; }
 
-        IReadOnlyList<Uri> IClientRegistration.ValidRedirectUrls => this.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList();
-
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
 
         public ClientType ClientType { get; set; }
@@ -35,7 +29,5 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public Guid? UserId { get; set; }
 
         public User User { get; set; }
-
-        IUser IClientRegistration.User => this.User;
     }
 }

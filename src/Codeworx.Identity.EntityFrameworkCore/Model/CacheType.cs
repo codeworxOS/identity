@@ -3,8 +3,7 @@
     public enum CacheType
     {
         AuthorizationCode = 0x00,
-        RefreshToken = 0x01,
-        AccessToken = 0x02,
-        Lookup = 0x04,
+        AccessToken = 0x01,
+        Lookup = 0x02,
     }
 }

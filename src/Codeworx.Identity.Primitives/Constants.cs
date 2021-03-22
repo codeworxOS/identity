@@ -15,6 +15,8 @@ namespace Codeworx.Identity
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
+        public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
+        public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
         public const string DefaultSecondTenantName = "Sendond Tenant";
@@ -24,22 +26,27 @@ namespace Codeworx.Identity
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
+        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
+        public const string InvitationNotSupported = "Invitation feature is not supported!";
+        public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
         public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
         public const string FormsLoginProviderName = "Form";
-        public const string GenericLoginError = "login_error";
+        public const string GenericLoginError = "There was an unexpected login error!";
         public const string InvalidCredentialsError = "Username or password is not valid!";
-        public const string ExternalLoginErrorMessage = "Could not process login for {0}.";
+        public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
+        public const string LoginProviderErrorParameter = "login_provider_error";
+        public const string LoginProviderIdParameter = "login_provider_id";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
-        public const string ProviderLoginErrorParameter = "provider_login_error";
         public const string TenantNameProperty = "tenantName";
+        public const string UnknownLoginProviderError = "Invalid provider!";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
         private const string NameChar = @"[a-zA-Z0-9_]";
@@ -78,6 +85,13 @@ namespace Codeworx.Identity
             public const string Subject = JwtRegisteredClaimNames.Sub;
             public const string Tenant = "tenant";
             public const string Upn = "upn";
+        }
+
+        public static class Forms
+        {
+            public const string ConfirmPassword = "confirm-password";
+            public const string Password = "password";
+            public const string ProviderId = "provider-id";
         }
 
         public static class OAuth
@@ -224,7 +238,9 @@ namespace Codeworx.Identity
 
         public static class Templates
         {
+            public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
+            public const string FormsProfile = "formsprofile";
             public const string Redirect = "redirect";
         }
 

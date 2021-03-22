@@ -14,8 +14,11 @@
 <body>
     <div id="loginContainer">
         {{#Groups}}
-            {{> (RegistrationTemplate)}}
+        {{> (RegistrationTemplate)}}
         {{/Groups}}
+        {{#HasError}}
+        <div class="error">{{Error}}</div>
+        {{/HasError}}
     </div>
 </body>
 </html>

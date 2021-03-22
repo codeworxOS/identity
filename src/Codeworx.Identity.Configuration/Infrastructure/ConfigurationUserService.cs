@@ -30,18 +30,23 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             return Task.FromResult<IUser>(null);
         }
 
-        public Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user)
+        public Task<IUser> GetUserByIdAsync(string userId)
         {
-            var id = user.GetUserId();
-
             User result = null;
 
-            if (_options.TryGetValue(id, out var userConfig))
+            if (_options.TryGetValue(userId, out var userConfig))
             {
-                result = new User(id, id, userConfig.Password);
+                result = new User(userId, userId, userConfig.Password);
             }
 
             return Task.FromResult<IUser>(result);
+        }
+
+        public async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user)
+        {
+            var id = user.GetUserId();
+
+            return await GetUserByIdAsync(id);
         }
 
         public Task<IUser> GetUserByNameAsync(string userName)

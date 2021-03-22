@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
@@ -19,14 +20,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="assets\account\invitation.html" />
     <None Remove="assets\account\redirect.html" />
     <None Remove="assets\challenge_response.html" />
+    <None Remove="assets\formsinvitation.html" />
     <None Remove="assets\formslogin.html" />
     <None Remove="assets\redirect_link.html" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="assets\account\loggedin.html" />
+    <EmbeddedResource Include="assets\account\invitation.html" />
     <EmbeddedResource Include="assets\account\redirect.html" />
     <EmbeddedResource Include="assets\account\login.html" />
     <EmbeddedResource Include="assets\account\tenant.html" />

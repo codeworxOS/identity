@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore
             _tokenProviders = tokenProviders;
         }
 
-        public async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
+        public virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
             _client.BaseAddress = oauthConfiguration.BaseUri;
 
@@ -52,44 +52,73 @@ namespace Codeworx.Identity.AspNetCore
 
             var provider = _tokenProviders.First(p => p.TokenType == Constants.Token.Jwt);
             var token = await provider.CreateAsync(null);
-
             await token.ParseAsync(responseValues.AccessToken);
 
-            var payload = await token.GetPayloadAsync();
-
             var identity = new ClaimsIdentity();
+
+            await AddClaimsAsync(token, identity, Constants.OAuth.AccessTokenName);
+            identity.AddClaim(new Claim(Constants.OAuth.AccessTokenName, responseValues.AccessToken));
+
+            if (!string.IsNullOrWhiteSpace(responseValues.IdToken))
+            {
+                identity.AddClaim(new Claim(Constants.OpenId.IdTokenName, responseValues.IdToken));
+
+                var identityToken = await provider.CreateAsync(null);
+                await identityToken.ParseAsync(responseValues.IdToken);
+                var identityPayload = await identityToken.GetPayloadAsync();
+                await AddClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
+            }
+
+            return identity;
+        }
+
+        private static async Task AddClaimsAsync(IToken token, ClaimsIdentity identity, string source)
+        {
+            var payload = await token.GetPayloadAsync();
 
             foreach (var item in payload)
             {
                 if (item.Value is string stringValue)
                 {
-                    identity.AddClaim(new Claim(item.Key, stringValue));
+                    AddClaimIfNotExists(identity, item.Key, stringValue, source);
                 }
-                else if (item.Value is IEnumerable<string> stringEnumerable)
+                else if (item.Value is IEnumerable<object> enumerable)
                 {
-                    foreach (var value in stringEnumerable)
+                    foreach (var value in enumerable)
                     {
-                        identity.AddClaim(new Claim(item.Key, value));
+                        AddClaimIfNotExists(identity, item.Key, value, source);
                     }
                 }
                 else
                 {
-                    identity.AddClaim(new Claim(item.Key, item.Value.ToString()));
+                    AddClaimIfNotExists(identity, item.Key, item.Value, source);
                 }
             }
+        }
 
-            if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
+        private static void AddClaimIfNotExists(ClaimsIdentity identity, string key, object value, string source)
+        {
+            Claim claim = null;
+
+            if (value is string stringValue)
             {
-                var identityToken = await provider.CreateAsync(null);
-                await identityToken.ParseAsync(responseValues.IdToken);
-                var identityPayload = await identityToken.GetPayloadAsync();
-                if (identityPayload.TryGetValue(Constants.OAuth.NonceName, out var nonceValue))
-                {
-                    identity.AddClaim(new Claim(Constants.OAuth.NonceName, nonceValue.ToString()));
-                }
+                claim = new Claim(key, stringValue);
+            }
+            else if (value is IDictionary<string, object> dictionary)
+            {
+                claim = new Claim(key, JsonConvert.SerializeObject(dictionary), "json");
+            }
+            else
+            {
+                claim = new Claim(key, value.ToString());
             }
 
-            return identity;
+            claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
+
+            if (!identity.HasClaim(claim.Type, claim.Value))
+            {
+                identity.AddClaim(claim);
+            }
         }
 
         private class ResponseType

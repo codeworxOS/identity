@@ -5,32 +5,36 @@ using Codeworx.Identity.View;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplateCache : ILoginViewTemplateCache, ITenantViewTemplateCache, IFormPostResponseTypeTemplateCache, IRedirectViewTemplateCache
+    public class DefaultViewTemplateCache : IInvitationViewTemplateCache, ILoginViewTemplateCache, ITenantViewTemplateCache, IFormPostResponseTypeTemplateCache, IRedirectViewTemplateCache
     {
         private readonly ITemplateCompiler _compiler;
         private readonly ILoginViewTemplate _loginViewTemplate;
         private readonly ITenantViewTemplate _tenantViewTemplate;
         private readonly IRedirectViewTemplate _redirectViewTemplate;
         private readonly IFormPostResponseTypeTemplate _formPostResponseTypeTemplate;
+        private readonly IInvitationViewTemplate _invitationViewTemplate;
         private Func<object, string> _redirect;
         private Func<object, string> _login;
         private Func<object, string> _tenant;
         private Func<object, string> _formPost;
         private Func<object, string> _loggedin;
         private Func<object, string> _challengeResponse;
+        private Func<object, string> _invitation;
 
         public DefaultViewTemplateCache(
             ITemplateCompiler compiler,
             ILoginViewTemplate loginViewTemplate,
             ITenantViewTemplate tenantViewTemplate,
             IRedirectViewTemplate redirectViewTemplate,
-            IFormPostResponseTypeTemplate formPostResponseTypeTemplate)
+            IFormPostResponseTypeTemplate formPostResponseTypeTemplate,
+            IInvitationViewTemplate invitationViewTemplate)
         {
             _compiler = compiler;
             _loginViewTemplate = loginViewTemplate;
             _tenantViewTemplate = tenantViewTemplate;
             _redirectViewTemplate = redirectViewTemplate;
             _formPostResponseTypeTemplate = formPostResponseTypeTemplate;
+            _invitationViewTemplate = invitationViewTemplate;
         }
 
         public async Task<string> GetChallengeResponse(IDictionary<string, object> data)
@@ -59,6 +63,20 @@ namespace Codeworx.Identity
             }
 
             return _formPost(data);
+        }
+
+        public async Task<string> GetInvitationView(IDictionary<string, object> data)
+        {
+            if (_invitation == null)
+            {
+                var template = await _invitationViewTemplate.GetInvitationTemplate();
+                if (_invitation == null)
+                {
+                    _invitation = _compiler.Compile(template);
+                }
+            }
+
+            return _invitation(data);
         }
 
         public async Task<string> GetLoggedInView(IDictionary<string, object> data)

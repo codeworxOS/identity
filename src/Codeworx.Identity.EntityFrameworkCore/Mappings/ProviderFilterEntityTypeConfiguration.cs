@@ -10,9 +10,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         {
             builder.ToTable("ProviderFilter");
 
-            builder.HasDiscriminator<string>("Type")
-                   .HasValue<DomainNameProviderFilter>("Domain")
-                   .HasValue<IPv4ProviderFilter>("IPv4");
+            builder.HasDiscriminator<byte>("Type")
+                   .HasValue<DomainNameProviderFilter>(1)
+                   .HasValue<IPv4ProviderFilter>(2);
         }
     }
 }

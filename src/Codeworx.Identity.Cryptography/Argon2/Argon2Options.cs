@@ -4,15 +4,11 @@
     {
         public Argon2Options()
         {
-            DegreeOfParallelism = 8;
-            MemorySize = 8192;
-            Iterations = 2;
-            Argon2Mode = Argon2Mode.Argon2i;
+            MemorySize = 65535;
             HashLength = 32;
-            SaltLength = 32;
+            Iterations = 5;
+            Argon2Mode = Argon2Mode.Argon2i;
         }
-
-        public int DegreeOfParallelism { get; set; }
 
         public int MemorySize { get; set; }
 
@@ -21,7 +17,5 @@
         public Argon2Mode Argon2Mode { get; set; }
 
         public int HashLength { get; set; }
-
-        public int SaltLength { get; set; }
     }
 }

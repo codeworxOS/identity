@@ -15,14 +15,22 @@ namespace Codeworx.Identity.Login
 
         public Type RequestParameterType { get; } = typeof(LoginFormRequest);
 
-        public string Template => Constants.Templates.FormsLogin;
-
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             string error = null;
             request.ProviderErrors.TryGetValue(configuration.Id, out error);
 
-            return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error));
+            switch (request.Type)
+            {
+                case ProviderRequestType.Login:
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error));
+                case ProviderRequestType.Invitation:
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error));
+                case ProviderRequestType.Profile:
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.UserName, error));
+            }
+
+            throw new NotSupportedException($"Request type {request.Type} not supported!");
         }
 
         public async Task<SignInResponse> ProcessAsync(ILoginRegistration registration, object request)

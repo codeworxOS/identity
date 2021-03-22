@@ -3,11 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.Login.OAuth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Cache
 {
+    // EventIds 141xx
     public class StateLookupCache<TContext> : IStateLookupCache
         where TContext : DbContext
     {
@@ -24,7 +27,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logKeyExists = LoggerMessage.Define<string>(LogLevel.Error, new EventId(14101), "The State {Key}, already exists.");
             _logKeyExpired = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14102), "The State {Key} is expired");
             _logKeyAlreadyUsed = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14103), "The State {Key} has already been used");
-            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14104), "The State {Key} not found!");
+            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14104), "The State {Key} was not found!");
         }
 
         public StateLookupCache(TContext context, ILogger<AuthorizationCodeCache<TContext>> logger)
@@ -33,7 +36,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public async Task<string> GetAsync(string state)
+        public async Task<StateLookupItem> GetAsync(string state)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -66,11 +69,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
                 transaction.Commit();
 
-                return entry.Value;
+                return JsonConvert.DeserializeObject<StateLookupItem>(entry.Value);
             }
         }
 
-        public async Task SetAsync(string state, string value)
+        public async Task SetAsync(string state, StateLookupItem value)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -88,7 +91,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     Key = state,
                     CacheType = CacheType.Lookup,
                     ValidUntil = DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
-                    Value = value,
+                    Value = JsonConvert.SerializeObject(value),
                 };
 
                 await cacheSet.AddAsync(entry).ConfigureAwait(false);

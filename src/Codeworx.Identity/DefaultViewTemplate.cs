@@ -9,7 +9,13 @@ using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplate : ILoginViewTemplate, ITenantViewTemplate, IRedirectViewTemplate, IFormPostResponseTypeTemplate, IDisposable
+    public class DefaultViewTemplate :
+        ILoginViewTemplate,
+        ITenantViewTemplate,
+        IRedirectViewTemplate,
+        IFormPostResponseTypeTemplate,
+        IInvitationViewTemplate,
+        IDisposable
     {
         private readonly IDisposable _optionsMonitor;
         private bool _disposedValue = false;
@@ -34,6 +40,11 @@ namespace Codeworx.Identity
         public async Task<string> GetFormPostTemplate()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.form_post.html");
+        }
+
+        public async Task<string> GetInvitationTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.invitation.html");
         }
 
         public async Task<string> GetLoggedInTemplate()

@@ -15,6 +15,8 @@
 
         public string Error { get; }
 
+        public string Template => Constants.Templates.FormsLogin;
+
         public bool HasRedirectUri(out string redirectUrl)
         {
             redirectUrl = null;

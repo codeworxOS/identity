@@ -7,19 +7,19 @@ namespace Codeworx.Identity.Login.OAuth
     {
         private readonly OAuthLoginConfiguration _configuration;
 
-        public OAuthLoginData(ILoginRegistration registration, ClaimsIdentity identity, OAuthLoginConfiguration configuration, string returnUrl)
+        public OAuthLoginData(ILoginRegistration registration, ClaimsIdentity identity, OAuthLoginConfiguration configuration, string invitationCode)
         {
             _configuration = configuration;
             LoginRegistration = registration;
             Identity = identity;
-            ReturnUrl = returnUrl;
+            InvitationCode = invitationCode;
         }
 
         public ILoginRegistration LoginRegistration { get; }
 
         public ClaimsIdentity Identity { get; }
 
-        public string ReturnUrl { get; }
+        public string InvitationCode { get; }
 
         public Task<string> GetExternalIdentifierAsync()
         {

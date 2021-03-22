@@ -10,6 +10,8 @@ namespace Codeworx.Identity
 
         Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user);
 
+        Task<IUser> GetUserByIdAsync(string userId);
+
         Task<IUser> GetUserByNameAsync(string userName);
     }
 }

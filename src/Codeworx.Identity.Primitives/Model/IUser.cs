@@ -9,5 +9,7 @@
         string Name { get; }
 
         string PasswordHash { get; }
+
+        bool ForceChangePassword { get; }
     }
 }

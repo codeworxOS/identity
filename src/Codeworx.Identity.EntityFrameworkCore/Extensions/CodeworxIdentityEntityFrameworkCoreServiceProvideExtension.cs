@@ -12,6 +12,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 {
     public static class CodeworxIdentityEntityFrameworkCoreServiceProvideExtension
     {
+        private static Guid _invitationUserId = Guid.Parse("{6554B541-8601-4258-8D11-661CA55C7277}");
+
         public static IServiceProvider MigrateDatabase(this IServiceProvider serviceProvider)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -223,7 +225,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Name = Constants.FormsLoginProviderName,
                             EndpointType = new FormsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
-                            Enabled = true,
                             SortOrder = 1,
                         });
                     }
@@ -238,11 +239,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Name = Constants.ExternalWindowsProviderName,
                             EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
-                            Enabled = true,
                             SortOrder = 2,
-                            Users =
+                            RightHolders =
                             {
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = "S-1-12-1-3570142310-1302179307-1636533923-2810485112",
@@ -259,7 +259,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(Constants.ExternalOAuthProviderId),
                             Name = "Basic OAuth",
-                            Enabled = true,
                             SortOrder = 3,
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
@@ -267,25 +266,40 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
-                                Scope = "openid",
+                                Scope = "openid 6c2cf5a9-ff71-4049-8035-4958df58b3bc/.default",
                                 IdentifierClaim = "oid",
                                 ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
                                 ClientSecret = "I1X07k1dq?=ZRx@wodZtKB/_9IAC5-[z",
                             }),
-                            Users =
+                            RightHolders =
                             {
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
                                     ExternalIdentifier = "d4cc0c66-adeb-4d9d-a386-8b61789984a7",
                                 },
-                                new AuthenticationProviderUser
+                                new AuthenticationProviderRightHolder
                                 {
                                     RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
                                     ExternalIdentifier = Constants.MultiTenantUserId,
                                 },
                             },
                         });
+                    }
+
+                    var invitationUser = context.Users.FirstOrDefault(p => p.Id == _invitationUserId);
+
+                    if (invitationUser == null)
+                    {
+                        invitationUser = new User { Id = _invitationUserId, Name = "invitation@example.com" };
+
+                        context.Users.Add(invitationUser);
+
+                        context.TenantUsers.AddRange(
+                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultTenantId), RightHolderId = invitationUser.Id },
+                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultSecondTenantId), RightHolderId = invitationUser.Id });
+
+                        context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }
 
                     context.SaveChanges();

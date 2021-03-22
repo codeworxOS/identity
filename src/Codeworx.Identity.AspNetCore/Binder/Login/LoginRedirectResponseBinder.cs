@@ -22,11 +22,19 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath(_options.AccountEndpoint);
             uriBuilder.AppendPath("login");
-            uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, responseData.RedirectUri);
-
-            if (responseData.ProviderError != null)
+            if (!string.IsNullOrWhiteSpace(responseData.RedirectUri))
             {
-                uriBuilder.AppendQueryParameter(Constants.ProviderLoginErrorParameter, responseData.ProviderError);
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, responseData.RedirectUri);
+            }
+
+            if (!string.IsNullOrWhiteSpace(responseData.ProviderError))
+            {
+                uriBuilder.AppendQueryParameter(Constants.LoginProviderErrorParameter, responseData.ProviderError);
+            }
+
+            if (!string.IsNullOrWhiteSpace(responseData.ProviderId))
+            {
+                uriBuilder.AppendQueryParameter(Constants.LoginProviderIdParameter, responseData.ProviderId);
             }
 
             response.Redirect(uriBuilder.ToString());

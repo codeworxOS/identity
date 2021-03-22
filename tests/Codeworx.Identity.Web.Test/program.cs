@@ -1,6 +1,4 @@
-﻿using System;
-using Codeworx.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Codeworx.Identity.Web.Test
@@ -15,8 +13,6 @@ namespace Codeworx.Identity.Web.Test
         public static void Main(string[] args)
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-
-            AppContext.SetSwitch("System.Net.Http.UseSocketsHttpHandler", false);
 
             BuildWebHost(args)
                 .MigrateDatabase()

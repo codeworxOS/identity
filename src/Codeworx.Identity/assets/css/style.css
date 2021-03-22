@@ -23,20 +23,37 @@ body {
     width: 450px;
 }
 
-    #loginContainer form {
+    #loginContainer:before {
+        content: "Login";
+        font-family: "Arial Black";
+        font-size: 30px;
+        color: #333333;
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 50px;
         display: flex;
         flex-direction: column;
     }
 
-        #loginContainer form:before {
-            content: "Login";
-            font-family: "Arial Black";
-            font-size: 30px;
-            color: #333333;
-            text-transform: uppercase;
-            text-align: center;
-            padding-bottom: 50px;
-        }
+    #loginContainer.invitation:before {
+        content: "Set Password";
+    }
+
+    #loginContainer form:after {
+        content: "Or login with";
+        font-family: Arial;
+        font-size: 16px;
+        width: 100%;
+        color: #999999;
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 40px;
+    }
+
+    #loginContainer form {
+        display: flex;
+        flex-direction: column;
+    }
 
     #loginContainer input {
         color: #686868;
@@ -94,7 +111,7 @@ body {
             background: red;
         }
 
-    #loginContainer #error {
+    #loginContainer .error {
         font-family: Arial;
         color: red;
         margin-top: 15px;
@@ -106,18 +123,7 @@ body {
         flex-flow: row wrap;
         justify-content: space-between;
         list-style-type: none;
-        margin-top: 40px;
     }
-
-        #loginContainer #external:before {
-            content: "Or login with";
-            font-family: Arial;
-            font-size: 16px;
-            width: 100%;
-            color: #999999;
-            text-align: center;
-            margin-bottom: 10px;
-        }
 
         #loginContainer #external li {
             height: 40px;
@@ -157,7 +163,7 @@ body {
     height: 20px;
     margin-bottom: 30px;
     margin-left: auto;
-    margin-right:auto;
+    margin-right: auto;
 }
 
     .ispinner .ispinner-blade {

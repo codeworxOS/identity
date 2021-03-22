@@ -2,6 +2,8 @@
 {
     public interface ILoginRegistrationInfo
     {
+        string Template { get; }
+
         string Error { get; }
 
         string ProviderId { get; }
