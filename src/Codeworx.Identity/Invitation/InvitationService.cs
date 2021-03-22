@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Invitation
             _redeemIvitationParameterLogMessage = LoggerMessage.Define<string>(LogLevel.Trace, new EventId(14403), $"{nameof(RedeemInvitationAsync)}: {{invitationCode}}");
         }
 
-        public InvitationService(IInvitationCache cache, ILogger<InvitationService> logger)
+        public InvitationService(ILogger<InvitationService> logger, IInvitationCache cache = null)
         {
             _logger = logger;
             _cache = cache;
@@ -36,6 +36,11 @@ namespace Codeworx.Identity.Invitation
             _getIvitationParameterLogMessage(_logger, invitationCode, null);
 
             return await _cache.GetAsync(invitationCode);
+        }
+
+        public Task<bool> IsSupportedAsync()
+        {
+            return Task.FromResult(_cache != null);
         }
 
         public async Task<InvitationItem> RedeemInvitationAsync(string invitationCode)

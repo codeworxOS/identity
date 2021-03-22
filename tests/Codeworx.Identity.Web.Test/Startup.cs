@@ -98,7 +98,7 @@ namespace Codeworx.Identity.Web.Test
 
         private void ConfigureJwt(JwtBearerOptions options)
         {
-            options.Authority = "https://localhost:5001";
+            options.Authority = "https://localhost:44319/";
             options.Audience = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         }
     }

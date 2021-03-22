@@ -22,7 +22,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
         public WindowsLoginRequestBinder(
             IAuthenticationSchemeProvider schemeProvider,
             IOptionsSnapshot<IdentityOptions> options,
-            IInvitationService invitationService = null)
+            IInvitationService invitationService)
         {
             _schemaProvider = schemeProvider;
             _invitationService = invitationService;
@@ -51,7 +51,9 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
                 if (request.Query.TryGetValue(Constants.InvitationParameter, out var invitationValues))
                 {
-                    if (_invitationService == null)
+                    var supported = await _invitationService.IsSupportedAsync().ConfigureAwait(false);
+
+                    if (!supported)
                     {
                         throw new NotSupportedException(Constants.InvitationNotSupported);
                     }
