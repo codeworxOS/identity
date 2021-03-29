@@ -1,11 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(EfVersion)' == '' Or '$(EfVersion)' == '5'">
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <EfVersion>5</EfVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EfVersion)' == '3' Or '$(EfVersion)' == '2'">
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
+
+  <ItemGroup Condition="'$(EfVersion)' == '5'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(EfVersion)' == '3'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EfVersion)' == '2'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.0" />
+  </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>

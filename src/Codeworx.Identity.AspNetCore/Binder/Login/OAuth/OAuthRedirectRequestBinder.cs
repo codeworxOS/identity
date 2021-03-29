@@ -14,7 +14,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
         private readonly IdentityOptions _identityOptions;
         private readonly IInvitationService _invitationService;
 
-        public OAuthRedirectRequestBinder(IOptionsSnapshot<IdentityOptions> options, IInvitationService invitationService = null)
+        public OAuthRedirectRequestBinder(IOptionsSnapshot<IdentityOptions> options, IInvitationService invitationService)
         {
             _identityOptions = options.Value;
             _invitationService = invitationService;
@@ -39,7 +39,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 {
                     invitationCode = invitationValues;
 
-                    if (_invitationService == null)
+                    var supported = await _invitationService.IsSupportedAsync().ConfigureAwait(false);
+
+                    if (!supported)
                     {
                         throw new NotSupportedException(Constants.InvitationNotSupported);
                     }

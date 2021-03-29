@@ -27,7 +27,7 @@ namespace Codeworx.Identity
             IClaimsService claimsService,
             IEnumerable<IExternalLoginEvent> loginEvents,
             IOptionsSnapshot<IdentityOptions> options,
-            IInvitationService invitationService = null,
+            IInvitationService invitationService,
             ILinkUserService linkUserService = null)
         {
             _userService = userService;
@@ -93,7 +93,9 @@ namespace Codeworx.Identity
 
             if (externalLoginData.InvitationCode != null)
             {
-                if (_invitationService == null || _linkUserService == null)
+                var supported = await _invitationService.IsSupportedAsync().ConfigureAwait(false);
+
+                if (!supported || _linkUserService == null)
                 {
                     throw new AuthenticationException(Constants.InvitationNotSupported);
                 }

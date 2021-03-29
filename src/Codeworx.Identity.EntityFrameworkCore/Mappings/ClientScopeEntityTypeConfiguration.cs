@@ -8,8 +8,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
     {
         public void Configure(EntityTypeBuilder<ClientScope> builder)
         {
-            builder.ToTable("ClientScope");
-
             builder.HasOne(p => p.Client)
                 .WithMany()
                 .HasForeignKey(p => p.ClientId)

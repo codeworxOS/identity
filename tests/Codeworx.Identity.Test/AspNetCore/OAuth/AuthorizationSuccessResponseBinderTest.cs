@@ -1,10 +1,11 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.OAuth.Binder;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Microsoft.AspNetCore.Http;
+#if NETCOREAPP2_1
 using Microsoft.AspNetCore.Http.Internal;
+#endif
 using Xunit;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
@@ -14,7 +15,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Fact]
         public async Task AuthorizationCodeEnsureRFC3986Encoding_Expects_Ok()
         {
-            var httpResponse = new DefaultHttpResponse(new DefaultHttpContext());
+            var ctx = new DefaultHttpContext();
+            var httpResponse = ctx.Response;
             var builder = new AuthorizationResponseBuilder()
                                     .WithCode("a bc+def")
                                     .WithRedirectUri("http://localhost:1234")
@@ -33,7 +35,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         public async Task AuthorizationCodeResponseModeFragment_Expects_Ok()
         {
 
-            var httpResponse = new DefaultHttpResponse(new DefaultHttpContext());
+            var ctx = new DefaultHttpContext();
+            var httpResponse = ctx.Response;
             var builder = new AuthorizationResponseBuilder()
                                     .WithCode("a bc+def")
                                     .WithRedirectUri("http://localhost:1234")

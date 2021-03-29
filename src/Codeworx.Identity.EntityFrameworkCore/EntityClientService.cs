@@ -38,7 +38,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 ClientSecretHash = result.ClientSecretHash,
                 ClientType = result.ClientType,
                 TokenExpiration = result.TokenExpiration,
-                ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url)).ToImmutableList(),
+                ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList(),
             };
         }
     }

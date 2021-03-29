@@ -18,10 +18,11 @@ namespace Codeworx.Identity
 
         public async Task<IEnumerable<IScope>> GetScopes()
         {
-            var systemScopeTasks = _systemScopeProviders.Select(p => p.GetScopes()).ToList();
-            await Task.WhenAll(systemScopeTasks).ConfigureAwait(false);
-
-            var scopes = systemScopeTasks.SelectMany(p => p.Result).ToList();
+            var scopes = new List<IScope>();
+            foreach (var provider in _systemScopeProviders)
+            {
+                scopes.AddRange(await provider.GetScopes().ConfigureAwait(false));
+            }
 
             if (_scopeProvider != null)
             {
