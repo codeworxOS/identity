@@ -26,8 +26,6 @@ namespace Codeworx.Identity.AspNetCore
 
         public virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
-            _client.BaseAddress = oauthConfiguration.BaseUri;
-
             var contentCollection = new Dictionary<string, string>
             {
                 { Constants.OAuth.GrantTypeName, Constants.OAuth.GrantType.AuthorizationCode },
@@ -36,14 +34,24 @@ namespace Codeworx.Identity.AspNetCore
                 { Constants.OAuth.ClientIdName, oauthConfiguration.ClientId },
             };
 
-            if (oauthConfiguration.ClientSecret != null)
+            return await GetIdentityAsync(oauthConfiguration, contentCollection);
+        }
+
+        public virtual async Task<ClaimsIdentity> RefreshAsync(OAuthLoginConfiguration oauthConfiguration, string refreshToken)
+        {
+            var contentCollection = new Dictionary<string, string>
             {
-                var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
+                { Constants.OAuth.GrantTypeName, Constants.OAuth.GrantType.RefreshToken },
+                { Constants.OAuth.RefreshTokenName, refreshToken },
+                { Constants.OAuth.ClientIdName, oauthConfiguration.ClientId },
+            };
 
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
-            }
+            return await GetIdentityAsync(oauthConfiguration, contentCollection);
+        }
 
-            var response = await _client.PostAsync(oauthConfiguration.TokenEndpoint, new FormUrlEncodedContent(contentCollection));
+        protected virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
+        {
+            HttpResponseMessage response = await CreateTokenResponse(oauthConfiguration, contentCollection);
 
             response.EnsureSuccessStatusCode();
 
@@ -69,7 +77,37 @@ namespace Codeworx.Identity.AspNetCore
                 await AddClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
             }
 
+            if (!string.IsNullOrWhiteSpace(responseValues.RefreshToken))
+            {
+                identity.AddClaim(new Claim(Constants.OAuth.RefreshTokenName, responseValues.RefreshToken));
+            }
+
             return identity;
+        }
+
+        private static void AddClaimIfNotExists(ClaimsIdentity identity, string key, object value, string source)
+        {
+            Claim claim = null;
+
+            if (value is string stringValue)
+            {
+                claim = new Claim(key, stringValue);
+            }
+            else if (value is IDictionary<string, object> dictionary)
+            {
+                claim = new Claim(key, JsonConvert.SerializeObject(dictionary), "json");
+            }
+            else
+            {
+                claim = new Claim(key, value.ToString());
+            }
+
+            claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
+
+            if (!identity.HasClaim(claim.Type, claim.Value))
+            {
+                identity.AddClaim(claim);
+            }
         }
 
         private static async Task AddClaimsAsync(IToken token, ClaimsIdentity identity, string source)
@@ -96,29 +134,19 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        private static void AddClaimIfNotExists(ClaimsIdentity identity, string key, object value, string source)
+        private async Task<HttpResponseMessage> CreateTokenResponse(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
         {
-            Claim claim = null;
+            _client.BaseAddress = oauthConfiguration.BaseUri;
 
-            if (value is string stringValue)
+            if (oauthConfiguration.ClientSecret != null)
             {
-                claim = new Claim(key, stringValue);
-            }
-            else if (value is IDictionary<string, object> dictionary)
-            {
-                claim = new Claim(key, JsonConvert.SerializeObject(dictionary), "json");
-            }
-            else
-            {
-                claim = new Claim(key, value.ToString());
+                var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
+
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
             }
 
-            claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
-
-            if (!identity.HasClaim(claim.Type, claim.Value))
-            {
-                identity.AddClaim(claim);
-            }
+            var response = await _client.PostAsync(oauthConfiguration.TokenEndpoint, new FormUrlEncodedContent(contentCollection));
+            return response;
         }
 
         private class ResponseType

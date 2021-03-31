@@ -8,6 +8,7 @@ namespace Codeworx.Identity.Login.OAuth
         {
             IdentifierClaim = Constants.Claims.Subject;
             RedirectCacheMethod = RedirectCacheMethod.UseState;
+            TokenHandling = ExternalTokenHandling.None;
         }
 
         public RedirectCacheMethod RedirectCacheMethod { get; set; }
@@ -25,5 +26,7 @@ namespace Codeworx.Identity.Login.OAuth
         public string TokenEndpoint { get; set; }
 
         public string ClientSecret { get; set; }
+
+        public ExternalTokenHandling TokenHandling { get; set; }
     }
 }

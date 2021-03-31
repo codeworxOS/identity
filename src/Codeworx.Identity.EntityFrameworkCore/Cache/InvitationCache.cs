@@ -35,7 +35,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public async Task<InvitationItem> RedeemAsync(string code)
+        public virtual async Task<InvitationItem> RedeemAsync(string code)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        public async Task AddAsync(string code, InvitationItem factory, TimeSpan validity)
+        public virtual async Task AddAsync(string code, InvitationItem factory, TimeSpan validity)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
