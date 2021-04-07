@@ -49,5 +49,12 @@ namespace Codeworx.Identity.OAuth.Authorization
         public string State { get; }
 
         public ClaimsIdentity User { get; }
+
+        public void Throw(string error, string errorDescription)
+        {
+            var errorResponse = new AuthorizationErrorResponse(error, errorDescription, null, this.State, this.RedirectUri, this.ResponseMode);
+
+            throw new ErrorResponseException<AuthorizationErrorResponse>(errorResponse);
+        }
     }
 }

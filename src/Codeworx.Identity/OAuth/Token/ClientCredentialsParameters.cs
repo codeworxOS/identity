@@ -31,5 +31,10 @@ namespace Codeworx.Identity.OAuth.Token
         public string State { get; }
 
         public ClaimsIdentity User { get; }
+
+        public void Throw(string error, string errorDescription)
+        {
+            ErrorResponse.Throw(error, errorDescription);
+        }
     }
 }

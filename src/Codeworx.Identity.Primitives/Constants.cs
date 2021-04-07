@@ -78,6 +78,8 @@ namespace Codeworx.Identity
             public const string Audience = JwtRegisteredClaimNames.Aud;
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
+            public const string ExternalTokenKey = "external_token_key";
+            public const string ExternalToken = "external_token";
             public const string Group = "group";
             public const string Id = "id";
             public const string Issuer = JwtRegisteredClaimNames.Iss;
@@ -156,7 +158,7 @@ namespace Codeworx.Identity
             public class GrantType
             {
                 public const string AuthorizationCode = "authorization_code";
-
+                public const string RefreshToken = "refresh_token";
                 public const string ClientCredentials = "client_credentials";
                 public const string Password = "password";
             }
@@ -234,6 +236,13 @@ namespace Codeworx.Identity
         {
             public const string Groups = "groups";
             public const string Tenant = "tenant";
+
+            public static class ExternalToken
+            {
+                public const string All = "external_token";
+                public const string IdToken = "external_token:id_token";
+                public const string AccessToken = "external_token:access_token";
+            }
         }
 
         public static class Templates
