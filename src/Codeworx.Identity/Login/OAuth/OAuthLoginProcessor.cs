@@ -4,30 +4,49 @@ using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.OAuth
 {
+    // EventIds 145xx
     public class OAuthLoginProcessor : ILoginProcessor
     {
+        private static readonly Action<ILogger, string, Exception> _processingLoginMessage;
+        private static readonly Action<ILogger, string, Exception> _processingParaemtersNullMessage;
+        private static readonly Action<ILogger, Exception> _stateNotFoundMessage;
+        private static readonly Action<ILogger, Exception> _externalTokenCacheMissingMessage;
         private readonly IIdentityService _identityService;
+        private readonly ILogger<OAuthLoginProcessor> _logger;
+        private readonly IExternalTokenCache _externalTokenCache;
         private readonly IdentityOptions _identityOptions;
         private readonly IExternalOAuthTokenService _tokenService;
         private readonly IStateLookupCache _stateCache;
         private readonly string _baseUri;
+
+        static OAuthLoginProcessor()
+        {
+            _processingLoginMessage = LoggerMessage.Define<string>(LogLevel.Information, new EventId(14501), "Processing Login for registration Id: {registrationId}.");
+            _processingParaemtersNullMessage = LoggerMessage.Define<string>(LogLevel.Error, new EventId(14502), "The request cannot be processed, becuase the parameter {parameterName} is null.");
+            _stateNotFoundMessage = LoggerMessage.Define(LogLevel.Error, new EventId(14503), "Unable to get the matching state for the callback!");
+            _externalTokenCacheMissingMessage = LoggerMessage.Define(LogLevel.Error, new EventId(14504), "External Token cach is not registered!");
+        }
 
         public OAuthLoginProcessor(
             IBaseUriAccessor baseUriAccessor,
             IExternalOAuthTokenService tokenService,
             IOptionsSnapshot<IdentityOptions> options,
             IStateLookupCache stateCache,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            ILogger<OAuthLoginProcessor> logger,
+            IExternalTokenCache externalTokenCache = null)
         {
             _tokenService = tokenService;
             _stateCache = stateCache;
             _identityService = identityService;
+            _logger = logger;
+            _externalTokenCache = externalTokenCache;
             _identityOptions = options.Value;
-
             _baseUri = baseUriAccessor.BaseUri.ToString();
         }
 
@@ -67,10 +86,21 @@ namespace Codeworx.Identity.Login.OAuth
 
         public async Task<SignInResponse> ProcessAsync(ILoginRegistration registration, object request)
         {
+            if (registration is null)
+            {
+                var ex = new ArgumentNullException(nameof(registration));
+                _processingParaemtersNullMessage(_logger, nameof(registration), ex);
+                throw ex;
+            }
+
             if (request == null)
             {
-                throw new ArgumentNullException(nameof(request));
+                var ex = new ArgumentNullException(nameof(request));
+                _processingParaemtersNullMessage(_logger, nameof(request), ex);
+                throw ex;
             }
+
+            _processingLoginMessage(_logger, registration.Id, null);
 
             var loginRequest = ToOAuthLoginRequest(request);
             var oauthConfiguration = this.ToOAuthLoginConfiguration(registration.ProcessorConfiguration);
@@ -97,12 +127,39 @@ namespace Codeworx.Identity.Login.OAuth
 
             if (stateItem == null)
             {
-                throw new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
+                var ex = new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
+                _stateNotFoundMessage(_logger, ex);
+                throw ex;
             }
 
             var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
-
             var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
+
+            if (oauthConfiguration.TokenHandling != ExternalTokenHandling.None)
+            {
+                var access_token = externalIdentity.FindFirst(Constants.OAuth.AccessTokenName)?.Value;
+                var id_token = externalIdentity.FindFirst(Constants.OpenId.IdTokenName)?.Value;
+                var refresh_token = externalIdentity.FindFirst(Constants.OAuth.RefreshTokenName)?.Value;
+
+                var data = new ExternalTokenData
+                {
+                    AccessToken = access_token,
+                    IdToken = id_token,
+                    RefreshToken = refresh_token,
+                    RegistrationId = registration.Id,
+                };
+
+                if (_externalTokenCache == null)
+                {
+                    var ex = new MissingDependencyException(typeof(IExternalTokenCache));
+                    _externalTokenCacheMissingMessage(_logger, ex);
+                    throw ex;
+                }
+
+                var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
+
+                identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
+            }
 
             return new SignInResponse(identity, stateItem.ReturnUrl);
         }

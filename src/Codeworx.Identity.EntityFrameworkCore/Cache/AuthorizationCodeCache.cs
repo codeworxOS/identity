@@ -37,7 +37,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public async Task<IdentityData> GetAsync(string authorizationCode)
+        public virtual async Task<IdentityData> GetAsync(string authorizationCode)
         {
             var cacheSet = _context.Set<IdentityCache>();
 
@@ -74,7 +74,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        public async Task SetAsync(string authorizationCode, IdentityData payload, TimeSpan timeout)
+        public virtual async Task SetAsync(string authorizationCode, IdentityData payload, TimeSpan timeout)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {

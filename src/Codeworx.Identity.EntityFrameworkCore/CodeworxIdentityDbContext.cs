@@ -18,6 +18,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<IdentityCache> IdentityCaches { get; set; }
 
+        public DbSet<RightHolderGroup> RightHolderGroups { get; set; }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Group> Groups { get; set; }

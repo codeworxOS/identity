@@ -14,5 +14,7 @@ namespace Codeworx.Identity
         string State { get; }
 
         ClaimsIdentity User { get; }
+
+        void Throw(string error, string errorDescription);
     }
 }

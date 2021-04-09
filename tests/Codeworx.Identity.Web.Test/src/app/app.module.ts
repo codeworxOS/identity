@@ -22,7 +22,7 @@ const config: AuthConfig = {
   oidc: true,
   responseType: 'code',
   requireHttps: true,
-  scope: 'openid profile tenant'
+  scope: 'openid profile tenant external_token:access_token'
 }
 
 @NgModule({
