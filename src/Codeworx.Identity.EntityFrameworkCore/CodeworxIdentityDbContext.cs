@@ -30,6 +30,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<AuthenticationProvider> AuthenticationProviders { get; set; }
 
+        public DbSet<AuthenticationProviderRightHolder> AuthenticationProviderRightHolders { get; set; }
+
         public DbSet<AvailableLicense> AvailableLicenses { get; set; }
 
         public DbSet<ClaimType> CleimTypes { get; set; }
