@@ -7,6 +7,7 @@ using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
+using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,7 @@ namespace Codeworx.Identity
         private static readonly Action<ILogger, Exception> _unableToGetExternalTokenDataMessage;
         private static readonly Action<ILogger, Exception> _unableToRefreshExternalTokenMessage;
         private static readonly Action<ILogger, Exception> _unableToUpdateExternalTokenMessage;
+        private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILogger<ExternalTokenClaimsProvider> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly IdentityOptions _options;
@@ -39,10 +41,12 @@ namespace Codeworx.Identity
         }
 
         public ExternalTokenClaimsProvider(
+            IBaseUriAccessor baseUriAccessor,
             ILogger<ExternalTokenClaimsProvider> logger,
             IOptionsSnapshot<IdentityOptions> options,
             IServiceProvider serviceProvider)
         {
+            _baseUriAccessor = baseUriAccessor;
             _logger = logger;
             _serviceProvider = serviceProvider;
             _options = options.Value;
@@ -50,6 +54,22 @@ namespace Codeworx.Identity
 
         public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
+            LogoutResponse logoutResponse = null;
+            bool interactive = false;
+
+            if (parameters is IAuthorizationParameters authorization)
+            {
+                interactive = true;
+
+                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                authorization.Request.Append(builder);
+
+                var loginBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                loginBuilder.AppendPath(_options.AccountEndpoint);
+                loginBuilder.AppendPath("login");
+                logoutResponse = new LogoutResponse(builder.ToString());
+            }
+
             var result = new List<AssignedClaim>();
             var scopes = parameters.Scopes.ToList();
 
@@ -78,6 +98,12 @@ namespace Codeworx.Identity
                 catch (Exception ex)
                 {
                     _unableToGetExternalTokenDataMessage(_logger, ex);
+
+                    if (interactive)
+                    {
+                        throw new ErrorResponseException<LogoutResponse>(logoutResponse);
+                    }
+
                     parameters.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.ExternalToken.All);
                 }
 
@@ -112,6 +138,12 @@ namespace Codeworx.Identity
                         catch (Exception ex)
                         {
                             _unableToRefreshExternalTokenMessage(_logger, ex);
+
+                            if (interactive)
+                            {
+                                throw new ErrorResponseException<LogoutResponse>(logoutResponse);
+                            }
+
                             parameters.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.ExternalToken.All);
                         }
 

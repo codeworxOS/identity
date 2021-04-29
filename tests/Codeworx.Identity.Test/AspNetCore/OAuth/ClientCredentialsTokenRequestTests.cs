@@ -7,13 +7,13 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class ClientCredentialsTokenRequestTests
     {
-        [Fact]
+        [Test]
         public async Task ClientCredentials_RequestTenantScope_ExpectsOk()
         {
             var services = new ServiceCollection();
@@ -36,8 +36,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 var response = await tokenService.ProcessAsync(request);
 
-                Assert.Contains("tenant", response.Scope);
-                Assert.Contains(Constants.DefaultTenantId, response.Scope,StringComparison.InvariantCultureIgnoreCase);
+                Assert.IsTrue(response.Scope.Contains("tenant"));
+                Assert.IsTrue(response.Scope.Contains(Constants.DefaultTenantId, StringComparison.InvariantCultureIgnoreCase));
                 Assert.NotNull(response.AccessToken);
             }
         }

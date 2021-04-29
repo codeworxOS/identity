@@ -14,7 +14,7 @@
         ////                                                                          };
 
 
-        ////[Fact]
+        ////[Test]
         ////public Task FromQuery_ClientIdentifierDuplicated_ReturnsErrorObject()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -26,7 +26,7 @@
         ////    Assert.IsType<ClientIdDuplicatedResult>(result);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_RedirectUriDuplicated_ReturnsErrorObject()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -38,7 +38,7 @@
         ////    Assert.IsType<RedirectUriDuplicatedResult>(result);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_GrantTypeDuplicated_ReturnsErrorObject()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -50,7 +50,7 @@
         ////    Assert.IsType<GrantTypeDuplicatedResult>(result);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_CodeDuplicated_ReturnsErrorObject()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -62,7 +62,7 @@
         ////    Assert.IsType<CodeDuplicatedResult>(result);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_ClientSecretDuplicated_ReturnsErrorObject()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -74,7 +74,7 @@
         ////    Assert.IsType<ClientSecretDuplicatedResult>(result);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -86,7 +86,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -98,7 +98,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_GrantTypeNull_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -110,7 +110,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_CodeNull_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -122,7 +122,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_ClientSecretNull_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -134,7 +134,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -146,7 +146,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -158,7 +158,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_GrantTypeEmpty_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -170,7 +170,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_CodeEmpty_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();
@@ -182,7 +182,7 @@
         ////    Assert.IsType<SuccessfulBindingResult>(request);
         ////}
 
-        ////[Fact]
+        ////[Test]
         ////public void FromQuery_ClientSecretEmpty_ReturnsBoundRequest()
         ////{
         ////    var instance = new AuthorizationCodeTokenRequestBinder();

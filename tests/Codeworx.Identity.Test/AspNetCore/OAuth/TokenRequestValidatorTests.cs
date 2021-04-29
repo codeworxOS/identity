@@ -3,13 +3,13 @@
 ////using System.Threading.Tasks;
 ////using Codeworx.Identity.AspNetCore.OAuth;
 ////using Codeworx.Identity.OAuth.Validation.Token;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class TokenRequestValidatorTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ValidRequest_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().Build();
@@ -21,7 +21,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdEmpty_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientId(string.Empty)
@@ -34,7 +34,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdNull_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientId(null)
@@ -47,7 +47,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdInvalid_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientId("\u0019")
@@ -60,7 +60,7 @@
 ////            Assert.IsType<ClientIdInvalidResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_GrantTypeEmpty_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithGrantType(string.Empty)
@@ -73,7 +73,7 @@
 ////            Assert.IsType<GrantTypeInvalidResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_GrantTypeNull_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithGrantType(null)
@@ -86,7 +86,7 @@
 ////            Assert.IsType<GrantTypeInvalidResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_GrantTypeInvalid_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithGrantType("ä")
@@ -99,7 +99,7 @@
 ////            Assert.IsType<GrantTypeInvalidResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriEmpty_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithRedirectUri(string.Empty)
@@ -112,7 +112,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriNull_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithRedirectUri(null)
@@ -125,7 +125,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriInvalid_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithRedirectUri("ä")
@@ -138,7 +138,7 @@
 ////            Assert.IsType<RedirectUriInvalidResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientSecretEmpty_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientSecret(string.Empty)
@@ -151,7 +151,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientSecretNull_ReturnsNoError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientSecret(null)
@@ -164,7 +164,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientSecretInvalid_ReturnsError()
 ////        {
 ////            var request = new TokenRequestBuilder().WithClientSecret("\u0019")

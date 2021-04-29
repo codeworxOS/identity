@@ -12,13 +12,13 @@
 ////using System.Threading.Tasks;
 ////using Codeworx.Identity.AspNetCore.OpenId;
 ////using Codeworx.Identity.Cache;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OpenId
 ////{
 ////    public class AuthorizationCodeFlowServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_MissingRequest_ArgumentNull()
 ////        {
 ////            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
@@ -26,7 +26,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(async () => await instance.AuthorizeRequest(null, new ClaimsIdentity()));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_MissingUser_ArgumentNull()
 ////        {
 ////            var request = new OpenIdAuthorizationRequestBuilder()
@@ -53,10 +53,10 @@
 ////        {
 ////            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
 
-////            Assert.Equal(expected, instance.IsSupported(responseType));
+////            Assert.AreEqual(expected, instance.IsSupported(responseType));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_MissingClientId_InvalidRequest()
 ////        {
 ////            var expectedState = "MyState";
@@ -71,10 +71,10 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity());
 
 ////            Assert.IsType<InvalidRequestResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedState, result.Response.State);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_NotSupportedFlow_UnauthorizedResult()
 ////        {
 ////            var expectedState = "MyState";
@@ -102,11 +102,11 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity());
 
 ////            Assert.IsType<UnauthorizedClientResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
-////            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+////            Assert.AreEqual(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedRedirectionUri, result.Response.RedirectUri);
 ////        }
 
-////        [Fact]
+////        [Test]
 
 ////        public async Task AuthorizeRequest_SingleScopeNotOpenId_MissingOpenIdScope()
 ////        {
@@ -136,11 +136,11 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity());
 
 ////            Assert.IsType<MissingOpenidScopeResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
-////            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+////            Assert.AreEqual(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedRedirectionUri, result.Response.RedirectUri);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_OpenIdScopeMissing_MissingOpenIdScope()
 ////        {
 ////            var expectedState = "MyState";
@@ -169,11 +169,11 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity());
 
 ////            Assert.IsType<MissingOpenidScopeResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
-////            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+////            Assert.AreEqual(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedRedirectionUri, result.Response.RedirectUri);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_MultipleScopesWithUnKnownScope_UnknownScope()
 ////        {
 ////            var expectedState = "MyState";
@@ -212,11 +212,11 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity());
 
 ////            Assert.IsType<UnknownScopeResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
-////            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+////            Assert.AreEqual(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedRedirectionUri, result.Response.RedirectUri);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequest_Successful()
 ////        {
 ////            var expectedLogin = "login";
@@ -264,12 +264,12 @@
 ////            var result = await instance.AuthorizeRequest(request, new ClaimsIdentity(new[] { new Claim(Constants.Claims.Name, expectedLogin) }));
 
 ////            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
-////            Assert.Equal(expectedState, result.Response.State);
-////            Assert.Equal(expectedRedirectionUri, result.Response.RedirectUri);
+////            Assert.AreEqual(expectedState, result.Response.State);
+////            Assert.AreEqual(expectedRedirectionUri, result.Response.RedirectUri);
 
 ////            Assert.IsType<AuthorizationCodeResponse>(result.Response);
 ////            var authorizationCodeResponse = result.Response as AuthorizationCodeResponse;
-////            Assert.Equal(expectedCode, authorizationCodeResponse?.Code);
+////            Assert.AreEqual(expectedCode, authorizationCodeResponse?.Code);
 
 ////            var expectedCacheValue = new Dictionary<string, string>
 ////            {

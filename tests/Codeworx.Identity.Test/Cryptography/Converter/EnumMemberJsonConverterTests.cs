@@ -2,7 +2,7 @@
 using Codeworx.Identity.Converter;
 using Moq;
 using Newtonsoft.Json;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Cryptography.Converter
 {
@@ -17,7 +17,7 @@ namespace Codeworx.Identity.Test.Cryptography.Converter
             Part2
         }
 
-        [Fact]
+        [Test]
         public void CanConvert_Enum_ReturnsTrue()
         {
             var instance = new EnumMemberJsonConverter();
@@ -26,7 +26,7 @@ namespace Codeworx.Identity.Test.Cryptography.Converter
 
         }
 
-        [Fact]
+        [Test]
         public void CanConvert_Object_ReturnsFalse()
         {
             var instance = new EnumMemberJsonConverter();
@@ -34,7 +34,7 @@ namespace Codeworx.Identity.Test.Cryptography.Converter
             Assert.False(instance.CanConvert(typeof(object)));
         }
 
-        [Fact]
+        [Test]
         public void WriteJson_EnumWithAttribute_ReturnsCorrectSerialization()
         {
             var enumValue = TestEnum.Part1;
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.Test.Cryptography.Converter
             jsonWriter.Verify(p => p.WriteValue((object)Part1Name), Times.Once);
         }
 
-        [Fact]
+        [Test]
         public void WriteJson_EnumWithoutAttribute_ReturnsEnumValue()
         {
             var enumValue = TestEnum.Part2;

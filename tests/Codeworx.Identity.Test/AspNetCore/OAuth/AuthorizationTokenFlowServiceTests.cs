@@ -11,13 +11,13 @@
 ////using System.Collections.Immutable;
 ////using System.Security.Claims;
 ////using System.Threading.Tasks;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationTokenFlowServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
 ////        {
 ////            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
@@ -48,7 +48,7 @@
 ////            Assert.IsType<UnauthorizedClientResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder().Build();
@@ -65,7 +65,7 @@
 ////            Assert.IsType<InvalidRequestResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UnknownScope_ReturnsError()
 ////        {
 ////            const string ClientIdentifier = "6D5CD2A0-59D0-47BD-86A1-BF1E600935C3";
@@ -106,7 +106,7 @@
 ////            Assert.IsType<UnknownScopeResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithEmptyScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationToken = "SAMPLE_ACCESS_TOKEN";
@@ -159,10 +159,10 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+////            Assert.AreEqual(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithoutScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationToken = "AuthorizationToken";
@@ -216,10 +216,10 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+////            Assert.AreEqual(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequest_ReturnsExpiresIn()
 ////        {
 ////            const string AuthorizationToken = "AuthorizationToken";
@@ -275,10 +275,10 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
-////            Assert.Equal(1234, (result.Response as AuthorizationTokenResponse)?.ExpiresIn);
+////            Assert.AreEqual(1234, (result.Response as AuthorizationTokenResponse)?.ExpiresIn);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationToken = "AuthorizationToken";
@@ -330,7 +330,7 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulTokenAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
+////            Assert.AreEqual(AuthorizationToken, (result.Response as AuthorizationTokenResponse)?.Token);
 ////        }
 
 ////        private static ClaimsIdentity GetIdentity()

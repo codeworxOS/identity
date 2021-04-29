@@ -8,13 +8,13 @@
 ////using Codeworx.Identity.OAuth.Authorization;
 ////using Microsoft.AspNetCore.Http;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OpenId
 ////{
 ////    public class AuthorizationMiddlewareTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task Invoke_EmptyUser_ReturnsUnauthorized()
 ////        {
 ////            var context = new DefaultHttpContext {User = new ClaimsPrincipal()};
@@ -23,10 +23,10 @@
 
 ////            await instance.Invoke(context, null, null);
 
-////            Assert.Equal(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
+////            Assert.AreEqual(StatusCodes.Status401Unauthorized, context.Response.StatusCode);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task Invoke_ValidQuery_AuthorizationServiceCalled()
 ////        {
 ////            var requestBinderMock = new Mock<IRequestBinder<Identity.OpenId.AuthorizationRequest>>();

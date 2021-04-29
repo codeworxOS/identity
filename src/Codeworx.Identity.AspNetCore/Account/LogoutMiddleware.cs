@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
-using Microsoft.AspNetCore.Authentication;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -16,13 +15,21 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)
+        public async Task Invoke(HttpContext context, IBaseUriAccessor accessor, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<LogoutRequest> requestBinder, IResponseBinder<LogoutResponse> responseBinder)
         {
-            var hasReturnUrl = context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrl);
+            var request = await requestBinder.BindAsync(context.Request);
+            var returnUrl = request.ReturnUrl;
+            if (returnUrl == null)
+            {
+                var builder = new UriBuilder(accessor.BaseUri.ToString());
+                builder.AppendPath(options.Value.AccountEndpoint);
+                builder.AppendPath("login");
+                returnUrl = builder.ToString();
+            }
 
-            await context.SignOutAsync(options.Value.AuthenticationScheme);
+            var response = new LogoutResponse(returnUrl);
 
-            context.Response.Redirect(hasReturnUrl ? returnUrl.First() : "login");
+            await responseBinder.BindAsync(response, context.Response);
         }
     }
 }

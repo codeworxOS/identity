@@ -8,13 +8,13 @@
 ////using Codeworx.Identity.Model;
 ////using Codeworx.Identity.OAuth;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class TokenServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_InvalidClient_ReturnsError()
 ////        {
 ////            var request = new AuthorizationCodeTokenRequestBuilder().Build();
@@ -32,7 +32,7 @@
 ////            var instance = new TokenService(null, new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object, null);
 
 ////            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthorizeRequest(request));
-////            Assert.Equal(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
+////            Assert.AreEqual(Constants.OAuth.Error.InvalidClient, result.TypedResponse.Error);
 ////        }
 
 ////        private Exception GetErrorResponse(string error)
@@ -40,7 +40,7 @@
 ////            return new ErrorResponseException<ErrorResponse>(new ErrorResponse(error, null, null));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_InvalidClientDueToInvalidRequest_ReturnsError()
 ////        {
 ////            var request = new AuthorizationCodeTokenRequestBuilder().Build();
@@ -58,10 +58,10 @@
 ////            var instance = new TokenService(null, new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object, null);
 
 ////            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthorizeRequest(request));
-////            Assert.Equal(Constants.OAuth.Error.InvalidRequest, result.TypedResponse.Error);
+////            Assert.AreEqual(Constants.OAuth.Error.InvalidRequest, result.TypedResponse.Error);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_InvalidRequest_ReturnsError()
 ////        {
 ////            var validationResultStub = new Mock<IValidationResult<ErrorResponse>>();
@@ -79,7 +79,7 @@
 ////            var request = new AuthorizationCodeTokenRequestBuilder().Build();
 
 ////            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthorizeRequest(request));
-////            Assert.Equal(Constants.OAuth.Error.InvalidRequest, result.TypedResponse.Error);
+////            Assert.AreEqual(Constants.OAuth.Error.InvalidRequest, result.TypedResponse.Error);
 ////        }
 
 ////        [Fact(Skip = "Implement")]
@@ -88,7 +88,7 @@
 ////            throw new NotImplementedException();
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_RequestNull_ThrowsException()
 ////        {
 ////            var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, ErrorResponse>>();
@@ -100,7 +100,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UnauthorizedClient_ReturnsError()
 ////        {
 ////            var request = new AuthorizationCodeTokenRequestBuilder().WithGrantType("code")
@@ -123,10 +123,10 @@
 ////            var instance = new TokenService(null, new List<ITokenResultService> { tokenFlowServiceStub.Object }, requestValidatorStub.Object, clientAuthenticationStub.Object, null);
 
 ////            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthorizeRequest(request));
-////            Assert.Equal(Constants.OAuth.Error.UnauthorizedClient, result.TypedResponse.Error);
+////            Assert.AreEqual(Constants.OAuth.Error.UnauthorizedClient, result.TypedResponse.Error);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UnsupportedGrantType_ReturnsError()
 ////        {
 ////            var requestValidatorStub = new Mock<IRequestValidator<TokenRequest, ErrorResponse>>();
@@ -139,10 +139,10 @@
 ////                                                                    .Build();
 
 ////            var result = await Assert.ThrowsAnyAsync<ErrorResponseException<ErrorResponse>>(async () => await instance.AuthorizeRequest(request));
-////            Assert.Equal(Constants.OAuth.Error.UnsupportedGrantType, result.TypedResponse.Error);
+////            Assert.AreEqual(Constants.OAuth.Error.UnsupportedGrantType, result.TypedResponse.Error);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequest_SuccessReturned()
 ////        {
 ////            var expectedToken = "AccessToken";
@@ -194,7 +194,7 @@
 ////            requestValidatorStub.Verify(p => p.IsValid(It.IsAny<TokenRequest>()), Times.Once);
 ////            clientAuthenticationStub.Verify(p => p.AuthenticateClient(It.IsAny<TokenRequest>()), Times.Once);
 ////            tokenResultServiceStub.Verify(p => p.CreateAccessToken(expectedCache, expectedTimespan), Times.Once);
-////            Assert.Equal(expectedToken, result.AccessToken);
+////            Assert.AreEqual(expectedToken, result.AccessToken);
 ////        }
 ////    }
 ////}

@@ -6,13 +6,13 @@
 ////using System.Collections.Generic;
 ////using System.Security.Claims;
 ////using System.Threading.Tasks;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationCodeTokenResultServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_CacheDataNull_ThrowsException()
 ////        {
 ////            var instance = new AuthorizationCodeTokenResultService(null, null, null);
@@ -20,7 +20,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.CreateAccessToken(null, TimeSpan.Zero));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_ClientIdMissing_ReturnsNull()
 ////        {
 ////            var cache = new Dictionary<string, string>
@@ -35,7 +35,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_RedirectUriMissing_ReturnsNull()
 ////        {
 ////            var cache = new Dictionary<string, string>
@@ -51,7 +51,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_LoginMissing_ReturnsNull()
 ////        {
 ////            var cache = new Dictionary<string, string>
@@ -68,7 +68,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_MissingMatchingTokenProvider_ReturnsNull()
 ////        {
 ////            var tokenProvideMock = new Mock<ITokenProvider>();
@@ -98,7 +98,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateAccessToken_ValidData_CallsGenerateToken()
 ////        {
 ////            var expectedLogin = "login";
@@ -136,7 +136,7 @@
 ////            tokenMock.Verify(p => p.SetPayloadAsync(It.IsAny<IDictionary<string, object>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ClaimsIdentity>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<TimeSpan>()), Times.Once);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task CreateIdToken_ValidData_CallsGenerateToken()
 ////        {
 ////            var expectedLogin = "login";

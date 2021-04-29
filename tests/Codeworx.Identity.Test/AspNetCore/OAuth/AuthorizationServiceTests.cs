@@ -10,13 +10,13 @@
 ////using Codeworx.Identity.OAuth.Authorization;
 ////using Codeworx.Identity.OAuth.Validation.Authorization;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_InvalidRequest_ReturnsError()
 ////        {
 ////            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
@@ -36,7 +36,7 @@
 ////            Assert.IsType<InvalidRequestResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_RequestNull_ThrowsException()
 ////        {
 ////            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
@@ -52,7 +52,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.AuthorizeRequest(null, null));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UnsupportedResponseType_ReturnsError()
 ////        {
 ////            const string UserIdentifier = "2C532CF0-65D1-40C7-82B8-837AC6758165";
@@ -94,7 +94,7 @@
 ////            Assert.IsType<UnsupportedResponseTypeResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UserNotFound_ReturnsError()
 ////        {
 ////            var validatorStub = new Mock<IRequestValidator<AuthorizationRequest, AuthorizationErrorResponse>>();
@@ -117,7 +117,7 @@
 ////            Assert.IsType<UserNotFoundResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequest_ReturnsResponse()
 ////        {
 ////            const string UserIdentifier = "2C532CF0-65D1-40C7-82B8-837AC6758165";

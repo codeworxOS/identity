@@ -6,13 +6,13 @@
 ////using Codeworx.Identity.OAuth;
 ////using Microsoft.AspNetCore.Http;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationCodeResponseBinderTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task RespondAsync_NullResponse_ExceptionThrown()
 ////        {
 ////            var instance = new AuthorizationCodeResponseBinder(null);
@@ -20,7 +20,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null, new DefaultHttpContext().Response));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task RespondAsync_NullContext_ExceptionThrown()
 ////        {
 ////            var instance = new AuthorizationCodeResponseBinder(null);
@@ -28,7 +28,7 @@
 ////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(new AuthorizationCodeResponse(null, null, null), null));
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task RespondAsync_Redirect_RedirectsToLocationWithQueryString()
 ////        {
 ////            var instance = new AuthorizationCodeResponseBinder(null);
@@ -40,19 +40,19 @@
 
 ////            await instance.BindAsync(new AuthorizationCodeResponse(null, ExpectedCode, RedirectUri), context.Response);
 
-////            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
+////            Assert.AreEqual(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
 
 ////            var locationHeader = context.Response.GetTypedHeaders().Location;
 ////            Assert.NotNull(locationHeader);
 
-////            Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
+////            Assert.AreEqual(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
 ////            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
-////            Assert.Equal(1, queryParts.Length);
-////            Assert.Equal($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
+////            Assert.AreEqual(1, queryParts.Length);
+////            Assert.AreEqual($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task RespondAsync_RedirectWithState_RedirectsToLocationWithQueryString()
 ////        {
 ////            var instance = new AuthorizationCodeResponseBinder(null);
@@ -65,20 +65,20 @@
 
 ////            await instance.BindAsync(new AuthorizationCodeResponse(ExpectedState, ExpectedCode, RedirectUri), context.Response);
 
-////            Assert.Equal(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
+////            Assert.AreEqual(HttpStatusCode.Redirect, (HttpStatusCode) context.Response.StatusCode);
 
 ////            var locationHeader = context.Response.GetTypedHeaders().Location;
 ////            Assert.NotNull(locationHeader);
 
-////            Assert.Equal(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
+////            Assert.AreEqual(RedirectUri, $"{locationHeader.Scheme}://{locationHeader.Host}{locationHeader.LocalPath}");
 
 ////            var queryParts = locationHeader.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
-////            Assert.Equal(2, queryParts.Length);
-////            Assert.Equal($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
-////            Assert.Equal($"{Constants.OAuth.StateName}={ExpectedState}", queryParts[1]);
+////            Assert.AreEqual(2, queryParts.Length);
+////            Assert.AreEqual($"{Constants.OAuth.CodeName}={ExpectedCode}", queryParts[0]);
+////            Assert.AreEqual($"{Constants.OAuth.StateName}={ExpectedState}", queryParts[1]);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task RespondAsync_ResponseModeFormPost_RedirectsToLocation()
 ////        {
 ////            const string RedirectUri = "http://example.org/redirect";
