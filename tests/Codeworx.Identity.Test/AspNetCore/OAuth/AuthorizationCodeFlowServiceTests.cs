@@ -13,13 +13,13 @@
 ////using Microsoft.Extensions.Caching.Memory;
 ////using Microsoft.Extensions.Options;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationCodeFlowServiceTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_MissingParameter_ArgumentNull()
 ////        {
 ////            var instance = new AuthorizationCodeFlowService(null, null, null, null, null);
@@ -28,7 +28,7 @@
 ////        }
 
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ClientNotAuthorized_ReturnsError()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -66,7 +66,7 @@
 ////            Assert.IsType<UnauthorizedClientResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ClientNotRegistered_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder().Build();
@@ -90,7 +90,7 @@
 ////            Assert.Null(result.Response.RedirectUri);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ReadCachedGrantInformation_ContainsRedirectUriAndClientIdAndNonceFromRequest()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -136,11 +136,11 @@
 ////            var grantInformation = await cache.GetAsync((result.Response as AuthorizationCodeResponse)?.Code)
 ////                                          .ConfigureAwait(false);
 
-////            Assert.Equal(request.ClientId, grantInformation[Constants.OAuth.ClientIdName]);
-////            Assert.Equal(request.RedirectUri, grantInformation[Constants.OAuth.RedirectUriName]);
+////            Assert.AreEqual(request.ClientId, grantInformation[Constants.OAuth.ClientIdName]);
+////            Assert.AreEqual(request.RedirectUri, grantInformation[Constants.OAuth.RedirectUriName]);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_UnknownScope_ReturnsError()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -186,7 +186,7 @@
 ////            Assert.IsType<UnknownScopeResult>(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequest_GrantInformationCached()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -235,7 +235,7 @@
 ////            Assert.NotEmpty(cachedResult);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithEmptyScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -277,10 +277,10 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+////            Assert.AreEqual(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithoutScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -323,10 +323,10 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+////            Assert.AreEqual(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task AuthorizeRequest_ValidRequestWithScope_ReturnsResponse()
 ////        {
 ////            const string AuthorizationCode = "AuthorizationCode";
@@ -369,7 +369,7 @@
 ////            var result = await instance.AuthorizeRequest(request, identity);
 
 ////            Assert.IsType<SuccessfulCodeAuthorizationResult>(result);
-////            Assert.Equal(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
+////            Assert.AreEqual(AuthorizationCode, (result.Response as AuthorizationCodeResponse)?.Code);
 ////        }
 
 ////        private static ClaimsIdentity GetIdentity()

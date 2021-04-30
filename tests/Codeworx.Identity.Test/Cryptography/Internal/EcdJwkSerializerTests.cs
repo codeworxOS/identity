@@ -2,7 +2,7 @@
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.IdentityModel.Tokens;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Cryptography.Internal
 {
@@ -20,7 +20,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
         #region Public Methods
 
-        [Fact]
+        [Test]
         public void Supports_ECCurveKey_ReturnsTrue()
         {
             var key = GetKey();
@@ -32,7 +32,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
             Assert.True(result);
         }
 
-        [Fact]
+        [Test]
         public void SerializeKeyToJsonWebKey_ReturnsEcdParameters()
         {
             var expectedKeyType = KeyType.EllipticCurve;
@@ -45,17 +45,17 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var actual = instance.SerializeKeyToJsonWebKey(key, "8802ABD3-97F3-4659-B6C6-8F2304A9B5B9");
 
-            Assert.IsType(typeof(EllipticKeyParameter), actual);
+            Assert.IsInstanceOf(typeof(EllipticKeyParameter), actual);
             Assert.False(string.IsNullOrWhiteSpace(actual.KeyId));
-            Assert.Equal(expectedKeyType, actual.KeyType);
-            Assert.Equal(expectedKeyUse, actual.KeyUse);
+            Assert.AreEqual(expectedKeyType, actual.KeyType);
+            Assert.AreEqual(expectedKeyUse, actual.KeyUse);
 
             var ellipticKeyParameter = actual as EllipticKeyParameter;
             Assert.NotNull(ellipticKeyParameter);
-            Assert.Equal(expectedCurveType, ellipticKeyParameter.Curve);
+            Assert.AreEqual(expectedCurveType, ellipticKeyParameter.Curve);
         }
 
-        [Fact]
+        [Test]
         public void GetAlgorithm_ReturnsCorrectValue()
         {
             var expectedAlgorithm = "ES384";
@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var actual = instance.GetAlgorithm(key);
 
-            Assert.Equal(expectedAlgorithm, actual);
+            Assert.AreEqual(expectedAlgorithm, actual);
         }
 
         #endregion

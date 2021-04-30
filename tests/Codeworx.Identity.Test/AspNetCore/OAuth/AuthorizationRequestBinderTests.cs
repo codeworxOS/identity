@@ -9,7 +9,7 @@
 ////using Microsoft.AspNetCore.Http;
 ////using Microsoft.AspNetCore.Http.Internal;
 ////using Microsoft.Extensions.Primitives;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
@@ -116,7 +116,7 @@
 ////            return GenerateRequests(values);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task BindAsync_NullRequest_ThrowsException()
 ////        {
 ////            var instance = new AuthorizationRequestBinder();
@@ -143,12 +143,12 @@
 
 ////            var bindingResult = await instance.BindAsync(request);
 
-////            Assert.Equal(_values[Constants.OAuth.ClientIdName].First(), bindingResult.ClientId);
-////            Assert.Equal(_values[Constants.OAuth.RedirectUriName].First(), bindingResult.RedirectUri);
-////            Assert.Equal(_values[Constants.OAuth.ResponseTypeName].First(), bindingResult.ResponseType);
-////            Assert.Equal(_values[Constants.OAuth.ScopeName].First(), bindingResult.Scope);
-////            Assert.Equal(_values[Constants.OAuth.StateName].First(), bindingResult.State);
-////            Assert.Equal(_values[Constants.OAuth.NonceName].First(), bindingResult.Nonce);
+////            Assert.AreEqual(_values[Constants.OAuth.ClientIdName].First(), bindingResult.ClientId);
+////            Assert.AreEqual(_values[Constants.OAuth.RedirectUriName].First(), bindingResult.RedirectUri);
+////            Assert.AreEqual(_values[Constants.OAuth.ResponseTypeName].First(), bindingResult.ResponseType);
+////            Assert.AreEqual(_values[Constants.OAuth.ScopeName].First(), bindingResult.Scope);
+////            Assert.AreEqual(_values[Constants.OAuth.StateName].First(), bindingResult.State);
+////            Assert.AreEqual(_values[Constants.OAuth.NonceName].First(), bindingResult.Nonce);
 ////        }
 
 ////        [Theory]
@@ -159,7 +159,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.ClientIdName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        [Theory]
@@ -170,7 +170,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.RedirectUriName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        [Theory]
@@ -181,7 +181,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.ResponseTypeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ResponseTypeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        [Theory]
@@ -192,7 +192,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.ScopeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ScopeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        [Theory]
@@ -203,7 +203,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.StateName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.StateName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        [Theory]
@@ -214,7 +214,7 @@
 
 ////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-////            Assert.Equal(Constants.OAuth.NonceName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.NonceName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
 ////        }
 
 ////        public static IEnumerable<object[]> SingleFieldNull()
@@ -252,7 +252,7 @@
 ////            Assert.NotNull(result);
 ////        }
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -264,7 +264,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -276,7 +276,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ResponseTypeNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -288,7 +288,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ScopeNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -300,7 +300,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_StateNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -312,7 +312,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_NonceNull_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -324,7 +324,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -336,7 +336,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -348,7 +348,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ResponseTypeEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -360,7 +360,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_ScopeEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -372,7 +372,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_StateEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();
@@ -384,7 +384,7 @@
 ////        //    Assert.IsType<SuccessfulBindingResult>(request);
 ////        //}
 
-////        //[Fact]
+////        //[Test]
 ////        //public void FromQuery_NonceEmpty_ReturnsBoundRequest()
 ////        //{
 ////        //    var instance = new AuthorizationRequestBinder();

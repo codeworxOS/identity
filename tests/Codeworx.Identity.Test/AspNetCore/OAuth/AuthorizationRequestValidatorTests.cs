@@ -5,13 +5,13 @@
 ////using Codeworx.Identity.AspNetCore.OAuth;
 ////using Codeworx.Identity.Model;
 ////using Moq;
-////using Xunit;
+////using NUnit.Framework;
 
 ////namespace Codeworx.Identity.Test.AspNetCore.OAuth
 ////{
 ////    public class AuthorizationRequestValidatorTests
 ////    {
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdEmpty_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -29,10 +29,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdInvalidAndRedirectUriInvalid_ReturnsErrorForClientId()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -51,10 +51,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdInvalidCharacters_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -72,10 +72,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdNotRegistered_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -93,10 +93,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ClientIdNull_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -116,10 +116,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriEmptyAndDefaultUriNull_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -137,10 +137,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriEmptyAndDefaultUriSet_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -164,7 +164,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriInvalid_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -182,10 +182,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriNotInValidList_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -205,10 +205,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriNullAndDefaultUriNull_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -226,10 +226,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriNullAndDefaultUriSet_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -253,7 +253,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_RedirectUriRelative_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -271,10 +271,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ResponseTypeEmpty_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -294,10 +294,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ResponseTypeInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -316,10 +316,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ResponseTypeInvalidCharacters_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -339,10 +339,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ResponseTypeNull_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -362,10 +362,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ResponseTypeName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ResponseTypeWithSpace_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -387,7 +387,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ScopeEmpty_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -409,7 +409,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ScopeInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -428,10 +428,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ScopeInvalidCharacters_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -451,10 +451,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.ScopeName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.ScopeName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ScopeNull_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -476,7 +476,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ScopeWithSpace_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -498,7 +498,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_StateEmpty_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -520,7 +520,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_StateInvalidAndRedirectUriInvalid_ReturnsErrorForRedirectUri()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -539,10 +539,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_StateInvalidCharacters_ReturnsError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -562,10 +562,10 @@
 ////            var result = await instance.IsValid(request);
 
 ////            Assert.NotNull(result);
-////            Assert.Equal(Constants.OAuth.StateName, result.Error.ErrorDescription);
+////            Assert.AreEqual(Constants.OAuth.StateName, result.Error.ErrorDescription);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_StateNull_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder()
@@ -587,7 +587,7 @@
 ////            Assert.Null(result);
 ////        }
 
-////        [Fact]
+////        [Test]
 ////        public async Task IsValid_ValidRequest_ReturnsNoError()
 ////        {
 ////            var request = new OAuthAuthorizationRequestBuilder().Build();

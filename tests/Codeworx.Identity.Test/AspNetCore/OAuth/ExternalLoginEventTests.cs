@@ -9,13 +9,13 @@ using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class ExternalLoginEventTests
     {
-        [Fact]
+        [Test]
         public async Task ExternalLoginEvent_MissingUser_ExpectsAuthenticationException()
         {
             var services = new ServiceCollection();
@@ -33,11 +33,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 var request = new WindowsLoginRequest(Constants.ExternalWindowsProviderId, windowsIdentity, "http://localhost/return", null);
                 var loginService = score.ServiceProvider.GetService<ILoginService>();
 
-                await Assert.ThrowsAsync<AuthenticationException>(() => loginService.SignInAsync(request.ProviderId, request));
+                Assert.ThrowsAsync<AuthenticationException>(() => loginService.SignInAsync(request.ProviderId, request));
             }
         }
 
-        [Fact]
+        [Test]
         public async Task ExternalLoginEvent_MissingUser_ExpectsOK()
         {
             var services = new ServiceCollection();

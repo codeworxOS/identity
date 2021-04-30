@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Http;
 #if NETCOREAPP2_1
 using Microsoft.AspNetCore.Http.Internal;
 #endif
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class AuthorizationSuccessResponseBinderTest
     {
-        [Fact]
+        [Test]
         public async Task AuthorizationCodeEnsureRFC3986Encoding_Expects_Ok()
         {
             var ctx = new DefaultHttpContext();
@@ -27,11 +27,11 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             await binder.BindAsync(successResponse, httpResponse);
 
-            Assert.Equal<int>((int)HttpStatusCode.Redirect, httpResponse.StatusCode);
-            Assert.Equal("?code=a%20bc%2Bdef", httpResponse.GetTypedHeaders().Location.Query);
+            Assert.AreEqual((int)HttpStatusCode.Redirect, httpResponse.StatusCode);
+            Assert.AreEqual("?code=a%20bc%2Bdef", httpResponse.GetTypedHeaders().Location.Query);
         }
 
-        [Fact]
+        [Test]
         public async Task AuthorizationCodeResponseModeFragment_Expects_Ok()
         {
 
@@ -47,8 +47,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             await binder.BindAsync(successResponse, httpResponse);
 
-            Assert.Equal<int>((int)HttpStatusCode.Redirect, httpResponse.StatusCode);
-            Assert.Equal("#code=a%20bc%2Bdef", httpResponse.GetTypedHeaders().Location.Fragment);
+            Assert.AreEqual((int)HttpStatusCode.Redirect, httpResponse.StatusCode);
+            Assert.AreEqual("#code=a%20bc%2Bdef", httpResponse.GetTypedHeaders().Location.Fragment);
         }
     }
 }

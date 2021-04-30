@@ -9,16 +9,18 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test
 {
-    public abstract class IntegrationTestBase<TStartup> : IDisposable where TStartup : class
+    public abstract class IntegrationTestBase<TStartup> where TStartup : class
     {
-        protected TestServer TestServer { get; }
+        protected TestServer TestServer { get; private set; }
 
-        public HttpClient TestClient { get; }
+        public HttpClient TestClient { get; private set; }
 
-        protected IntegrationTestBase()
+        [SetUp()]
+        public void Setup()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<TStartup>();
@@ -45,7 +47,8 @@ namespace Codeworx.Identity.Test
             this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
         }
 
-        public void Dispose()
+        [TearDown()]
+        public void TearDown()
         {
             this.TestServer?.Dispose();
             this.TestClient?.Dispose();

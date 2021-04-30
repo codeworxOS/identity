@@ -2,7 +2,7 @@
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.IdentityModel.Tokens;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Cryptography.Internal
 {
@@ -20,7 +20,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
         #region Public Methods
 
-        [Fact]
+        [Test]
         public void Supports_RsaKey_ReturnsTrue()
         {
             var key = GetKey();
@@ -32,7 +32,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
             Assert.True(result);
         }
 
-        [Fact]
+        [Test]
         public void SerializeKeyToJsonWebKey_ReturnsRsaParameters()
         {
             var expectedKeyType = KeyType.RSA;
@@ -44,13 +44,13 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var actual = instance.SerializeKeyToJsonWebKey(key, "BCEF81C6-AA12-4FFD-99CB-914910C75636");
 
-            Assert.IsType(typeof(RsaKeyParameter), actual);
+            Assert.IsInstanceOf(typeof(RsaKeyParameter), actual);
             Assert.False(string.IsNullOrWhiteSpace(actual.KeyId));
-            Assert.Equal(expectedKeyType, actual.KeyType);
-            Assert.Equal(expectedKeyUse, actual.KeyUse);
+            Assert.AreEqual(expectedKeyType, actual.KeyType);
+            Assert.AreEqual(expectedKeyUse, actual.KeyUse);
         }
 
-        [Fact]
+        [Test]
         public void GetAlgorithm_ReturnsCorrectValue()
         {
             var expectedAlgorithm = "RS256";
@@ -61,7 +61,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var actual = instance.GetAlgorithm(key);
 
-            Assert.Equal(expectedAlgorithm, actual);
+            Assert.AreEqual(expectedAlgorithm, actual);
         }
 
         #endregion

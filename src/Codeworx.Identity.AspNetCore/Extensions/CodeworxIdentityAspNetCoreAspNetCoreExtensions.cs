@@ -14,6 +14,7 @@ using Codeworx.Identity.AspNetCore.Binder.Invitation;
 using Codeworx.Identity.AspNetCore.Binder.Login;
 using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
+using Codeworx.Identity.AspNetCore.Binder.Logout;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
 using Codeworx.Identity.AspNetCore.Invitation;
 using Codeworx.Identity.AspNetCore.OAuth;
@@ -228,6 +229,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<LogoutRequest>, LogoutRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();
             collection.AddTransient<IRequestBinder<OAuthRedirectRequest>, OAuthRedirectRequestBinder>();
@@ -259,6 +261,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginRedirectResponse>, LoginRedirectResponseBinder>();
+            collection.AddTransient<IResponseBinder<LogoutResponse>, LogoutResponseBinder>();
             collection.AddTransient<IResponseBinder<RedirectViewResponse>, RedirectViewResponseBinder>();
             collection.AddTransient<IResponseBinder<InvitationViewResponse>, InvitationViewResponseBinder>();
 
