@@ -270,7 +270,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 TokenHandling = ExternalTokenHandling.Refresh,
                                 IdentifierClaim = "oid",
                                 ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
-                                ClientSecret = "I1X07k1dq?=ZRx@wodZtKB/_9IAC5-[z",
+                                ClientSecret = "7-abWHyW-_MlnFUV92ar.2miuUY0GuQ8EB",
                             }),
                             RightHolders =
                             {

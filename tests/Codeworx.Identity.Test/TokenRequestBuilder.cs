@@ -41,6 +41,13 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
+        public TokenRequestBuilder WithRedirectUri(string uri)
+        {
+            _redirectUrl = uri;
+
+            return this;
+        }
+
         public TokenRequestBuilder WithClientSecret(string value)
         {
             _clientSecret = value;
