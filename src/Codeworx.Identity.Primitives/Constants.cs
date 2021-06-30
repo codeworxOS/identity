@@ -1,6 +1,4 @@
-﻿using Microsoft.IdentityModel.JsonWebTokens;
-
-namespace Codeworx.Identity
+﻿namespace Codeworx.Identity
 {
     public static class Constants
     {
@@ -66,6 +64,19 @@ namespace Codeworx.Identity
         private const string VsChar = @"[\u0020-\u007e]";
         private const string VsChars = @"^" + VsChar + @"+$";
 
+        public static class KeyType
+        {
+            public const string Rsa = "RSA";
+            public const string EllipticCurve = "EC";
+            public const string Oct = "oct";
+        }
+
+        public static class KeyUse
+        {
+            public const string Signature = "sig";
+            public const string Encryption = "enc";
+        }
+
         public static class Assets
         {
             public const string Css = "/identity/css";
@@ -75,16 +86,16 @@ namespace Codeworx.Identity
 
         public static class Claims
         {
-            public const string Audience = JwtRegisteredClaimNames.Aud;
+            public const string Audience = "aud";
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
             public const string ExternalTokenKey = "external_token_key";
             public const string ExternalToken = "external_token";
             public const string Group = "group";
             public const string Id = "id";
-            public const string Issuer = JwtRegisteredClaimNames.Iss;
+            public const string Issuer = "iss";
             public const string Name = "name";
-            public const string Subject = JwtRegisteredClaimNames.Sub;
+            public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
         }
