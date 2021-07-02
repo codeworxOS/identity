@@ -9,7 +9,6 @@
              xmlns:att="clr-namespace:Codeworx.Identity.Wpf.Test.Extensions">
     <WebBrowser Margin="100"
                 att:WebControlAttached.BindableSource="{Binding Path=LoginUri}"
-                att:WebControlAttached.NavigatingCommand="{Binding Path=NavigatingCommand}"
-                >
+                att:WebControlAttached.NavigatingCommand="{Binding Path=NavigatingCommand}">
     </WebBrowser>
 </UserControl>

@@ -5,7 +5,7 @@ namespace Codeworx.Identity.OpenId.Model
     [DataContract]
     public abstract class KeyParameter
     {
-        protected KeyParameter(string keyId, KeyType keyType, KeyUse keyUse)
+        protected KeyParameter(string keyId, string keyType, string keyUse)
         {
             this.KeyId = keyId;
             this.KeyType = keyType;
@@ -16,9 +16,9 @@ namespace Codeworx.Identity.OpenId.Model
         public string KeyId { get; set; }
 
         [DataMember(Order = 2, Name = "kty")]
-        public KeyType KeyType { get; }
+        public string KeyType { get; }
 
         [DataMember(Order = 3, Name = "use")]
-        public KeyUse KeyUse { get; set; }
+        public string KeyUse { get; set; }
     }
 }

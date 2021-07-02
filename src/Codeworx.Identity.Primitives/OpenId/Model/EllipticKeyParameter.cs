@@ -4,8 +4,8 @@ namespace Codeworx.Identity.OpenId.Model
 {
     public class EllipticKeyParameter : KeyParameter
     {
-        public EllipticKeyParameter(string keyId, KeyUse keyUse, int keySize, string x, string y)
-            : base(keyId, KeyType.EllipticCurve, keyUse)
+        public EllipticKeyParameter(string keyId, string keyUse, int keySize, string x, string y)
+            : base(keyId, Codeworx.Identity.Constants.KeyType.EllipticCurve, keyUse)
         {
             this.Curve = $"P-{keySize}";
             this.X = x;

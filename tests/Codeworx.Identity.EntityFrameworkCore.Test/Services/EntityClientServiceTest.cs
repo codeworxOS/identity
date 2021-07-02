@@ -75,6 +75,4 @@ namespace Codeworx.Identity.Test.Services
             GC.SuppressFinalize(this);
         }
     }
-
-
 }

@@ -35,8 +35,8 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
         [Test]
         public void SerializeKeyToJsonWebKey_ReturnsRsaParameters()
         {
-            var expectedKeyType = KeyType.RSA;
-            var expectedKeyUse = KeyUse.Signature;
+            var expectedKeyType = Constants.KeyType.Rsa;
+            var expectedKeyUse = Constants.KeyUse.Signature;
 
             var key = GetKey();
 
