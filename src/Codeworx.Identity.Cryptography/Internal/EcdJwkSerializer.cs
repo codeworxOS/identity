@@ -14,7 +14,7 @@ namespace Codeworx.Identity.Cryptography.Internal
             {
                 var parameters = ecdKey.ECDsa.ExportParameters(false);
 
-                return new EllipticKeyParameter(keyId, KeyUse.Signature, ecdKey.KeySize, Base64UrlEncoder.Encode(parameters.Q.X), Base64UrlEncoder.Encode(parameters.Q.Y));
+                return new EllipticKeyParameter(keyId, Constants.KeyUse.Signature, ecdKey.KeySize, Base64UrlEncoder.Encode(parameters.Q.X), Base64UrlEncoder.Encode(parameters.Q.Y));
             }
 
             throw new NotSupportedException("Key type not supported!");

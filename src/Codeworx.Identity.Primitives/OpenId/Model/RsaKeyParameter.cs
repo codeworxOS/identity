@@ -6,8 +6,8 @@ namespace Codeworx.Identity.Cryptography.Internal
     [DataContract]
     public class RsaKeyParameter : KeyParameter
     {
-        public RsaKeyParameter(string keyId, KeyUse keyUse, string exponent, string modulus)
-            : base(keyId, KeyType.RSA, keyUse)
+        public RsaKeyParameter(string keyId, string keyUse, string exponent, string modulus)
+            : base(keyId, Constants.KeyType.Rsa, keyUse)
         {
             this.Exponent = exponent;
             this.Modulus = modulus;

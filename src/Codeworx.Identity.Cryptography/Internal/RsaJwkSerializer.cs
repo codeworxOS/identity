@@ -14,7 +14,7 @@ namespace Codeworx.Identity.Cryptography.Internal
             {
                 var parameters = rsaKey.Rsa.ExportParameters(false);
 
-                return new RsaKeyParameter(keyId, KeyUse.Signature, Base64UrlEncoder.Encode(parameters.Exponent), Base64UrlEncoder.Encode(parameters.Modulus));
+                return new RsaKeyParameter(keyId, Constants.KeyUse.Signature, Base64UrlEncoder.Encode(parameters.Exponent), Base64UrlEncoder.Encode(parameters.Modulus));
             }
 
             throw new NotSupportedException("Key type not supported!");

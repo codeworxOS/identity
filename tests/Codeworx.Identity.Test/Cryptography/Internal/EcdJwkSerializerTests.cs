@@ -35,8 +35,8 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
         [Test]
         public void SerializeKeyToJsonWebKey_ReturnsEcdParameters()
         {
-            var expectedKeyType = KeyType.EllipticCurve;
-            var expectedKeyUse = KeyUse.Signature;
+            var expectedKeyType = Constants.KeyType.EllipticCurve;
+            var expectedKeyUse = Constants.KeyUse.Signature;
             var expectedCurveType = "P-384";
 
             var key = GetKey();
