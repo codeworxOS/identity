@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net5.0;netcoreapp3.1;</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NSwag.AspNetCore" Version="13.11.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj" />
+  </ItemGroup>
+
+</Project>

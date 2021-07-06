@@ -204,7 +204,8 @@ namespace Codeworx.Identity.AspNetCore
         private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
-            builder.Argon2();
+            builder.Argon2()
+                .WithAesSymmetricEncryption();
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityOptions.AuthenticationScheme; })
                       .AddCookie(

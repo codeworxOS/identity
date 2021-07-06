@@ -19,5 +19,10 @@ namespace Codeworx.Identity.Cryptography
             return builder.ReplaceService<IHashingProvider, Argon2HashingProvider>(ServiceLifetime.Singleton)
                         .ReplaceService<Argon2Options, Argon2Options>(ServiceLifetime.Singleton, sp => options ?? new Argon2Options());
         }
+
+        public static IIdentityServiceBuilder WithAesSymmetricEncryption(this IIdentityServiceBuilder builder, Argon2Options options = null)
+        {
+            return builder.ReplaceService<ISymmetricDataEncryption, AesDataEncryption>(ServiceLifetime.Singleton);
+        }
     }
 }

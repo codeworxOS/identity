@@ -31,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
   </ItemGroup>
 </Project>
