@@ -10,6 +10,7 @@ namespace Codeworx.Identity.OAuth.Token
             : base(clientId, Constants.OAuth.GrantType.RefreshToken, clientSecret)
         {
             RefreshToken = refreshToken;
+            Scope = scope;
         }
 
         [Required]
