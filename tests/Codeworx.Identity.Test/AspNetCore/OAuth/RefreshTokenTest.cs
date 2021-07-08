@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Test]
-        public async Task IncludeRefreshTokenIfOfflineAccessScopeIsMissing_ExpectsOK()
+        public async Task IncludeRefreshTokenIfOfflineAccessScopeIsPresent_ExpectsOK()
         {
             await this.Authenticate();
 

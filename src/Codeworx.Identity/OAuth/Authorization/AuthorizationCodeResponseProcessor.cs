@@ -10,15 +10,15 @@ namespace Codeworx.Identity.OAuth.Authorization
     {
         private readonly IAuthorizationCodeGenerator _authorizationCodeGenerator;
         private readonly IAuthorizationCodeCache _cache;
-        private readonly IOptions<AuthorizationCodeOptions> _options;
+        private readonly AuthorizationCodeOptions _options;
 
         public AuthorizationCodeResponseProcessor(
             IAuthorizationCodeGenerator authorizationCodeGenerator,
-            IOptions<AuthorizationCodeOptions> options,
+            IOptionsSnapshot<AuthorizationCodeOptions> options,
             IAuthorizationCodeCache cache)
         {
             _authorizationCodeGenerator = authorizationCodeGenerator;
-            _options = options;
+            _options = options.Value;
             _cache = cache;
         }
 
@@ -33,11 +33,8 @@ namespace Codeworx.Identity.OAuth.Authorization
                 return responseBuilder;
             }
 
-            var authorizationCode = await _authorizationCodeGenerator.GenerateCode(parameters, _options.Value.Length)
-                                                                     .ConfigureAwait(false);
-
-            await _cache.SetAsync(authorizationCode, data, TimeSpan.FromSeconds(_options.Value.ExpirationInSeconds))
-                    .ConfigureAwait(false);
+            var authorizationCode = await _cache.SetAsync(data, TimeSpan.FromSeconds(_options.ExpirationInSeconds))
+                                            .ConfigureAwait(false);
 
             return responseBuilder.WithCode(authorizationCode);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Threading.Tasks;
+using Codeworx.Identity.Internal;
 
 namespace Codeworx.Identity.Cryptography
 {
@@ -8,17 +9,17 @@ namespace Codeworx.Identity.Cryptography
     {
         public static async Task<(string Key, string Data)> EncryptAsync(this ISymmetricDataEncryption encryption, string value, string key = null)
         {
-            var keyBuffer = key != null ? Convert.FromBase64String(key) : null;
+            var keyBuffer = key != null ? Base64UrlEncoding.DecodeBytes(key) : null;
             var dataBuffer = Encoding.UTF8.GetBytes(value);
 
             var encrypted = await encryption.EncryptAsync(dataBuffer, keyBuffer);
 
-            return (Convert.ToBase64String(encrypted.Key), Convert.ToBase64String(encrypted.Data));
+            return (Base64UrlEncoding.Encode(encrypted.Key), Convert.ToBase64String(encrypted.Data));
         }
 
         public static async Task<string> DecryptAsync(this ISymmetricDataEncryption encryption, string value, string key)
         {
-            var keyBuffer = Convert.FromBase64String(key);
+            var keyBuffer = Base64UrlEncoding.DecodeBytes(key);
             var dataBuffer = Convert.FromBase64String(value);
 
             var result = await encryption.DecryptAsync(dataBuffer, keyBuffer);

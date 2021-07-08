@@ -58,7 +58,9 @@ namespace Codeworx.Identity
             var c = await _claimsService.GetClaimsAsync(identityDataParameters);
             claims.AddRange(c);
 
-            var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims);
+            var externalTokenKey = identityDataParameters.User.FindFirst(Constants.Claims.ExternalTokenKey)?.Value;
+
+            var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
 
             return result;
         }

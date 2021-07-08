@@ -7,6 +7,6 @@ namespace Codeworx.Identity.Cache
     {
         Task<IdentityData> GetAsync(string authorizationCode);
 
-        Task SetAsync(string authorizationCode, IdentityData payload, TimeSpan timeout);
+        Task<string> SetAsync(IdentityData payload, TimeSpan validFor);
     }
 }

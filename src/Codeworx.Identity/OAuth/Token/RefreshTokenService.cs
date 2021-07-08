@@ -7,29 +7,32 @@ using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
-    public class AuthorizationCodeTokenService : ITokenService<AuthorizationCodeTokenRequest>
+    public class RefreshTokenService : ITokenService<RefreshTokenRequest>
     {
-        private readonly IRequestValidator<AuthorizationCodeTokenRequest> _validator;
+        private readonly IRequestValidator<RefreshTokenRequest> _validator;
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly IRefreshTokenCache _refreshTokenCache;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
-        private readonly IAuthorizationCodeCache _cache;
+        private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
 
-        public AuthorizationCodeTokenService(
-            IAuthorizationCodeCache cache,
-            IRequestValidator<AuthorizationCodeTokenRequest> validator,
+        public RefreshTokenService(
+            IRequestValidator<RefreshTokenRequest> validator,
             IClientAuthenticationService clientAuthenticationService,
             IRefreshTokenCache refreshTokenCache,
-            IEnumerable<ITokenProvider> tokenProviders)
+            IEnumerable<ITokenProvider> tokenProviders,
+            IUserService userService,
+            IIdentityService identityService)
         {
             _validator = validator;
             _clientAuthenticationService = clientAuthenticationService;
             _refreshTokenCache = refreshTokenCache;
-            this._tokenProviders = tokenProviders;
-            _cache = cache;
+            _tokenProviders = tokenProviders;
+            _userService = userService;
+            _identityService = identityService;
         }
 
-        public async Task<TokenResponse> ProcessAsync(AuthorizationCodeTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(RefreshTokenRequest request)
         {
             if (request == null)
             {
@@ -47,42 +50,56 @@ namespace Codeworx.Identity.OAuth.Token
             ////    ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
             ////}
 
-            var identityData = await _cache.GetAsync(request.Code)
-                .ConfigureAwait(false);
+            var cacheEntry = await _refreshTokenCache.GetAsync(request.RefreshToken).ConfigureAwait(false);
 
-            if (identityData == null)
+            if (cacheEntry == null)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
 
-            if (identityData.ClientId != request.ClientId)
+            if (cacheEntry.IdentityData.ClientId != request.ClientId)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
+
+            // TODO extend refresh_token lifetime or recreate;
+            var clientId = cacheEntry.IdentityData.ClientId;
+            var user = await _userService.GetUserByIdAsync(cacheEntry.IdentityData.Identifier).ConfigureAwait(false);
+            var identity = await _identityService.GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
+
+            if (!string.IsNullOrWhiteSpace(cacheEntry.IdentityData.ExternalTokenKey))
+            {
+                identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, cacheEntry.IdentityData.ExternalTokenKey));
+            }
+
+            var scopeClaim = cacheEntry.IdentityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
+            var scopes = scopeClaim?.Values?.ToArray() ?? new string[] { };
+
+            // TODO chekc if requested Scopes match previous;
+            var parameters = new RefreshTokenParameters(clientId, scopes, identity);
+
+            var identityData = await _identityService.GetIdentityAsync(parameters).ConfigureAwait(false);
 
             var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
 
             var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
             var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), client.TokenExpiration)
+            await accessToken.SetPayloadAsync(cacheEntry.IdentityData.GetTokenClaims(ClaimTarget.AccessToken), client.TokenExpiration)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), client.TokenExpiration)
+            await identityToken.SetPayloadAsync(cacheEntry.IdentityData.GetTokenClaims(ClaimTarget.IdToken), client.TokenExpiration)
                     .ConfigureAwait(false);
-
-            var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
-
-            var scope = string.Empty;
 
             string refreshToken = null;
+            string scope = null;
 
-            if (scopeClaim != null)
+            if (scopes.Any())
             {
                 scope = string.Join(" ", scopeClaim.Values);
 
-                if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
+                if (scopes.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
-                    refreshToken = await _refreshTokenCache.SetAsync(identityData, TimeSpan.FromDays(30 * 6));
+                    refreshToken = request.RefreshToken;
                 }
             }
 
