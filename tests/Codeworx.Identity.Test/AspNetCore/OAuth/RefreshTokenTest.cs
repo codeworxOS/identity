@@ -8,7 +8,10 @@ using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
+    using System;
+    using Codeworx.Identity.Cache;
     using Codeworx.Identity.OAuth;
+    using UriBuilder = Codeworx.Identity.UriBuilder;
 
     public class RefreshTokenTest : IntegrationTestBase
     {
@@ -117,6 +120,62 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Test]
+        public async Task RedeemMalformedRefreshCode_ExpectsException()
+        {
+            var tokenResponseData = await GetTokenResponse("openid offline_access");
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            var refreshRequest = new TokenRequestBuilder()
+                                 .WithGrantType("refresh_token")
+                                 .WithRefreshCode("a")
+                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientSecret("clientSecret")
+                                 .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            Assert.ThrowsAsync<InvalidCacheKeyFormatException>(() => this.TestClient.PostAsync(uriBuilder.ToString(), content));
+        }
+
+        [Test]
+        public async Task RedeemInvalidRefreshCode_ExpectsBadRequest()
+        {
+            var tokenResponseData = await GetTokenResponse("openid offline_access");
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            var tokenParts = tokenResponseData.RefreshToken.Split('.');
+
+            var refreshRequest = new TokenRequestBuilder()
+                                 .WithGrantType("refresh_token")
+                                 .WithRefreshCode($"{new string('a',tokenParts[0].Length)}.{new string('a', tokenParts[1].Length)}")
+                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientSecret("clientSecret")
+                                 .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, refreshResponse.StatusCode);
+
+            var errorData = JsonConvert.DeserializeObject<ErrorResponse>(await refreshResponse.Content.ReadAsStringAsync());
+            Assert.AreEqual("invalid_grant", errorData.Error);
+        }
+
+        [Test]
         public async Task RedeemRefreshCodeWithDifferentClientId_ExpectsUnauthorized()
         {
             var tokenResponseData = await GetTokenResponse("openid offline_access");
@@ -150,7 +209,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var reducedScope = new[] { "openid", "offline_access", "scope1" };
             var additionalScope = "scope2";
-            var tokenResponseData = await GetTokenResponse(string.Join(" ", reducedScope.Append(additionalScope)));
+            var initialScope = reducedScope.Append(additionalScope).ToArray();
+
+            var tokenResponseData = await GetTokenResponse(string.Join(" ", initialScope));
 
             Assert.IsNotNull(tokenResponseData.RefreshToken);
             Assert.IsNotNull(tokenResponseData.AccessToken);
@@ -174,13 +235,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
 
-            var actualScope = refreshResponseData.Scope;
-            foreach (var scope in reducedScope)
-            {
-                Assert.True(actualScope.Contains(scope));
-            }
+            var actualScope = refreshResponseData.Scope.Split(" ");
 
-            Assert.False(actualScope.Contains(additionalScope));
+            CollectionAssert.AreEquivalent(reducedScope, actualScope);
+            CollectionAssert.DoesNotContain(actualScope, additionalScope);
         }
 
 
