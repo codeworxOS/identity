@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity
@@ -27,6 +28,20 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithRefreshTokenClientSecret<TBuilder>(this TBuilder builder, string clientSecret)
+          where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        {
+            builder.SetValue(p => p.ClientSecret, clientSecret);
+            return builder;
+        }
+
+        public static TBuilder WithCacheItem<TBuilder>(this TBuilder builder, IRefreshTokenCacheItem cacheItem)
+          where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        {
+            builder.SetValue(p => p.CacheItem, cacheItem);
+            return builder;
+        }
+
         public static TBuilder WithNonce<TBuilder>(this TBuilder builder, string nonce)
             where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
@@ -48,8 +63,15 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithRefreshToken<TBuilder>(this TBuilder builder, string refreshToken)
+            where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        {
+            builder.SetValue(p => p.RefreshToken, refreshToken);
+            return builder;
+        }
+
         public static TBuilder WithResponseMode<TBuilder>(this TBuilder builder, string responseMode)
-            where TBuilder : IIdentityDataParametersBuilder<IAuthorizationParameters>
+                    where TBuilder : IIdentityDataParametersBuilder<IAuthorizationParameters>
         {
             builder.SetValue(p => p.ResponseMode, responseMode);
             return builder;
@@ -85,6 +107,13 @@ namespace Codeworx.Identity
 
         public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
             where TBuilder : IIdentityDataParametersBuilder<IClientCredentialsParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
+        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
+    where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
         {
             builder.SetValue(p => p.User, user);
             return builder;

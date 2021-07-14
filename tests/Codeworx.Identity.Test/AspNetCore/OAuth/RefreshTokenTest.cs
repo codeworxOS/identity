@@ -156,7 +156,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
-                                 .WithRefreshCode($"{new string('a',tokenParts[0].Length)}.{new string('a', tokenParts[1].Length)}")
+                                 .WithRefreshCode($"{new string('a', tokenParts[0].Length)}.{new string('a', tokenParts[1].Length)}")
                                  .WithClientId(Constants.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .Build();
@@ -243,7 +243,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
 
         [Test]
-        public async Task RedeemRefreshCodeWithWidenedScope_ExpectsUnauthorized()
+        public async Task RedeemRefreshCodeWithWidenedScope_ExpectsBadRequest()
         {
             var reducedScope = new[] { "openid", "offline_access", "scope1" };
             var additionalScope = "scope2";
@@ -265,7 +265,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
             uriBuilder.AppendPath("oauth20/token");
             var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
-            Assert.AreEqual(System.Net.HttpStatusCode.Unauthorized, refreshResponse.StatusCode);
+            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, refreshResponse.StatusCode);
 
             var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(await refreshResponse.Content.ReadAsStringAsync());
 

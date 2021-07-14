@@ -73,7 +73,6 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<RefreshTokenRequest>>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
-            this.ReplaceService<IRequestValidator<RefreshTokenRequest>, RefreshTokenRequestValidator>(ServiceLifetime.Transient);
 
             this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);

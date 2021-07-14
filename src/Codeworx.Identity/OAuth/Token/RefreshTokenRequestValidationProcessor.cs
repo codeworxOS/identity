@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Token
 {
-    public class RefreshTokenRequestValidator : IRequestValidator<RefreshTokenRequest>
+    public class RefreshTokenRequestValidationProcessor : IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>
     {
-        public Task ValidateAsync(RefreshTokenRequest request)
+        public int SortOrder => 150;
+
+        public Task ProcessAsync(IIdentityDataParametersBuilder<IRefreshTokenParameters> builder, RefreshTokenRequest request)
         {
             var error = false;
 
@@ -39,6 +41,11 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
+
+            builder.WithRefreshToken(request.RefreshToken)
+                .WithClientId(request.ClientId)
+                .WithRefreshTokenClientSecret(request.ClientSecret)
+                .WithScopes(request.Scope?.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries) ?? new string[] { });
 
             return Task.CompletedTask;
         }

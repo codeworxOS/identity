@@ -18,8 +18,8 @@ namespace Codeworx.Identity.OAuth.Token
         [DataMember(Order = 2, Name = Constants.OAuth.RefreshTokenName)]
         public string RefreshToken { get; }
 
-        [RegularExpression(Constants.OAuth.ScopeName)]
-        [DataMember(Order = 1, Name = Constants.OAuth.ScopeValidation)]
+        [RegularExpression(Constants.OAuth.ScopeValidation)]
+        [DataMember(Order = 1, Name = Constants.OAuth.ScopeName)]
         public string Scope { get; }
     }
 }
