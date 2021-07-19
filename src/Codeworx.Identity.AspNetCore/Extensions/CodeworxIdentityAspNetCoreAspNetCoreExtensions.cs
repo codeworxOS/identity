@@ -228,6 +228,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<RefreshTokenRequest>, RefreshTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<LogoutRequest>, LogoutRequestBinder>();
@@ -268,6 +269,7 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
+            collection.AddScoped<ITokenRequestBindingSelector, RefreshTokenBindingSelector>();
 
             collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, StageOneAuthorizationRequestProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, StageTwoAuthorizationRequestProcessor>();
@@ -298,6 +300,11 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
 
+            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestValidationProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestClientProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestUserProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestScopeProcessor>();
+
             collection.AddTransient<IScopeService, ScopeService>();
             collection.AddSingleton<ISystemScopeProvider, SystemScopeProvider>();
             collection.AddTransient<ISystemScopeProvider, TenantScopeProvider>();
@@ -309,13 +316,14 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ISystemClaimsProvider, ExternalTokenClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
-            collection.AddTransient<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
+            collection.AddSingleton<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
+            collection.AddSingleton<IRefreshTokenCache, DistributedRefreshTokenCache>();
             collection.AddSingleton<ITemplateCompiler, MustacheTemplateCompiler>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();

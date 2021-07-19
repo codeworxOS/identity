@@ -11,6 +11,7 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly IRequestValidator<AuthorizationCodeTokenRequest> _validator;
         private readonly IClientAuthenticationService _clientAuthenticationService;
+        private readonly IRefreshTokenCache _refreshTokenCache;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
         private readonly IAuthorizationCodeCache _cache;
 
@@ -18,10 +19,12 @@ namespace Codeworx.Identity.OAuth.Token
             IAuthorizationCodeCache cache,
             IRequestValidator<AuthorizationCodeTokenRequest> validator,
             IClientAuthenticationService clientAuthenticationService,
+            IRefreshTokenCache refreshTokenCache,
             IEnumerable<ITokenProvider> tokenProviders)
         {
             _validator = validator;
             _clientAuthenticationService = clientAuthenticationService;
+            _refreshTokenCache = refreshTokenCache;
             this._tokenProviders = tokenProviders;
             _cache = cache;
         }
@@ -71,15 +74,22 @@ namespace Codeworx.Identity.OAuth.Token
 
             var scope = string.Empty;
 
+            string refreshToken = null;
+
             if (scopeClaim != null)
             {
                 scope = string.Join(" ", scopeClaim.Values);
+
+                if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
+                {
+                    refreshToken = await _refreshTokenCache.SetAsync(identityData, TimeSpan.FromDays(30 * 6));
+                }
             }
 
             var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
             var identityTokenValue = await identityToken.SerializeAsync().ConfigureAwait(false);
 
-            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope);
+            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope, refreshToken);
         }
     }
 }

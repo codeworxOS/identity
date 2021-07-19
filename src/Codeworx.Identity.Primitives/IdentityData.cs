@@ -8,16 +8,20 @@ namespace Codeworx.Identity
     [DataContract]
     public class IdentityData
     {
-        public IdentityData(string clientId, string identifier, string login, IEnumerable<AssignedClaim> claims = null)
+        public IdentityData(string clientId, string identifier, string login, IEnumerable<AssignedClaim> claims = null, string externalTokenKey = null)
         {
             ClientId = clientId;
             Identifier = identifier;
             Login = login;
+            ExternalTokenKey = externalTokenKey;
             Claims = ImmutableList.CreateRange(claims ?? Enumerable.Empty<AssignedClaim>());
         }
 
+        [DataMember(Order = 5, Name = Constants.Claims.ExternalTokenKey)]
+        public string ExternalTokenKey { get; }
+
         [DataMember(Order = 4, Name = "client_id")]
-        public string ClientId { get; set; }
+        public string ClientId { get; }
 
         [DataMember(Order = 3, Name = "claims")]
         public IEnumerable<AssignedClaim> Claims { get; }
