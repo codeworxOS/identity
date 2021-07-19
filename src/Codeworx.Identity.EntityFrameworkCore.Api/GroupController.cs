@@ -42,6 +42,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpGet("{id}/member")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IEnumerable<MemberInfoData>> GetMembersAsync(Guid id)
         {
             var groupExists = await _db.Context.Set<Group>().Where(p => p.Id == id).AnyAsync();
@@ -66,6 +67,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut("{id}/member/{memberId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task AddMemberAsync(Guid id, Guid memberId)
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
@@ -89,6 +91,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpDelete("{id}/member/{memberId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task RemoveMemberAsync(Guid id, Guid memberId)
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
@@ -109,6 +112,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<GroupData> UpdateUsersAsync([FromBody] GroupListData group)
         {
             var entity = await _db.Context.Set<Group>().Where(p => p.Id == group.Id).FirstOrDefaultAsync();
@@ -131,6 +135,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task DeleteGroupAsync(Guid id)
         {
             var entity = await _db.Context.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -171,6 +176,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<GroupData> GetGroupByIdAsync(Guid id, [FromQuery] string expand = null)
         {
             var set = _db.Context.Set<Group>();
