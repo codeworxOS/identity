@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Model
 {
     public class PasswordChangeViewResponse : IViewData
     {
-        public PasswordChangeViewResponse(string error, string username)
+        public PasswordChangeViewResponse(string username, string error = null)
         {
             Error = error;
             HasError = Error != null;

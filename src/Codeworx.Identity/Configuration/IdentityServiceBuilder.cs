@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Codeworx.Identity.Account;
 using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Invitation;
@@ -49,6 +50,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
+            this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);

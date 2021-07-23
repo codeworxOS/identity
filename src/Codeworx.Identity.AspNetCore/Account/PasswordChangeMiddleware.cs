@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -17,15 +18,9 @@ namespace Codeworx.Identity.AspNetCore
         public async Task Invoke(
             HttpContext context,
             IRequestBinder<PasswordChangeRequest> requestBinder,
-            IPasswordChangeService service = null)
+            IPasswordChangeService service,
+            IServiceProvider serviceProvider)
         {
-            if (service == null)
-            {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-
-                return;
-            }
-
             try
             {
                 object response = null;

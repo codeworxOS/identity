@@ -4,6 +4,7 @@
     {
         public const string AuthenticationExceptionMessage = "Username or password incorrect.";
 
+        public const string BasicHeader = "Basic";
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
         public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
@@ -103,7 +104,7 @@
         public static class Forms
         {
             public const string ConfirmPassword = "confirm-password";
-            public const string CurrentPassword = "password";
+            public const string CurrentPassword = "current-password";
             public const string Password = "password";
             public const string ProviderId = "provider-id";
         }
