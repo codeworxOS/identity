@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
 {
     public class FormsLoginProcessor : ILoginProcessor
     {
+        private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly bool _hasPasswordChangeService;
         private readonly IIdentityService _identityService;
+        private readonly IdentityOptions _options;
 
-        public FormsLoginProcessor(IIdentityService identityService)
+        public FormsLoginProcessor(IIdentityService identityService, IBaseUriAccessor baseUriAccessor, IOptionsSnapshot<IdentityOptions> options, IPasswordChangeService passwordChangeService = null)
         {
             _identityService = identityService;
+            _baseUriAccessor = baseUriAccessor;
+            _hasPasswordChangeService = passwordChangeService != null;
+            _options = options.Value;
         }
 
         public Type RequestParameterType { get; } = typeof(LoginFormRequest);
@@ -23,11 +31,11 @@ namespace Codeworx.Identity.Login
             switch (request.Type)
             {
                 case ProviderRequestType.Login:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error));
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, _hasPasswordChangeService, GetPasswodChangeUrl(request), error));
                 case ProviderRequestType.Invitation:
                     return Task.FromResult<ILoginRegistrationInfo>(new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error));
                 case ProviderRequestType.Profile:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.UserName, error));
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.UserName, _hasPasswordChangeService, GetPasswodChangeUrl(request), error));
             }
 
             throw new NotSupportedException($"Request type {request.Type} not supported!");
@@ -52,6 +60,26 @@ namespace Codeworx.Identity.Login
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
             return new SignInResponse(identity, returnUrl);
+        }
+
+        private string GetPasswodChangeUrl(ProviderRequest request)
+        {
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+
+            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath("change-password");
+
+            if (!string.IsNullOrWhiteSpace(request.Prompt))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.ReturnUrl))
+            {
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
+            }
+
+            return uriBuilder.ToString();
         }
 
         private LoginFormRequest ToLoginFormRequest(object request)

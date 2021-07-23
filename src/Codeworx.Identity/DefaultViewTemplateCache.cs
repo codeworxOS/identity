@@ -5,7 +5,13 @@ using Codeworx.Identity.View;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplateCache : IInvitationViewTemplateCache, ILoginViewTemplateCache, ITenantViewTemplateCache, IFormPostResponseTypeTemplateCache, IRedirectViewTemplateCache
+    public class DefaultViewTemplateCache :
+        IInvitationViewTemplateCache,
+        ILoginViewTemplateCache,
+        ITenantViewTemplateCache,
+        IFormPostResponseTypeTemplateCache,
+        IPasswordChangeViewTemplateCache,
+        IRedirectViewTemplateCache
     {
         private readonly ITemplateCompiler _compiler;
         private readonly ILoginViewTemplate _loginViewTemplate;
@@ -13,6 +19,7 @@ namespace Codeworx.Identity
         private readonly IRedirectViewTemplate _redirectViewTemplate;
         private readonly IFormPostResponseTypeTemplate _formPostResponseTypeTemplate;
         private readonly IInvitationViewTemplate _invitationViewTemplate;
+        private readonly IPasswordChangeViewTemplate _passwordChangeViewTemplate;
         private Func<object, string> _redirect;
         private Func<object, string> _login;
         private Func<object, string> _tenant;
@@ -20,6 +27,7 @@ namespace Codeworx.Identity
         private Func<object, string> _loggedin;
         private Func<object, string> _challengeResponse;
         private Func<object, string> _invitation;
+        private Func<object, string> _passwordChange;
 
         public DefaultViewTemplateCache(
             ITemplateCompiler compiler,
@@ -27,7 +35,8 @@ namespace Codeworx.Identity
             ITenantViewTemplate tenantViewTemplate,
             IRedirectViewTemplate redirectViewTemplate,
             IFormPostResponseTypeTemplate formPostResponseTypeTemplate,
-            IInvitationViewTemplate invitationViewTemplate)
+            IInvitationViewTemplate invitationViewTemplate,
+            IPasswordChangeViewTemplate passwordChangeViewTemplate)
         {
             _compiler = compiler;
             _loginViewTemplate = loginViewTemplate;
@@ -35,6 +44,7 @@ namespace Codeworx.Identity
             _redirectViewTemplate = redirectViewTemplate;
             _formPostResponseTypeTemplate = formPostResponseTypeTemplate;
             _invitationViewTemplate = invitationViewTemplate;
+            _passwordChangeViewTemplate = passwordChangeViewTemplate;
         }
 
         public async Task<string> GetChallengeResponse(IDictionary<string, object> data)
@@ -105,6 +115,20 @@ namespace Codeworx.Identity
             }
 
             return _login(data);
+        }
+
+        public async Task<string> GetPasswordChangeView(IDictionary<string, object> data)
+        {
+            if (_passwordChange == null)
+            {
+                var template = await _passwordChangeViewTemplate.GetPasswordChangeTemplate();
+                if (_passwordChange == null)
+                {
+                    _passwordChange = _compiler.Compile(template);
+                }
+            }
+
+            return _passwordChange(data);
         }
 
         public async Task<string> GetRedirectView(IDictionary<string, object> data)
