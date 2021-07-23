@@ -46,6 +46,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut("{id}/tenant/{tenantId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task AssignTenantAsync(Guid id, Guid tenantId)
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
@@ -69,6 +70,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpDelete("{id}/tenant/{tenantId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task RemoveMemberAsync(Guid id, Guid tenantId)
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
@@ -89,6 +91,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<UserData> UpdateUsersAsync([FromBody] UserUpdateData user)
         {
             var entity = await _db.Context.Set<User>().Where(p => p.Id == user.Id).FirstOrDefaultAsync();
@@ -114,6 +117,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task DeleteUsersAsync(Guid id)
         {
             var entity = await _db.Context.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -162,6 +166,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<UserData> GetUserByIdAsync(Guid id, [FromQuery] string expand = null)
         {
             var set = _db.Context.Set<User>();

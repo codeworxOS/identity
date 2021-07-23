@@ -45,6 +45,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<TenantListData> UpdateTenantAsync([FromBody] TenantListData tenant)
         {
             var entity = await _db.Context.Set<Tenant>().Where(p => p.Id == tenant.Id).FirstOrDefaultAsync();
@@ -98,6 +99,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<TenantListData> GetTenantById(Guid id)
         {
             IQueryable<Tenant> query = _db.Context.Set<Tenant>();
@@ -122,6 +124,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task DeleteTenantById(Guid id)
         {
             IQueryable<Tenant> query = _db.Context.Set<Tenant>();
