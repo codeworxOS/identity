@@ -2,14 +2,20 @@
 {
     internal class FormsProfileRegistrationInfo : ILoginRegistrationInfo
     {
-        public FormsProfileRegistrationInfo(string providerId, string userName, string error = null)
+        public FormsProfileRegistrationInfo(string providerId, string userName, bool canChangePassword, string passwordChangeUrl, string error = null)
         {
             UserName = userName;
+            CanChangePassword = canChangePassword;
+            PasswordChangeUrl = passwordChangeUrl;
             ProviderId = providerId;
             Error = error;
         }
 
         public string UserName { get; }
+
+        public bool CanChangePassword { get; }
+
+        public string PasswordChangeUrl { get; }
 
         public string ProviderId { get; }
 

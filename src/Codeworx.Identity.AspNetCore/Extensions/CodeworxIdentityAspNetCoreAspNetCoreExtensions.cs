@@ -187,6 +187,11 @@ namespace Codeworx.Identity.AspNetCore
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<ProfileMiddleware>())
+                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/change-password"),
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<PasswordChangeMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/winlogin", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
@@ -228,8 +233,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
-            collection.AddTransient<IRequestBinder<RefreshTokenRequest>, RefreshTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
+            collection.AddTransient<IRequestBinder<RefreshTokenRequest>, RefreshTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<LogoutRequest>, LogoutRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
@@ -238,6 +243,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ExternalCallbackRequest>, ExternalCallbackRequestBinder>();
             collection.AddTransient<IRequestBinder<RedirectRequest>, RedirectRequestBinder>();
             collection.AddTransient<IRequestBinder<InvitationViewRequest>, InvitationViewRequestBinder>();
+            collection.AddTransient<IRequestBinder<PasswordChangeRequest>, PasswordChangeRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -266,6 +272,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<LogoutResponse>, LogoutResponseBinder>();
             collection.AddTransient<IResponseBinder<RedirectViewResponse>, RedirectViewResponseBinder>();
             collection.AddTransient<IResponseBinder<InvitationViewResponse>, InvitationViewResponseBinder>();
+            collection.AddTransient<IResponseBinder<PasswordChangeViewResponse>, PasswordChangeViewResponseBinder>();
+            collection.AddTransient<IResponseBinder<PasswordChangeResponse>, PasswordChangeResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
@@ -321,9 +329,9 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
+            collection.AddSingleton<IRefreshTokenCache, DistributedRefreshTokenCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
-            collection.AddSingleton<IRefreshTokenCache, DistributedRefreshTokenCache>();
             collection.AddSingleton<ITemplateCompiler, MustacheTemplateCompiler>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
