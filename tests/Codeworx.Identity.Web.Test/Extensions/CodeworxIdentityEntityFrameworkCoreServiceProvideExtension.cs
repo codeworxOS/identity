@@ -5,6 +5,7 @@ using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
@@ -14,7 +15,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
     {
         private static Guid _invitationUserId = Guid.Parse("{6554B541-8601-4258-8D11-661CA55C7277}");
 
-        public static IServiceProvider MigrateDatabase(this IServiceProvider serviceProvider)
+        public static IServiceProvider MigrateDatabase(this IServiceProvider serviceProvider, IConfiguration configuration)
         {
             using (var scope = serviceProvider.CreateScope())
             {
@@ -266,11 +267,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
-                                Scope = "openid 6c2cf5a9-ff71-4049-8035-4958df58b3bc/.default offline_access",
+                                Scope = configuration.GetValue<string>("TestSetup:ExternalScopes"),
                                 TokenHandling = ExternalTokenHandling.Refresh,
                                 IdentifierClaim = "oid",
-                                ClientId = "6c2cf5a9-ff71-4049-8035-4958df58b3bc",
-                                ClientSecret = "~zN83~W-wzInR_zkuKKPPHlc~6rF2OfL5t",
+                                ClientId = configuration.GetValue<string>("TestSetup:ExternalClientId"),
+                                ClientSecret = configuration.GetValue<string>("TestSetup:ExternalClientSecret"),
                             }),
                             RightHolders =
                             {
