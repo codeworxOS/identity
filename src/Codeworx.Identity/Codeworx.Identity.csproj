@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <None Remove="assets\account\invitation.html" />
+    <None Remove="assets\account\password_change.html" />
     <None Remove="assets\account\redirect.html" />
     <None Remove="assets\challenge_response.html" />
     <None Remove="assets\formsinvitation.html" />
@@ -32,6 +33,7 @@
   <ItemGroup>
     <EmbeddedResource Include="assets\account\loggedin.html" />
     <EmbeddedResource Include="assets\account\invitation.html" />
+    <EmbeddedResource Include="assets\account\password_change.html" />
     <EmbeddedResource Include="assets\account\redirect.html" />
     <EmbeddedResource Include="assets\account\login.html" />
     <EmbeddedResource Include="assets\account\tenant.html" />

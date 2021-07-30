@@ -12,6 +12,7 @@ namespace Codeworx.Identity.Test
         private string _scopes = null;
         private string _redirectUrl = null;
         private string _code = null;
+        private string _refreshCode = null;
 
         public TokenRequestBuilder WithClientId(string value)
         {
@@ -41,6 +42,20 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
+        public TokenRequestBuilder WithRefreshCode(string value)
+        {
+            _refreshCode = value;
+
+            return this;
+        }
+
+        public TokenRequestBuilder WithRedirectUri(string uri)
+        {
+            _redirectUrl = uri;
+
+            return this;
+        }
+
         public TokenRequestBuilder WithClientSecret(string value)
         {
             _clientSecret = value;
@@ -57,6 +72,10 @@ namespace Codeworx.Identity.Test
             else if (_grantType == Constants.OAuth.GrantType.ClientCredentials)
             {
                 return new ClientCredentialsTokenRequest(_clientId, _clientSecret, _scopes);
+            }
+            else if (_grantType == Constants.OAuth.GrantType.RefreshToken)
+            {
+                return new RefreshTokenRequest(_clientId, _clientSecret, _refreshCode, _scopes);
             }
 
             throw new NotSupportedException("Grant type not supported!");

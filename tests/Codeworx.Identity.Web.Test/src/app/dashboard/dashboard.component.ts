@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { OAuthService } from "angular-oauth2-oidc";
 
 @Component({
     selector: 'dashboard',
@@ -7,7 +8,7 @@ import { HttpClient } from "@angular/common/http";
 })
 export class DashboardComponent
     implements OnInit {
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private oauthService: OAuthService) {
 
     }
 
@@ -18,5 +19,9 @@ export class DashboardComponent
         this.name = response;
     }
 
+    public async refreshToken(): Promise<void> {
+        let response = await this.oauthService.refreshToken();
+        alert(JSON.stringify(response));
+    }
 
 }

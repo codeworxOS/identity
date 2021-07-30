@@ -4,13 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Codeworx.Identity</RootNamespace>
     <PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="OAuth\Binding\**" />
-    <EmbeddedResource Remove="OAuth\Binding\**" />
-    <None Remove="OAuth\Binding\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
@@ -20,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Converter\" />
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

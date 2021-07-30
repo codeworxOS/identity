@@ -14,7 +14,8 @@ namespace Codeworx.Identity.Test
                 .ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped)
                 .ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped)
                 .ReplaceService<IClientService, DummyOAuthClientService>(ServiceLifetime.Scoped)
-                .ReplaceService<IBaseUriAccessor, DummyBaseUriAccessor>(ServiceLifetime.Singleton);
+                .ReplaceService<IBaseUriAccessor, DummyBaseUriAccessor>(ServiceLifetime.Singleton)
+                .ReplaceService<IScopeProvider, DummyScopeProvider>(ServiceLifetime.Scoped);
         }
     }
 }
