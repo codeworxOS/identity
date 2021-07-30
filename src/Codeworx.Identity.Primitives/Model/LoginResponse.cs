@@ -1,24 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using Codeworx.Identity.Login;
+using Codeworx.Identity.View;
 
 namespace Codeworx.Identity.Model
 {
-    public class LoginResponse
+    public class LoginResponse : IViewData
     {
-        public LoginResponse(IEnumerable<ExternalProviderInfo> providers, string returnUrl = null, string username = null, string error = null)
+        public LoginResponse(IEnumerable<ILoginRegistrationGroup> groups, string returnUrl = null, string username = null, string error = null)
         {
-            Providers = providers.ToImmutableList();
+            Groups = groups.ToImmutableList();
             ReturnUrl = returnUrl;
             Username = username;
             Error = error;
+            HasError = !string.IsNullOrWhiteSpace(Error);
         }
 
         public string Error { get; }
 
-        public IEnumerable<ExternalProviderInfo> Providers { get; }
+        public bool HasError { get; }
+
+        public IEnumerable<ILoginRegistrationGroup> Groups { get; }
 
         public string ReturnUrl { get; }
 
         public string Username { get; }
+
+        public void CopyTo(IDictionary<string, object> target)
+        {
+            target.Add(nameof(Error), Error);
+            target.Add(nameof(Groups), Groups);
+            target.Add(nameof(ReturnUrl), ReturnUrl);
+            target.Add(nameof(Username), Username);
+            target.Add(nameof(HasError), HasError);
+        }
     }
 }

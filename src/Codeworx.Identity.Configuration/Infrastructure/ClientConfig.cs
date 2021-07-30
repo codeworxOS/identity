@@ -1,4 +1,5 @@
 ﻿using System;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Configuration.Infrastructure
 {
@@ -7,7 +8,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
         public ClientConfig()
         {
             TokenExpiration = TimeSpan.FromHours(1);
-            Type = ClientType.HybridWeb;
+            Type = ClientType.WebBackend;
         }
 
         public string[] RedirectUris { get; set; }
@@ -17,5 +18,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
         public TimeSpan TokenExpiration { get; set; }
 
         public ClientType Type { get; set; }
+
+        public string User { get; set; }
     }
 }

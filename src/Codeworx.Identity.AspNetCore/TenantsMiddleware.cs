@@ -1,60 +1,55 @@
-﻿using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
-using Codeworx.Identity.ContentType;
-using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class TenantsMiddleware
     {
-        private readonly IContentTypeLookup _contentTypeLookup;
         private readonly RequestDelegate _next;
 
-        public TenantsMiddleware(RequestDelegate next, IContentTypeLookup contentTypeLookup)
+        public TenantsMiddleware(RequestDelegate next)
         {
             _next = next;
-            _contentTypeLookup = contentTypeLookup;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService, ITenantService tenantService, IOptionsSnapshot<IdentityOptions> options)
+        public async Task Invoke(
+            HttpContext context,
+            IRequestBinder<SelectTenantViewRequest> selectViewBinder,
+            IRequestBinder<SelectTenantViewActionRequest> selectViewActionBinder,
+            IResponseBinder<SelectTenantViewResponse> selectViewResponseBinder,
+            IResponseBinder<SelectTenantSuccessResponse> selectTenantSuccessResponseBinder,
+            ITenantViewService tenantViewService)
         {
-            var authenticationResult = await context.AuthenticateAsync(options.Value.MissingTenantAuthenticationScheme);
-
-            if (!authenticationResult.Succeeded)
+            try
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
+                if (HttpMethods.IsGet(context.Request.Method))
+                {
+                    var request = await selectViewBinder.BindAsync(context.Request);
+                    var response = await tenantViewService.ShowAsync(request);
+                    await selectViewResponseBinder.BindAsync(response, context.Response);
+                    return;
+                }
+                else if (HttpMethods.IsPost(context.Request.Method))
+                {
+                    var request = await selectViewActionBinder.BindAsync(context.Request);
+                    var response = await tenantViewService.SelectAsync(request);
+                    await selectTenantSuccessResponseBinder.BindAsync(response, context.Response);
+                    return;
+                }
+                else
+                {
+                    context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+                    return;
+                }
+            }
+            catch (ErrorResponseException ex)
+            {
+                var binder = context.GetResponseBinder(ex.ResponseType);
+                await binder.BindAsync(ex.Response, context.Response);
             }
 
-            var identity = (ClaimsIdentity)authenticationResult.Principal.Identity;
-
-            var tenants = await tenantService.GetTenantsByIdentityAsync(identity) ?? Enumerable.Empty<TenantInfo>();
-
-            if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out string contentType))
-            {
-                context.Response.ContentType = contentType;
-            }
-
-            context.Response.StatusCode = StatusCodes.Status200OK;
-
-            var setting = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
-            var json = JsonSerializer.Create(setting);
-
-            using (var responseWriter = new StreamWriter(context.Response.Body))
-            {
-                json.Serialize(responseWriter, tenants);
-            }
+            await _next(context);
         }
     }
 }

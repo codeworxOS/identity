@@ -1,22 +1,19 @@
-﻿using Codeworx.Identity.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.Test
 {
     public class DummyTenantService : ITenantService
     {
-        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(ClaimsIdentity user)
+        public Task<IEnumerable<TenantInfo>> GetTenantsAsync()
         {
-            var identity = user.ToIdentityData();
-            return GetTenants(identity.Identifier);
+            return GetTenants(Constants.MultiTenantUserId);
         }
 
-        public Task<IEnumerable<TenantInfo>> GetTenantsByUserAsync(IUser user)
+        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
         {
-            return GetTenants(user.Identity);
+            return GetTenants(request.User.GetUserId());
         }
 
         private Task<IEnumerable<TenantInfo>> GetTenants(string identity)

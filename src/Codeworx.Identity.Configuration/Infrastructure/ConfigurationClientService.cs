@@ -9,31 +9,35 @@ namespace Codeworx.Identity.Configuration.Infrastructure
 {
     public class ConfigurationClientService : IClientService, IDisposable
     {
+        private readonly IDisposable _changeToken;
         private readonly IHashingProvider _hashing;
-        private readonly IDisposable _listener;
-        private bool _disposedValue = false;
+        private readonly IUserService _userService;
+        private bool _disposedValue;
         private ClientConfigOptions _options;
 
-        public ConfigurationClientService(IOptionsMonitor<ClientConfigOptions> monitor, IHashingProvider hashing)
+        public ConfigurationClientService(IOptionsMonitor<ClientConfigOptions> options, IHashingProvider hashing, IUserService userService)
         {
-            _options = monitor.CurrentValue;
-            _listener = monitor.OnChange(p => _options = p);
+            _options = options.CurrentValue;
+            _changeToken = options.OnChange(p => _options = p);
             _hashing = hashing;
+            _userService = userService;
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
-            Dispose(true);
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
 
-        public Task<IClientRegistration> GetById(string clientIdentifier)
+        public async Task<IClientRegistration> GetById(string clientIdentifier)
         {
             if (_options.TryGetValue(clientIdentifier, out var config))
             {
-                return Task.FromResult<IClientRegistration>(config.ToRegistration(_hashing, clientIdentifier));
+                return await config.ToRegistration(_userService, _hashing, clientIdentifier);
             }
 
-            return Task.FromResult<IClientRegistration>(null);
+            return null;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -42,7 +46,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             {
                 if (disposing)
                 {
-                    _listener.Dispose();
+                    _changeToken.Dispose();
                 }
 
                 _disposedValue = true;

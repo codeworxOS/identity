@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration.Infrastructure;
 using Codeworx.Identity.Configuration.Model;
 using Codeworx.Identity.Cryptography;
@@ -9,29 +8,19 @@ namespace Codeworx.Identity.Configuration.Extensions
 {
     public static class CodeworxIdentityConfigurationInternalExtensions
     {
-        public static ClientRegistration ToRegistration(this ClientConfig config, IHashingProvider hashing, string id)
+        public static async Task<ClientRegistration> ToRegistration(this ClientConfig config, IUserService userService, IHashingProvider hashing, string id)
         {
             var urls = config.RedirectUris;
+            IUser user = null;
 
-            byte[] salt = null, hash = null;
-
-            if (!string.IsNullOrWhiteSpace(config.Secret))
+            if (config.Type == ClientType.ApiKey)
             {
-                salt = hashing.CrateSalt();
-                hash = hashing.Hash(config.Secret, salt);
-            }
+                user = await userService.GetUserByNameAsync(config.User).ConfigureAwait(false);
 
-            var flows = new HashSet<string>();
-
-            if (config.Type.HasFlag(ClientType.Web))
-            {
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.AuthorizationCode);
-            }
-            else if (config.Type.HasFlag(ClientType.Native) || config.Type.HasFlag(ClientType.UserAgent))
-            {
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.AuthorizationCode);
-                flows.Add(Codeworx.Identity.OAuth.Constants.ResponseType.Token);
-                flows.Add(Codeworx.Identity.OAuth.Constants.GrantType.Password);
+                if (user == null)
+                {
+                    throw new AuthenticationException($"The User provided for client {id} could not be found.");
+                }
             }
 
             ////else if (config.Type.HasFlag(ClientType.Backend))
@@ -41,22 +30,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             ////{
             ////}
 
-            return new ClientRegistration(id, hash, salt, new ISupportedFlow[] { new SupportedFlow(flows) }, config.TokenExpiration, urls);
-        }
-
-        private class SupportedFlow : ISupportedFlow
-        {
-            private HashSet<string> _flows;
-
-            public SupportedFlow(HashSet<string> flows)
-            {
-                _flows = flows;
-            }
-
-            public bool IsSupported(string flowKey)
-            {
-                return _flows.Contains(flowKey);
-            }
+            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, urls, user);
         }
     }
 }

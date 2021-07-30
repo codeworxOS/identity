@@ -45,6 +45,14 @@ function New-NugetPackages {
     .PARAMETER DoNotCleanOutput
     If set, the output folder is not cleand before build.
 
+    
+    .OUTPUTS
+    Major = The Major Version for the next build.
+    Minor = The Minor Version for the next build.
+    Build = The Build Version for the next build.
+    Release = The Release Version for the next build.
+    NugetVersion = The full NuGet Version String.
+
     #>
     [CmdletBinding()]
     param
@@ -104,7 +112,7 @@ function New-NugetPackages {
         $data = Get-Content $versionFile.FullName | ConvertFrom-Json
 
         if (Test-Path env:BUILD_PRERELEASE) {
-            $data = $data | Add-Member -NotePropertyMembers @{prerelease=$env:BUILD_PRERELEASE} -PassThru
+            $data = $data | Add-Member -NotePropertyMembers @{prerelease = $env:BUILD_PRERELEASE } -PassThru
         }
 
         $nextVersion = Get-NugetVersionInfo -NugetServerUrl $NugetServerUrl -Package $VersionPackage -Major $data.major -Minor $data.minor -BuildNumberPrefix $data.buildNumberPrefix -Prerelease $data.prerelease    
@@ -133,6 +141,8 @@ function New-NugetPackages {
                 Write-Error -Message $buildresult.Message
             }
         }
+
+        return $nextVersion
     }
 }
 
@@ -211,7 +221,7 @@ function Get-NugetVersionInfo {
     PROCESS {
        
         # Build our hash table that will be returned.
-        $result = @{}
+        $result = @{ }
         $result.Major = $Major
         $result.Minor = $Minor
         $result.Build = $BuildNumberPrefix * 1000
@@ -227,30 +237,26 @@ function Get-NugetVersionInfo {
             $lower = "$Major.$($Minor - 1).0"
         }
         
-        $searchUrl = "Packages()/?`$filter=Id eq '$Package' and Version gt '$lower' and Version lt '$upper'&`$select=Version&`$orderby=Version desc"
-        
-        $packageResponse = Invoke-WebRequest -Uri "$NugetServerUrl/$searchUrl" -UseBasicParsing
-        
-        $xDoc = [System.Xml.Linq.XDocument]::Parse($packageResponse.Content);
-        
-        $ns = [System.Xml.Linq.XNamespace]::Get("http://www.w3.org/2005/Atom")
-        $m = [System.Xml.Linq.XNamespace]::Get("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
-        $d = [System.Xml.Linq.XNamespace]::Get("http://schemas.microsoft.com/ado/2007/08/dataservices")
-        $versions = $xDoc.Descendants($ns + "entry") | Select-Object @{Name = "Uri"; Expression = {$_.Element($ns + "content").Attribute("src").Value}}, @{Name = "Version"; Expression = {$_.Element($m + "properties").Element($d + "Version").Value}} | 
-            Where-Object Version -Like "$Major.$Minor*"
-        
+
+        $packageResponse = Find-Package $Package -source $NugetServerUrl -MinimumVersion $lower -MaximumVersion $upper -AllowPrereleaseVersion -ErrorAction Ignore
+
+        $versions = $packageResponse | Select-Object -Property Version
+
         if ( (-Not $versions.Count -And $versions) -Or ($versions.Count -gt 0) ) {
         
             $tempFile = [System.IO.Path]::GetTempFileName();
             $tempPath = [System.IO.Path]::GetTempPath() + [System.Guid]::NewGuid().ToString("N");
         
             if (-Not $versions.Count) {
-                $latest = $versions;
+                $latest = $versions.Version;
             }
             else {
-                $latest = $versions[0];
+                $latest = $versions[0].Version;
             }
-            Invoke-WebRequest -Uri $latest.Uri -OutFile "$tempFile.zip"
+
+            $downloadUri = Get-NugetDownloadUri -Server $NugetServerUrl -Package $Package -Version $latest;
+
+            Invoke-WebRequest -Uri $downloadUri -OutFile "$tempFile.zip"
             Unzip "$tempFile.zip" "$tempPath"
             Remove-Item -Path "$tempFile.zip"
         
@@ -260,7 +266,7 @@ function Get-NugetVersionInfo {
         
             $result.Build = $fileVersion.Build + 1
         
-            $splitted = $latest.Version.Split(".")
+            $splitted = $latest.Split(".")
             if ($splitted[2] -Like "*-*") {
                 $result.Release = [int]::Parse($splitted[2].SubString(0, $splitted[2].IndexOf("-")))
             }
@@ -284,5 +290,70 @@ function Get-NugetVersionInfo {
     }
 }
 
+
+function Get-NugetDownloadUri {
+    <#
+	.SYNOPSIS
+	Creates The download Url for the NuGet Package.
+
+	.DESCRIPTION
+	Creates The download Url for the NuGet Package.
+
+	.PARAMETER NugetServerUrl
+	The Url of the Nuget v2 oData Api.
+
+	.PARAMETER Package
+	The Id of the NuGet Package to query.
+  
+	.PARAMETER Version
+    The Version Information
+
+    .OUTPUTS
+    the download uri
+    
+	.EXAMPLE
+    $downloadUri = Get-DownloadUri -Server $NugetServerUrl -Package $Package -Version $latest;
+
+    Invoke-WebRequest -Uri $downloadUri -OutFile "$tempFile.zip"
+
+    .NOTES
+	Name:   Get-DownloadUri
+	Author: Raphael Schwarz
+	Version: 1.0.0
+#>
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Position = 0, Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias("Server", "S")]
+        [string] $NugetServerUrl,
+
+        [parameter(Position = 1, Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias("P")]
+        [string] $Package,
+
+        [parameter(Position = 2, Mandatory = $false)]
+        [Alias("V")]
+        [string] $Version
+    )
+    BEGIN { }
+    END { }
+    PROCESS {
+    
+        $baseUrl = $NugetServerUrl
+
+        if ($NugetServerUrl -like '*/api/v3/index.json') {
+            $baseUrl = $NugetServerUrl.Substring(0, $NugetServerUrl.IndexOf('/api/v3/index.json'))
+            $baseUrl = "$baseUrl/api/v2"
+        }
+
+        return "$baseUrl/package/$Package/$Version"
+    }
+}
+
+
 Export-ModuleMember -Function Get-NugetVersionInfo
 Export-ModuleMember -Function New-NugetPackages
+Export-ModuleMember -Function Get-NugetDownloadUri

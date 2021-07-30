@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="{{base-href}}">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+    <title>401 Unauthenticated</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Kanit:200" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+    <style>
+        * {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        #unauthorized {
+            position: relative;
+            height: 100vh;
+        }
+
+            #unauthorized .unauthorized {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+            }
+
+        .unauthorized {
+            max-width: 767px;
+            width: 100%;
+            line-height: 1.4;
+            text-align: center;
+            padding: 15px;
+        }
+
+            .unauthorized .unauthorized-401 {
+                position: relative;
+                height: 220px;
+            }
+
+                .unauthorized .unauthorized-401 h1 {
+                    font-family: 'Kanit', sans-serif;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    -webkit-transform: translate(-50%, -50%);
+                    -ms-transform: translate(-50%, -50%);
+                    transform: translate(-50%, -50%);
+                    font-size: 186px;
+                    font-weight: 200;
+                    margin: 0px;
+                    background: linear-gradient(130deg, #ffa34f, #ff6f68);
+                    color: transparent;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    text-transform: uppercase;
+                }
+
+            .unauthorized h2 {
+                font-family: 'Kanit', sans-serif;
+                font-size: 33px;
+                font-weight: 200;
+                text-transform: uppercase;
+                margin-top: 0px;
+                margin-bottom: 25px;
+                letter-spacing: 3px;
+            }
+
+
+            .unauthorized p {
+                font-family: 'Kanit', sans-serif;
+                font-size: 16px;
+                font-weight: 200;
+                margin-top: 0px;
+                margin-bottom: 25px;
+            }
+
+
+            .unauthorized a {
+                font-family: 'Kanit', sans-serif;
+                color: #ff6f68;
+                font-weight: 200;
+                text-decoration: none;
+                border-bottom: 1px dashed #ff6f68;
+                border-radius: 2px;
+            }
+
+
+        @media only screen and (max-width: 480px) {
+            .unauthorized .unauthorized-401 {
+                position: relative;
+                height: 168px;
+            }
+
+                .unauthorized .unauthorized-401 h1 {
+                    font-size: 142px;
+                }
+
+            .unauthorized h2 {
+                font-size: 22px;
+            }
+        }
+        
+        @media all\0 {
+            .unauthorized .unauthorized-401 h1 {
+                background: none;
+                color: #ff6f68;
+            }
+        } 
+
+        @media all and (monochrome:0) {
+            .unauthorized .unauthorized-401 h1 {
+                background: none;
+                color: #ff6f68;
+            }
+        } 
+
+        @media all and (-ms-high-contrast:none) {
+            .unauthorized .unauthorized-401 h1 {
+                background: none;
+                color: #ff6f68;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="unauthorized">
+        <div class="unauthorized">
+            <div class="unauthorized-401">
+                <h1>401</h1>
+            </div>
+            <h2>Oops! you could not be authenticated</h2>
+            <p>This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled. <a href="{{ReturnUrl}}">Return to Login</a></p>
+        </div>
+    </div>
+
+</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+
+</html>

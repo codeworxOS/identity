@@ -2,7 +2,7 @@
 using Codeworx.Identity;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Configuration.Internal;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,18 +15,17 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServiceBuilder Provider<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IExternalLoginProvider
+        public static IIdentityServiceBuilder LoginRegistrations<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, ILoginRegistrationProvider
         {
-            if (factory == null)
-            {
-                builder.ServiceCollection.AddScoped<IExternalLoginProvider, TImplementation>();
-            }
-            else
-            {
-                builder.ServiceCollection.AddScoped<IExternalLoginProvider, TImplementation>(factory);
-            }
+            builder.Register<ILoginRegistrationProvider, TImplementation>(lifetime, factory);
 
+            return builder;
+        }
+
+        public static IIdentityServiceBuilder ReplaceService(this IIdentityServiceBuilder builder, Type serviceType, Type implementationType, ServiceLifetime lifeTime)
+        {
+            builder.Register(serviceType, implementationType, lifeTime);
             return builder;
         }
 
@@ -46,17 +45,24 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        public static IIdentityServiceBuilder UserProvider<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
+        public static IIdentityServiceBuilder Users<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
             where TImplementation : class, IUserService
         {
-            builder.RegisterScoped<IUserService, TImplementation>(factory);
+            builder.Register<IUserService, TImplementation>(lifetime, factory);
             return builder;
         }
 
-        public static IIdentityServiceBuilder View<TImplementation>(this IIdentityServiceBuilder builder, Func<IServiceProvider, TImplementation> factory = null)
-            where TImplementation : class, IViewTemplate
+        public static IIdentityServiceBuilder Tenants<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, ITenantService
         {
-            builder.RegisterSingleton<IViewTemplate, TImplementation>(factory);
+            builder.Register<ITenantService, TImplementation>(lifetime, factory);
+            return builder;
+        }
+
+        public static IIdentityServiceBuilder Clients<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, IClientService
+        {
+            builder.Register<IClientService, TImplementation>(lifetime, factory);
             return builder;
         }
     }

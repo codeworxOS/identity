@@ -8,8 +8,8 @@
 
         string Name { get; }
 
-        byte[] PasswordHash { get; }
+        string PasswordHash { get; }
 
-        byte[] PasswordSalt { get; }
+        bool ForceChangePassword { get; }
     }
 }

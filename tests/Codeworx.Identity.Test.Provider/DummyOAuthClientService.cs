@@ -14,12 +14,12 @@ namespace Codeworx.Identity.Test
 
         public DummyOAuthClientService(IHashingProvider hashingProvider)
         {
-            var salt = hashingProvider.CrateSalt();
-            var hash = hashingProvider.Hash("clientSecret", salt);
+            var hashValue = hashingProvider.Create("clientSecret");
 
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hash, salt),
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new ServiceAccountClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
         }
@@ -34,72 +34,79 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
         }
 
-        private class AuthorizationCodeSupportedFlow : ISupportedFlow
-        {
-            public bool IsSupported(string flowKey)
-            {
-                return flowKey == OAuth.Constants.ResponseType.Code || flowKey == OAuth.Constants.GrantType.AuthorizationCode;
-            }
-        }
 
         private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
         {
-            public DummyOAuthAuthorizationCodeClientRegistration(byte[] clientSecretHash, byte[] clientSecretSalt)
+            public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
             {
-                this.ClientSecretHash = clientSecretHash;
-                this.ClientSecretSalt = clientSecretSalt;
+                this.ClientSecretHash = hashValue;
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
-                this.SupportedFlow = ImmutableList.Create(new AuthorizationCodeSupportedFlow());
+                this.ClientType = ClientType.Web;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
             public string ClientId => Constants.DefaultCodeFlowClientId;
 
-            public byte[] ClientSecretHash { get; }
-
-            public byte[] ClientSecretSalt { get; }
-
             public Uri DefaultRedirectUri { get; }
-
-            public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
-
+            public string ClientSecretHash { get; }
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
         {
             public DummyOAuthAuthorizationTokenClientRegistration()
             {
-                this.SupportedFlow = ImmutableList.Create(new TokenSupportedFlow());
+                this.ClientType = ClientType.UserAgent;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
             public string ClientId => Constants.DefaultTokenFlowClientId;
 
-            public byte[] ClientSecretHash => null;
-
-            public byte[] ClientSecretSalt => null;
+            public string ClientSecretHash => null;
 
             public Uri DefaultRedirectUri { get; }
-
-            public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
 
             public TimeSpan TokenExpiration { get; }
 
             public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
         }
 
-        private class TokenSupportedFlow : ISupportedFlow
+        private class ServiceAccountClientRegistration : IClientRegistration
         {
-            public bool IsSupported(string flowKey)
+            public ServiceAccountClientRegistration(string hashValue)
             {
-                return flowKey == OAuth.Constants.ResponseType.Token;
+                this.ClientType = ClientType.ApiKey;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.ClientSecretHash = hashValue;
             }
+
+            public string ClientId => Constants.DefaultServiceAccountClientId;
+
+            public string ClientSecretHash { get; }
+
+            public Uri DefaultRedirectUri { get; }
+
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => new DummyUserService.DummyUser();
         }
     }
 }

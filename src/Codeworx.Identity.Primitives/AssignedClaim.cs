@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Runtime.Serialization;
 
 namespace Codeworx.Identity
 {
+    [DataContract]
     public class AssignedClaim
     {
-        ////public AssignedClaim(string type, string value, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
-        ////    : this(type, new[] { value }, target, source)
-        ////{
-        ////}
-
-        public AssignedClaim(string type, IEnumerable<string> values, ClaimTarget target = ClaimTarget.AccessToken, AssignmentSource source = AssignmentSource.System)
+        public AssignedClaim(IEnumerable<string> type, IEnumerable<string> values, ClaimTarget target = ClaimTarget.AccessToken)
         {
             Target = target;
-            Source = source;
-            Type = type;
+            Type = ImmutableList.CreateRange(type);
             Values = ImmutableList.CreateRange(values);
         }
 
@@ -30,12 +26,23 @@ namespace Codeworx.Identity
             TenantUser = User | Tenant,
         }
 
-        public AssignmentSource Source { get; }
-
+        [DataMember(Order = 2, Name = "target")]
         public ClaimTarget Target { get; }
 
-        public string Type { get; }
+        [DataMember(Order = 3, Name = "type")]
+        public IEnumerable<string> Type { get; }
 
+        [DataMember(Order = 4, Name = "values")]
         public IEnumerable<string> Values { get; }
+
+        public static AssignedClaim Create(string type, string value, ClaimTarget target = ClaimTarget.AllTokens)
+        {
+            return new AssignedClaim(new[] { type }, new[] { value }, target);
+        }
+
+        public static AssignedClaim Create(string type, IEnumerable<string> value, ClaimTarget target = ClaimTarget.AllTokens)
+        {
+            return new AssignedClaim(new[] { type }, value, target);
+        }
     }
 }

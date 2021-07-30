@@ -4,16 +4,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class RightHolder
+    public abstract class RightHolder
     {
         public RightHolder()
         {
-            this.MemberOf = new HashSet<UserRole>();
+            this.MemberOf = new HashSet<RightHolderGroup>();
+            this.Providers = new HashSet<AuthenticationProviderRightHolder>();
         }
 
         public Guid Id { get; set; }
 
-        public ICollection<UserRole> MemberOf { get; }
+        public ICollection<RightHolderGroup> MemberOf { get; }
+
+        public ICollection<AuthenticationProviderRightHolder> Providers { get; }
 
         [StringLength(500)]
         [Required]

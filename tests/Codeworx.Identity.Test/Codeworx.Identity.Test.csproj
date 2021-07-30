@@ -1,20 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0;</TargetFrameworks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
+    <EfVersion>2</EfVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <EfVersion>3</EfVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <EfVersion>5</EfVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-    <PackageReference Include="Moq" Version="4.10.1" />
-    <PackageReference Include="xunit" Version="2.2.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  <ItemGroup Condition="'$(EfVersion)' == '2'">
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EfVersion)' == '3'">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EfVersion)' == '5'">
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="nunit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,5 +46,9 @@
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Cryptography\Converter\" />
   </ItemGroup>
 </Project>

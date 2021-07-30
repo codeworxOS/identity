@@ -7,7 +7,7 @@ namespace Codeworx.Identity.Validation
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var validationResult = new ValidationResult($"{OAuth.Constants.RedirectUriName} not URI or relative.", new[] { validationContext.MemberName });
+            var validationResult = new ValidationResult($"{Constants.OAuth.RedirectUriName} not URI or relative.", new[] { validationContext.MemberName });
 
             if (value is string uriString)
             {

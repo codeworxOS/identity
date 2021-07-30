@@ -8,28 +8,34 @@ namespace Codeworx.Identity.Configuration.Model
 {
     public class ClientRegistration : IClientRegistration
     {
-        public ClientRegistration(string clientId, byte[] clientSecretHash, byte[] clientSecretSalt, IEnumerable<ISupportedFlow> supportedFlow, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls)
+        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls = null, IUser user = null)
         {
             ClientId = clientId;
             ClientSecretHash = clientSecretHash;
-            ClientSecretSalt = clientSecretSalt;
-            SupportedFlow = supportedFlow.ToImmutableList();
+            ClientType = clientType;
             TokenExpiration = tokenExpiration;
-            ValidRedirectUrls = validRedirectUrls.Select(p => new Uri(p)).ToImmutableList();
+            if (validRedirectUrls != null)
+            {
+                ValidRedirectUrls = validRedirectUrls.Select(p => new Uri(p)).ToImmutableList();
+            }
+            else
+            {
+                ValidRedirectUrls = ImmutableList.Create<Uri>();
+            }
+
+            User = user;
         }
 
         public string ClientId { get; }
 
-        public byte[] ClientSecretHash { get; }
-
-        public byte[] ClientSecretSalt { get; }
-
-        public Uri DefaultRedirectUri => ValidRedirectUrls.FirstOrDefault();
-
-        public IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
+        public string ClientSecretHash { get; }
 
         public TimeSpan TokenExpiration { get; }
 
         public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+        public ClientType ClientType { get; }
+
+        public IUser User { get; }
     }
 }

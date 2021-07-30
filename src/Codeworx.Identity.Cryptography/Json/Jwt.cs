@@ -6,13 +6,13 @@ using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Codeworx.Identity.Cryptography.Json
 {
     public class Jwt : IToken
     {
         private readonly JwtConfiguration _configuration;
-        private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
         private readonly JsonWebTokenHandler _handler;
         private readonly SecurityKey _signingKey;
         private TimeSpan _expiration;
@@ -20,9 +20,8 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public Jwt(IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
-            _defaultSigningKeyProvider = defaultSigningKeyProvider;
             _configuration = configuration;
-            _signingKey = _defaultSigningKeyProvider.GetKey();
+            _signingKey = defaultSigningKeyProvider.GetKey();
 
             _handler = new JsonWebTokenHandler();
         }
@@ -36,37 +35,42 @@ namespace Codeworx.Identity.Cryptography.Json
         {
             if (!_handler.CanReadToken(value))
             {
-                throw new ArgumentException($"Parameter {nameof(value)} is not a valid token.");
+                throw new SecurityTokenException($"Parameter {nameof(value)} is not a valid token.");
             }
 
             var token = _handler.ReadJsonWebToken(value);
-
             var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
 
-            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode);
+            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode, new ArraySubObjectConverter());
 
             await Task.CompletedTask;
         }
 
         public Task<string> SerializeAsync()
         {
+            _payload.TryGetValue(Constants.Claims.Issuer, out var issuer);
+            _payload.TryGetValue(Constants.Claims.Audience, out var audience);
+
             var descriptor = new SecurityTokenDescriptor
             {
-                SigningCredentials = GetSigningCredentials(),
+                Issuer = issuer?.ToString(),
+                Audience = audience?.ToString(),
                 Claims = _payload,
-                Expires = DateTime.Now + _expiration,
-                IssuedAt = DateTime.Now
+                Expires = DateTime.UtcNow + _expiration,
+                IssuedAt = DateTime.UtcNow,
+                NotBefore = DateTime.UtcNow,
+                SigningCredentials = GetSigningCredentials(),
             };
 
             return Task.FromResult(_handler.CreateToken(descriptor));
         }
 
-        public async Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
+        public Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
         {
-            await Task.CompletedTask;
-
             _payload = data;
             _expiration = expiration;
+
+            return Task.CompletedTask;
         }
 
         public Task<bool> ValidateAsync()
@@ -142,6 +146,39 @@ namespace Codeworx.Identity.Cryptography.Json
             }
 
             return new SigningCredentials(_signingKey, algorithm);
+        }
+
+        private class ArraySubObjectConverter : JsonConverter
+        {
+            public override bool CanWrite => false;
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(object);
+            }
+
+            public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                switch (reader.TokenType)
+                {
+                    case Newtonsoft.Json.JsonToken.StartArray:
+                        return JToken.Load(reader).ToObject<List<object>>();
+                    case Newtonsoft.Json.JsonToken.StartObject:
+                        return JToken.Load(reader).ToObject<ConcurrentDictionary<string, object>>();
+                    default:
+                        if (reader.ValueType == null && reader.TokenType != Newtonsoft.Json.JsonToken.Null)
+                        {
+                            throw new NotImplementedException("Token not supported!");
+                        }
+
+                        return reader.Value;
+                }
+            }
+
+            public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException("Read Only Converter.");
+            }
         }
     }
 }

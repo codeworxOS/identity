@@ -1,4 +1,5 @@
 ﻿using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.Test
 {
@@ -7,7 +8,7 @@ namespace Codeworx.Identity.Test
         private string _clientId = "SomeClientId";
         private string _redirectUri = "http://example.org/redirect";
         private string _code = "SomeAuthorizationCode";
-        private string _grantType = OAuth.Constants.GrantType.AuthorizationCode;
+        private string _grantType = Constants.OAuth.GrantType.AuthorizationCode;
         private string _clientSecret = string.Empty;
 
         public AuthorizationCodeTokenRequestBuilder WithClientId(string value)
@@ -47,7 +48,7 @@ namespace Codeworx.Identity.Test
 
         public AuthorizationCodeTokenRequest Build()
         {
-            return new AuthorizationCodeTokenRequest(_clientId, _redirectUri, _code, _grantType, _clientSecret);
+            return new AuthorizationCodeTokenRequest(_clientId, _redirectUri, _code, _clientSecret);
         }
     }
 }

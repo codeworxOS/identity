@@ -1,19 +1,18 @@
-﻿using Codeworx.Identity.OAuth;
+﻿using System;
+using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.Test
 {
     public class TokenRequestBuilder
     {
-        private class MockTokenRequest : TokenRequest
-        {
-            public MockTokenRequest(string clientId, string redirectUri, string grantType, string clientSecret)
-                : base(clientId, redirectUri, grantType, clientSecret) { }
-        }
-
         private string _clientId = "SomeClientId";
-        private string _redirectUri = "http://example.org/redirect";
-        private string _grantType = OAuth.Constants.GrantType.AuthorizationCode;
-        private string _clientSecret = string.Empty;
+        private string _grantType = Constants.OAuth.GrantType.AuthorizationCode;
+        private string _clientSecret = null;
+        private string _scopes = null;
+        private string _redirectUrl = null;
+        private string _code = null;
+        private string _refreshCode = null;
 
         public TokenRequestBuilder WithClientId(string value)
         {
@@ -22,16 +21,37 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
-        public TokenRequestBuilder WithRedirectUri(string value)
+        public TokenRequestBuilder WithGrantType(string value)
         {
-            _redirectUri = value;
+            _grantType = value;
 
             return this;
         }
 
-        public TokenRequestBuilder WithGrantType(string value)
+        public TokenRequestBuilder WithScopes(string value)
         {
-            _grantType = value;
+            _scopes = value;
+
+            return this;
+        }
+
+        public TokenRequestBuilder WithCode(string value)
+        {
+            _code = value;
+
+            return this;
+        }
+
+        public TokenRequestBuilder WithRefreshCode(string value)
+        {
+            _refreshCode = value;
+
+            return this;
+        }
+
+        public TokenRequestBuilder WithRedirectUri(string uri)
+        {
+            _redirectUrl = uri;
 
             return this;
         }
@@ -45,7 +65,21 @@ namespace Codeworx.Identity.Test
 
         public TokenRequest Build()
         {
-            return new MockTokenRequest(_clientId, _redirectUri, _grantType, _clientSecret);
+            if (_grantType == Constants.OAuth.GrantType.AuthorizationCode)
+            {
+                return new AuthorizationCodeTokenRequest(_clientId, _redirectUrl, _code, _clientSecret);
+            }
+            else if (_grantType == Constants.OAuth.GrantType.ClientCredentials)
+            {
+                return new ClientCredentialsTokenRequest(_clientId, _clientSecret, _scopes);
+            }
+            else if (_grantType == Constants.OAuth.GrantType.RefreshToken)
+            {
+                return new RefreshTokenRequest(_clientId, _clientSecret, _refreshCode, _scopes);
+            }
+
+            throw new NotSupportedException("Grant type not supported!");
+
         }
     }
 }

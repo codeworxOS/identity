@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
@@ -21,29 +21,15 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
         public override async Task BindAsync(SignInResponse responseData, HttpResponse response)
         {
-            var principal = responseData.Identity.ToClaimsPrincipal();
+            var principal = new ClaimsPrincipal(responseData.Identity);
 
             var returnUrl = responseData.ReturnUrl;
 
-            if (responseData.Identity.TenantKey != null)
-            {
-                await response.HttpContext.SignInAsync(_options.AuthenticationScheme, principal);
-            }
-            else
-            {
-                var authProperties = new AuthenticationProperties();
-                authProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(5);
-                await response.HttpContext.SignInAsync(_options.MissingTenantAuthenticationScheme, principal);
-
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri);
-                builder.AppendPath($"{_options.AccountEndpoint}/login");
-                builder.AppendQueryPart(Constants.ReturnUrlParameter, returnUrl);
-                returnUrl = builder.ToString();
-            }
+            await response.HttpContext.SignInAsync(_options.AuthenticationScheme, principal);
 
             if (returnUrl == null)
             {
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri);
+                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                 builder.AppendPath($"{_options.AccountEndpoint}/login");
                 returnUrl = builder.ToString();
             }

@@ -1,229 +1,197 @@
-﻿using System.Collections.Generic;
-using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.OAuth.Binding.AuthorizationCodeToken;
-using Xunit;
-
-namespace Codeworx.Identity.Test.AspNetCore.OAuth
+﻿namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
     public class AuthorizationCodeTokenRequestBinderTests
     {
-        private readonly Dictionary<string, IReadOnlyCollection<string>> _query = new Dictionary<string, IReadOnlyCollection<string>>
-                                                                                  {
-                                                                                      {Identity.OAuth.Constants.ClientIdName, new[] {"SomeId"}},
-                                                                                      {Identity.OAuth.Constants.RedirectUriName, new[] {"http://example.org/redirect"}},
-                                                                                      {Identity.OAuth.Constants.GrantTypeName, new[] {Identity.OAuth.Constants.GrantType.AuthorizationCode}},
-                                                                                      {Identity.OAuth.Constants.CodeName, new[] {"Some_auth_code"}},
-                                                                                      {Identity.OAuth.Constants.ClientSecretValidation, new[] {"someClientSecret"}}
-                                                                                  };
+        // TODO Rewrite with TestHost.
 
-        [Fact]
-        public void FromQuery_NullQuery_ReturnsBoundObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////private readonly Dictionary<string, IReadOnlyCollection<string>> _query = new Dictionary<string, IReadOnlyCollection<string>>
+        ////                                                                          {
+        ////                                                                              {Constants.OAuth.ClientIdName, new[] {"SomeId"}},
+        ////                                                                              {Constants.OAuth.RedirectUriName, new[] {"http://example.org/redirect"}},
+        ////                                                                              {Constants.OAuth.GrantTypeName, new[] {Constants.OAuth.GrantType.AuthorizationCode}},
+        ////                                                                              {Constants.OAuth.CodeName, new[] {"Some_auth_code"}},
+        ////                                                                              {Constants.OAuth.ClientSecretValidation, new[] {"someClientSecret"}}
+        ////                                                                          };
 
-            var request = instance.FromQuery(null);
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////[Test]
+        ////public Task FromQuery_ClientIdentifierDuplicated_ReturnsErrorObject()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-        [Fact]
-        public void FromQuery_EmptyQuery_ReturnsBoundObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    _query[Constants.OAuth.ClientIdName] = new[] { "id1", "id2" };
 
-            var request = instance.FromQuery(new Dictionary<string, IReadOnlyCollection<string>>());
+        ////    var result = await instance.BindAsync(new Microsoft.AspNetCore.Http.HttpRequest)
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    Assert.IsType<ClientIdDuplicatedResult>(result);
+        ////}
 
-        [Fact]
-        public void FromQuery_ValidQuery_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////[Test]
+        ////public void FromQuery_RedirectUriDuplicated_ReturnsErrorObject()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.RedirectUriName] = new[] { "http://redirect1", "http://redirect2" };
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var result = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_ClientIdentifierDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<RedirectUriDuplicatedResult>(result);
+        ////}
 
-            _query[Identity.OAuth.Constants.ClientIdName] = new[] { "id1", "id2" };
+        ////[Test]
+        ////public void FromQuery_GrantTypeDuplicated_ReturnsErrorObject()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var result = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.GrantTypeName] = new[] { "type1", "type2" };
 
-            Assert.IsType<ClientIdDuplicatedResult>(result);
-        }
+        ////    var result = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_RedirectUriDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<GrantTypeDuplicatedResult>(result);
+        ////}
 
-            _query[Identity.OAuth.Constants.RedirectUriName] = new[] { "http://redirect1", "http://redirect2" };
+        ////[Test]
+        ////public void FromQuery_CodeDuplicated_ReturnsErrorObject()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var result = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.CodeName] = new[] { "code1", "code2" };
 
-            Assert.IsType<RedirectUriDuplicatedResult>(result);
-        }
+        ////    var result = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_GrantTypeDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<CodeDuplicatedResult>(result);
+        ////}
 
-            _query[Identity.OAuth.Constants.GrantTypeName] = new[] { "type1", "type2" };
+        ////[Test]
+        ////public void FromQuery_ClientSecretDuplicated_ReturnsErrorObject()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var result = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.ClientSecretName] = new[] { "secret1", "secret2" };
 
-            Assert.IsType<GrantTypeDuplicatedResult>(result);
-        }
+        ////    var result = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_CodeDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<ClientSecretDuplicatedResult>(result);
+        ////}
 
-            _query[Identity.OAuth.Constants.CodeName] = new[] { "code1", "code2" };
+        ////[Test]
+        ////public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var result = instance.FromQuery(_query);
+        ////    _query.Remove(Constants.OAuth.ClientIdName);
 
-            Assert.IsType<CodeDuplicatedResult>(result);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_ClientSecretDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query[Identity.OAuth.Constants.ClientSecretName] = new[] { "secret1", "secret2" };
+        ////[Test]
+        ////public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var result = instance.FromQuery(_query);
+        ////    _query.Remove(Constants.OAuth.RedirectUriName);
 
-            Assert.IsType<ClientSecretDuplicatedResult>(result);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query.Remove(Identity.OAuth.Constants.ClientIdName);
+        ////[Test]
+        ////public void FromQuery_GrantTypeNull_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query.Remove(Constants.OAuth.GrantTypeName);
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query.Remove(Identity.OAuth.Constants.RedirectUriName);
+        ////[Test]
+        ////public void FromQuery_CodeNull_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query.Remove(Constants.OAuth.CodeName);
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_GrantTypeNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query.Remove(Identity.OAuth.Constants.GrantTypeName);
+        ////[Test]
+        ////public void FromQuery_ClientSecretNull_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query.Remove(Constants.OAuth.ClientSecretName);
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_CodeNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query.Remove(Identity.OAuth.Constants.CodeName);
+        ////[Test]
+        ////public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.ClientIdName] = new string[0];
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_ClientSecretNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query.Remove(Identity.OAuth.Constants.ClientSecretName);
+        ////[Test]
+        ////public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.RedirectUriName] = new string[0];
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query[Identity.OAuth.Constants.ClientIdName] = new string[0];
+        ////[Test]
+        ////public void FromQuery_GrantTypeEmpty_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.GrantTypeName] = new string[0];
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query[Identity.OAuth.Constants.RedirectUriName] = new string[0];
+        ////[Test]
+        ////public void FromQuery_CodeEmpty_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.CodeName] = new string[0];
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_GrantTypeEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
 
-            _query[Identity.OAuth.Constants.GrantTypeName] = new string[0];
+        ////[Test]
+        ////public void FromQuery_ClientSecretEmpty_ReturnsBoundRequest()
+        ////{
+        ////    var instance = new AuthorizationCodeTokenRequestBinder();
 
-            var request = instance.FromQuery(_query);
+        ////    _query[Constants.OAuth.ClientSecretName] = new string[0];
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    var request = instance.FromQuery(_query);
 
-        [Fact]
-        public void FromQuery_CodeEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
-
-            _query[Identity.OAuth.Constants.CodeName] = new string[0];
-
-            var request = instance.FromQuery(_query);
-
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
-
-        [Fact]
-        public void FromQuery_ClientSecretEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationCodeTokenRequestBinder();
-
-            _query[Identity.OAuth.Constants.ClientSecretName] = new string[0];
-
-            var request = instance.FromQuery(_query);
-
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+        ////    Assert.IsType<SuccessfulBindingResult>(request);
+        ////}
     }
 }

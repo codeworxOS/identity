@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
-using Codeworx.Identity.ExternalLogin;
+﻿using System;
+using System.Threading.Tasks;
+using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
@@ -14,21 +16,35 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<SignInResponse> signInBinder, IExternalLoginService externalLogin)
+        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<LoginRedirectResponse> loginRedirectBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService loginService)
         {
+            WindowsLoginRequest windowsLoginRequest = null;
+
             try
             {
-                ////var requestType = await externalLogin.GetParameterTypeAsync(Constants.ExternalWindowsProviderId);
-                ////var binder = context.RequestServices.GetService(typeof(IRequestBinder<>).MakeGenericType(requestType));
-
-                var windowsLoginRequest = await requestBinder.BindAsync(context.Request);
-                var signInResonse = await externalLogin.SignInAsync(Constants.ExternalWindowsProviderId, windowsLoginRequest);
+                windowsLoginRequest = await requestBinder.BindAsync(context.Request);
+                var signInResonse = await loginService.SignInAsync(windowsLoginRequest.ProviderId, windowsLoginRequest);
                 await signInBinder.BindAsync(signInResonse, context.Response);
+            }
+            catch (AuthenticationException ex)
+            {
+                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, ex.Message, windowsLoginRequest.ReturnUrl);
+                await loginRedirectBinder.BindAsync(data, context.Response);
+            }
+            catch (LoginProviderNotFoundException)
+            {
+                var data = new LoginRedirectResponse(providerError: Constants.UnknownLoginProviderError, redirectUri: windowsLoginRequest.ReturnUrl);
+                await loginRedirectBinder.BindAsync(data, context.Response);
             }
             catch (ErrorResponseException error)
             {
                 var binder = context.GetResponseBinder(error.ResponseType);
                 await binder.BindAsync(error.Response, context.Response);
+            }
+            catch (Exception)
+            {
+                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, Constants.GenericLoginError, windowsLoginRequest.ReturnUrl);
+                await loginRedirectBinder.BindAsync(data, context.Response);
             }
         }
     }

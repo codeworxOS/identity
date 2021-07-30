@@ -1,51 +1,53 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
     public class AuthorizationMiddleware
     {
-        private readonly IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> _authorizationRequestBinder;
         private readonly RequestDelegate _next;
-        private readonly IEnumerable<IResponseBinder> _responseBinders;
 
-        public AuthorizationMiddleware(
-                                       RequestDelegate next,
-                                       IRequestBinder<AuthorizationRequest, AuthorizationErrorResponse> authorizationRequestBinder,
-                                       IEnumerable<IResponseBinder> responseBinders)
+        public AuthorizationMiddleware(RequestDelegate next)
         {
             _next = next;
-            _authorizationRequestBinder = authorizationRequestBinder;
-            _responseBinders = responseBinders;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService)
+        public async Task Invoke(
+            HttpContext context,
+            IAuthorizationService<AuthorizationRequest> authorizationService,
+            IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
+            IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder,
+            IOptionsSnapshot<IdentityOptions> options)
         {
-            if (context.User == null)
+            ClaimsIdentity claimsIdentity = null;
+
+            var schema = options.Value.AuthenticationScheme;
+
+            var authResponse = await context.AuthenticateAsync(schema);
+
+            if (authResponse.Succeeded)
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                return;
+                claimsIdentity = authResponse.Principal.Identity as ClaimsIdentity;
             }
 
-            var claimsIdentity = context.User.Identity as ClaimsIdentity;
-
-            var bindingResult = _authorizationRequestBinder.FromQuery(context.Request.Query.ToDictionary(p => p.Key, p => p.Value as IReadOnlyCollection<string>));
-
-            if (bindingResult.Error != null)
+            try
             {
-                var responseBinder = context.GetResponseBinder<AuthorizationErrorResponse>();
-                await responseBinder.BindAsync(bindingResult.Error, context.Response);
+                var authorizationRequest = await authorizationRequestBinder.BindAsync(context.Request)
+                                                                           .ConfigureAwait(false);
+
+                var result = await authorizationService.AuthorizeRequest(authorizationRequest, claimsIdentity).ConfigureAwait(false);
+
+                await authorizationSuccessResponseBinder.BindAsync(result, context.Response).ConfigureAwait(false);
             }
-            else if (bindingResult.Result != null)
+            catch (ErrorResponseException error)
             {
-                var result = await authorizationService.AuthorizeRequest(bindingResult.Result, claimsIdentity);
-
-                var responseBinder = context.GetResponseBinder(result.Response.GetType());
-                await responseBinder.BindAsync(result.Response, context.Response);
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
             }
         }
     }

@@ -1,230 +1,399 @@
-﻿using System.Collections.Generic;
-using Codeworx.Identity.AspNetCore.OAuth;
-using Codeworx.Identity.OAuth.Binding;
-using Codeworx.Identity.OAuth.Binding.Authorization;
-using Xunit;
+﻿// TODO fix
+////using System;
+////using System.Collections.Generic;
+////using System.Collections.ObjectModel;
+////using System.Linq;
+////using System.Threading.Tasks;
+////using Codeworx.Identity.AspNetCore.OAuth;
+////using Codeworx.Identity.OAuth;
+////using Microsoft.AspNetCore.Http;
+////using Microsoft.AspNetCore.Http.Internal;
+////using Microsoft.Extensions.Primitives;
+////using NUnit.Framework;
+
+////namespace Codeworx.Identity.Test.AspNetCore.OAuth
+////{
+////    public class AuthorizationRequestBinderTests
+////    {
+////        private static readonly ReadOnlyDictionary<string, IReadOnlyCollection<string>> _values = new ReadOnlyDictionary<string, IReadOnlyCollection<string>>(new Dictionary<string, IReadOnlyCollection<string>>
+////                                                                                                                                                              {
+////                                                                                                                                                                  {Constants.OAuth.ClientIdName, new[] {"SomeId"}},
+////                                                                                                                                                                  {Constants.OAuth.RedirectUriName, new[] {"http://example.org/redirect"}},
+////                                                                                                                                                                  {Constants.OAuth.ResponseTypeName, new[] {Constants.OAuth.ResponseType.Code}},
+////                                                                                                                                                                  {Constants.OAuth.ScopeName, new[] {"scope1 scope2"}},
+////                                                                                                                                                                  {Constants.OAuth.StateName, new[] {"SomeState"}},
+////                                                                                                                                                                  {Constants.OAuth.NonceName, new[] {"abc"}}
+////                                                                                                                                                              });
+
+////        private static IEnumerable<object[]> EmptyData()
+////        {
+////            yield return new object[]
+////                         {
+////                             new DefaultHttpRequest(new DefaultHttpContext())
+////                             {
+////                                 Query = new QueryCollection(new Dictionary<string, StringValues>())
+////                             }
+////                         };
+
+////            yield return new object[]
+////                         {
+////                             new DefaultHttpRequest(new DefaultHttpContext())
+////                             {
+////                                 Form = new FormCollection(new Dictionary<string, StringValues>())
+////                             }
+////                         };
+////        }
+
+////        private static IEnumerable<object[]> GenerateRequests(IDictionary<string, IReadOnlyCollection<string>> values)
+////        {
+////            yield return new object[]
+////                         {
+////                             new DefaultHttpRequest(new DefaultHttpContext())
+////                             {
+////                                 Query = new QueryCollection(values.ToDictionary(p => p.Key, p => new StringValues(p.Value.ToArray())))
+////                             }
+////                         };
+
+////            yield return new object[]
+////                         {
+////                             new DefaultHttpRequest(new DefaultHttpContext())
+////                             {
+////                                 Form = new FormCollection(values.ToDictionary(p => p.Key, p => new StringValues(p.Value.ToArray())))
+////                             }
+////                         };
+////        }
+        
+////        private static IEnumerable<object[]> ValidData()
+////        {
+////            return GenerateRequests(_values);
+////        }
+
+////        private static IEnumerable<object[]> ClientIdentifierDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.ClientIdName] = new[] {"id1", "id2"};
+
+////            return GenerateRequests(values);
+////        }
+
+////        private static IEnumerable<object[]> RedirectUriDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.RedirectUriName] = new[] {"http://redirect1", "http://redirect2"};
+
+////            return GenerateRequests(values);
+////        }
+
+////        private static IEnumerable<object[]> ResponseTypeDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.ResponseTypeName] = new[] {"type1", "type2"};
+
+////            return GenerateRequests(values);
+////        }
+
+////        private static IEnumerable<object[]> ScopeDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.ScopeName] = new[] {"scope1", "scope2"};
+
+////            return GenerateRequests(values);
+////        }
+
+////        private static IEnumerable<object[]> StateDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.StateName] = new[] {"state1", "state2"};
 
-namespace Codeworx.Identity.Test.AspNetCore.OAuth
-{
-    public class AuthorizationRequestBinderTests
-    {
-        private readonly Dictionary<string, IReadOnlyCollection<string>> _query = new Dictionary<string, IReadOnlyCollection<string>>
-                                                                                  {
-                                                                                      {Identity.OAuth.Constants.ClientIdName, new[] {"SomeId"}},
-                                                                                      {Identity.OAuth.Constants.RedirectUriName, new[] {"http://example.org/redirect"}},
-                                                                                      {Identity.OAuth.Constants.ResponseTypeName, new[] {Identity.OAuth.Constants.ResponseType.Code}},
-                                                                                      {Identity.OAuth.Constants.ScopeName, new[] {"scope1 scope2"}},
-                                                                                      {Identity.OAuth.Constants.StateName, new[] {"SomeState"}}
-                                                                                  };
+////            return GenerateRequests(values);
+////        }
 
-        [Fact]
-        public void FromQuery_NullQuery_ReturnsBoundObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        private static IEnumerable<object[]> NonceDuplicated()
+////        {
+////            var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////            values[Constants.OAuth.NonceName] = new[] {"nonce1", "nonce2"};
 
-            var request = instance.FromQuery(null);
+////            return GenerateRequests(values);
+////        }
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        [Test]
+////        public async Task BindAsync_NullRequest_ThrowsException()
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_EmptyQuery_ReturnsBoundObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////            await Assert.ThrowsAsync<ArgumentNullException>(() => instance.BindAsync(null));
+////        }
+
+////        [Theory]
+////        [MemberData(nameof(EmptyData))]
+////        public async Task BindAsync_EmptyData_ReturnsBoundObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
+
+////            var bindingResult = await instance.BindAsync(request);
+
+////            Assert.NotNull(bindingResult);
+////        }
+
+////        [Theory]
+////        [MemberData(nameof(ValidData))]
+////        public async Task BindAsync_ValidData_ReturnsBoundRequest(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
+
+////            var bindingResult = await instance.BindAsync(request);
+
+////            Assert.AreEqual(_values[Constants.OAuth.ClientIdName].First(), bindingResult.ClientId);
+////            Assert.AreEqual(_values[Constants.OAuth.RedirectUriName].First(), bindingResult.RedirectUri);
+////            Assert.AreEqual(_values[Constants.OAuth.ResponseTypeName].First(), bindingResult.ResponseType);
+////            Assert.AreEqual(_values[Constants.OAuth.ScopeName].First(), bindingResult.Scope);
+////            Assert.AreEqual(_values[Constants.OAuth.StateName].First(), bindingResult.State);
+////            Assert.AreEqual(_values[Constants.OAuth.NonceName].First(), bindingResult.Nonce);
+////        }
+
+////        [Theory]
+////        [MemberData(nameof(ClientIdentifierDuplicated))]
+////        public async Task BindAsync_ClientIdentifierDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
+
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
+
+////            Assert.AreEqual(Constants.OAuth.ClientIdName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
+
+////        [Theory]
+////        [MemberData(nameof(RedirectUriDuplicated))]
+////        public async Task BindAsync_RedirectUriDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
+
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
+
+////            Assert.AreEqual(Constants.OAuth.RedirectUriName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
+
+////        [Theory]
+////        [MemberData(nameof(ResponseTypeDuplicated))]
+////        public async Task BindAsync_ResponseTypeDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-            var request = instance.FromQuery(new Dictionary<string, IReadOnlyCollection<string>>());
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
+
+////            Assert.AreEqual(Constants.OAuth.ResponseTypeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        [Theory]
+////        [MemberData(nameof(ScopeDuplicated))]
+////        public async Task BindAsync_ScopeDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ValidQuery_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            var request = instance.FromQuery(_query);
+////            Assert.AreEqual(Constants.OAuth.ScopeName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        [Theory]
+////        [MemberData(nameof(StateDuplicated))]
+////        public async Task BindAsync_StateDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ClientIdentifierDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-            _query[Identity.OAuth.Constants.ClientIdName] = new[] { "id1", "id2" };
+////            Assert.AreEqual(Constants.OAuth.StateName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
 
-            var result = instance.FromQuery(_query);
+////        [Theory]
+////        [MemberData(nameof(NonceDuplicated))]
+////        public async Task BindAsync_NonceDuplicated_ReturnsErrorObject(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-            Assert.IsType<ClientIdDuplicatedResult>(result);
-        }
+////            var exception = await Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(() => instance.BindAsync(request));
 
-        [Fact]
-        public void FromQuery_RedirectUriDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////            Assert.AreEqual(Constants.OAuth.NonceName, ((AuthorizationErrorResponse) exception.Response).ErrorDescription);
+////        }
 
-            _query[Identity.OAuth.Constants.RedirectUriName] = new[] { "http://redirect1", "http://redirect2" };
+////        public static IEnumerable<object[]> SingleFieldNull()
+////        {
+////            var fields = new[]
+////                         {
+////                             Constants.OAuth.ClientIdName,
+////                             Constants.OAuth.RedirectUriName,
+////                             Constants.OAuth.ResponseTypeName,
+////                             Constants.OAuth.ScopeName,
+////                             Constants.OAuth.StateName,
+////                             Constants.OAuth.NonceName
+////                         };
 
-            var result = instance.FromQuery(_query);
+////            foreach (var field in fields)
+////            {
+////                var values = _values.ToDictionary(p => p.Key, p => p.Value);
+////                values.Remove(field);
 
-            Assert.IsType<RedirectUriDuplicatedResult>(result);
-        }
+////                foreach (var request in GenerateRequests(values))
+////                {
+////                    yield return request;
+////                }
+////            }
+////        }
 
-        [Fact]
-        public void FromQuery_ResponseTypeDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        [Theory]
+////        [MemberData(nameof(SingleFieldNull))]
+////        public async Task BindAsync_SingleFieldNull_ReturnsBoundRequest(HttpRequest request)
+////        {
+////            var instance = new AuthorizationRequestBinder();
 
-            _query[Identity.OAuth.Constants.ResponseTypeName] = new[] { "type1", "type2" };
+////            var result = await instance.BindAsync(request);
 
-            var result = instance.FromQuery(_query);
+////            Assert.NotNull(result);
+////        }
 
-            Assert.IsType<ResponseTypeDuplicatedResult>(result);
-        }
+////        //[Test]
+////        //public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ScopeDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.ClientIdName);
 
-            _query[Identity.OAuth.Constants.ScopeName] = new[] { "scope1", "scope2" };
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var result = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<ScopeDuplicatedResult>(result);
-        }
+////        //[Test]
+////        //public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_StateDuplicated_ReturnsErrorObject()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.RedirectUriName);
 
-            _query[Identity.OAuth.Constants.StateName] = new[] { "state1", "state2" };
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var result = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<StateDuplicatedResult>(result);
-        }
+////        //[Test]
+////        //public void FromQuery_ResponseTypeNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ClientIdentifierNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.ResponseTypeName);
 
-            _query.Remove(Identity.OAuth.Constants.ClientIdName);
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_ScopeNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_RedirectUriNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.ScopeName);
 
-            _query.Remove(Identity.OAuth.Constants.RedirectUriName);
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_StateNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ResponseTypeNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.StateName);
 
-            _query.Remove(Identity.OAuth.Constants.ResponseTypeName);
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_NonceNull_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ScopeNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values.Remove(Constants.OAuth.NonceName);
 
-            _query.Remove(Identity.OAuth.Constants.ScopeName);
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_StateNull_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.ClientIdName] = new string[0];
 
-            _query.Remove(Identity.OAuth.Constants.StateName);
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ClientIdentifierEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.RedirectUriName] = new string[0];
 
-            _query[Identity.OAuth.Constants.ClientIdName] = new string[0];
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_ResponseTypeEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_RedirectUriEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.ResponseTypeName] = new string[0];
 
-            _query[Identity.OAuth.Constants.RedirectUriName] = new string[0];
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_ScopeEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ResponseTypeEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.ScopeName] = new string[0];
 
-            _query[Identity.OAuth.Constants.ResponseTypeName] = new string[0];
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_StateEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_ScopeEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.StateName] = new string[0];
 
-            _query[Identity.OAuth.Constants.ScopeName] = new string[0];
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
 
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
+////        //[Test]
+////        //public void FromQuery_NonceEmpty_ReturnsBoundRequest()
+////        //{
+////        //    var instance = new AuthorizationRequestBinder();
 
-        [Fact]
-        public void FromQuery_StateEmpty_ReturnsBoundRequest()
-        {
-            var instance = new AuthorizationRequestBinder();
+////        //    _values[Constants.OAuth.NonceName] = new string[0];
 
-            _query[Identity.OAuth.Constants.StateName] = new string[0];
+////        //    var bindingResult = instance.FromQuery(_values);
 
-            var request = instance.FromQuery(_query);
-
-            Assert.IsType<SuccessfulBindingResult>(request);
-        }
-    }
-}
+////        //    Assert.IsType<SuccessfulBindingResult>(request);
+////        //}
+////    }
+////}

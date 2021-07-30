@@ -2,8 +2,8 @@
 
 namespace Codeworx.Identity
 {
-    public interface IRequestValidator<in TRequest, TResult>
+    public interface IRequestValidator<in TRequest>
     {
-        Task<IValidationResult<TResult>> IsValid(TRequest request);
+        Task ValidateAsync(TRequest request);
     }
 }

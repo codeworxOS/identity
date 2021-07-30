@@ -20,7 +20,7 @@ namespace Codeworx.Identity.AspNetCore
                     uriBuilder.Port = request.Host.Port.Value;
                 }
 
-                uriBuilder.Path = request.PathBase;
+                uriBuilder.AppendPath(request.PathBase);
                 BaseUri = new Uri(uriBuilder.ToString().TrimEnd('/'));
             }
         }

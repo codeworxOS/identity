@@ -1,4 +1,6 @@
-﻿using Codeworx.Identity.Configuration;
+﻿using Codeworx.Identity;
+using Codeworx.Identity.Configuration;
 
-[assembly: EmbeddedAssets("/account/js", "assets/js")]
-[assembly: EmbeddedAssets("/account/css", "assets/css")]
+[assembly: EmbeddedAssets(Constants.Assets.Js, "assets/js")]
+[assembly: EmbeddedAssets(Constants.Assets.Css, "assets/css")]
+[assembly: EmbeddedAssets(Constants.Assets.Images, "assets/images")]

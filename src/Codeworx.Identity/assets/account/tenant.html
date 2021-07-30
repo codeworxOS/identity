@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <base href="{{base-href}}">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Select tenant</title>
+    {{> Styles}}
+</head>
+<body>
+    <form method="post" id="tenantForm">
+        <select id="tenantSelection" name="tenantKey">
+            {{#Tenants}}
+            <option value="{{Key}}">{{Name}}</option>
+            {{/Tenants}}
+        </select>
+        <button type="submit" id="select">Select</button>
+
+        {{#CanSetDefault}}
+        <div>
+            <input type="checkbox" id="setDefault" name="setDefault" />
+            <label htmlFor="setDefault">Set as default</label>
+        </div>
+        {{/CanSetDefault}}
+    </form>
+</body>
+</html>

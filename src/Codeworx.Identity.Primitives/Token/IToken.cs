@@ -12,7 +12,7 @@ namespace Codeworx.Identity.Token
 
         Task<string> SerializeAsync();
 
-        Task SetPayloadAsync(IDictionary<string, object> claims, TimeSpan expiration);
+        Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration);
 
         Task<bool> ValidateAsync();
     }

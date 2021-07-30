@@ -1,0 +1,3 @@
+<select [(ngModel)]="selectedTenant">
+    <option *ngFor="let item of tenants" [ngValue]="item">{{item.name}}</option>
+  </select>

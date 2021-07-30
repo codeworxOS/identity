@@ -1,67 +1,78 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Login
 {
     public class LoginViewService : ILoginViewService
     {
-        private readonly IDefaultTenantService _defaultTenantService;
-        private readonly IExternalLoginService _externalLoginService;
+        private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
-        private readonly ITenantService _tenantService;
+        private readonly IUserService _userService;
 
-        public LoginViewService(ITenantService tenantService, IExternalLoginService externalLoginService, IIdentityService identityService, IDefaultTenantService defaultTenantService = null)
+        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService)
         {
-            _defaultTenantService = defaultTenantService;
-            _tenantService = tenantService;
-            _externalLoginService = externalLoginService;
+            _loginService = loginService;
             _identityService = identityService;
+            _userService = userService;
         }
 
         public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
         {
-            var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
+            var response = await _loginService.GetRegistrationInfosAsync(new ProviderRequest(ProviderRequestType.Profile, request.ReturnUrl, request.Prompt, null, null));
+            var user = await _userService.GetUserByIdentifierAsync(request.Identity);
 
-            return new LoggedinResponse(response.Providers, request.ReturnUrl);
+            return new LoggedinResponse(user, response.Groups, request.ReturnUrl);
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
-            var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
+            string error = null;
+            var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+            if (request.LoginProviderId != null)
+            {
+                providerRequest.ProviderErrors.Add(request.LoginProviderId, request.LoginProviderError ?? Constants.GenericLoginError);
+            }
+            else if (request.LoginProviderError != null)
+            {
+                error = request.LoginProviderError;
+            }
 
-            return new LoginResponse(response.Providers, request.ReturnUrl);
+            var response = await _loginService.GetRegistrationInfosAsync(providerRequest);
+
+            return new LoginResponse(response.Groups, request.ReturnUrl, error: error);
         }
 
         public async Task<SignInResponse> ProcessLoginFormAsync(LoginFormRequest request)
         {
+            ProviderRequest providerRequest = null;
+            string errorMessage = null;
+
             try
             {
-                var identityData = await _identityService.LoginAsync(request.UserName, request.Password);
-
-                return new SignInResponse(identityData, request.ReturnUrl);
+                var response = await _loginService.SignInAsync(request.ProviderId, request);
+                return response;
             }
-            catch (AuthenticationException)
+            catch (AuthenticationException ex)
             {
-                var response = await _externalLoginService.GetProviderInfosAsync(new ProviderRequest(request.ReturnUrl));
-                var loginResponse = new LoginResponse(response.Providers, request.ReturnUrl, request.UserName, Constants.InvalidCredentialsError);
-
-                throw new ErrorResponseException<LoginResponse>(loginResponse);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest.ProviderErrors.Add(request.ProviderId, ex.Message);
             }
-        }
+            catch (LoginProviderNotFoundException)
+            {
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                errorMessage = Constants.UnknownLoginProviderError;
+            }
+            catch (Exception)
+            {
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest.ProviderErrors.Add(request.ProviderId, Constants.GenericLoginError);
+            }
 
-        public async Task<TenantMissingResponse> ProcessTenantMissingAsync(TenantMissingRequest request)
-        {
-            var tenants = await _tenantService.GetTenantsByIdentityAsync(request.Identity);
+            var registrationInfos = await _loginService.GetRegistrationInfosAsync(providerRequest);
+            var loginResponse = new LoginResponse(registrationInfos.Groups, request.ReturnUrl, request.UserName, errorMessage);
 
-            return new TenantMissingResponse(tenants, _defaultTenantService != null, request.ReturnUrl);
-        }
-
-        public Task<SignInResponse> ProcessTenantSelectionAsync(TenantSelectionRequest request)
-        {
-            var identity = request.Identity.ToIdentityData();
-            var signInIdentity = new IdentityData(identity.Identifier, identity.Login, identity.Tenants, identity.Claims, request.TenantKey);
-
-            return Task.FromResult(new SignInResponse(signInIdentity, request.ReturnUrl));
+            throw new ErrorResponseException<LoginResponse>(loginResponse);
         }
     }
 }

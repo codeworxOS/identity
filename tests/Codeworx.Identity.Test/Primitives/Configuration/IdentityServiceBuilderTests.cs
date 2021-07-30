@@ -1,7 +1,7 @@
 ﻿using System;
 using Codeworx.Identity.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Primitives.Configuration
 {
@@ -22,52 +22,52 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             Assert.NotNull(firstService);
             Assert.NotNull(secondService);
 
-            Assert.Same(firstService, secondService);
+            Assert.AreSame(firstService, secondService);
         }
 
-        [Fact]
+        [Test]
         public void UserProvider_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<IUserService>(p => p.UserProvider<DummyUserService>());
+            this.CheckServiceRegistration<IUserService>(p => p.Users<DummyUserService>());
         }
 
-        [Fact]
+        [Test]
         public void UserProviderFactory_SingleRegistrations_SameInstance()
         {
-            this.CheckServiceRegistration<IUserService>(p => p.UserProvider(a => new DummyUserService()));
+            this.CheckServiceRegistration<IUserService>(p => p.Users<DummyUserService>(ServiceLifetime.Scoped, a => new DummyUserService()));
         }
 
-        [Fact]
+        [Test]
         public void PasswordValidator_SingleRegistrations_SameInstance()
         {
             this.CheckServiceRegistration<IPasswordValidator>(p => p.PasswordValidator<DummyPasswordValidator>());
         }
 
-        [Fact]
+        [Test]
         public void PasswordValidatorFactory_SingleRegistrations_SameInstance()
         {
             this.CheckServiceRegistration<IPasswordValidator>(p => p.PasswordValidator(a => new DummyPasswordValidator()));
         }
 
-        [Fact]
+        [Test]
         public void ReplaceService_SingleRegistrations_SameInstance()
         {
             this.CheckServiceRegistration<IDefaultTenantService>(p => p.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Test]
         public void ReplaceServiceFactory_SingleRegistrations_SameInstance()
         {
             this.CheckServiceRegistration<IDefaultTenantService>(p => p.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped, a => new DummyUserService()));
         }
 
-        [Fact]
+        [Test]
         public void Register_MultipleInterfaces_SameInstance()
         {
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
-            serviceBuilder.UserProvider<DummyUserService>();
+            serviceBuilder.Users<DummyUserService>();
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -75,16 +75,16 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var userService = serviceProvider.GetService<IUserService>();
             var defaultTenantService = serviceProvider.GetService<IDefaultTenantService>();
 
-            Assert.NotSame(userService, defaultTenantService);
+            Assert.AreNotSame(userService, defaultTenantService);
         }
 
-        [Fact]
+        [Test]
         public void RegisterFactory_MultipleInterfaces_SameInstance()
         {
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
 
-            serviceBuilder.UserProvider(p => new DummyUserService());
+            serviceBuilder.Users(ServiceLifetime.Scoped, p => new DummyUserService());
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -92,7 +92,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
             var userService = serviceProvider.GetService<IUserService>();
             var defaultTenantService = serviceProvider.GetService<IDefaultTenantService>();
 
-            Assert.NotSame(userService, defaultTenantService);
+            Assert.AreNotSame(userService, defaultTenantService);
         }
     }
 }

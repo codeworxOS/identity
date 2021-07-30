@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.View;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.Binder.LoginView
@@ -8,9 +10,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
     public class LoginResponseBinder : ResponseBinder<LoginResponse>
     {
         private readonly IContentTypeLookup _lookup;
-        private readonly IViewTemplate _view;
+        private readonly ILoginViewTemplateCache _view;
 
-        public LoginResponseBinder(IViewTemplate view, IContentTypeLookup lookup)
+        public LoginResponseBinder(ILoginViewTemplateCache view, IContentTypeLookup lookup)
         {
             _view = view;
             _lookup = lookup;
@@ -18,15 +20,22 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
         public override async Task BindAsync(LoginResponse responseData, HttpResponse response)
         {
-            var html = await _view.GetLoginTemplate(responseData.ReturnUrl, responseData.Username, responseData.Error);
+            var registrations = responseData.Groups.SelectMany(p => p.Registrations).ToList();
+            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri))
+            {
+                response.Redirect(redirectUri);
+                return;
+            }
 
             if (_lookup.TryGetContentType(".html", out var contentType))
             {
                 response.ContentType = contentType;
             }
 
+            var responseBody = await _view.GetLoginView(response.GetViewContextData(responseData));
+
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(html);
+            await response.WriteAsync(responseBody);
         }
     }
 }

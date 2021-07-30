@@ -10,5 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+    <ProjectReference Include="..\..\src\Codeworx.Identity\Codeworx.Identity.csproj" />
   </ItemGroup>
 </Project>

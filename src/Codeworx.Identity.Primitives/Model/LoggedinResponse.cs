@@ -1,18 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using Codeworx.Identity.Login;
+using Codeworx.Identity.View;
 
 namespace Codeworx.Identity.Model
 {
-    public class LoggedinResponse
+    public class LoggedinResponse : IViewData
     {
-        public LoggedinResponse(IEnumerable<ExternalProviderInfo> providers, string returnUrl = null)
+        public LoggedinResponse(IUser user, IEnumerable<ILoginRegistrationGroup> registrations, string returnUrl = null)
         {
-            Providers = providers.ToImmutableList();
+            Groups = registrations.ToImmutableList();
             ReturnUrl = returnUrl;
+            User = user;
         }
 
-        public IEnumerable<ExternalProviderInfo> Providers { get; }
+        public IUser User { get; }
+
+        public IEnumerable<ILoginRegistrationGroup> Groups { get; }
 
         public string ReturnUrl { get; }
+
+        public void CopyTo(IDictionary<string, object> target)
+        {
+            target.Add(nameof(User), User);
+            target.Add(nameof(Groups), Groups);
+            target.Add(nameof(ReturnUrl), ReturnUrl);
+        }
     }
 }

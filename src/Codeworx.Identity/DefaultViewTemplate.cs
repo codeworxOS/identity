@@ -4,11 +4,19 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.View;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
-    public class DefaultViewTemplate : IViewTemplate, IDisposable
+    public class DefaultViewTemplate :
+        ILoginViewTemplate,
+        ITenantViewTemplate,
+        IRedirectViewTemplate,
+        IFormPostResponseTypeTemplate,
+        IInvitationViewTemplate,
+        IPasswordChangeViewTemplate,
+        IDisposable
     {
         private readonly IDisposable _optionsMonitor;
         private bool _disposedValue = false;
@@ -25,28 +33,70 @@ namespace Codeworx.Identity
             Dispose(true);
         }
 
-        public async Task<string> GetLoggedInTemplate(string returnUrl)
+        public async Task<string> GetChallengeResponse()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.loggedin.html"))
-                .Replace("{{returnUrl}}", returnUrl)
-                .Replace("{{styles}}", GetStyles());
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.challenge_response.html");
         }
 
-        public async Task<string> GetLoginTemplate(string returnUrl, string username = null, string error = null)
+        public async Task<string> GetFormPostTemplate()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.login.html"))
-                .Replace("{{returnUrl}}", returnUrl)
-                .Replace("{{username}}", username)
-                .Replace("{{error}}", error)
-                .Replace("{{styles}}", GetStyles());
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.form_post.html");
         }
 
-        public async Task<string> GetTenantSelectionTemplate(string returnUrl, bool showDefault)
+        public async Task<string> GetInvitationTemplate()
         {
-            return (await GetTemplateAsString("Codeworx.Identity.assets.tenant.html"))
-                .Replace("{{returnUrl}}", returnUrl)
-                .Replace("{{showDefault}}", showDefault.ToString())
-                .Replace("{{styles}}", GetStyles());
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.invitation.html");
+        }
+
+        public async Task<string> GetLoggedInTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.loggedin.html");
+        }
+
+        public async Task<string> GetLoginTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.login.html");
+        }
+
+        public async Task<string> GetPasswordChangeTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.password_change.html");
+        }
+
+        public async Task<string> GetRedirectTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.redirect.html");
+        }
+
+        public async Task<string> GetTenantSelectionTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.tenant.html");
+        }
+
+        internal static string GetTemplateAsString(string resourceName)
+        {
+            using (var stream = typeof(DefaultViewTemplate)
+                                .GetTypeInfo().Assembly
+                                .GetManifestResourceStream(resourceName))
+            {
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+
+                return Encoding.UTF8.GetString(buffer);
+            }
+        }
+
+        internal static async Task<string> GetTemplateAsStringAsync(string resourceName)
+        {
+            using (var stream = typeof(DefaultViewTemplate)
+                                .GetTypeInfo().Assembly
+                                .GetManifestResourceStream(resourceName))
+            {
+                byte[] buffer = new byte[stream.Length];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                return Encoding.UTF8.GetString(buffer);
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -59,19 +109,6 @@ namespace Codeworx.Identity
                 }
 
                 _disposedValue = true;
-            }
-        }
-
-        private static async Task<string> GetTemplateAsString(string resourceName)
-        {
-            using (var stream = typeof(DefaultViewTemplate)
-                                .GetTypeInfo().Assembly
-                                .GetManifestResourceStream(resourceName))
-            {
-                byte[] buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                return Encoding.UTF8.GetString(buffer);
             }
         }
 

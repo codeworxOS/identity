@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography.Json;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Xunit;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Cryptography.Json
 {
@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Test.Cryptography.Json
             return ecDsaCng;
         }
 
-        [Fact(Skip = "For local use only")]
+        [Ignore("For local use only")]
         private async Task SimpleRsaSigningKeyTest()
         {
             var test = new JsonWebTokenHandler();

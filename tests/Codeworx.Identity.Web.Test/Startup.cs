@@ -1,18 +1,19 @@
-﻿using Codeworx.Identity.AspNetCore;
+﻿using System.IO;
+using System.Reflection;
+using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
-using Codeworx.Identity.ExternalLogin;
-using Codeworx.Identity.Test;
+using Codeworx.Identity.Web.Test.Tenant;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.IO;
-using System.Reflection;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -28,16 +29,17 @@ namespace Codeworx.Identity.Web.Test
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
         {
-            loggerFactory.AddConsole();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseCodeworxIdentity(identityOptions.Value);
-            app.UseMvc();
+            app.UseCors();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseCodeworxIdentity(identityOptions.Value);
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -49,19 +51,55 @@ namespace Codeworx.Identity.Web.Test
                 DataSource = Path.Combine(Path.GetTempPath(), "CodeworxIdentity.db")
             };
 
-            services.AddSingleton<IExternalLoginProvider, WindowsLoginProvider>();
+            services.AddCors(setup => setup.AddDefaultPolicy(
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                ));
+
+            services.AddDbContext<DemoContext>((sp, builder) =>
+            {
+                var tenant = sp.GetService<IHttpContextAccessor>()?.HttpContext?.User?.FindFirst("current_tenant")?.Value;
+
+                var connectionStringBuilder = new SqliteConnectionStringBuilder
+                {
+                    DataSource = Path.Combine(Path.GetTempPath(), $"{tenant ?? "default"}.db")
+                };
+
+                builder.UseSqlite(connectionStringBuilder.ConnectionString);
+            });
+
+            services.AddRouting();
+            services.AddControllers();
 
             services.AddCodeworxIdentity(_configuration)
-                .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
-                .UseTestSetup()
-                //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString()))
-                .UseConfiguration(_configuration);
+                    //.Pbkdf2()
+                    //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
+                    //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
+                    .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
+                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
+                    //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+            //.UseConfiguration(_configuration);
 
-            services.AddScoped<IClaimsService, SampleClaimsProvider>();
+            ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
+
+            services.AddAuthentication()
+                //.AddNegotiate("Windows", p => { })
+                .AddJwtBearer("JWT", ConfigureJwt);
+
+            services.AddAuthorization();
 
             services.AddMvcCore()
-                .AddAuthorization()
-                .AddJsonFormatters();
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
+                });
+        }
+
+        private void ConfigureJwt(JwtBearerOptions options)
+        {
+            options.Authority = "https://localhost:44319/";
+            options.Audience = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         }
     }
 }

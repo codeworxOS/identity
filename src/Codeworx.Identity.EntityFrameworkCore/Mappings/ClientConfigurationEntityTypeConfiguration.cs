@@ -10,7 +10,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         {
             builder.ToTable("ClientConfiguration");
 
-            builder.Ignore(p => p.AllowedScopes);
+            builder.HasOne(p => p.User)
+                .WithMany(p => p.Clients)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

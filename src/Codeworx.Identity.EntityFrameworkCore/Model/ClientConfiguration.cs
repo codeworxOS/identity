@@ -1,43 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class ClientConfiguration : IClientRegistration
+    public class ClientConfiguration
     {
         public ClientConfiguration()
         {
-            this.AllowedScopes = new HashSet<ClientScope>();
-            this.ValidRedirectUrls = new HashSet<ValidRedirectUrl>();
+            ScopeAssignments = new HashSet<ScopeAssignment>();
+            ValidRedirectUrls = new HashSet<ValidRedirectUrl>();
         }
 
-        public ICollection<ClientScope> AllowedScopes { get; }
+        public ICollection<ScopeAssignment> ScopeAssignments { get; set; }
 
-        public string ClientId => this.Id.ToString("N");
-
-        public byte[] ClientSecret { get; set; }
-
-        public byte[] ClientSecretHash => this.ClientSecret;
-
-        public byte[] ClientSecretSalt { get; set; }
-
-        public string DefaultRedirectUri { get; set; }
-
-        Uri IClientRegistration.DefaultRedirectUri => new Uri(this.DefaultRedirectUri);
-
-        public FlowType FlowTypes { get; set; }
+        [StringLength(512)]
+        public string ClientSecretHash { get; set; }
 
         public Guid Id { get; set; }
 
-        IReadOnlyList<ISupportedFlow> IClientRegistration.SupportedFlow => SupportedFlows.GetFlow(this.FlowTypes);
-
         public TimeSpan TokenExpiration { get; set; }
 
-        IReadOnlyList<Uri> IClientRegistration.ValidRedirectUrls => this.ValidRedirectUrls.Select(p => new Uri(p.Url)).ToImmutableList();
-
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
+
+        public ClientType ClientType { get; set; }
+
+        public Guid? UserId { get; set; }
+
+        public User User { get; set; }
     }
 }

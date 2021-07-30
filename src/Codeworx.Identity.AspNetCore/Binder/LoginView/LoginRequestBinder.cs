@@ -28,70 +28,52 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 returnUrl = returnUrlValues.First();
             }
 
-            var authenticateResult = await request.HttpContext.AuthenticateAsync(_options.AuthenticationScheme);
+            string prompt = null;
 
-            if (authenticateResult.Succeeded)
+            if (request.Query.TryGetValue(Constants.OAuth.PromptName, out var promptValues))
             {
-                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl);
+                prompt = promptValues.FirstOrDefault();
             }
 
-            var tenantAuthenticateResult = await request.HttpContext.AuthenticateAsync(_options.MissingTenantAuthenticationScheme);
+            var authenticateResult = await request.HttpContext.AuthenticateAsync(_options.AuthenticationScheme);
 
-            if (tenantAuthenticateResult.Succeeded)
+            if (authenticateResult.Succeeded && prompt?.Contains(Constants.OAuth.Prompt.Login) != true)
             {
-                var tenantIdentity = (ClaimsIdentity)tenantAuthenticateResult.Principal.Identity;
+                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, prompt);
+            }
 
-                if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method))
+            {
+                string providerId = null;
+                string providerError = null;
+                if (request.Query.TryGetValue(Constants.LoginProviderIdParameter, out var providerIdValues))
                 {
-                    return new TenantMissingRequest(returnUrl, tenantIdentity);
+                    providerId = providerIdValues.FirstOrDefault();
                 }
-                else if (HttpMethods.IsPost(request.Method))
+
+                if (request.Query.TryGetValue(Constants.LoginProviderErrorParameter, out var errorValues))
                 {
-                    if (request.HasFormContentType)
-                    {
-                        var tenantKey = request.Form["tenantKey"].FirstOrDefault();
-                        bool setDefault = false;
-
-                        if (request.Form.TryGetValue("setDefault", out var values))
-                        {
-                            if (bool.TryParse(values.First(), out var value))
-                            {
-                                setDefault = value;
-                            }
-                        }
-
-                        return new TenantSelectionRequest(returnUrl, tenantIdentity, tenantKey, setDefault);
-                    }
-
-                    throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
+                    providerError = errorValues.FirstOrDefault();
                 }
-                else
+
+                return new LoginRequest(returnUrl, prompt, providerId, providerError);
+            }
+            else if (HttpMethods.IsPost(request.Method))
+            {
+                if (request.HasFormContentType)
                 {
-                    throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
+                    var username = request.Form["username"].FirstOrDefault();
+                    var password = request.Form["password"].FirstOrDefault();
+                    var providerId = request.Form["provider-id"].FirstOrDefault();
+
+                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt);
                 }
+
+                throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
             }
             else
             {
-                if (HttpMethods.IsGet(request.Method))
-                {
-                    return new LoginRequest(returnUrl);
-                }
-                else if (HttpMethods.IsPost(request.Method))
-                {
-                    if (request.HasFormContentType)
-                    {
-                        var username = request.Form["username"].FirstOrDefault();
-                        var password = request.Form["password"].FirstOrDefault();
-
-                        return new LoginFormRequest(returnUrl, username, password);
-                    }
-
-                    throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
-                }
-                else
-                {
-                    throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
-                }
+                throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
             }
 
             throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("this should not happen!"));

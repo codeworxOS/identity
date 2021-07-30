@@ -1,9 +1,9 @@
 ﻿using System;
-using Codeworx.Identity.ExternalLogin;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.ExternalLogin
 {
-    public class ExternalLoginRegistration : IExternalLoginRegistration
+    public class ExternalLoginRegistration : ILoginRegistration
     {
         public Type ProcessorType { get; set; }
 

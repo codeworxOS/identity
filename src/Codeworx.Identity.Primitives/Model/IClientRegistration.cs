@@ -7,16 +7,14 @@ namespace Codeworx.Identity.Model
     {
         string ClientId { get; }
 
-        byte[] ClientSecretHash { get; }
+        string ClientSecretHash { get; }
 
-        byte[] ClientSecretSalt { get; }
-
-        IReadOnlyList<ISupportedFlow> SupportedFlow { get; }
+        ClientType ClientType { get; }
 
         TimeSpan TokenExpiration { get; }
 
         IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
-        Uri DefaultRedirectUri { get; }
+        IUser User { get; }
     }
 }

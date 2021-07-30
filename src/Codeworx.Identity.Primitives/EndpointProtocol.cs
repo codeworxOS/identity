@@ -9,6 +9,6 @@ namespace Codeworx.Identity
         OAuth20 = 0x01,
         OpenIdConnect = 0x02,
         Introspection = 0x04,
-        All = OAuth20 | OpenIdConnect | Introspection
+        All = OAuth20 | OpenIdConnect | Introspection,
     }
 }

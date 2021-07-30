@@ -3,42 +3,69 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
     public class IdentityService : IIdentityService
     {
-        private readonly ImmutableList<IClaimsService> _claimsProviders;
+        private readonly IClaimsService _claimsService;
+        private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
+        private readonly IdentityOptions _options;
+        private readonly IInvitationService _invitationService;
+        private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
-        private readonly ITenantService _tenantService;
         private readonly IUserService _userService;
 
-        public IdentityService(IUserService userService, IPasswordValidator passwordValidator, ITenantService tenantService, IEnumerable<IClaimsService> claimsProvider)
+        public IdentityService(
+            IUserService userService,
+            IPasswordValidator passwordValidator,
+            IClaimsService claimsService,
+            IEnumerable<IExternalLoginEvent> loginEvents,
+            IOptionsSnapshot<IdentityOptions> options,
+            IInvitationService invitationService,
+            ILinkUserService linkUserService = null)
         {
             _userService = userService;
             _passwordValidator = passwordValidator;
-            _tenantService = tenantService;
-            _claimsProviders = ImmutableList.CreateRange(claimsProvider);
+            _claimsService = claimsService;
+            _loginEvents = loginEvents.ToImmutableList();
+            _options = options.Value;
+            _invitationService = invitationService;
+            _linkUserService = linkUserService;
         }
 
-        public async Task<IdentityData> GetIdentityAsync(ClaimsIdentity user)
+        public async Task<IdentityData> GetIdentityAsync(IIdentityDataParameters identityDataParameters)
         {
-            var identity = user.ToIdentityData();
+            if (identityDataParameters is null)
+            {
+                throw new System.ArgumentNullException(nameof(identityDataParameters));
+            }
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(user);
+            var currentUser = await _userService.GetUserByIdentifierAsync(identityDataParameters.User);
 
-            if (user == null)
+            if (currentUser == null)
             {
                 throw new AuthenticationException();
             }
 
-            var result = await GetIdentityAsync(currentUser, identity.TenantKey);
+            var claims = new List<AssignedClaim>();
+
+            var c = await _claimsService.GetClaimsAsync(identityDataParameters);
+            claims.AddRange(c);
+
+            var externalTokenKey = identityDataParameters.User.FindFirst(Constants.Claims.ExternalTokenKey)?.Value;
+
+            var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
 
             return result;
         }
 
-        public async Task<IdentityData> LoginAsync(string username, string password)
+        public async Task<ClaimsIdentity> LoginAsync(string username, string password)
         {
             var user = await _userService.GetUserByNameAsync(username);
             if (user == null)
@@ -51,40 +78,80 @@ namespace Codeworx.Identity
                 throw new AuthenticationException();
             }
 
-            return await GetIdentityAsync(user);
+            return await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
         }
 
-        public async Task<IdentityData> LoginExternalAsync(string provider, string nameIdentifier)
+        public async Task<ClaimsIdentity> LoginExternalAsync(IExternalLoginData externalLoginData)
         {
-            var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier);
-
-            if (user == null)
+            foreach (var item in _loginEvents)
             {
-                throw new AuthenticationException();
+                await item.BeginLoginAsync(externalLoginData).ConfigureAwait(false);
             }
 
-            var result = await GetIdentityAsync(user);
+            var provider = externalLoginData.LoginRegistration.Id;
+            var nameIdentifier = await externalLoginData.GetExternalIdentifierAsync().ConfigureAwait(false);
+
+            var user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier).ConfigureAwait(false);
+
+            if (externalLoginData.InvitationCode != null)
+            {
+                var supported = await _invitationService.IsSupportedAsync().ConfigureAwait(false);
+
+                if (!supported || _linkUserService == null)
+                {
+                    throw new AuthenticationException(Constants.InvitationNotSupported);
+                }
+
+                if (user != null)
+                {
+                    throw new AuthenticationException(Constants.ExternalAccountAlreadyLinkedError);
+                }
+
+                var invitation = await _invitationService.RedeemInvitationAsync(externalLoginData.InvitationCode).ConfigureAwait(false);
+
+                user = await _userService.GetUserByIdAsync(invitation.UserId);
+                await _linkUserService.LinkUserAsync(user, externalLoginData).ConfigureAwait(false);
+            }
+            else if (user == null)
+            {
+                foreach (var item in _loginEvents)
+                {
+                    await item.UnknownLoginAsync(externalLoginData);
+                }
+
+                if (_loginEvents.Any())
+                {
+                    user = await _userService.GetUserByExternalIdAsync(provider, nameIdentifier).ConfigureAwait(false);
+                }
+
+                if (user == null)
+                {
+                    throw new AuthenticationException(Constants.ExternalAccountNotLinked);
+                }
+            }
+
+            foreach (var item in _loginEvents)
+            {
+                await item.LoginSuccessAsync(externalLoginData, user).ConfigureAwait(false);
+            }
+
+            var result = await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
 
             return result;
         }
 
-        protected virtual async Task<IdentityData> GetIdentityAsync(IUser user, string tenantKey = null)
+        public virtual Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user)
         {
-            var tenants = await _tenantService.GetTenantsByUserAsync(user);
+            var identity = new ClaimsIdentity(_options.AuthenticationScheme);
 
-            var claims = new List<AssignedClaim>();
-
-            tenantKey = tenantKey ?? user.DefaultTenantKey ?? (tenants?.Count() == 1 ? tenants.First().Key : null);
-
-            foreach (var cp in _claimsProviders)
+            identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
+            identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
+            if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))
             {
-                var c = await cp.GetClaimsAsync(user);
-                claims.AddRange(c);
+                identity.AddClaim(new Claim(Constants.Claims.DefaultTenant, user.DefaultTenantKey));
             }
 
-            var result = new IdentityData(user.Identity, user.Name, tenants, claims, tenantKey);
-
-            return result;
+            return Task.FromResult(identity);
         }
     }
 }
