@@ -3,6 +3,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <UserSecretsId>07c6a822-3903-4442-88a9-82596d94d41d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

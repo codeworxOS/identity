@@ -104,6 +104,7 @@
         public static class Forms
         {
             public const string ConfirmPassword = "confirm-password";
+            public const string CurrentPassword = "current-password";
             public const string Password = "password";
             public const string ProviderId = "provider-id";
         }
