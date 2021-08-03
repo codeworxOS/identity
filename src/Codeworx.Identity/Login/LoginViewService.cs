@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
 {
@@ -9,20 +11,32 @@ namespace Codeworx.Identity.Login
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
         private readonly IUserService _userService;
+        private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IdentityOptions _options;
 
-        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService)
+        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService, IBaseUriAccessor baseUriAccessor, IOptions<IdentityOptions> options)
         {
             _loginService = loginService;
             _identityService = identityService;
             _userService = userService;
+            _baseUriAccessor = baseUriAccessor;
+            _options = options.Value;
         }
 
-        public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
+        public Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest loggedin)
         {
-            var response = await _loginService.GetRegistrationInfosAsync(new ProviderRequest(ProviderRequestType.Profile, request.ReturnUrl, request.Prompt, null, null));
-            var user = await _userService.GetUserByIdentifierAsync(request.Identity);
+            string returnUrl = loggedin.ReturnUrl;
 
-            return new LoggedinResponse(user, response.Groups, request.ReturnUrl);
+            if (returnUrl == null)
+            {
+                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                builder.AppendPath(_options.AccountEndpoint);
+                builder.AppendPath("me");
+
+                returnUrl = builder.ToString();
+            }
+
+            return Task.FromResult(new LoggedinResponse(returnUrl));
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)

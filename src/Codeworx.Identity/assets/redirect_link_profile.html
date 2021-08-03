@@ -1,0 +1,9 @@
+﻿
+<ul id="external">
+    {{#Registrations}}
+    <li><a href="{{RedirectUri}}"><img src="identity/images/logo-pictogram.svg" />{{Name}}</a></li>
+    {{/Registrations}}
+</ul>
+{{#Registrations}}
+{{#Error}}<div class="error">{{.}}</div>{{/Error}}
+{{/Registrations}}

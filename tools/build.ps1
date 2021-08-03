@@ -16,6 +16,20 @@ $coreVersion = New-NugetPackages `
     -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk"
 
 $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj",
+    "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.csproj",
+    "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj"
+
+New-NugetPackages `
+    -Projects $projects `
+    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
+    -VersionFilePath "..\version_ef2.json" `
+    -DoNotCleanOutput `
+    -OutputPath "..\dist\nuget" `
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=2;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
+
+$projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj",

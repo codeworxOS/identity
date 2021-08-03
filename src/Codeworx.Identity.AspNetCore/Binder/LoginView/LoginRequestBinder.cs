@@ -39,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             if (authenticateResult.Succeeded && prompt?.Contains(Constants.OAuth.Prompt.Login) != true)
             {
-                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, prompt);
+                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl);
             }
 
             if (HttpMethods.IsGet(request.Method))
