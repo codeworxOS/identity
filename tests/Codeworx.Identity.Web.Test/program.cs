@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -8,6 +9,7 @@ namespace Codeworx.Identity.Web.Test
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .ConfigureAppConfiguration(p => p.AddUserSecrets<Program>())
                 .Build();
 
         public static void Main(string[] args)
