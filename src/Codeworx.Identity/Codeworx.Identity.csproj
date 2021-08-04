@@ -28,6 +28,11 @@
     <None Remove="assets\formsinvitation.html" />
     <None Remove="assets\formslogin.html" />
     <None Remove="assets\formsprofile.html" />
+    <None Remove="assets\images\cancel-32.png" />
+    <None Remove="assets\images\identity-64.png" />
+    <None Remove="assets\images\microsoft-64.png" />
+    <None Remove="assets\images\tick-32.png" />
+    <None Remove="assets\images\windows-64.png" />
     <None Remove="assets\redirect_link.html" />
     <None Remove="assets\redirect_link_profile.html" />
   </ItemGroup>

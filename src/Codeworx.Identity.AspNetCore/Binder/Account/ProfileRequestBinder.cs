@@ -37,7 +37,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                     loginProviderId = loginProviderIdValues;
                 }
 
-                if (request.Query.TryGetValue(Constants.LoginProviderIdParameter, out var loginProviderErrorValues))
+                if (request.Query.TryGetValue(Constants.LoginProviderErrorParameter, out var loginProviderErrorValues))
                 {
                     loginProviderError = loginProviderErrorValues;
                 }

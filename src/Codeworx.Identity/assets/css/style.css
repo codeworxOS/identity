@@ -136,66 +136,107 @@ body {
             stroke: #af110e;
         }
 
-    #loginContainer button[type="submit"] {
-        font-size: 16px;
-        text-transform: uppercase;
-        color: white;
-        background: #af110e;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-        height: 60px;
-        margin-top: 25px;
+.login-submit {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: white;
+    background: #af110e;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 60px;
+    margin-top: 25px;
+}
+
+    .login-submit:hover {
+        background: red;
     }
 
-        #loginContainer button[type="submit"]:hover {
-            background: red;
+#loginContainer .error {
+    font-family: Arial;
+    color: red;
+    margin-top: 15px;
+    width: 100%;
+}
+
+#loginContainer #external,
+#loginContainer #external-profile {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: -10px;
+}
+
+    #loginContainer #external > * {
+        flex: 1 1 160px;
+        margin: 10px;
+    }
+
+    #loginContainer #external-profile > * {
+        flex: 1 1 auto;
+        margin: 10px;
+    }
+
+.redirect-link {
+    font-family: Arial;
+    text-decoration: none;
+    font-size: 16px;
+    color: #333333;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    padding: 10px;
+    display: flex;
+}
+
+a.redirect-link:hover {
+    color: #af110e;
+    border-color: red;
+}
+
+.redirect-link.linked {
+    position: relative;
+}
+
+    .redirect-link.linked .linked-icon {
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        right: -8px;
+        top: 3px;
+    }
+
+        .redirect-link.linked .linked-icon .unlink-submit {
+            background-image: url(../images/tick-32.png);
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            border: none;
         }
 
-    #loginContainer .error {
-        font-family: Arial;
-        color: red;
-        margin-top: 15px;
-        width: 100%;
-    }
-
-    #loginContainer #external {
-        display: flex;
-        flex-flow: row wrap;
-        justify-content: space-between;
-        list-style-type: none;
-    }
-
-        #loginContainer #external li {
-            height: 40px;
-            width: calc((100% - 10px) / 2);
-            margin-top: 10px;
-        }
-
-            #loginContainer #external li a {
-                font-family: Arial;
-                text-decoration: none;
-                font-size: 16px;
-                color: #333333;
-                border: 1px solid #e6e6e6;
-                border-radius: 3px;
-                cursor: pointer;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            .redirect-link.linked .linked-icon .unlink-submit:hover {
+                background-image: url(../images/cancel-32.png);
             }
 
-                #loginContainer #external li a:hover {
-                    color: #af110e;
-                    border-color: red;
-                }
+.provider-icon {
+    padding-left: 46px;
+    background-image: url('../images/identity-64.png');
+    background-size: 16px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: -26px center;
+}
 
-                #loginContainer #external li a img {
-                    width: 24px;
-                    margin-right: 10px;
-                }
+    .provider-icon.icon-windows {
+        background-image: url('../images/windows-64.png');
+    }
 
+    .provider-icon.icon-microsoft {
+        background-image: url('../images/microsoft-64.png');
+    }
 
 
 .ispinner {

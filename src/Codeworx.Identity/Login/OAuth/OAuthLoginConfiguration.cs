@@ -19,6 +19,8 @@ namespace Codeworx.Identity.Login.OAuth
 
         public string AuthorizationEndpoint { get; set; }
 
+        public string CssClass { get; set; }
+
         public string ClientId { get; set; }
 
         public string Scope { get; set; }

@@ -94,6 +94,22 @@ namespace Codeworx.Identity.EntityFrameworkCore
             }
         }
 
+        public async Task UnlinkUserAsync(IUser user, string providerId)
+        {
+            var userId = Guid.Parse(user.Identity);
+            var providerGuid = Guid.Parse(providerId);
+
+            var query = _context.Set<AuthenticationProviderRightHolder>();
+
+            var link = await query.Where(p => p.RightHolderId == userId && p.ProviderId == providerGuid).FirstOrDefaultAsync();
+            if (link != null)
+            {
+                _context.Remove(link);
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
         protected virtual IQueryable<User> GetUserQuery()
         {
             return _context.Set<User>().Where(p => !p.IsDisabled);

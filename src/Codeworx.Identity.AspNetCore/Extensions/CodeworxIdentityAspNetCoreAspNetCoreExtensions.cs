@@ -183,6 +183,11 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
                        p => p.UseMiddleware<RedirectMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/me", out var remaining) && remaining.HasValue,
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<ProfileLinkMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
@@ -245,6 +250,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<InvitationViewRequest>, InvitationViewRequestBinder>();
             collection.AddTransient<IRequestBinder<PasswordChangeRequest>, PasswordChangeRequestBinder>();
             collection.AddTransient<IRequestBinder<ProfileRequest>, ProfileRequestBinder>();
+            collection.AddTransient<IRequestBinder<ProfileLinkRequest>, ProfileLinkRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -277,6 +283,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<PasswordChangeViewResponse>, PasswordChangeViewResponseBinder>();
             collection.AddTransient<IResponseBinder<PasswordChangeResponse>, PasswordChangeResponseBinder>();
             collection.AddTransient<IResponseBinder<ProfileResponse>, ProfileResponseBinder>();
+            collection.AddTransient<IResponseBinder<ProfileLinkResponse>, ProfileLinkResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();

@@ -2,9 +2,14 @@
 {
     public class RedirectProfileRegistrationInfo : RedirectRegistrationInfo
     {
-        public RedirectProfileRegistrationInfo(string providerId, string name, string redirectUri, string error = null)
-            : base(providerId, name, redirectUri, error)
+        public RedirectProfileRegistrationInfo(string providerId, string name, string cssClass, string redirectUri, bool isLinked, string error = null)
+            : base(providerId, name, cssClass, redirectUri, error)
         {
+            IsLinked = isLinked;
         }
+
+        public override string Template => Constants.Templates.RedirectProfile;
+
+        public bool IsLinked { get; }
     }
 }

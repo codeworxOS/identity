@@ -6,5 +6,7 @@ namespace Codeworx.Identity.Account
     public interface IProfileService
     {
         Task<ProfileResponse> ProcessAsync(ProfileRequest request);
+
+        Task<ProfileLinkResponse> ProcessLinkAsync(ProfileLinkRequest request);
     }
 }

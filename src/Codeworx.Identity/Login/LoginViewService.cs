@@ -26,17 +26,30 @@ namespace Codeworx.Identity.Login
         public Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest loggedin)
         {
             string returnUrl = loggedin.ReturnUrl;
+            UriBuilder builder = null;
 
             if (returnUrl == null)
             {
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                 builder.AppendPath(_options.AccountEndpoint);
                 builder.AppendPath("me");
-
-                returnUrl = builder.ToString();
+            }
+            else
+            {
+                builder = new UriBuilder(returnUrl);
             }
 
-            return Task.FromResult(new LoggedinResponse(returnUrl));
+            if (loggedin.LoginProviderId != null)
+            {
+                builder.AppendQueryParameter(Constants.LoginProviderIdParameter, loggedin.LoginProviderId);
+            }
+
+            if (loggedin.LoginProviderError != null)
+            {
+                builder.AppendQueryParameter(Constants.LoginProviderErrorParameter, loggedin.LoginProviderError);
+            }
+
+            return Task.FromResult(new LoggedinResponse(builder.ToString()));
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)

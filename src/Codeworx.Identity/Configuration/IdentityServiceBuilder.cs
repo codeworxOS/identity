@@ -85,6 +85,7 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsProfileTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
         }
 
