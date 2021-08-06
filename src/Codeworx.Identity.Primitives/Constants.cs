@@ -99,6 +99,7 @@
             public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
+            public const string AtHash = "at_hash";
         }
 
         public static class Forms
