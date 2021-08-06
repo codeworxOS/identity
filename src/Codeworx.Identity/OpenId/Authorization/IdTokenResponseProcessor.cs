@@ -11,13 +11,11 @@ namespace Codeworx.Identity.OpenId.Authorization
     {
         private readonly IClientService _clientService;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
-        private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public IdTokenResponseProcessor(IClientService clientService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
+        public IdTokenResponseProcessor(IClientService clientService, IEnumerable<ITokenProvider> tokenProviders)
         {
             _clientService = clientService;
             _tokenProviders = tokenProviders;
-            _baseUriAccessor = baseUriAccessor;
         }
 
         public async Task<IAuthorizationResponseBuilder> ProcessAsync(IAuthorizationParameters parameters, IdentityData data, IAuthorizationResponseBuilder responseBuilder)
@@ -36,7 +34,6 @@ namespace Codeworx.Identity.OpenId.Authorization
 
             var client = await _clientService.GetById(parameters.ClientId);
             var payload = data.GetTokenClaims(ClaimTarget.IdToken);
-            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 
             await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
 
