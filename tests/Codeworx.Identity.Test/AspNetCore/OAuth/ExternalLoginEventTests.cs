@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore;
@@ -119,6 +120,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 public string PasswordHash => null;
 
                 public bool ForceChangePassword => false;
+
+                public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
             }
         }
     }

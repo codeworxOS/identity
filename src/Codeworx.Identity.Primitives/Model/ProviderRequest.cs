@@ -4,13 +4,14 @@ namespace Codeworx.Identity.Model
 {
     public class ProviderRequest
     {
-        public ProviderRequest(ProviderRequestType type, string returnUrl, string prompt, string userName, string invitationCode)
+        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, string invitationCode = null, IUser user = null)
         {
             Type = type;
             ReturnUrl = returnUrl;
             UserName = userName;
             Prompt = prompt;
             InvitationCode = invitationCode;
+            User = user;
             ProviderErrors = new Dictionary<string, string>();
         }
 
@@ -25,5 +26,7 @@ namespace Codeworx.Identity.Model
         public string Prompt { get; }
 
         public string InvitationCode { get; }
+
+        public IUser User { get; }
     }
 }

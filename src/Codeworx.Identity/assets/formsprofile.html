@@ -1,0 +1,11 @@
+﻿{{#Registrations}}
+<div class="forms-profile">
+    <input type="text" id="username" name="username" readonly="readonly" placeholder="User" value="{{UserName}}" />
+    {{#CanChangePassword}}
+    <div class="change-password-box">
+        <a class="change-password-link" href="{{PasswordChangeUrl}}">Change password</a>
+    </div>
+    {{/CanChangePassword}}
+    <div class="error">{{Error}}</div>
+</div>
+{{/Registrations}}
