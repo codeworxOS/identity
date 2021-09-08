@@ -38,7 +38,6 @@ namespace Codeworx.Identity.Test.AspNetCore
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
 
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
-            this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
 
             Assert.AreEqual(HttpStatusCode.Found, response.StatusCode);
 
@@ -46,17 +45,28 @@ namespace Codeworx.Identity.Test.AspNetCore
             var expectedRedirectTarget = options.Value.AccountEndpoint + "/change-password";
             Assert.True(redirectLocation.LocalPath.Contains(expectedRedirectTarget));
 
-            var changePasswordResponse = await this.TestClient.PostAsync(redirectLocation,
-                                             new FormUrlEncodedContent(new Dictionary<string, string>
+            var changePasswordContent = new FormUrlEncodedContent(new Dictionary<string, string>
                                              {
                                                  {"username", Constants.ForcePasswordUserName},
                                                  {"current-password", Constants.ForcePasswordUserName},
                                                  {"password", "aaAAbb11!!"},
                                                  {"confirm-password", "aaAAbb11!!"},
-                                             }));
+                                             });
 
-            Assert.AreEqual(HttpStatusCode.Found, changePasswordResponse.StatusCode);
-            Assert.AreEqual(changePasswordResponse.Headers.Location, "http://example.com");
+            changePasswordContent.Headers.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+
+            var changePasswordResponse = await this.TestClient.PostAsync(redirectLocation, changePasswordContent);
+
+            response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
+                               new FormUrlEncodedContent(new Dictionary<string, string>
+                               {
+                                   {"provider-id", Constants.FormsLoginProviderId},
+                                   {"username", Constants.ForcePasswordUserName},
+                                   {"password", "aaAAbb11!!"}
+                               }));
+
+            Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.AreEqual(new Uri("http://example.com"), response.Headers.Location);
         }
 
         [Test]
@@ -89,7 +99,8 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var authorizationResponse = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
 
-            Assert.AreEqual(HttpStatusCode.Unauthorized, authorizationResponse.StatusCode);
+            Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
+            Assert.AreEqual($"{options.Value.AccountEndpoint}/change-password", authorizationResponse.Headers.Location.AbsolutePath);
         }
 
         private string ToRequestString(AuthorizationRequest request)

@@ -1,21 +1,19 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Account
 {
     public class PasswordChangeRequestBinder : IRequestBinder<PasswordChangeRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IIdentityAuthenticationHandler _handler;
 
-        public PasswordChangeRequestBinder(IOptionsSnapshot<IdentityOptions> options)
+        public PasswordChangeRequestBinder(IIdentityAuthenticationHandler handler)
         {
-            _options = options.Value;
+            _handler = handler;
         }
 
         public async Task<PasswordChangeRequest> BindAsync(HttpRequest request)
@@ -32,7 +30,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 prompt = promptValues;
             }
 
-            var authenticateResult = await request.HttpContext.AuthenticateAsync(_options.AuthenticationScheme);
+            var authenticateResult = await _handler.AuthenticateAsync(request.HttpContext);
 
             if (!authenticateResult.Succeeded)
             {

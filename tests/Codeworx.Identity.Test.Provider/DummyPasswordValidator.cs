@@ -7,10 +7,12 @@ namespace Codeworx.Identity.Test
     {
         public Task<bool> Validate(IUser user, string password)
         {
-            return Task.FromResult(
-                (user.Name == Constants.DefaultAdminUserName && password == Constants.DefaultAdminUserName)
-                || (user.Name == Constants.MultiTenantUserName && password == Constants.MultiTenantUserName)
-                || (user.Name == Constants.ForcePasswordUserName && password == Constants.ForcePasswordUserName));
+            if (user is DummyUserService.IDummyUser dummyUser)
+            {
+                return Task.FromResult(dummyUser.PasswordHash == password);
+            }
+
+            return Task.FromResult(false);
         }
     }
 }

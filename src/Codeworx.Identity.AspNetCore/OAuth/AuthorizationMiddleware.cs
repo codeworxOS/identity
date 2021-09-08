@@ -1,10 +1,8 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.OAuth;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OAuth
 {
@@ -22,21 +20,19 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             IAuthorizationService<AuthorizationRequest> authorizationService,
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
             IResponseBinder<AuthorizationSuccessResponse> authorizationSuccessResponseBinder,
-            IOptionsSnapshot<IdentityOptions> options)
+            IIdentityAuthenticationHandler handler)
         {
             ClaimsIdentity claimsIdentity = null;
 
-            var schema = options.Value.AuthenticationScheme;
-
-            var authResponse = await context.AuthenticateAsync(schema);
-
-            if (authResponse.Succeeded)
-            {
-                claimsIdentity = authResponse.Principal.Identity as ClaimsIdentity;
-            }
-
             try
             {
+                var authResponse = await handler.AuthenticateAsync(context);
+
+                if (authResponse.Succeeded)
+                {
+                    claimsIdentity = authResponse.Principal.Identity as ClaimsIdentity;
+                }
+
                 var authorizationRequest = await authorizationRequestBinder.BindAsync(context.Request)
                                                                            .ConfigureAwait(false);
 

@@ -90,6 +90,7 @@
             public const string Tenant = "tenant";
             public const string Upn = "upn";
             public const string AtHash = "at_hash";
+            public const string ForceChangePassword = "force_change_password";
         }
 
         public static class Forms

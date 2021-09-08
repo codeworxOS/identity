@@ -146,6 +146,12 @@ namespace Codeworx.Identity
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
+
+            if (user.ForceChangePassword)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
+            }
+
             if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))
             {
                 identity.AddClaim(new Claim(Constants.Claims.DefaultTenant, user.DefaultTenantKey));
