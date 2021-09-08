@@ -26,5 +26,10 @@ namespace Codeworx.Identity.Cryptography.Internal
         {
             return _key;
         }
+
+        public HashAlgorithm GetHashAlgorithm()
+        {
+            return SHA384.Create();
+        }
     }
 }

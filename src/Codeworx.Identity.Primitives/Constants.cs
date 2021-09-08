@@ -42,6 +42,9 @@
         public const string LoginProviderIdParameter = "login_provider_id";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
+        public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
+        public const string ForcePasswordUserName = "changepassword";
+
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
         public const string TenantNameProperty = "tenantName";
@@ -86,6 +89,7 @@
             public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
+            public const string AtHash = "at_hash";
         }
 
         public static class Forms

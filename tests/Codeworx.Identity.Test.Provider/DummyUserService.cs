@@ -21,6 +21,7 @@ namespace Codeworx.Identity.Test
             _users = new List<IDummyUser>();
             _users.Add(new DummyUser());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
+            _users.Add(new ForceChangePasswordUser());
         }
 
         public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
@@ -102,6 +103,21 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public bool ForceChangePassword => false;
+        }
+
+        public class ForceChangePasswordUser : IDummyUser
+        {
+            public string DefaultTenantKey => null;
+
+            public string Identity => Constants.ForcePasswordUserId;
+
+            public string Name => Constants.ForcePasswordUserName;
+
+            public string PasswordHash => null;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => true;
         }
     }
 }
