@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -117,6 +118,85 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.IsNotNull(refreshResponseData.AccessToken);
             Assert.AreNotEqual(refreshResponseData.AccessToken, tokenResponseData.AccessToken);
             CollectionAssert.AreEquivalent(tokenResponseData.Scope.Split(" "), refreshResponseData.Scope.Split(" "));
+        }
+
+        [Test]
+        public async Task RedeemRefreshCodeWithExplicitTenantScope_ExpectsOK()
+        {
+            var scopes = "openid offline_access tenant";
+            var tokenResponseData = await GetTokenResponse(scopes);
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            var refreshRequest = new TokenRequestBuilder()
+                .WithGrantType("refresh_token")
+                .WithRefreshCode(tokenResponseData.RefreshToken)
+                .WithClientId(Constants.DefaultCodeFlowClientId)
+                .WithClientSecret("clientSecret")
+                .WithScopes(scopes)
+                .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+            Assert.IsNotNull(refreshResponseData.RefreshToken);
+            Assert.IsNotNull(refreshResponseData.AccessToken);
+
+            var previousAccessToken = new JwtSecurityToken(tokenResponseData.AccessToken);
+            var refreshedAccessToken = new JwtSecurityToken(refreshResponseData.AccessToken);
+            Assert.IsTrue(previousAccessToken.Payload.ContainsKey("current_tenant"));
+            Assert.IsTrue(refreshedAccessToken.Payload.ContainsKey("current_tenant"));
+            Assert.AreEqual(previousAccessToken.Payload["current_tenant"].ToString(), refreshedAccessToken.Payload["current_tenant"].ToString());
+        }
+
+        [Test]
+        public async Task RedeemRefreshCodeWithExpirationDate_ExpectsOK()
+        {
+            var tokenResponseData = await GetTokenResponse("openid offline_access");
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            var refreshRequest = new TokenRequestBuilder()
+                .WithGrantType("refresh_token")
+                .WithRefreshCode(tokenResponseData.RefreshToken)
+                .WithClientId(Constants.DefaultCodeFlowClientId)
+                .WithClientSecret("clientSecret")
+                .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+            Assert.IsNotNull(refreshResponseData.RefreshToken);
+            Assert.IsNotNull(refreshResponseData.AccessToken);
+            Assert.AreNotEqual(refreshResponseData.AccessToken, tokenResponseData.AccessToken);
+
+            var previousAccessToken = new JwtSecurityToken(tokenResponseData.AccessToken);
+            var refreshedAccessToken = new JwtSecurityToken(refreshResponseData.AccessToken);
+
+            Assert.IsTrue(previousAccessToken.ValidFrom < previousAccessToken.ValidTo);
+            Assert.IsTrue(refreshedAccessToken.ValidFrom < refreshedAccessToken.ValidTo);
+
+            var previousAccessTokenDifference = previousAccessToken.ValidTo - previousAccessToken.ValidFrom;
+            var refreshedAccessTokenDifference = refreshedAccessToken.ValidTo - refreshedAccessToken.ValidFrom;
+            Assert.AreEqual(previousAccessTokenDifference, refreshedAccessTokenDifference);
         }
 
         [Test]
