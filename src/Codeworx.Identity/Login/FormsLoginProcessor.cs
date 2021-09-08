@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Login
                 case ProviderRequestType.Invitation:
                     return Task.FromResult<ILoginRegistrationInfo>(new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error));
                 case ProviderRequestType.Profile:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.UserName, _hasChangePasswordService, GetPasswodChangeUrl(request), error));
+                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, GetPasswodChangeUrl(request), error));
             }
 
             throw new NotSupportedException($"Request type {request.Type} not supported!");

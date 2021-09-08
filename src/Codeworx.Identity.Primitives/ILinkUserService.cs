@@ -7,5 +7,7 @@ namespace Codeworx.Identity
     public interface ILinkUserService
     {
         Task LinkUserAsync(IUser user, IExternalLoginData loginData);
+
+        Task UnlinkUserAsync(IUser user, string providerId);
     }
 }

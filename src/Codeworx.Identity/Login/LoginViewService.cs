@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
 {
@@ -9,20 +11,45 @@ namespace Codeworx.Identity.Login
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
         private readonly IUserService _userService;
+        private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IdentityOptions _options;
 
-        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService)
+        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService, IBaseUriAccessor baseUriAccessor, IOptions<IdentityOptions> options)
         {
             _loginService = loginService;
             _identityService = identityService;
             _userService = userService;
+            _baseUriAccessor = baseUriAccessor;
+            _options = options.Value;
         }
 
-        public async Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest request)
+        public Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest loggedin)
         {
-            var response = await _loginService.GetRegistrationInfosAsync(new ProviderRequest(ProviderRequestType.Profile, request.ReturnUrl, request.Prompt, null, null));
-            var user = await _userService.GetUserByIdentifierAsync(request.Identity);
+            string returnUrl = loggedin.ReturnUrl;
+            UriBuilder builder = null;
 
-            return new LoggedinResponse(user, response.Groups, request.ReturnUrl);
+            if (returnUrl == null)
+            {
+                builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                builder.AppendPath(_options.AccountEndpoint);
+                builder.AppendPath("me");
+            }
+            else
+            {
+                builder = new UriBuilder(returnUrl);
+            }
+
+            if (loggedin.LoginProviderId != null)
+            {
+                builder.AppendQueryParameter(Constants.LoginProviderIdParameter, loggedin.LoginProviderId);
+            }
+
+            if (loggedin.LoginProviderError != null)
+            {
+                builder.AppendQueryParameter(Constants.LoginProviderErrorParameter, loggedin.LoginProviderError);
+            }
+
+            return Task.FromResult(new LoggedinResponse(builder.ToString()));
         }
 
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)

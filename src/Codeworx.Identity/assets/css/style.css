@@ -24,7 +24,6 @@ body {
 }
 
     #loginContainer:before {
-        content: "Login";
         font-family: "Arial Black";
         font-size: 30px;
         color: #333333;
@@ -35,11 +34,23 @@ body {
         flex-direction: column;
     }
 
+    #loginContainer.login-view:before {
+        content: "Login";
+    }
+
+    #loginContainer.profile-view:before {
+        content: "Profile";
+    }
+
+    #loginContainer.change-password-view:before {
+        content: "Profile";
+    }
+
     #loginContainer.invitation:before {
         content: "Set Password";
     }
 
-    #loginContainer form:after {
+    #loginContainer.login-view ul#external:before {
         content: "Or login with";
         font-family: Arial;
         font-size: 16px;
@@ -47,7 +58,18 @@ body {
         color: #999999;
         text-align: center;
         margin-bottom: 10px;
-        margin-top: 40px;
+        margin-top: 10px;
+    }
+
+    #loginContainer.invitation ul#external:before {
+        content: "Or connect with";
+        font-family: Arial;
+        font-size: 16px;
+        width: 100%;
+        color: #999999;
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 10px;
     }
 
     #loginContainer form {
@@ -66,95 +88,155 @@ body {
         height: 60px
     }
 
-        #loginContainer input[type="checkbox"] {
-            display: none;
-        }
-
-            #loginContainer input[type="checkbox"] + label {
-                font-family: Arial;
-                color: #999999;
-                line-height: 1.2em;
-                font-size: 16px;
-                cursor: pointer;
-                display: flex;
-            }
-
-                #loginContainer input[type="checkbox"] + label svg {
-                    margin-right: 8px;
-                }
-
-                    #loginContainer input[type="checkbox"] + label svg rect {
-                        stroke: #af110e;
-                    }
-
-                    #loginContainer input[type="checkbox"] + label svg #checked {
-                        stroke: none;
-                    }
-
-            #loginContainer input[type="checkbox"]:checked + label svg #checked {
-                stroke: #af110e;
-            }
-
-    #loginContainer button[type="submit"] {
-        font-size: 16px;
-        text-transform: uppercase;
-        color: white;
-        background: #af110e;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-        height: 60px;
-        margin-top: 25px;
+    #loginContainer div.change-password-box {
+        text-align: right;
     }
 
-        #loginContainer button[type="submit"]:hover {
-            background: red;
-        }
-
-    #loginContainer .error {
-        font-family: Arial;
-        color: red;
-        margin-top: 15px;
-        width: 100%;
-    }
-
-    #loginContainer #external {
+    #loginContainer div.forms-profile {
         display: flex;
-        flex-flow: row wrap;
-        justify-content: space-between;
-        list-style-type: none;
+        flex-direction: column;
     }
 
-        #loginContainer #external li {
-            height: 40px;
-            width: calc((100% - 10px) / 2);
-            margin-top: 10px;
+    #loginContainer a.change-password-link {
+        font-family: Arial;
+        color: #af110e;
+        text-decoration: none;
+        font-weight: bold;
+        line-height: 1.2em;
+        font-size: 16px;
+    }
+
+
+    #loginContainer input[type="checkbox"] {
+        display: none;
+    }
+
+        #loginContainer input[type="checkbox"] + label {
+            font-family: Arial;
+            color: #999999;
+            line-height: 1.2em;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
         }
 
-            #loginContainer #external li a {
-                font-family: Arial;
-                text-decoration: none;
-                font-size: 16px;
-                color: #333333;
-                border: 1px solid #e6e6e6;
-                border-radius: 3px;
-                cursor: pointer;
-                height: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+            #loginContainer input[type="checkbox"] + label svg {
+                margin-right: 8px;
             }
 
-                #loginContainer #external li a:hover {
-                    color: #af110e;
-                    border-color: red;
+                #loginContainer input[type="checkbox"] + label svg rect {
+                    stroke: #af110e;
                 }
 
-                #loginContainer #external li a img {
-                    width: 24px;
-                    margin-right: 10px;
+                #loginContainer input[type="checkbox"] + label svg #checked {
+                    stroke: none;
                 }
 
+        #loginContainer input[type="checkbox"]:checked + label svg #checked {
+            stroke: #af110e;
+        }
+
+.login-submit {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: white;
+    background: #af110e;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 60px;
+    margin-top: 25px;
+}
+
+    .login-submit:hover {
+        background: red;
+    }
+
+#loginContainer .error {
+    font-family: Arial;
+    color: red;
+    margin-top: 15px;
+    width: 100%;
+}
+
+#loginContainer #external,
+#loginContainer #external-profile {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: -10px;
+}
+
+    #loginContainer #external > * {
+        flex: 1 1 160px;
+        margin: 10px;
+    }
+
+    #loginContainer #external-profile > * {
+        flex: 1 1 auto;
+        margin: 10px;
+    }
+
+.redirect-link {
+    font-family: Arial;
+    text-decoration: none;
+    font-size: 16px;
+    color: #333333;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    padding: 10px;
+    display: flex;
+}
+
+a.redirect-link:hover {
+    color: #af110e;
+    border-color: red;
+}
+
+.redirect-link.linked {
+    position: relative;
+}
+
+    .redirect-link.linked .linked-icon {
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        right: -8px;
+        top: 3px;
+    }
+
+        .redirect-link.linked .linked-icon .unlink-submit {
+            background-image: url(../images/tick-32.png);
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            border: none;
+        }
+
+            .redirect-link.linked .linked-icon .unlink-submit:hover {
+                background-image: url(../images/cancel-32.png);
+            }
+
+.provider-icon {
+    padding-left: 46px;
+    background-image: url('../images/identity-64.png');
+    background-size: 16px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: -26px center;
+}
+
+    .provider-icon.icon-windows {
+        background-image: url('../images/windows-64.png');
+    }
+
+    .provider-icon.icon-microsoft {
+        background-image: url('../images/microsoft-64.png');
+    }
 
 
 .ispinner {

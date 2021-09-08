@@ -22,10 +22,22 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
         public async Task<LoginRequest> BindAsync(HttpRequest request)
         {
             string returnUrl = null;
+            string providerId = null;
+            string providerError = null;
 
             if (request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrlValues))
             {
                 returnUrl = returnUrlValues.First();
+            }
+
+            if (request.Query.TryGetValue(Constants.LoginProviderIdParameter, out var providerIdValues))
+            {
+                providerId = providerIdValues.FirstOrDefault();
+            }
+
+            if (request.Query.TryGetValue(Constants.LoginProviderErrorParameter, out var errorValues))
+            {
+                providerError = errorValues.FirstOrDefault();
             }
 
             string prompt = null;
@@ -39,23 +51,11 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             if (authenticateResult.Succeeded && prompt?.Contains(Constants.OAuth.Prompt.Login) != true)
             {
-                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, prompt);
+                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, providerId, providerError);
             }
 
             if (HttpMethods.IsGet(request.Method))
             {
-                string providerId = null;
-                string providerError = null;
-                if (request.Query.TryGetValue(Constants.LoginProviderIdParameter, out var providerIdValues))
-                {
-                    providerId = providerIdValues.FirstOrDefault();
-                }
-
-                if (request.Query.TryGetValue(Constants.LoginProviderErrorParameter, out var errorValues))
-                {
-                    providerError = errorValues.FirstOrDefault();
-                }
-
                 return new LoginRequest(returnUrl, prompt, providerId, providerError);
             }
             else if (HttpMethods.IsPost(request.Method))
@@ -64,7 +64,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 {
                     var username = request.Form["username"].FirstOrDefault();
                     var password = request.Form["password"].FirstOrDefault();
-                    var providerId = request.Form["provider-id"].FirstOrDefault();
+                    providerId = request.Form["provider-id"].FirstOrDefault();
 
                     return new LoginFormRequest(providerId, returnUrl, username, password, prompt);
                 }

@@ -1,85 +1,33 @@
-﻿using System.IO;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Codeworx.Identity.ContentType;
+﻿using System.Threading.Tasks;
+using Codeworx.Identity.Account;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Codeworx.Identity.AspNetCore
 {
     public class ProfileMiddleware
     {
-        private readonly IContentTypeLookup _contentTypeLookup;
         private readonly RequestDelegate _next;
 
-        public ProfileMiddleware(RequestDelegate next, IContentTypeLookup contentTypeLookup)
+        public ProfileMiddleware(RequestDelegate next)
         {
             _next = next;
-            _contentTypeLookup = contentTypeLookup;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, IProfileService profileService, IRequestBinder<ProfileRequest> requestBinder, IResponseBinder<ProfileResponse> responseBinder)
         {
-            if (context.User == null)
+            try
             {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                var profileRequest = await requestBinder.BindAsync(context.Request);
+                var profileResponse = await profileService.ProcessAsync(profileRequest);
+                await responseBinder.BindAsync(profileResponse, context.Response);
                 return;
             }
-
-            var user = (ClaimsIdentity)context.User.Identity;
-
-            ////var data = ((ClaimsIdentity)context.User.Identity).ToIdentityData();
-
-            if (_contentTypeLookup.TryGetContentType(Constants.JsonExtension, out var contentType))
+            catch (ErrorResponseException error)
             {
-                context.Response.ContentType = contentType;
-            }
-
-            context.Response.StatusCode = StatusCodes.Status200OK;
-
-            var setting = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            };
-            var ser = JsonSerializer.Create(setting);
-
-            using (var streamWriter = new StreamWriter(context.Response.Body))
-            {
-                using (var jsonTextWriter = new JsonTextWriter(streamWriter))
-                {
-                    await jsonTextWriter.WriteStartObjectAsync();
-
-                    await jsonTextWriter.WritePropertyNameAsync(Constants.Claims.Id);
-                    await jsonTextWriter.WriteValueAsync(user.GetUserId());
-
-                    ////await jsonTextWriter.WritePropertyNameAsync(nameof(data.Login));
-                    ////await jsonTextWriter.WriteValueAsync(data.Login);
-
-                    ////foreach (var item in data.Claims)
-                    ////{
-                    ////    await jsonTextWriter.WritePropertyNameAsync(item.Type);
-                    ////    if (item.Values.Count() > 1)
-                    ////    {
-                    ////        await jsonTextWriter.WriteStartArrayAsync();
-                    ////    }
-
-                    ////    foreach (var value in item.Values)
-                    ////    {
-                    ////        await jsonTextWriter.WriteValueAsync(value);
-                    ////    }
-
-                    ////    if (item.Values.Count() > 1)
-                    ////    {
-                    ////        await jsonTextWriter.WriteEndArrayAsync();
-                    ////    }
-                    ////}
-
-                    await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
-
-                    await jsonTextWriter.FlushAsync().ConfigureAwait(false);
-                    await jsonTextWriter.CloseAsync().ConfigureAwait(false);
-                }
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
+                return;
             }
         }
     }

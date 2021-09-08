@@ -1,0 +1,23 @@
+﻿
+<div id="external-profile">
+    {{#Registrations}}
+    <div class="redirect-link-profile">
+        {{#IsLinked}}
+        <div class="redirect-link linked provider-icon {{CssClass}}">
+            {{Name}}
+            <div class="linked-icon">
+                <form method="get" action="{{RedirectUri}}">
+                    <button class="unlink-submit" type="submit"></button>
+                </form>
+            </div>
+        </div>
+        {{/IsLinked}}
+        {{^IsLinked}}
+        <a class="redirect-link provider-icon {{CssClass}}" href="{{RedirectUri}}">{{Name}}</a>
+        {{/IsLinked}}
+    </div>
+    {{/Registrations}}
+</div>
+{{#Registrations}}
+{{#Error}}<div class="error">{{.}}</div>{{/Error}}
+{{/Registrations}}

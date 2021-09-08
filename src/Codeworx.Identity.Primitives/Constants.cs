@@ -26,7 +26,6 @@
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
         public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
-        public const string InvitationNotSupported = "Invitation feature is not supported!";
         public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
@@ -35,6 +34,7 @@
         public const string FormsLoginProviderName = "Form";
         public const string GenericLoginError = "There was an unexpected login error!";
         public const string InvalidCredentialsError = "Username or password is not valid!";
+        public const string InvitationNotSupported = "Invitation feature is not supported!";
         public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
@@ -42,6 +42,9 @@
         public const string LoginProviderIdParameter = "login_provider_id";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
+        public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
+        public const string ForcePasswordUserName = "changepassword";
+
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
         public const string TenantNameProperty = "tenantName";
@@ -65,19 +68,6 @@
         private const string VsChar = @"[\u0020-\u007e]";
         private const string VsChars = @"^" + VsChar + @"+$";
 
-        public static class KeyType
-        {
-            public const string Rsa = "RSA";
-            public const string EllipticCurve = "EC";
-            public const string Oct = "oct";
-        }
-
-        public static class KeyUse
-        {
-            public const string Signature = "sig";
-            public const string Encryption = "enc";
-        }
-
         public static class Assets
         {
             public const string Css = "/identity/css";
@@ -90,8 +80,8 @@
             public const string Audience = "aud";
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
-            public const string ExternalTokenKey = "external_token_key";
             public const string ExternalToken = "external_token";
+            public const string ExternalTokenKey = "external_token_key";
             public const string Group = "group";
             public const string Id = "id";
             public const string Issuer = "iss";
@@ -99,6 +89,7 @@
             public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
+            public const string AtHash = "at_hash";
         }
 
         public static class Forms
@@ -107,6 +98,19 @@
             public const string CurrentPassword = "current-password";
             public const string Password = "password";
             public const string ProviderId = "provider-id";
+        }
+
+        public static class KeyType
+        {
+            public const string EllipticCurve = "EC";
+            public const string Oct = "oct";
+            public const string Rsa = "RSA";
+        }
+
+        public static class KeyUse
+        {
+            public const string Encryption = "enc";
+            public const string Signature = "sig";
         }
 
         public static class OAuth
@@ -171,9 +175,9 @@
             public class GrantType
             {
                 public const string AuthorizationCode = "authorization_code";
-                public const string RefreshToken = "refresh_token";
                 public const string ClientCredentials = "client_credentials";
                 public const string Password = "password";
+                public const string RefreshToken = "refresh_token";
             }
 
             public class Prompt
@@ -252,9 +256,9 @@
 
             public static class ExternalToken
             {
+                public const string AccessToken = "external_token:access_token";
                 public const string All = "external_token";
                 public const string IdToken = "external_token:id_token";
-                public const string AccessToken = "external_token:access_token";
             }
         }
 
@@ -264,11 +268,17 @@
             public const string FormsLogin = "formslogin";
             public const string FormsProfile = "formsprofile";
             public const string Redirect = "redirect";
+            public const string RedirectProfile = "redirectprofile";
         }
 
         public static class Token
         {
             public const string Jwt = "jwt";
+        }
+
+        public class Icons
+        {
+            public const string Windows = "icon-windows";
         }
     }
 }

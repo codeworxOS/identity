@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
-            return ToUser(user);
+            return await ToUser(user);
         }
 
         public virtual async Task<IUser> GetUserByIdAsync(string userId)
@@ -40,7 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 
-            return ToUser(user);
+            return await ToUser(user);
         }
 
         public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
@@ -56,7 +57,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
 
-            return ToUser(user);
+            return await ToUser(user);
         }
 
         public async Task LinkUserAsync(IUser user, IExternalLoginData loginData)
@@ -93,17 +94,35 @@ namespace Codeworx.Identity.EntityFrameworkCore
             }
         }
 
+        public async Task UnlinkUserAsync(IUser user, string providerId)
+        {
+            var userId = Guid.Parse(user.Identity);
+            var providerGuid = Guid.Parse(providerId);
+
+            var query = _context.Set<AuthenticationProviderRightHolder>();
+
+            var link = await query.Where(p => p.RightHolderId == userId && p.ProviderId == providerGuid).FirstOrDefaultAsync();
+            if (link != null)
+            {
+                _context.Remove(link);
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
         protected virtual IQueryable<User> GetUserQuery()
         {
             return _context.Set<User>().Where(p => !p.IsDisabled);
         }
 
-        private Data.User ToUser(User user)
+        private async Task<Data.User> ToUser(User user)
         {
             if (user == null)
             {
                 return null;
             }
+
+            var providers = await _context.Set<Model.AuthenticationProviderRightHolder>().Where(p => p.RightHolderId == user.Id).Select(p => p.ProviderId).ToListAsync();
 
             return new Data.User
             {
@@ -112,6 +131,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 ForceChangePassword = user.ForceChangePassword,
                 Name = user.Name,
                 PasswordHash = user.PasswordHash,
+                LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),
             };
         }
     }

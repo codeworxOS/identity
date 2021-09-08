@@ -183,6 +183,11 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
                        p => p.UseMiddleware<RedirectMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/me", out var remaining) && remaining.HasValue,
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<ProfileLinkMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
@@ -244,6 +249,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<RedirectRequest>, RedirectRequestBinder>();
             collection.AddTransient<IRequestBinder<InvitationViewRequest>, InvitationViewRequestBinder>();
             collection.AddTransient<IRequestBinder<PasswordChangeRequest>, PasswordChangeRequestBinder>();
+            collection.AddTransient<IRequestBinder<ProfileRequest>, ProfileRequestBinder>();
+            collection.AddTransient<IRequestBinder<ProfileLinkRequest>, ProfileLinkRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -259,7 +266,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
             collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
-            collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
+            collection.AddTransient<IResponseBinder<ProfileResponse>, ProfileResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();
             collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
@@ -269,11 +276,14 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginRedirectResponse>, LoginRedirectResponseBinder>();
+            collection.AddTransient<IResponseBinder<LoggedinResponse>, LoggedinResponseBinder>();
             collection.AddTransient<IResponseBinder<LogoutResponse>, LogoutResponseBinder>();
             collection.AddTransient<IResponseBinder<RedirectViewResponse>, RedirectViewResponseBinder>();
             collection.AddTransient<IResponseBinder<InvitationViewResponse>, InvitationViewResponseBinder>();
             collection.AddTransient<IResponseBinder<PasswordChangeViewResponse>, PasswordChangeViewResponseBinder>();
             collection.AddTransient<IResponseBinder<PasswordChangeResponse>, PasswordChangeResponseBinder>();
+            collection.AddTransient<IResponseBinder<ProfileResponse>, ProfileResponseBinder>();
+            collection.AddTransient<IResponseBinder<ProfileLinkResponse>, ProfileLinkResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
