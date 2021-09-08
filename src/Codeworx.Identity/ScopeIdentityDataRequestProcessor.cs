@@ -45,14 +45,6 @@ namespace Codeworx.Identity
             }
 
             builder = builder.WithScopes(newScopes.ToArray());
-
-            if (request is OpenId.AuthorizationRequest)
-            {
-                if (!builder.Parameters.Scopes.Contains(Constants.OpenId.Scopes.OpenId))
-                {
-                    builder.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.");
-                }
-            }
         }
     }
 }

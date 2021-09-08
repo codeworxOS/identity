@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Codeworx.Identity.Cache;
@@ -8,7 +7,7 @@ namespace Codeworx.Identity.OAuth.Token
 {
     internal class RefreshTokenParameters : IRefreshTokenParameters
     {
-        public RefreshTokenParameters(string clientId, string clientSecret, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem, TimeSpan tokenExpiration)
+        public RefreshTokenParameters(string clientId, string clientSecret, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem)
         {
             ClientId = clientId;
             Scopes = scopes.ToImmutableList();
@@ -16,7 +15,6 @@ namespace Codeworx.Identity.OAuth.Token
             ClientSecret = clientSecret;
             RefreshToken = refreshToken;
             CacheItem = cacheItem;
-            TokenExpiration = tokenExpiration;
         }
 
         public string ClientId { get; }
@@ -34,8 +32,6 @@ namespace Codeworx.Identity.OAuth.Token
         public string ClientSecret { get; }
 
         public IRefreshTokenCacheItem CacheItem { get; }
-
-        public TimeSpan TokenExpiration { get; }
 
         public void Throw(string error, string errorDescription)
         {

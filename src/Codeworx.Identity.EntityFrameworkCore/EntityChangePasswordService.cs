@@ -29,6 +29,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             userEntity.PasswordHash = hash;
             userEntity.PasswordChanged = DateTime.UtcNow;
             userEntity.FailedLoginCount = 0;
+            userEntity.ForceChangePassword = false;
 
             var refreshToken = await _context.Set<UserRefreshToken>()
                                             .Where(p => p.UserId == userEntity.Id)

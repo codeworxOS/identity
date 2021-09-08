@@ -12,13 +12,12 @@ namespace Codeworx.Identity.OAuth.Token
         private ClaimsIdentity _user;
         private string[] _scopes;
         private IRefreshTokenCacheItem _cacheItem;
-        private TimeSpan _tokenExpiration;
 
         public RefreshTokenParametersBuilder()
         {
         }
 
-        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_clientId, _clientSecret, _refreshToken, _scopes, _user, _cacheItem, _tokenExpiration);
+        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_clientId, _clientSecret, _refreshToken, _scopes, _user, _cacheItem);
 
         public void SetValue(string property, object value)
         {
@@ -41,9 +40,6 @@ namespace Codeworx.Identity.OAuth.Token
                     break;
                 case nameof(IRefreshTokenParameters.CacheItem):
                     _cacheItem = (IRefreshTokenCacheItem)value;
-                    break;
-                case nameof(IRefreshTokenParameters.TokenExpiration):
-                    _tokenExpiration = (TimeSpan)value;
                     break;
                 case nameof(IRefreshTokenParameters.Nonce):
                 case nameof(IRefreshTokenParameters.State):

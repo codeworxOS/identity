@@ -50,6 +50,16 @@ namespace Codeworx.Identity.Account
                 error = "Passwords do not match!";
                 hasError = true;
             }
+            else if (request.NewPassword == request.CurrentPassword)
+            {
+                error = "The new password cannot be equal to the current password!";
+                hasError = true;
+            }
+            else if (user.Identity == request.NewPassword)
+            {
+                error = "The new password cannot be equal to the login!";
+                hasError = true;
+            }
             else if (!Regex.IsMatch(request.NewPassword, policy.Regex))
             {
                 error = policy.Description;

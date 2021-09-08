@@ -8,7 +8,7 @@ namespace Codeworx.Identity.Test
     {
         public static IIdentityServiceBuilder UseTestSetup(this IIdentityServiceBuilder builder)
         {
-            return builder.Users<DummyUserService>()
+            return builder.Users<DummyUserService>(ServiceLifetime.Singleton)
                           .PasswordValidator<DummyPasswordValidator>()
                           .LoginRegistrations<DummyLoginRegistrationProvider>()
                           .ReplaceService<IChangePasswordService, DummyChangePasswordService>(ServiceLifetime.Scoped)

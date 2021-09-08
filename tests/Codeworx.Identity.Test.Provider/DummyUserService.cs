@@ -63,28 +63,41 @@ namespace Codeworx.Identity.Test
 
         public interface IDummyUser : IUser
         {
+            void ResetPassword(string password);
+
             IDictionary<string, string> ExternalIdentifiers { get; }
         }
 
         public class DummyUser : IDummyUser
         {
+            private bool _forceChangePassword;
+            private string _password = Constants.DefaultAdminUserName;
+
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.DefaultAdminUserId;
 
             public string Name => Constants.DefaultAdminUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
-            public bool ForceChangePassword => false;
+            public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
         }
 
         public class MultiTenantDummyUser : IDummyUser
         {
+            private bool _forceChangePassword;
+            private string _password = Constants.MultiTenantUserName;
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
                 this.DefaultTenantKey = defaultTenantKey;
@@ -96,30 +109,45 @@ namespace Codeworx.Identity.Test
 
             public string Name => Constants.MultiTenantUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
-            public bool ForceChangePassword => false;
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public void ResetPassword(string password)
+            {
+                _password = password;
+                _forceChangePassword = false;
+            }
         }
 
         public class ForceChangePasswordUser : IDummyUser
         {
+            private bool _forceChangePassword = true;
+            private string _password = Constants.ForcePasswordUserName;
+
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.ForcePasswordUserId;
 
             public string Name => Constants.ForcePasswordUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
-            public bool ForceChangePassword => true;
+            public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
+
+            public void ResetPassword(string password)
+            {
+                _password = password;
+                _forceChangePassword = false;
+            }
         }
     }
 }
