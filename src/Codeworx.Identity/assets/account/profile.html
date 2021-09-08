@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <base href="{{base-href}}">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>Profile</title>
+    {{> Styles}}
+</head>
+
+<body>
+    <div id="loginContainer" class="profile-view">
+        {{#Groups}}
+        {{> (RegistrationTemplate)}}
+        {{/Groups}}
+        {{#HasError}}
+        <div class="error">{{Error}}</div>
+        {{/HasError}}
+    </div>
+</body>
+</html>

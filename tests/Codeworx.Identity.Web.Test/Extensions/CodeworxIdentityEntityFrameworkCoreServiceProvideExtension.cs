@@ -241,14 +241,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
                             SortOrder = 2,
-                            RightHolders =
-                            {
-                                new AuthenticationProviderRightHolder
-                                {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
-                                    ExternalIdentifier = "S-1-12-1-3570142310-1302179307-1636533923-2810485112",
-                                },
-                            },
                         });
                     }
 
@@ -264,28 +256,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
                             {
-                                BaseUri = new Uri("https://login.microsoftonline.com/51088e07-f352-4a0f-b11e-4be93b83c484/oauth2/v2.0/"),
+                                BaseUri = new Uri($"https://login.microsoftonline.com/{configuration.GetValue<string>("TestSetup:ExternalTenantId")}/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
+                                CssClass = "icon-microsoft",
                                 Scope = configuration.GetValue<string>("TestSetup:ExternalScopes"),
                                 TokenHandling = ExternalTokenHandling.Refresh,
                                 IdentifierClaim = "oid",
                                 ClientId = configuration.GetValue<string>("TestSetup:ExternalClientId"),
                                 ClientSecret = configuration.GetValue<string>("TestSetup:ExternalClientSecret"),
-                            }),
-                            RightHolders =
-                            {
-                                new AuthenticationProviderRightHolder
-                                {
-                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
-                                    ExternalIdentifier = "d4cc0c66-adeb-4d9d-a386-8b61789984a7",
-                                },
-                                new AuthenticationProviderRightHolder
-                                {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
-                                    ExternalIdentifier = Constants.MultiTenantUserId,
-                                },
-                            },
+                            })
                         });
                     }
 

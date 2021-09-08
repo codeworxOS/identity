@@ -1,10 +1,10 @@
-﻿#loginContainer button[type="submit"] {
+﻿#loginContainer #loginButton {
     background-color: blue;
 }
 
-    #loginContainer button[type="submit"]:hover {
-        background: blueviolet;
-    }
+#loginContainer #loginButton:hover {
+    background: blueviolet;
+}
 
 #loginContainer input[type="checkbox"] + label svg rect {
     stroke: blue;

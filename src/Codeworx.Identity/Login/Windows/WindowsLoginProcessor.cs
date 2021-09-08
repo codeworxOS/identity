@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
@@ -23,24 +24,42 @@ namespace Codeworx.Identity.Login.Windows
 
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
-            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
-            uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
+            var cssClass = Constants.Icons.Windows;
 
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             var returnUrl = request.ReturnUrl ?? $"{_options.AccountEndpoint}/login";
 
-            if (request.Type == ProviderRequestType.Invitation)
+            switch (request.Type)
             {
-                uriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
-            }
-            else
-            {
-                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                case ProviderRequestType.Login:
+                    uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
+                    uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    break;
+                case ProviderRequestType.Invitation:
+                    uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
+                    uriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
+                    uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    break;
+                case ProviderRequestType.Profile:
+                    uriBuilder.AppendPath($"{_options.AccountEndpoint}/me/{configuration.Id}");
+                    break;
             }
 
             string error = null;
             request.ProviderErrors.TryGetValue(configuration.Id, out error);
 
-            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, uriBuilder.ToString(), error);
+            ILoginRegistrationInfo result = null;
+
+            if (request.Type == ProviderRequestType.Profile)
+            {
+                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                uriBuilder.AppendPath(isLinked ? "unlink" : "link");
+                result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, uriBuilder.ToString(), isLinked, error);
+            }
+            else
+            {
+                result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, cssClass, uriBuilder.ToString(), error);
+            }
 
             return Task.FromResult<ILoginRegistrationInfo>(result);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -55,20 +56,30 @@ namespace Codeworx.Identity.Login.OAuth
         public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             var oauthConfiguration = this.ToOAuthLoginConfiguration(configuration.ProcessorConfiguration);
+            var cssClass = oauthConfiguration.CssClass;
 
             var redirectUriBuilder = new UriBuilder(_baseUri);
             redirectUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
-            redirectUriBuilder.AppendPath("oauth");
-            redirectUriBuilder.AppendPath(configuration.Id);
 
-            if (request.Type == ProviderRequestType.Invitation)
+            var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/me";
+
+            switch (request.Type)
             {
-                redirectUriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
-            }
-            else
-            {
-                var returnUrl = request.ReturnUrl ?? $"{_identityOptions.AccountEndpoint}/me";
-                redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                case ProviderRequestType.Login:
+                    redirectUriBuilder.AppendPath("oauth");
+                    redirectUriBuilder.AppendPath(configuration.Id);
+                    redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    break;
+                case ProviderRequestType.Invitation:
+                    redirectUriBuilder.AppendPath("oauth");
+                    redirectUriBuilder.AppendPath(configuration.Id);
+                    redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    redirectUriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
+                    break;
+                case ProviderRequestType.Profile:
+                    redirectUriBuilder.AppendPath("me");
+                    redirectUriBuilder.AppendPath(configuration.Id);
+                    break;
             }
 
             if (!string.IsNullOrEmpty(request.Prompt))
@@ -79,7 +90,19 @@ namespace Codeworx.Identity.Login.OAuth
             string error = null;
             request.ProviderErrors.TryGetValue(configuration.Id, out error);
 
-            var result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, redirectUriBuilder.ToString(), error);
+            ILoginRegistrationInfo result = null;
+
+            if (request.Type == ProviderRequestType.Profile)
+            {
+                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                redirectUriBuilder.AppendPath(isLinked ? "unlink" : "link");
+
+                result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, redirectUriBuilder.ToString(), isLinked, error);
+            }
+            else
+            {
+                result = new RedirectRegistrationInfo(configuration.Id, configuration.Name, cssClass, redirectUriBuilder.ToString(), error);
+            }
 
             return Task.FromResult<ILoginRegistrationInfo>(result);
         }
