@@ -24,6 +24,7 @@ namespace Codeworx.Identity.Configuration
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
             UserInfoEndpoint = "/userinfo";
             WindowsAuthenticationEnabled = false;
+            CompanyName = "Identity";
         }
 
         public string AccountEndpoint { get; set; }
@@ -60,6 +61,10 @@ namespace Codeworx.Identity.Configuration
 
         public bool WindowsAuthenticationEnabled { get; set; }
 
+        public string CompanyName { get; set; }
+
+        public string SupportEmail { get; set; }
+
         public void CopyTo(IdentityOptions target)
         {
             target.AccountEndpoint = this.AccountEndpoint;
@@ -76,6 +81,9 @@ namespace Codeworx.Identity.Configuration
             target.PasswordDescription = this.PasswordDescription;
             target.PasswordRegex = this.PasswordRegex;
             target.SelectTenantEndpoint = this.SelectTenantEndpoint;
+            target.CompanyName = this.CompanyName;
+            target.SupportEmail = this.SupportEmail;
+
             target.Styles.Clear();
 
             foreach (var item in this.Styles)

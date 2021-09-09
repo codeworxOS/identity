@@ -6,6 +6,7 @@ using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Notification;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
@@ -35,6 +36,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IInvitationViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
             this.ReplaceService<IPasswordChangeViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
             this.ReplaceService<IProfileViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
+            this.ReplaceService<IForgotPasswordViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
 
             this.ReplaceService<ILoginViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<ITenantViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
@@ -43,6 +45,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IInvitationViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<IPasswordChangeViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<IProfileViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
+            this.ReplaceService<IForgotPasswordViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
 
             this.ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped);
             this.ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped);
@@ -55,6 +58,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IForgotPasswordService, ForgotPasswordService>(ServiceLifetime.Scoped);
+            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Singleton);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
@@ -87,6 +92,7 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
         }
 
         public IServiceCollection ServiceCollection { get; }

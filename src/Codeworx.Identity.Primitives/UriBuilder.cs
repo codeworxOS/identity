@@ -15,8 +15,13 @@ namespace Codeworx.Identity
         private ImmutableArray<string> _segments;
 
         public UriBuilder(string baseUrl)
+            : this(new Uri(baseUrl))
         {
-            var uri = new Uri(baseUrl);
+        }
+
+        public UriBuilder(Uri baseUrl)
+        {
+            var uri = baseUrl;
 
             if (!uri.IsDefaultPort)
             {

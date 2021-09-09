@@ -11,6 +11,11 @@
         </svg>
         Remember me
     </label>
+    {{#ForgotPasswordUrl}}
+    <div class="forgot-password-box">
+        <a class="forgot-password-link" href="{{.}}">Forgot password</a>
+    </div>
+    {{/ForgotPasswordUrl}}
     <div class="error">{{Error}}</div>
     <button type="submit" class="login-submit" id="loginButton">login</button>
 </form>

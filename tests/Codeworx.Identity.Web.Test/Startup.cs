@@ -3,6 +3,7 @@ using System.Reflection;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
+using Codeworx.Identity.Mail;
 using Codeworx.Identity.Web.Test.Tenant;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -72,13 +73,16 @@ namespace Codeworx.Identity.Web.Test
             services.AddRouting();
             services.AddControllers();
 
+            services.Configure<SmtpOptions>(this._configuration.GetSection("Smtp"));
+
             services.AddCodeworxIdentity(_configuration)
                     //.Pbkdf2()
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
+                    .AddSmtpMailConnector()
                     .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
-                    //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+            //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
             //.UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
