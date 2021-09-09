@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 
-namespace Codeworx.Identity.Login
+namespace Codeworx.Identity.Account
 {
     public interface IPasswordChangeService
     {

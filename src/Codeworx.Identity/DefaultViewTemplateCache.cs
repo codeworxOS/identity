@@ -11,6 +11,7 @@ namespace Codeworx.Identity
         ITenantViewTemplateCache,
         IFormPostResponseTypeTemplateCache,
         IPasswordChangeViewTemplateCache,
+        IForgotPasswordViewTemplateCache,
         IRedirectViewTemplateCache,
         IProfileViewTemplateCache
     {
@@ -22,6 +23,7 @@ namespace Codeworx.Identity
         private readonly IInvitationViewTemplate _invitationViewTemplate;
         private readonly IPasswordChangeViewTemplate _passwordChangeViewTemplate;
         private readonly IProfileViewTemplate _profileViewTemplate;
+        private readonly IForgotPasswordViewTemplate _forgotPasswordViewTemplate;
         private Func<object, string> _redirect;
         private Func<object, string> _login;
         private Func<object, string> _tenant;
@@ -30,6 +32,8 @@ namespace Codeworx.Identity
         private Func<object, string> _invitation;
         private Func<object, string> _passwordChange;
         private Func<object, string> _profileView;
+        private Func<object, string> _forgotPassword;
+        private Func<object, string> _forgotPasswordComplete;
 
         public DefaultViewTemplateCache(
             ITemplateCompiler compiler,
@@ -39,7 +43,8 @@ namespace Codeworx.Identity
             IFormPostResponseTypeTemplate formPostResponseTypeTemplate,
             IInvitationViewTemplate invitationViewTemplate,
             IPasswordChangeViewTemplate passwordChangeViewTemplate,
-            IProfileViewTemplate profileViewTemplate)
+            IProfileViewTemplate profileViewTemplate,
+            IForgotPasswordViewTemplate forgotPasswordViewTemplate)
         {
             _compiler = compiler;
             _loginViewTemplate = loginViewTemplate;
@@ -49,6 +54,7 @@ namespace Codeworx.Identity
             _invitationViewTemplate = invitationViewTemplate;
             _passwordChangeViewTemplate = passwordChangeViewTemplate;
             _profileViewTemplate = profileViewTemplate;
+            _forgotPasswordViewTemplate = forgotPasswordViewTemplate;
         }
 
         public async Task<string> GetChallengeResponse(IDictionary<string, object> data)
@@ -63,6 +69,34 @@ namespace Codeworx.Identity
             }
 
             return _challengeResponse(data);
+        }
+
+        public async Task<string> GetForgotPasswordCompletedView(IDictionary<string, object> data)
+        {
+            if (_forgotPasswordComplete == null)
+            {
+                var template = await _forgotPasswordViewTemplate.GetForgotPasswordCompletedTemplate();
+                if (_forgotPasswordComplete == null)
+                {
+                    _forgotPasswordComplete = _compiler.Compile(template);
+                }
+            }
+
+            return _forgotPasswordComplete(data);
+        }
+
+        public async Task<string> GetForgotPasswordView(IDictionary<string, object> data)
+        {
+            if (_forgotPassword == null)
+            {
+                var template = await _forgotPasswordViewTemplate.GetForgotPasswordTemplate();
+                if (_forgotPassword == null)
+                {
+                    _forgotPassword = _compiler.Compile(template);
+                }
+            }
+
+            return _forgotPassword(data);
         }
 
         public async Task<string> GetFormPostView(IDictionary<string, object> data)

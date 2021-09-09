@@ -99,6 +99,7 @@
             public const string CurrentPassword = "current-password";
             public const string Password = "password";
             public const string ProviderId = "provider-id";
+            public const string UserName = "username";
         }
 
         public static class KeyType
@@ -265,6 +266,7 @@
 
         public static class Templates
         {
+            public const string ForgotPasswordNotification = "forgot_password_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
             public const string FormsProfile = "formsprofile";

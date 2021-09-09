@@ -43,8 +43,17 @@ body {
     }
 
     #loginContainer.change-password-view:before {
-        content: "Profile";
+        content: "Change Password";
     }
+
+    #loginContainer.forgot-password-view:before {
+        content: "Forgot Password";
+    }
+
+    #loginContainer.forgot-password-completed-view:before {
+        content: "Notification";
+    }
+
 
     #loginContainer.invitation:before {
         content: "Set Password";
@@ -88,7 +97,12 @@ body {
         height: 60px
     }
 
-    #loginContainer div.change-password-box {
+    #loginContainer div.change-password-box,
+    #loginContainer div.forgot-password-box {
+        text-align: right;
+    }
+
+    #loginContainer div.forgot-password-box {
         text-align: right;
     }
 
@@ -97,7 +111,8 @@ body {
         flex-direction: column;
     }
 
-    #loginContainer a.change-password-link {
+    #loginContainer a.change-password-link,
+    #loginContainer a.forgot-password-link {
         font-family: Arial;
         color: #af110e;
         text-decoration: none;
@@ -107,34 +122,40 @@ body {
     }
 
 
-    #loginContainer input[type="checkbox"] {
-        display: none;
+.forgot-password-complete {
+    font-family: Arial;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+#loginContainer input[type="checkbox"] {
+    display: none;
+}
+
+    #loginContainer input[type="checkbox"] + label {
+        font-family: Arial;
+        color: #999999;
+        line-height: 1.2em;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
     }
 
-        #loginContainer input[type="checkbox"] + label {
-            font-family: Arial;
-            color: #999999;
-            line-height: 1.2em;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
+        #loginContainer input[type="checkbox"] + label svg {
+            margin-right: 8px;
         }
 
-            #loginContainer input[type="checkbox"] + label svg {
-                margin-right: 8px;
+            #loginContainer input[type="checkbox"] + label svg rect {
+                stroke: #af110e;
             }
 
-                #loginContainer input[type="checkbox"] + label svg rect {
-                    stroke: #af110e;
-                }
+            #loginContainer input[type="checkbox"] + label svg #checked {
+                stroke: none;
+            }
 
-                #loginContainer input[type="checkbox"] + label svg #checked {
-                    stroke: none;
-                }
-
-        #loginContainer input[type="checkbox"]:checked + label svg #checked {
-            stroke: #af110e;
-        }
+    #loginContainer input[type="checkbox"]:checked + label svg #checked {
+        stroke: #af110e;
+    }
 
 .login-submit {
     font-size: 16px;

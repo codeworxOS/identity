@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Codeworx.Identity.Account;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
@@ -9,21 +10,28 @@ namespace Codeworx.Identity.Login
     public class FormsLoginProcessor : ILoginProcessor
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IForgotPasswordService _forgotPasswordService;
         private readonly bool _hasChangePasswordService;
         private readonly IIdentityService _identityService;
         private readonly IdentityOptions _options;
 
-        public FormsLoginProcessor(IIdentityService identityService, IBaseUriAccessor baseUriAccessor, IOptionsSnapshot<IdentityOptions> options, IChangePasswordService changePasswordService = null)
+        public FormsLoginProcessor(
+            IIdentityService identityService,
+            IBaseUriAccessor baseUriAccessor,
+            IOptionsSnapshot<IdentityOptions> options,
+            IForgotPasswordService forgotPasswordService,
+            IChangePasswordService changePasswordService = null)
         {
             _identityService = identityService;
             _baseUriAccessor = baseUriAccessor;
+            _forgotPasswordService = forgotPasswordService;
             _hasChangePasswordService = changePasswordService != null;
             _options = options.Value;
         }
 
         public Type RequestParameterType { get; } = typeof(LoginFormRequest);
 
-        public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
+        public async Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration configuration)
         {
             string error = null;
             request.ProviderErrors.TryGetValue(configuration.Id, out error);
@@ -31,11 +39,11 @@ namespace Codeworx.Identity.Login
             switch (request.Type)
             {
                 case ProviderRequestType.Login:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error));
+                    return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error, await GetForgotPasswordUrl(request));
                 case ProviderRequestType.Invitation:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error));
+                    return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error);
                 case ProviderRequestType.Profile:
-                    return Task.FromResult<ILoginRegistrationInfo>(new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, GetPasswodChangeUrl(request), error));
+                    return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, GetPasswodChangeUrl(request), error);
             }
 
             throw new NotSupportedException($"Request type {request.Type} not supported!");
@@ -68,6 +76,31 @@ namespace Codeworx.Identity.Login
 
             uriBuilder.AppendPath(_options.AccountEndpoint);
             uriBuilder.AppendPath("change-password");
+
+            if (!string.IsNullOrWhiteSpace(request.Prompt))
+            {
+                uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.ReturnUrl))
+            {
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
+            }
+
+            return uriBuilder.ToString();
+        }
+
+        private async Task<string> GetForgotPasswordUrl(ProviderRequest request)
+        {
+            if (!await _forgotPasswordService.IsSupportedAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+
+            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath("forgot-password");
 
             if (!string.IsNullOrWhiteSpace(request.Prompt))
             {
