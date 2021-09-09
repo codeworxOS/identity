@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore;
@@ -101,6 +102,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             private class ExternalUser : Test.DummyUserService.IDummyUser
             {
+                private bool _forceChangePassword;
+                private string _password = null;
+
                 public ExternalUser(string externalId, string provider, string email)
                 {
                     Identity = Guid.NewGuid().ToString();
@@ -116,9 +120,17 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 public string Name { get; }
 
-                public string PasswordHash => null;
+                public string PasswordHash => _password;
 
-                public bool ForceChangePassword => false;
+                public bool ForceChangePassword => _forceChangePassword;
+
+                public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+                public void ResetPassword(string password)
+                {
+                    _forceChangePassword = false;
+                    _password = password;
+                }
             }
         }
     }

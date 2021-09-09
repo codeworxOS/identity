@@ -1,4 +1,6 @@
-﻿namespace Codeworx.Identity.Model
+﻿using System.Collections.Generic;
+
+namespace Codeworx.Identity.Model
 {
     public interface IUser
     {
@@ -11,5 +13,7 @@
         string PasswordHash { get; }
 
         bool ForceChangePassword { get; }
+
+        IReadOnlyList<string> LinkedProviders { get; }
     }
 }

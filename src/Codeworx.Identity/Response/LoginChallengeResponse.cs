@@ -2,7 +2,7 @@
 {
     public class LoginChallengeResponse
     {
-        public LoginChallengeResponse(string prompt)
+        public LoginChallengeResponse(string prompt = null)
         {
             Prompt = prompt;
         }

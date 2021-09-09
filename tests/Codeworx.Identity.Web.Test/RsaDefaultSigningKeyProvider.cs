@@ -18,5 +18,10 @@ namespace Codeworx.Identity.Web.Test
         {
             return _key;
         }
+
+        public HashAlgorithm GetHashAlgorithm()
+        {
+            return SHA512.Create();
+        }
     }
 }

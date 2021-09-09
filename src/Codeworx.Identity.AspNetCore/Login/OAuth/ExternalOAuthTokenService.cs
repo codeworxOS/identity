@@ -60,21 +60,38 @@ namespace Codeworx.Identity.AspNetCore
 
             var provider = _tokenProviders.First(p => p.TokenType == Constants.Token.Jwt);
             var token = await provider.CreateAsync(null);
-            await token.ParseAsync(responseValues.AccessToken);
+            string tokenName = null;
+
+            switch (oauthConfiguration.ClaimSource)
+            {
+                case ClaimSource.AccessToken:
+                    tokenName = Constants.OAuth.AccessTokenName;
+                    await token.ParseAsync(responseValues.AccessToken);
+                    break;
+                case ClaimSource.IdToken:
+                    tokenName = Constants.OpenId.IdTokenName;
+                    await token.ParseAsync(responseValues.IdToken);
+                    break;
+                default:
+                    throw new NotSupportedException($"Claim source {oauthConfiguration.ClaimSource} not supported!");
+            }
 
             var identity = new ClaimsIdentity();
 
-            await AddClaimsAsync(token, identity, Constants.OAuth.AccessTokenName);
+            await AddClaimsAsync(token, identity, tokenName);
             identity.AddClaim(new Claim(Constants.OAuth.AccessTokenName, responseValues.AccessToken));
 
             if (!string.IsNullOrWhiteSpace(responseValues.IdToken))
             {
                 identity.AddClaim(new Claim(Constants.OpenId.IdTokenName, responseValues.IdToken));
 
-                var identityToken = await provider.CreateAsync(null);
-                await identityToken.ParseAsync(responseValues.IdToken);
-                var identityPayload = await identityToken.GetPayloadAsync();
-                await AddClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
+                if (oauthConfiguration.ClaimSource != ClaimSource.IdToken)
+                {
+                    var identityToken = await provider.CreateAsync(null);
+                    await identityToken.ParseAsync(responseValues.IdToken);
+                    var identityPayload = await identityToken.GetPayloadAsync();
+                    await AddClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(responseValues.RefreshToken))

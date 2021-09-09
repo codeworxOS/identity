@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Company>codeworx gmbh</Company>
-    <Copyright>copyright © codeworx 2019</Copyright>
+    <Copyright>copyright © codeworx 2021</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <DebugType>portable</DebugType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -17,7 +17,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
