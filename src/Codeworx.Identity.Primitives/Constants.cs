@@ -44,6 +44,7 @@
         public const string MultiTenantUserName = "multitenant";
         public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
         public const string ForcePasswordUserName = "changepassword";
+        public const string NotExistingUserName = "notExistingUser";
 
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
