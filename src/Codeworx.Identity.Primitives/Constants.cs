@@ -44,6 +44,7 @@
         public const string MultiTenantUserName = "multitenant";
         public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
         public const string ForcePasswordUserName = "changepassword";
+        public const string NotExistingUserName = "notExistingUser";
 
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
@@ -99,6 +100,7 @@
             public const string CurrentPassword = "current-password";
             public const string Password = "password";
             public const string ProviderId = "provider-id";
+            public const string UserName = "username";
         }
 
         public static class KeyType
@@ -265,6 +267,7 @@
 
         public static class Templates
         {
+            public const string ForgotPasswordNotification = "forgot_password_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
             public const string FormsProfile = "formsprofile";
