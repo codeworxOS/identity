@@ -153,8 +153,6 @@ namespace Codeworx.Identity.AspNetCore
 
         private async Task<HttpResponseMessage> CreateTokenResponse(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
         {
-            _client.BaseAddress = oauthConfiguration.BaseUri;
-
             if (oauthConfiguration.ClientSecret != null)
             {
                 var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
@@ -162,7 +160,9 @@ namespace Codeworx.Identity.AspNetCore
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
             }
 
-            var response = await _client.PostAsync(oauthConfiguration.TokenEndpoint, new FormUrlEncodedContent(contentCollection));
+            var tokenEndpointUri = oauthConfiguration.GetTokenEndpointUri();
+
+            var response = await _client.PostAsync(tokenEndpointUri, new FormUrlEncodedContent(contentCollection));
             return response;
         }
 

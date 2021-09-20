@@ -33,5 +33,15 @@ namespace Codeworx.Identity.Login.OAuth
         public string ClientSecret { get; set; }
 
         public ExternalTokenHandling TokenHandling { get; set; }
+
+        public Uri GetTokenEndpointUri()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Uri GetAuthorizationEndpointUri()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

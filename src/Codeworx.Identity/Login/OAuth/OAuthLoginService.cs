@@ -50,8 +50,7 @@ namespace Codeworx.Identity.Login.OAuth
 
             IEnumerable<string> scopes = config.Scope?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? Enumerable.Empty<string>();
 
-            var endpointBuilder = new UriBuilder(config.BaseUri.ToString());
-            endpointBuilder.AppendPath(config.AuthorizationEndpoint);
+            var endpointBuilder = new UriBuilder(config.GetAuthorizationEndpointUri());
 
             if (config.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
             {
