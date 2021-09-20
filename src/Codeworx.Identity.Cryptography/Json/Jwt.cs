@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Cryptography.Json
             var token = _handler.ReadJsonWebToken(value);
             var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
 
-            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode, new ArraySubObjectConverter());
+            _payload = JsonConvert.DeserializeObject<Dictionary<string, object>>(decode, new ArraySubObjectConverter());
 
             await Task.CompletedTask;
         }
@@ -164,7 +164,7 @@ namespace Codeworx.Identity.Cryptography.Json
                     case Newtonsoft.Json.JsonToken.StartArray:
                         return JToken.Load(reader).ToObject<List<object>>();
                     case Newtonsoft.Json.JsonToken.StartObject:
-                        return JToken.Load(reader).ToObject<ConcurrentDictionary<string, object>>();
+                        return JToken.Load(reader).ToObject<Dictionary<string, object>>();
                     default:
                         if (reader.ValueType == null && reader.TokenType != Newtonsoft.Json.JsonToken.Null)
                         {
