@@ -25,6 +25,7 @@ namespace Codeworx.Identity.Api.Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers()
+                .AddApplicationPart(typeof(TenantController).Assembly)
                 .AddNewtonsoftJson();
 
             ////services.AddOpenApiDocument();
