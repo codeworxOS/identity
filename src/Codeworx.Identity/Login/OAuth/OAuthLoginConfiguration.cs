@@ -10,7 +10,10 @@ namespace Codeworx.Identity.Login.OAuth
             RedirectCacheMethod = RedirectCacheMethod.UseState;
             TokenHandling = ExternalTokenHandling.None;
             ClaimSource = ClaimSource.AccessToken;
+            ClientAuthenticationMode = ClientAuthenticationMode.Header;
         }
+
+        public ClientAuthenticationMode ClientAuthenticationMode { get; set; }
 
         public RedirectCacheMethod RedirectCacheMethod { get; set; }
 
@@ -33,5 +36,45 @@ namespace Codeworx.Identity.Login.OAuth
         public string ClientSecret { get; set; }
 
         public ExternalTokenHandling TokenHandling { get; set; }
+
+        public Uri GetTokenEndpointUri()
+        {
+            if (Uri.TryCreate(this.TokenEndpoint, UriKind.RelativeOrAbsolute, out var uri))
+            {
+                if (uri.IsAbsoluteUri)
+                {
+                    return uri;
+                }
+                else
+                {
+                    var builder = new UriBuilder(BaseUri);
+                    builder.AppendPath(this.TokenEndpoint);
+
+                    return new Uri(builder.ToString());
+                }
+            }
+
+            return BaseUri;
+        }
+
+        public Uri GetAuthorizationEndpointUri()
+        {
+            if (Uri.TryCreate(this.AuthorizationEndpoint, UriKind.RelativeOrAbsolute, out var uri))
+            {
+                if (uri.IsAbsoluteUri)
+                {
+                    return uri;
+                }
+                else
+                {
+                    var builder = new UriBuilder(BaseUri);
+                    builder.AppendPath(this.AuthorizationEndpoint);
+
+                    return new Uri(builder.ToString());
+                }
+            }
+
+            return BaseUri;
+        }
     }
 }
