@@ -13,13 +13,13 @@ namespace Codeworx.Identity
     {
         private readonly ITenantService _tenantService;
         private readonly IDefaultTenantService _defaultTenantService;
-        private readonly IReadOnlyCollection<IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>> _requestProcessors;
+        private readonly IReadOnlyList<IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>> _requestProcessors;
 
         public TenantViewService(ITenantService tenantService, IEnumerable<IIdentityRequestProcessor<IAuthorizationParameters, AuthorizationRequest>> requestProcessors, IDefaultTenantService defaultTenantService = null)
         {
             _tenantService = tenantService ?? throw new System.ArgumentNullException(nameof(tenantService));
             _defaultTenantService = defaultTenantService;
-            _requestProcessors = requestProcessors.Where(p => !(p is TenantAuthorizationRequestProcessor)).ToImmutableArray();
+            _requestProcessors = requestProcessors.Where(p => !(p is TenantAuthorizationRequestProcessor)).OrderBy(p => p.SortOrder).ToImmutableList();
         }
 
         public async Task<SelectTenantSuccessResponse> SelectAsync(SelectTenantViewActionRequest request)
