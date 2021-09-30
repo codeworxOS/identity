@@ -60,7 +60,7 @@ namespace Codeworx.Identity
 
             var externalTokenKey = identityDataParameters.User.FindFirst(Constants.Claims.ExternalTokenKey)?.Value;
 
-            var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
+            var result = new IdentityData(identityDataParameters.Client.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
 
             return result;
         }

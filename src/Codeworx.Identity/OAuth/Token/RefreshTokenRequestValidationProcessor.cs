@@ -43,7 +43,6 @@ namespace Codeworx.Identity.OAuth.Token
             }
 
             builder.WithRefreshToken(request.RefreshToken)
-                .WithClientId(request.ClientId)
                 .WithRefreshTokenClientSecret(request.ClientSecret)
                 .WithScopes(request.Scope?.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries) ?? new string[] { });
 

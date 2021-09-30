@@ -21,6 +21,13 @@ namespace Codeworx.Identity.OAuth.Token
             var client = await _clientAuthenticationService.AuthenticateClient(request.ClientId, request.ClientSecret)
                                                                                   .ConfigureAwait(false);
 
+            if (client == null)
+            {
+                ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
+            }
+
+            builder.WithClient(client);
+
             // TODO implement ClientType
             ////if (!client.SupportedFlow.Any(p => p.IsSupported(request.GrantType)))
             ////{

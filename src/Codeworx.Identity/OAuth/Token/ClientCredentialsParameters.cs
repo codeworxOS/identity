@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     internal class ClientCredentialsParameters : IClientCredentialsParameters
     {
-        public ClientCredentialsParameters(string clientId, string clientSecret, string nonce, string[] scopes, string state, TimeSpan tokenExpiration, ClaimsIdentity user)
+        public ClientCredentialsParameters(IClientRegistration client, string clientSecret, string nonce, string[] scopes, string state, ClaimsIdentity user)
         {
-            ClientId = clientId;
+            Client = client;
             ClientSecret = clientSecret;
             Nonce = nonce;
             Scopes = scopes.ToImmutableList();
             State = state;
-            TokenExpiration = tokenExpiration;
             User = user;
         }
 
@@ -22,7 +22,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public TimeSpan TokenExpiration { get; }
 
-        public string ClientId { get; }
+        public IClientRegistration Client { get; }
 
         public string Nonce { get; }
 
