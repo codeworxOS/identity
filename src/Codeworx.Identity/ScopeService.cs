@@ -29,7 +29,7 @@ namespace Codeworx.Identity
                 scopes.AddRange(await _scopeProvider.GetScopes().ConfigureAwait(false));
             }
 
-            if (client.AllowedScopes?.Count > 0)
+            if (client?.AllowedScopes?.Count > 0)
             {
                 var scopeKeys = client.AllowedScopes.Select(p => p.ScopeKey).ToList();
                 for (int i = scopes.Count - 1; i >= 0; i--)

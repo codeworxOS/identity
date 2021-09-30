@@ -16,7 +16,7 @@ import { OrderListComponent } from './order/order-list.component';
 import { OrderDetailComponent } from './order/order-detail.component';
 
 const config: AuthConfig = {
-  clientId: 'B45ABA81-AAC1-403F-93DD-1CE42F745ED2',
+  clientId: 'b45aba81aac1403f93dd1ce42f745ed2',
   issuer: './',
   postLogoutRedirectUri: 'abc',
   oidc: true,
