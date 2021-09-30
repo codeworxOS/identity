@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using Codeworx.Identity.Cache;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity
@@ -14,10 +15,10 @@ namespace Codeworx.Identity
             builder.SetValue(((MemberExpression)propertySelector.Body).Member.Name, value);
         }
 
-        public static TBuilder WithClientId<TBuilder>(this TBuilder builder, string clientId)
+        public static TBuilder WithClient<TBuilder>(this TBuilder builder, IClientRegistration client)
             where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
-            builder.SetValue(p => p.ClientId, clientId);
+            builder.SetValue(p => p.Client, client);
             return builder;
         }
 
@@ -95,13 +96,6 @@ namespace Codeworx.Identity
                                                                                     where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
             builder.SetValue(p => p.State, state);
-            return builder;
-        }
-
-        public static TBuilder WithTokenExpiration<TBuilder>(this TBuilder builder, TimeSpan tokenExpiration)
-             where TBuilder : IIdentityDataParametersBuilder<IClientCredentialsParameters>
-        {
-            builder.SetValue(p => p.TokenExpiration, tokenExpiration);
             return builder;
         }
 

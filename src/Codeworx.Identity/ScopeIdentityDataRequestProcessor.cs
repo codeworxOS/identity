@@ -24,7 +24,7 @@ namespace Codeworx.Identity
             var newScopes = new List<string>();
 
             var tempScopes = await _scopeService
-                .GetScopes()
+                .GetScopes(parameters.Client)
                 .ConfigureAwait(false);
 
             var availableScopes = tempScopes.Select(p => p.ScopeKey).ToList();

@@ -12,6 +12,7 @@ namespace Codeworx.Identity
             {
                 new Scope(Constants.OpenId.Scopes.OpenId),
                 new Scope(Constants.OpenId.Scopes.Profile),
+                new Scope(Constants.Scopes.ProfileEmail),
                 new Scope(Constants.OpenId.Scopes.OfflineAccess),
             });
         }

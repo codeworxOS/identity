@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
@@ -9,7 +10,7 @@ namespace Codeworx.Identity.OAuth.Token
     public class RefreshTokenService : ITokenService<RefreshTokenRequest>
     {
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
-        private readonly IEnumerable<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> _processors;
+        private readonly IReadOnlyList<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> _processors;
         private readonly IUserService _userService;
         private readonly IClientService _clientService;
         private readonly IIdentityService _identityService;
@@ -22,7 +23,7 @@ namespace Codeworx.Identity.OAuth.Token
             IIdentityService identityService)
         {
             _tokenProviders = tokenProviders;
-            _processors = processors;
+            _processors = processors.OrderBy(p => p.SortOrder).ToImmutableList();
             _userService = userService;
             _clientService = clientService;
             _identityService = identityService;
@@ -37,7 +38,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var builder = new RefreshTokenParametersBuilder();
 
-            foreach (var processor in _processors.OrderBy(p => p.SortOrder))
+            foreach (var processor in _processors)
             {
                 await processor.ProcessAsync(builder, request).ConfigureAwait(false);
             }
@@ -48,7 +49,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
 
-            var client = await _clientService.GetById(parameters.ClientId).ConfigureAwait(false);
+            var client = parameters.Client;
 
             var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
             var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);

@@ -256,6 +256,7 @@
         {
             public const string Groups = "groups";
             public const string Tenant = "tenant";
+            public const string ProfileEmail = "profile:email";
 
             public static class ExternalToken
             {

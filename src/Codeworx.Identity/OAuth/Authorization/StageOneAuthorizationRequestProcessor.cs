@@ -22,14 +22,14 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public async Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
-            builder.WithClientId(request.ClientId);
-
             var client = await _clientService.GetById(request.ClientId).ConfigureAwait(false);
 
             if (client == null)
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
+
+            builder.WithClient(client);
 
             if (request.RedirectUri != null)
             {
