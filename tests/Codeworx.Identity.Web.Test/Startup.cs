@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Web.Test.Tenant;
@@ -13,6 +12,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Web.Test
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
         {
             if (env.IsDevelopment())
             {

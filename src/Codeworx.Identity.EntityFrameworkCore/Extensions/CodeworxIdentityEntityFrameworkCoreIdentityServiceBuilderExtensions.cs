@@ -40,6 +40,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .ReplaceService<IStateLookupCache, StateLookupCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IInvitationCache, InvitationCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IExternalTokenCache, ExternalTokenCache<TContext>>(ServiceLifetime.Scoped)
+                         .RegisterMultiple<IScopeProvider, EntityScopeProvider<TContext>>(ServiceLifetime.Scoped)
                          .RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped)
                          .RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient);
 

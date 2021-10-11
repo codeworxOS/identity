@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
-    using System;
     using Codeworx.Identity.Cache;
     using Codeworx.Identity.OAuth;
     using UriBuilder = Codeworx.Identity.UriBuilder;

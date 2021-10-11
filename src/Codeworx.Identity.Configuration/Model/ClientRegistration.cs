@@ -8,7 +8,7 @@ namespace Codeworx.Identity.Configuration.Model
 {
     public class ClientRegistration : IClientRegistration
     {
-        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls = null, IEnumerable<string> allowedScopes = null, IUser user = null)
+        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, IEnumerable<string> validRedirectUrls = null, IUser user = null)
         {
             ClientId = clientId;
             ClientSecretHash = clientSecretHash;
@@ -21,15 +21,6 @@ namespace Codeworx.Identity.Configuration.Model
             else
             {
                 ValidRedirectUrls = ImmutableList.Create<Uri>();
-            }
-
-            if (allowedScopes != null)
-            {
-                AllowedScopes = allowedScopes.Select(p => new Scope(p)).ToImmutableList();
-            }
-            else
-            {
-                AllowedScopes = ImmutableList.Create<IScope>();
             }
 
             User = user;
@@ -46,7 +37,5 @@ namespace Codeworx.Identity.Configuration.Model
         public ClientType ClientType { get; }
 
         public IUser User { get; }
-
-        public IReadOnlyList<IScope> AllowedScopes { get; }
     }
 }

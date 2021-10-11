@@ -20,6 +20,7 @@ namespace Codeworx.Identity.Test.Services
 
             service.AddScoped<IClientService, EntityClientService<CodeworxIdentityDbContext>>();
             service.AddScoped<IUserService, EntityUserService<CodeworxIdentityDbContext>>();
+            service.AddScoped<IScopeProvider, EntityScopeProvider<CodeworxIdentityDbContext>>();
             service.AddDbContext<CodeworxIdentityDbContext>(p => p.UseInMemoryDatabase(databaseId));
 
             _serviceProvider = service.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });

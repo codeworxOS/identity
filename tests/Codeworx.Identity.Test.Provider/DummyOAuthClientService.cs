@@ -36,7 +36,7 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
         }
 
-        private class DummyLimitedScope1ClientRegistration : IClientRegistration
+        private class DummyLimitedScope1ClientRegistration : IDummyClientRegistration
 
         {
 
@@ -65,7 +65,7 @@ namespace Codeworx.Identity.Test
         }
 
 
-        private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
+        private class DummyOAuthAuthorizationCodeClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
             {
@@ -94,7 +94,7 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
-        private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
+        private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationTokenClientRegistration()
             {
@@ -122,7 +122,7 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
-        private class ServiceAccountClientRegistration : IClientRegistration
+        private class ServiceAccountClientRegistration : IDummyClientRegistration
         {
             public ServiceAccountClientRegistration(string hashValue)
             {

@@ -26,7 +26,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var result = await _context.Set<ClientConfiguration>()
                 .Include(p => p.ValidRedirectUrls)
-                .Include(p => p.ScopeAssignments).ThenInclude(p => p.Scope)
                 .SingleOrDefaultAsync(p => p.Id == id);
 
             if (result == null)
@@ -49,7 +48,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 TokenExpiration = result.TokenExpiration,
                 ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList(),
                 User = user,
-                AllowedScopes = result.ScopeAssignments.Select(p => (IScope)new Data.Scope(p.Scope.ScopeKey)).ToImmutableList(),
             };
         }
     }

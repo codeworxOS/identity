@@ -14,23 +14,29 @@ namespace Codeworx.Identity
             _tenantService = tenantService;
         }
 
-        public async Task<IEnumerable<IScope>> GetScopes()
+        public async Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null)
         {
-            if (_tenantService == null)
+            if (_tenantService == null || parameters == null)
             {
                 return Enumerable.Empty<IScope>();
             }
 
-            var result = new List<IScope>();
-            result.Add(new Scope(Constants.Scopes.Tenant));
-
-            var tenants = await _tenantService.GetTenantsAsync();
-            foreach (var tenant in tenants)
+            if (parameters.Scopes.Contains(Constants.Scopes.Tenant))
             {
-                result.Add(new Scope(tenant.Key));
+                var result = new List<IScope>();
+
+                result.Add(new Scope(Constants.Scopes.Tenant));
+
+                var tenants = await _tenantService.GetTenantsAsync();
+                foreach (var tenant in tenants)
+                {
+                    result.Add(new Scope(tenant.Key));
+                }
+
+                return result;
             }
 
-            return result;
+            return Enumerable.Empty<IScope>();
         }
     }
 }
