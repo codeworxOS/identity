@@ -15,8 +15,6 @@ namespace Codeworx.Identity.Model
 
         IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
-        IReadOnlyList<IScope> AllowedScopes { get; }
-
         IUser User { get; }
     }
 }

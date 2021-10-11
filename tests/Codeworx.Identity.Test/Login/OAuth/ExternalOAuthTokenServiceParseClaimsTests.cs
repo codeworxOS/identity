@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Cryptography.Json;
-using Codeworx.Identity.Login.OAuth;
 using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Login.OAuth

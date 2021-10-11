@@ -2,14 +2,17 @@
 
 namespace Codeworx.Identity.Test.Provider
 {
+    using System.Linq;
     using System.Threading.Tasks;
     using Codeworx.Identity.Model;
 
     public class DummyScopeProvider : IScopeProvider
     {
-        public Task<IEnumerable<IScope>> GetScopes()
+        private static readonly Scope[] _allScopes;
+
+        static DummyScopeProvider()
         {
-            IEnumerable<IScope> scopes = new[] {
+            _allScopes = new[] {
                 new Scope("scope1"),
                 new Scope("scope1:sub1"),
                 new Scope("scope1:sub2"),
@@ -27,7 +30,21 @@ namespace Codeworx.Identity.Test.Provider
                 new Scope("scope6:sub2")
             };
 
-            return Task.FromResult(scopes);
+        }
+
+        public Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null)
+        {
+            if (parameters != null)
+            {
+                var client = ((IDummyClientRegistration)parameters.Client);
+
+                if (client.AllowedScopes.Any())
+                {
+                    return Task.FromResult<IEnumerable<IScope>>(client.AllowedScopes);
+                }
+            }
+
+            return Task.FromResult<IEnumerable<IScope>>(_allScopes);
         }
     }
 }

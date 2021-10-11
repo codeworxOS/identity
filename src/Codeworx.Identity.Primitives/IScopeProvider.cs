@@ -6,6 +6,6 @@ namespace Codeworx.Identity
 {
     public interface IScopeProvider
     {
-        Task<IEnumerable<IScope>> GetScopes();
+        Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null);
     }
 }
