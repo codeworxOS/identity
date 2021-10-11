@@ -17,7 +17,5 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
         public IReadOnlyList<Uri> ValidRedirectUrls { get; set; }
 
         public IUser User { get; set; }
-
-        public IReadOnlyList<IScope> AllowedScopes { get; set; }
     }
 }
