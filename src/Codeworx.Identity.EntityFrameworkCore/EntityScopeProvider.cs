@@ -24,8 +24,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             if (parameters?.Client != null && Guid.TryParse(parameters.Client.ClientId, out var clientId))
             {
-                await _db.Set<ScopeAssignment>().Where(p => p.ClientId == clientId)
-                    .Select(p => p.Scope)
+                await _db.Set<Scope>()
+                    .Where(p => p.ScopeAssignments.Any(x => x.ClientId == clientId))
                     .Include(p => p.Parent.Parent)
                     .AsNoTracking()
                     .ToListAsync();

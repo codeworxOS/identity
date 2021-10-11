@@ -17,7 +17,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
             });
 
             builder.HasOne(p => p.Scope)
-                .WithMany()
+                .WithMany(p => p.ScopeAssignments)
                 .HasForeignKey(p => p.ScopeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
