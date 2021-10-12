@@ -118,6 +118,8 @@
 
         public static class OAuth
         {
+            public const string AudienceName = "audience";
+            public const string AudienceValidation = VsChars;
             public const string AccessTokenName = "access_token";
             public const string AccessTokenValidation = VsChars;
             public const string AdditionalParameterValidation = GrantTypeValidation;
@@ -181,6 +183,7 @@
                 public const string ClientCredentials = "client_credentials";
                 public const string Password = "password";
                 public const string RefreshToken = "refresh_token";
+                public const string TokenExchange = "urn:ietf:params:oauth:grant-type:token-exchange";
             }
 
             public class Prompt
