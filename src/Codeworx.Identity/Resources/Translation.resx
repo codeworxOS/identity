@@ -117,8 +117,83 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AcceptInvitationPageTitle" xml:space="preserve">
+    <value>Accept Invitation</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ChangePasswordPageTitle" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="CurrentPassword" xml:space="preserve">
+    <value>Current password</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Forgot password</value>
+  </data>
+  <data name="ForgotPasswordCompletedMessage" xml:space="preserve">
+    <value>If an account exists that maches the given credentials, password reset instructions will be sent to you.</value>
+  </data>
+  <data name="ForgotPasswordPageTitle" xml:space="preserve">
+    <value>Forgot Password</value>
+  </data>
+  <data name="Http401Description" xml:space="preserve">
+    <value>This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled.</value>
+  </data>
+  <data name="Http401Header" xml:space="preserve">
+    <value>Oops! You could not be authenticated</value>
+  </data>
+  <data name="Http401PageTitle" xml:space="preserve">
+    <value>401 Unauthenticated</value>
+  </data>
+  <data name="JavascriptErrorMessage" xml:space="preserve">
+    <value>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginPageTitle" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="OidcFormPostResponsePageTitle" xml:space="preserve">
+    <value>OIDC Form_Post Response</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="ProfilePageTitle" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="ReturnToLogin" xml:space="preserve">
+    <value>Return to login</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="SelectTenantPageTitle" xml:space="preserve">
+    <value>Select Tenant</value>
+  </data>
+  <data name="SetAsDefault" xml:space="preserve">
+    <value>Set as default</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>
