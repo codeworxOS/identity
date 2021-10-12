@@ -20,7 +20,12 @@ namespace Codeworx.Identity.OAuth.Token
             var client = await _clientAuthenticationService.AuthenticateClient(request.ClientId, request.ClientSecret)
                                                                       .ConfigureAwait(false);
 
-            builder.WithTokenExpiration(client.TokenExpiration);
+            if (client == null)
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidClient, request.ClientId);
+            }
+
+            builder.WithClient(client);
 
             if (client.User == null)
             {

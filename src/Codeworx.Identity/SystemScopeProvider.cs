@@ -6,12 +6,13 @@ namespace Codeworx.Identity
 {
     public partial class SystemScopeProvider : ISystemScopeProvider
     {
-        public Task<IEnumerable<IScope>> GetScopes()
+        public Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null)
         {
             return Task.FromResult<IEnumerable<IScope>>(new[]
             {
                 new Scope(Constants.OpenId.Scopes.OpenId),
                 new Scope(Constants.OpenId.Scopes.Profile),
+                new Scope(Constants.Scopes.ProfileEmail),
                 new Scope(Constants.OpenId.Scopes.OfflineAccess),
             });
         }

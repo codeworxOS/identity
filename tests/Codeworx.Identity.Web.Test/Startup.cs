@@ -12,6 +12,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,7 @@ namespace Codeworx.Identity.Web.Test
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
         {
             var supportedCultures = new[] { "en", "de" };
             var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
@@ -109,7 +110,7 @@ namespace Codeworx.Identity.Web.Test
         private void ConfigureJwt(JwtBearerOptions options)
         {
             options.Authority = "https://localhost:44319/";
-            options.Audience = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
+            options.Audience = "b45aba81aac1403f93dd1ce42f745ed2";
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
     public class AuthorizationParameters : IAuthorizationParameters
     {
         public AuthorizationParameters(
-            string clientId,
+            IClientRegistration client,
             string nonce,
             string redirectUri,
             string responseMode,
@@ -18,7 +19,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             ClaimsIdentity user,
             AuthorizationRequest request)
         {
-            ClientId = clientId;
+            Client = client;
             Nonce = nonce;
             RedirectUri = redirectUri;
             ResponseMode = responseMode;
@@ -30,7 +31,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             Request = request;
         }
 
-        public string ClientId { get; }
+        public IClientRegistration Client { get; }
 
         public string Nonce { get; }
 

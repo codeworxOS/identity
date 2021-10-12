@@ -33,7 +33,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);
 
-            var client = await _clientService.GetById(parameters.ClientId);
+            var client = parameters.Client;
             var payload = data.GetTokenClaims(ClaimTarget.AccessToken);
             var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 

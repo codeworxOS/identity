@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Security.Claims;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
@@ -7,7 +8,7 @@ namespace Codeworx.Identity.OAuth.Authorization
     {
         private readonly ClaimsIdentity _user;
         private readonly AuthorizationRequest _request;
-        private string _clientId;
+        private IClientRegistration _client;
         private string _nonce;
         private string _redirectUri;
         private string _responseMode;
@@ -26,7 +27,7 @@ namespace Codeworx.Identity.OAuth.Authorization
         }
 
         public IAuthorizationParameters Parameters => new AuthorizationParameters(
-             _clientId,
+             _client,
              _nonce,
              _redirectUri,
              _responseMode,
@@ -41,8 +42,8 @@ namespace Codeworx.Identity.OAuth.Authorization
         {
             switch (property)
             {
-                case nameof(AuthorizationParameters.ClientId):
-                    _clientId = (string)value;
+                case nameof(AuthorizationParameters.Client):
+                    _client = (IClientRegistration)value;
                     break;
                 case nameof(AuthorizationParameters.Nonce):
                     _nonce = (string)value;
