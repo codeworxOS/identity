@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Resources;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
 
@@ -12,11 +13,13 @@ namespace Codeworx.Identity.AspNetCore
     {
         private readonly IDisposable _subscription;
         private readonly IHandlebars _handlebars;
+        private readonly IStringResources _stringResources;
         private bool _disposedValue = false;
         private IdentityOptions _options;
 
-        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates)
+        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IStringResources stringResources)
         {
+            _stringResources = stringResources;
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
@@ -26,6 +29,17 @@ namespace Codeworx.Identity.AspNetCore
                 if (context is ILoginRegistrationGroup info)
                 {
                     writer.WriteSafeString(info.Template);
+                }
+            });
+
+            _handlebars.RegisterHelper("Translate", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 1 && parameters[0] is string resource)
+                {
+                    if (Enum.TryParse<StringResource>(resource, out var stringResource))
+                    {
+                        writer.WriteSafeString(_stringResources.GetResource(stringResource));
+                    }
                 }
             });
 

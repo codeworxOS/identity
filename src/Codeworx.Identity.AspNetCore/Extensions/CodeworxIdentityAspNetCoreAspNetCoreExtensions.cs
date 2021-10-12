@@ -37,6 +37,7 @@ using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -365,6 +366,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 
             collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();
+
+            collection.AddSingleton<IStringResources, DefaultStringResources>();
 
             return builder;
         }
