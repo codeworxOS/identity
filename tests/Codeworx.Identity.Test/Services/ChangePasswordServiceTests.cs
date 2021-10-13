@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using Codeworx.Identity.Account;
     using Codeworx.Identity.Model;
+    using Codeworx.Identity.Resources;
     using Codeworx.Identity.Test.Provider;
     using Moq;
     using NUnit.Framework;
@@ -19,7 +20,7 @@
             _testIdentity = new ClaimsIdentity();
             _testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.DefaultAdminUserId));
             _testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.DefaultAdminUserName));
-            _changeService = new PasswordChangeService(new DummyUserService(), new DummyPasswordValidator(), new DummyPasswordPolicyProvider(), _changePasswordServiceMock.Object);
+            _changeService = new PasswordChangeService(new DummyUserService(), new DummyPasswordValidator(), new DummyPasswordPolicyProvider(), new DefaultStringResources(), _changePasswordServiceMock.Object);
         }
 
         private ClaimsIdentity _testIdentity;
