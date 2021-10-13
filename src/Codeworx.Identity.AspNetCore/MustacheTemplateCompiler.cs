@@ -23,6 +23,7 @@ namespace Codeworx.Identity.AspNetCore
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
+            _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
             _handlebars.RegisterHelper("RegistrationTemplate", (writer, context, parameters) =>
             {
@@ -77,6 +78,11 @@ namespace Codeworx.Identity.AspNetCore
         private static string GetStyles(IEnumerable<string> styles)
         {
             return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+        }
+
+        private static string GetFavicon(string favicon)
+        {
+            return $"<link rel=\"icon\" href=\"{favicon}\">";
         }
     }
 

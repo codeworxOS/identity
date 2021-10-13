@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="{{base-href}}">
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    {{> Favicon}}
 
     <title>{{Translate 'Http401Title'}}</title>
 
@@ -120,20 +120,20 @@
                 font-size: 22px;
             }
         }
-        
+
         @media all\0 {
             .unauthorized .unauthorized-401 h1 {
                 background: none;
                 color: #ff6f68;
             }
-        } 
+        }
 
         @media all and (monochrome:0) {
             .unauthorized .unauthorized-401 h1 {
                 background: none;
                 color: #ff6f68;
             }
-        } 
+        }
 
         @media all and (-ms-high-contrast:none) {
             .unauthorized .unauthorized-401 h1 {

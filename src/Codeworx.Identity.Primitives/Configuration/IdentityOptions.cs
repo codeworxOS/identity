@@ -25,6 +25,7 @@ namespace Codeworx.Identity.Configuration
             UserInfoEndpoint = "/userinfo";
             WindowsAuthenticationEnabled = false;
             CompanyName = "Identity";
+            Favicon = Constants.DefaultFavicon;
         }
 
         public string AccountEndpoint { get; set; }
@@ -34,6 +35,8 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
+
+        public string Favicon { get; set; }
 
         public TimeSpan InvitationValidity { get; set; }
 
@@ -71,6 +74,7 @@ namespace Codeworx.Identity.Configuration
             target.AuthenticationCookie = this.AuthenticationCookie;
             target.AuthenticationScheme = this.AuthenticationScheme;
             target.CookieExpiration = this.CookieExpiration;
+            target.Favicon = this.Favicon;
             target.InvitationValidity = this.InvitationValidity;
             target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;
             target.OauthTokenEndpoint = this.OauthTokenEndpoint;

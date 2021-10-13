@@ -18,9 +18,9 @@ namespace Codeworx.Identity.AspNetCore
         }
 
         public async Task Invoke(
-            HttpContext context, 
+            HttpContext context,
             IRequestBinder<WindowsLoginRequest> requestBinder,
-            IResponseBinder<LoginRedirectResponse> loginRedirectBinder, 
+            IResponseBinder<LoginRedirectResponse> loginRedirectBinder,
             IResponseBinder<SignInResponse> signInBinder,
             ILoginService loginService,
             IStringResources stringResources)

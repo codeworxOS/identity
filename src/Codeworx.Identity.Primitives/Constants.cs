@@ -12,6 +12,7 @@
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
+        public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
         public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
