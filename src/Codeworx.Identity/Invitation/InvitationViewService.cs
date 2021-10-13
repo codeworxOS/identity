@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 
 namespace Codeworx.Identity.Invitation
 {
     public class InvitationViewService : IInvitationViewService
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IInvitationService _service;
-        private readonly IEnumerable<ILoginRegistrationProvider> _providers;
+        private readonly IStringResources _stringResources;
         private readonly IUserService _userService;
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
@@ -21,18 +19,16 @@ namespace Codeworx.Identity.Invitation
         private readonly IChangePasswordService _changePasswordService;
 
         public InvitationViewService(
-            IServiceProvider serviceProvider,
             IInvitationService service,
             IUserService userService,
             ILoginService loginService,
             IIdentityService identityService,
             IPasswordPolicyProvider passwordPolicyProvider,
             IChangePasswordService changePasswordService,
-            IEnumerable<ILoginRegistrationProvider> providers)
+            IStringResources stringResources)
         {
-            _serviceProvider = serviceProvider;
             _service = service;
-            _providers = providers;
+            _stringResources = stringResources;
             _userService = userService;
             _loginService = loginService;
             _identityService = identityService;
@@ -48,7 +44,7 @@ namespace Codeworx.Identity.Invitation
 
             if (request.Password != request.ConfirmPassword)
             {
-                error = "Passwords do not match!";
+                error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
                 hasError = true;
             }
             else if (!Regex.IsMatch(request.Password, policy.Regex))
@@ -74,17 +70,20 @@ namespace Codeworx.Identity.Invitation
             }
             catch (InvitationNotFoundException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is invalid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationExpiredException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationAlreadyRedeemedException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
         }
@@ -110,15 +109,18 @@ namespace Codeworx.Identity.Invitation
             }
             catch (InvitationNotFoundException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is invalid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
             catch (InvitationExpiredException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
             catch (InvitationAlreadyRedeemedException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
 
             return response;

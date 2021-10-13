@@ -66,6 +66,35 @@
                     return Translation.OrConnectWith;
                 case StringResource.SetPassword:
                     return Translation.SetPassword;
+                case StringResource.InvitationCodeInvalidError:
+                    return Translation.InvitationCodeInvalidError;
+                case StringResource.InvitationCodeExpiredError:
+                    return Translation.InvitationCodeExpiredError;
+                case StringResource.InvitationCodeRedeemedError:
+                    return Translation.InvitationCodeRedeemedError;
+                case StringResource.UnknownLoginProviderError:
+                    return Translation.UnknownLoginProviderError;
+                case StringResource.InvitationNotSupportedError:
+                    return Translation.InvitationNotSupportedError;
+                case StringResource.ExternalAccountAlreadyLinkedError:
+                    return Translation.ExternalAccountAlreadyLinkedError;
+                case StringResource.ExternalAccountNotLinkedError:
+                    return Translation.ExternalAccountNotLinkedError;
+                case StringResource.UserForClientP0NotFoundError:
+                    return Translation.UserForClientP0NotFoundError;
+                case StringResource.DefaultAuthenticationError:
+                    return Translation.DefaultAuthenticationError;
+                case StringResource.GenericLoginError:
+                    return Translation.GenericLoginError;
+                case StringResource.PasswordChangeWrongPasswordError:
+                    return Translation.PasswordChangeWrongPasswordError;
+                case StringResource.PasswordChangeNotMatchingError:
+                    return Translation.PasswordChangeNotMatchingError;
+                case StringResource.PasswordChangeSamePasswordError:
+                    return Translation.PasswordChangeSamePasswordError;
+                case StringResource.PasswordChangeEqualToLoginError:
+                    return Translation.PasswordChangeEqualToLoginError;
+
                 default:
                     throw new MissingResourceException(resource);
             }

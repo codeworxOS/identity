@@ -2,8 +2,6 @@
 {
     public static class Constants
     {
-        public const string AuthenticationExceptionMessage = "Username or password incorrect.";
-
         public const string BasicHeader = "Basic";
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
@@ -25,16 +23,11 @@
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
-        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
-        public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
         public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
         public const string FormsLoginProviderName = "Form";
-        public const string GenericLoginError = "There was an unexpected login error!";
-        public const string InvalidCredentialsError = "Username or password is not valid!";
-        public const string InvitationNotSupported = "Invitation feature is not supported!";
         public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
@@ -49,7 +42,6 @@
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
         public const string TenantNameProperty = "tenantName";
-        public const string UnknownLoginProviderError = "Invalid provider!";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
         private const string NameChar = @"[a-zA-Z0-9_]";

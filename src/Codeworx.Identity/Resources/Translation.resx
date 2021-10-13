@@ -135,6 +135,15 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>Current password</value>
   </data>
+  <data name="DefaultAuthenticationError" xml:space="preserve">
+    <value>Username or password incorrect.</value>
+  </data>
+  <data name="ExternalAccountAlreadyLinkedError" xml:space="preserve">
+    <value>The external account is already linked to a different user.</value>
+  </data>
+  <data name="ExternalAccountNotLinkedError" xml:space="preserve">
+    <value>Your Account is not yet linked.</value>
+  </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Forgot password</value>
   </data>
@@ -144,6 +153,9 @@
   <data name="ForgotPasswordPageTitle" xml:space="preserve">
     <value>Forgot Password</value>
   </data>
+  <data name="GenericLoginError" xml:space="preserve">
+    <value>There was an unexpected login error!</value>
+  </data>
   <data name="Http401Description" xml:space="preserve">
     <value>This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled.</value>
   </data>
@@ -152,6 +164,18 @@
   </data>
   <data name="Http401PageTitle" xml:space="preserve">
     <value>401 Unauthenticated</value>
+  </data>
+  <data name="InvitationCodeExpiredError" xml:space="preserve">
+    <value>The invitation code is expired!</value>
+  </data>
+  <data name="InvitationCodeInvalidError" xml:space="preserve">
+    <value>The invitation code is invalid!</value>
+  </data>
+  <data name="InvitationCodeRedeemedError" xml:space="preserve">
+    <value>The invitation code is no longer valid!</value>
+  </data>
+  <data name="InvitationNotSupportedError" xml:space="preserve">
+    <value>Invitation feature is not supported!</value>
   </data>
   <data name="JavascriptErrorMessage" xml:space="preserve">
     <value>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue.</value>
@@ -176,6 +200,18 @@
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="PasswordChangeEqualToLoginError" xml:space="preserve">
+    <value>The new password cannot be equal to the login!</value>
+  </data>
+  <data name="PasswordChangeNotMatchingError" xml:space="preserve">
+    <value>Passwords do not match!</value>
+  </data>
+  <data name="PasswordChangeSamePasswordError" xml:space="preserve">
+    <value>The new password cannot be equal to the current password!</value>
+  </data>
+  <data name="PasswordChangeWrongPasswordError" xml:space="preserve">
+    <value>Wrong password!</value>
   </data>
   <data name="ProfilePageTitle" xml:space="preserve">
     <value>Profile</value>
@@ -203,6 +239,12 @@
   </data>
   <data name="SetPassword" xml:space="preserve">
     <value>Set Password</value>
+  </data>
+  <data name="UnknownLoginProviderError" xml:space="preserve">
+    <value>Invalid provider!</value>
+  </data>
+  <data name="UserForClientP0NotFoundError" xml:space="preserve">
+    <value>The User provided for client {0} could not be found.</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>

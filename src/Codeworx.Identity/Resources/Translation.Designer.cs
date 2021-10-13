@@ -115,6 +115,33 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Username or password incorrect..
+        /// </summary>
+        internal static string DefaultAuthenticationError {
+            get {
+                return ResourceManager.GetString("DefaultAuthenticationError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The external account is already linked to a different user..
+        /// </summary>
+        internal static string ExternalAccountAlreadyLinkedError {
+            get {
+                return ResourceManager.GetString("ExternalAccountAlreadyLinkedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your Account is not yet linked..
+        /// </summary>
+        internal static string ExternalAccountNotLinkedError {
+            get {
+                return ResourceManager.GetString("ExternalAccountNotLinkedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Forgot password.
         /// </summary>
         internal static string ForgotPassword {
@@ -142,6 +169,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an unexpected login error!.
+        /// </summary>
+        internal static string GenericLoginError {
+            get {
+                return ResourceManager.GetString("GenericLoginError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled..
         /// </summary>
         internal static string Http401Description {
@@ -165,6 +201,42 @@ namespace Codeworx.Identity.Resources {
         internal static string Http401PageTitle {
             get {
                 return ResourceManager.GetString("Http401PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The invitation code is expired!.
+        /// </summary>
+        internal static string InvitationCodeExpiredError {
+            get {
+                return ResourceManager.GetString("InvitationCodeExpiredError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The invitation code is invalid!.
+        /// </summary>
+        internal static string InvitationCodeInvalidError {
+            get {
+                return ResourceManager.GetString("InvitationCodeInvalidError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The invitation code is no longer valid!.
+        /// </summary>
+        internal static string InvitationCodeRedeemedError {
+            get {
+                return ResourceManager.GetString("InvitationCodeRedeemedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invitation feature is not supported!.
+        /// </summary>
+        internal static string InvitationNotSupportedError {
+            get {
+                return ResourceManager.GetString("InvitationNotSupportedError", resourceCulture);
             }
         }
         
@@ -237,6 +309,42 @@ namespace Codeworx.Identity.Resources {
         internal static string Password {
             get {
                 return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The new password cannot be equal to the login!.
+        /// </summary>
+        internal static string PasswordChangeEqualToLoginError {
+            get {
+                return ResourceManager.GetString("PasswordChangeEqualToLoginError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passwords do not match!.
+        /// </summary>
+        internal static string PasswordChangeNotMatchingError {
+            get {
+                return ResourceManager.GetString("PasswordChangeNotMatchingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The new password cannot be equal to the current password!.
+        /// </summary>
+        internal static string PasswordChangeSamePasswordError {
+            get {
+                return ResourceManager.GetString("PasswordChangeSamePasswordError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong password!.
+        /// </summary>
+        internal static string PasswordChangeWrongPasswordError {
+            get {
+                return ResourceManager.GetString("PasswordChangeWrongPasswordError", resourceCulture);
             }
         }
         
@@ -318,6 +426,24 @@ namespace Codeworx.Identity.Resources {
         internal static string SetPassword {
             get {
                 return ResourceManager.GetString("SetPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid provider!.
+        /// </summary>
+        internal static string UnknownLoginProviderError {
+            get {
+                return ResourceManager.GetString("UnknownLoginProviderError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The User provided for client {0} could not be found..
+        /// </summary>
+        internal static string UserForClientP0NotFoundError {
+            get {
+                return ResourceManager.GetString("UserForClientP0NotFoundError", resourceCulture);
             }
         }
         

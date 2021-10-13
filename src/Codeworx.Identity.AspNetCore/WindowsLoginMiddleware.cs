@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
@@ -16,7 +17,13 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<WindowsLoginRequest> requestBinder, IResponseBinder<LoginRedirectResponse> loginRedirectBinder, IResponseBinder<SignInResponse> signInBinder, ILoginService loginService)
+        public async Task Invoke(
+            HttpContext context, 
+            IRequestBinder<WindowsLoginRequest> requestBinder,
+            IResponseBinder<LoginRedirectResponse> loginRedirectBinder, 
+            IResponseBinder<SignInResponse> signInBinder,
+            ILoginService loginService,
+            IStringResources stringResources)
         {
             WindowsLoginRequest windowsLoginRequest = null;
 
@@ -33,7 +40,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             catch (LoginProviderNotFoundException)
             {
-                var data = new LoginRedirectResponse(providerError: Constants.UnknownLoginProviderError, redirectUri: windowsLoginRequest.ReturnUrl);
+                var message = stringResources.GetResource(StringResource.UnknownLoginProviderError);
+                var data = new LoginRedirectResponse(providerError: message, redirectUri: windowsLoginRequest.ReturnUrl);
                 await loginRedirectBinder.BindAsync(data, context.Response);
             }
             catch (ErrorResponseException error)
@@ -43,7 +51,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             catch (Exception)
             {
-                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, Constants.GenericLoginError, windowsLoginRequest.ReturnUrl);
+                var message = stringResources.GetResource(StringResource.GenericLoginError);
+                var data = new LoginRedirectResponse(windowsLoginRequest.ProviderId, message, windowsLoginRequest.ReturnUrl);
                 await loginRedirectBinder.BindAsync(data, context.Response);
             }
         }

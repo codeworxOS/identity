@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 
 namespace Codeworx.Identity.Account
@@ -12,17 +13,20 @@ namespace Codeworx.Identity.Account
         private readonly IUserService _userService;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IPasswordPolicyProvider _policyProvider;
+        private readonly IStringResources _stringResources;
 
         public PasswordChangeService(
             IUserService userService,
             IPasswordValidator passwordValidator,
             IPasswordPolicyProvider policyProvider,
+            IStringResources stringResources,
             IChangePasswordService passwordService = null)
         {
             _passwordService = passwordService;
             _userService = userService;
             _passwordValidator = passwordValidator;
             _policyProvider = policyProvider;
+            _stringResources = stringResources;
         }
 
         public async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
@@ -42,22 +46,22 @@ namespace Codeworx.Identity.Account
 
             if (!isPasswordValid)
             {
-                error = "Wrong password!";
+                error = _stringResources.GetResource(StringResource.PasswordChangeWrongPasswordError);
                 hasError = true;
             }
             else if (request.NewPassword != request.ConfirmPassword)
             {
-                error = "Passwords do not match!";
+                error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
                 hasError = true;
             }
             else if (request.NewPassword == request.CurrentPassword)
             {
-                error = "The new password cannot be equal to the current password!";
+                error = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
                 hasError = true;
             }
             else if (user.Identity == request.NewPassword)
             {
-                error = "The new password cannot be equal to the login!";
+                error = _stringResources.GetResource(StringResource.PasswordChangeEqualToLoginError);
                 hasError = true;
             }
             else if (!Regex.IsMatch(request.NewPassword, policy.Regex))

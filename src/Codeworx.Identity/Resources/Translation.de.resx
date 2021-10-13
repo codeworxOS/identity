@@ -135,6 +135,15 @@
   <data name="CurrentPassword" xml:space="preserve">
     <value>aktuelles Passwort</value>
   </data>
+  <data name="DefaultAuthenticationError" xml:space="preserve">
+    <value>Benutzername oder Passwort falsch.</value>
+  </data>
+  <data name="ExternalAccountAlreadyLinkedError" xml:space="preserve">
+    <value>Das externe Konto ist bereits mit einem anderen Benutzer verknüpft.</value>
+  </data>
+  <data name="ExternalAccountNotLinkedError" xml:space="preserve">
+    <value>Ihr Konto ist noch nicht verknüpft.</value>
+  </data>
   <data name="ForgotPassword" xml:space="preserve">
     <value>Passwort vergessen</value>
   </data>
@@ -144,6 +153,9 @@
   <data name="ForgotPasswordPageTitle" xml:space="preserve">
     <value>Passwort vergessen</value>
   </data>
+  <data name="GenericLoginError" xml:space="preserve">
+    <value>Es ist ein unerwarteter Anmeldefehler aufgetreten!</value>
+  </data>
   <data name="Http401Description" xml:space="preserve">
     <value>Dies weist normalerweise darauf hin, dass Ihr Browser die Windows-Authentifizierung nicht unterstützt, falsche Anmeldeinformationen angegeben wurden oder die Unterstützung für Windows-Authentifizierung deaktiviert ist.</value>
   </data>
@@ -152,6 +164,18 @@
   </data>
   <data name="Http401PageTitle" xml:space="preserve">
     <value>401 Nicht Authentifiziert</value>
+  </data>
+  <data name="InvitationCodeExpiredError" xml:space="preserve">
+    <value>Der Einladungscode ist abgelaufen!</value>
+  </data>
+  <data name="InvitationCodeInvalidError" xml:space="preserve">
+    <value>Der Einladungscode ist ungültig!</value>
+  </data>
+  <data name="InvitationCodeRedeemedError" xml:space="preserve">
+    <value>Der Einladungscode ist nicht mehr gültig!</value>
+  </data>
+  <data name="InvitationNotSupportedError" xml:space="preserve">
+    <value>Einladungsfunktion wird nicht unterstützt!</value>
   </data>
   <data name="JavascriptErrorMessage" xml:space="preserve">
     <value>JavaScript ist deaktiviert. Wir empfehlen Ihnen es zu aktivieren. Klicken Sie auf die Schaltfläche unten um fortzufahren.</value>
@@ -176,6 +200,18 @@
   </data>
   <data name="Password" xml:space="preserve">
     <value>Kennwort</value>
+  </data>
+  <data name="PasswordChangeEqualToLoginError" xml:space="preserve">
+    <value>Das neue Passwort darf nicht gleich dem Benutzernamen sein!</value>
+  </data>
+  <data name="PasswordChangeNotMatchingError" xml:space="preserve">
+    <value>Passwörter stimmen nicht überein!</value>
+  </data>
+  <data name="PasswordChangeSamePasswordError" xml:space="preserve">
+    <value>Das neue Passwort darf nicht gleich dem aktuellen Passwort sein!</value>
+  </data>
+  <data name="PasswordChangeWrongPasswordError" xml:space="preserve">
+    <value>Falsches Passwort!</value>
   </data>
   <data name="ProfilePageTitle" xml:space="preserve">
     <value>Benutzerprofil</value>
@@ -203,6 +239,12 @@
   </data>
   <data name="SetPassword" xml:space="preserve">
     <value>Passwort vergeben</value>
+  </data>
+  <data name="UnknownLoginProviderError" xml:space="preserve">
+    <value>Ungültiger Anmeldungsmechanismus!</value>
+  </data>
+  <data name="UserForClientP0NotFoundError" xml:space="preserve">
+    <value>Der Benutzer für die Anwendung {0} konnte nicht gefunden werden.</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Benutzer</value>
