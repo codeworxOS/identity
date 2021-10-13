@@ -29,5 +29,8 @@
         SelectTenantPageTitle,
         Select,
         SetAsDefault,
+        OrLoginWith,
+        OrConnectWith,
+        SetPassword,
     }
 }

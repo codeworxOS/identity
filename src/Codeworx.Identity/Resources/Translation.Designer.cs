@@ -214,6 +214,24 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to or connect with.
+        /// </summary>
+        internal static string OrConnectWith {
+            get {
+                return ResourceManager.GetString("OrConnectWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to or login with.
+        /// </summary>
+        internal static string OrLoginWith {
+            get {
+                return ResourceManager.GetString("OrLoginWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         internal static string Password {
@@ -291,6 +309,15 @@ namespace Codeworx.Identity.Resources {
         internal static string SetAsDefault {
             get {
                 return ResourceManager.GetString("SetAsDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Password.
+        /// </summary>
+        internal static string SetPassword {
+            get {
+                return ResourceManager.GetString("SetPassword", resourceCulture);
             }
         }
         

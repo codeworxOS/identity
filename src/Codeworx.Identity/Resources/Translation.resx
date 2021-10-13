@@ -168,6 +168,12 @@
   <data name="OidcFormPostResponsePageTitle" xml:space="preserve">
     <value>OIDC Form_Post Response</value>
   </data>
+  <data name="OrConnectWith" xml:space="preserve">
+    <value>or connect with</value>
+  </data>
+  <data name="OrLoginWith" xml:space="preserve">
+    <value>or login with</value>
+  </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
   </data>
@@ -194,6 +200,9 @@
   </data>
   <data name="SetAsDefault" xml:space="preserve">
     <value>Set as default</value>
+  </data>
+  <data name="SetPassword" xml:space="preserve">
+    <value>Set Password</value>
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>

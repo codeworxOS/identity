@@ -13,9 +13,13 @@
 
 <body>
     <div id="loginContainer" class="login-view">
-        {{#Groups}}
+        <h1 class="login-header">{{Translate 'LoginPageTitle'}}</h1>
+        {{#each Groups}}
+        {{#unless @first}}
+        <div class="registration-separator">{{Translate 'OrLoginWith'}}</div>
+        {{/unless}}
         {{> (RegistrationTemplate)}}
-        {{/Groups}}
+        {{/each}}
         {{#HasError}}
         <div class="error">{{Error}}</div>
         {{/HasError}}

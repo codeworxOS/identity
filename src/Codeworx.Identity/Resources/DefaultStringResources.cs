@@ -60,6 +60,12 @@
                     return Translation.Select;
                 case StringResource.SetAsDefault:
                     return Translation.SetAsDefault;
+                case StringResource.OrLoginWith:
+                    return Translation.OrLoginWith;
+                case StringResource.OrConnectWith:
+                    return Translation.OrConnectWith;
+                case StringResource.SetPassword:
+                    return Translation.SetPassword;
                 default:
                     throw new MissingResourceException(resource);
             }

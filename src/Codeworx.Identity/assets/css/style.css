@@ -23,55 +23,18 @@ body {
     width: 450px;
 }
 
-    #loginContainer:before {
-        font-family: "Arial Black";
-        font-size: 30px;
-        color: #333333;
-        text-transform: uppercase;
-        text-align: center;
-        padding-bottom: 50px;
-        display: flex;
-        flex-direction: column;
-    }
+#loginContainer h1.login-header {
+    font-family: "Arial Black";
+    font-size: 30px;
+    color: #333333;
+    text-transform: uppercase;
+    text-align: center;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+}
 
-    #loginContainer.login-view:before {
-        content: "Login";
-    }
-
-    #loginContainer.profile-view:before {
-        content: "Profile";
-    }
-
-    #loginContainer.change-password-view:before {
-        content: "Change Password";
-    }
-
-    #loginContainer.forgot-password-view:before {
-        content: "Forgot Password";
-    }
-
-    #loginContainer.forgot-password-completed-view:before {
-        content: "Notification";
-    }
-
-
-    #loginContainer.invitation:before {
-        content: "Set Password";
-    }
-
-    #loginContainer.login-view ul#external:before {
-        content: "Or login with";
-        font-family: Arial;
-        font-size: 16px;
-        width: 100%;
-        color: #999999;
-        text-align: center;
-        margin-bottom: 10px;
-        margin-top: 10px;
-    }
-
-    #loginContainer.invitation ul#external:before {
-        content: "Or connect with";
+    #loginContainer .registration-separator {
         font-family: Arial;
         font-size: 16px;
         width: 100%;
