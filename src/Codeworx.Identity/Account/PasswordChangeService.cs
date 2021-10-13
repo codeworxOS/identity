@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Account
             }
             else if (!Regex.IsMatch(request.NewPassword, policy.Regex))
             {
-                error = policy.Description;
+                error = policy.GetDescription(_stringResources);
                 hasError = true;
             }
 

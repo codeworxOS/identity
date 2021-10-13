@@ -49,7 +49,7 @@ namespace Codeworx.Identity.Invitation
             }
             else if (!Regex.IsMatch(request.Password, policy.Regex))
             {
-                error = policy.Description;
+                error = policy.GetDescription(_stringResources);
                 hasError = true;
             }
 

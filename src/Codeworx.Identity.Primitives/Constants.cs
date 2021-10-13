@@ -13,7 +13,8 @@
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
         public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
-        public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
+        public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
+        public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";

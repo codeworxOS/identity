@@ -180,6 +180,9 @@
   <data name="JavascriptErrorMessage" xml:space="preserve">
     <value>JavaScript ist deaktiviert. Wir empfehlen Ihnen es zu aktivieren. Klicken Sie auf die Schaltfläche unten um fortzufahren.</value>
   </data>
+  <data name="LanguageCode" xml:space="preserve">
+    <value>de</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Anmelden</value>
   </data>

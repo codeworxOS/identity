@@ -180,6 +180,9 @@
   <data name="JavascriptErrorMessage" xml:space="preserve">
     <value>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue.</value>
   </data>
+  <data name="LanguageCode" xml:space="preserve">
+    <value>en</value>
+  </data>
   <data name="Login" xml:space="preserve">
     <value>Login</value>
   </data>

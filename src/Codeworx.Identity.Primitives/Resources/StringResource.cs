@@ -46,5 +46,6 @@
         PasswordChangeNotMatchingError,
         PasswordChangeSamePasswordError,
         PasswordChangeEqualToLoginError,
+        LanguageCode,
     }
 }

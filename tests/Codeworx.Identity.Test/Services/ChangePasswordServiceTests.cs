@@ -48,7 +48,7 @@
             Assert.NotNull(exception);
 
             var passwordChangeViewResponse = exception.TypedResponse;
-            Assert.AreEqual(DummyPasswordPolicyProvider.Description, passwordChangeViewResponse.Error);
+            Assert.AreEqual(DummyPasswordPolicyProvider.Description["en"], passwordChangeViewResponse.Error);
 
             _changePasswordServiceMock.Verify(x => x.SetPasswordAsync(It.IsAny<IUser>(), It.IsAny<string>()), Times.Never);
         }

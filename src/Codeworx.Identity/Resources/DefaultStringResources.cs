@@ -94,6 +94,8 @@
                     return Translation.PasswordChangeSamePasswordError;
                 case StringResource.PasswordChangeEqualToLoginError:
                     return Translation.PasswordChangeEqualToLoginError;
+                case StringResource.LanguageCode:
+                    return Translation.LanguageCode;
 
                 default:
                     throw new MissingResourceException(resource);
