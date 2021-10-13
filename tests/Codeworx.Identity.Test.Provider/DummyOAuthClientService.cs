@@ -19,6 +19,7 @@ namespace Codeworx.Identity.Test
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
@@ -32,6 +33,31 @@ namespace Codeworx.Identity.Test
         public Task<IEnumerable<IClientRegistration>> GetForTenantByIdentifier(string tenantIdentifier)
         {
             return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
+        }
+
+
+        private class DummyOAuthAuthorizationCodePublicClientRegistration : IClientRegistration
+        {
+            public DummyOAuthAuthorizationCodePublicClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Web;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+            }
+
+            public string ClientId => Constants.DefaultCodeFlowPublicClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
         }
 
 

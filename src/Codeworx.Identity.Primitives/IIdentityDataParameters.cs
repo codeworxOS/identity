@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity
 {
     public interface IIdentityDataParameters
     {
-        string ClientId { get; }
-
-        string Nonce { get; }
+        IClientRegistration Client { get; }
 
         IReadOnlyCollection<string> Scopes { get; }
-
-        string State { get; }
 
         ClaimsIdentity User { get; }
 

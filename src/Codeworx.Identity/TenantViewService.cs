@@ -24,10 +24,6 @@ namespace Codeworx.Identity
 
         public async Task<SelectTenantSuccessResponse> SelectAsync(SelectTenantViewActionRequest request)
         {
-            var identityDataParameters = await GetIdentityDataParametersAsync(request.Request, request.Identity)
-                                            .ConfigureAwait(false);
-
-            var tenants = await _tenantService.GetTenantsByIdentityAsync(identityDataParameters);
             if (_defaultTenantService != null && request.SetDefault)
             {
                 await _defaultTenantService.SetDefaultTenantAsync(request.Identity.GetUserId(), request.TenantKey);

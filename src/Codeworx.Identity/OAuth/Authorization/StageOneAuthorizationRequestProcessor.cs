@@ -22,13 +22,20 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public async Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
-            builder.WithClientId(request.ClientId);
+            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
+            }
 
             var client = await _clientService.GetById(request.ClientId).ConfigureAwait(false);
 
             if (client == null)
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
+            }
+            else
+            {
+                builder.WithClient(client);
             }
 
             if (request.RedirectUri != null)
@@ -91,11 +98,6 @@ namespace Codeworx.Identity.OAuth.Authorization
             if (!Validator.TryValidateProperty(request.State, new ValidationContext(request) { MemberName = nameof(request.State) }, new List<ValidationResult>()))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);
-            }
-
-            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
-            {
-                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
         }
 

@@ -50,7 +50,7 @@ namespace Codeworx.Identity.OAuth.Token
             var identityParameters = builder.Parameters;
             var identityData = await _identityService.GetIdentityAsync(identityParameters).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), identityParameters.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), identityParameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
@@ -64,7 +64,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
 
-            return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)identityParameters.TokenExpiration.TotalSeconds, scope);
+            return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)identityParameters.Client.TokenExpiration.TotalSeconds, scope);
         }
     }
 }

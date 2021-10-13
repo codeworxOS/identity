@@ -44,7 +44,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             return await ToUser(user);
         }
 
-        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public virtual async Task<IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var identifier = identity.GetUserId();
 

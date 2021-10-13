@@ -8,7 +8,7 @@ namespace Codeworx.Identity
     {
         Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier);
 
-        Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user);
+        Task<IUser> GetUserByIdentityAsync(ClaimsIdentity user);
 
         Task<IUser> GetUserByIdAsync(string userId);
 

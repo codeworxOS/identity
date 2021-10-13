@@ -6,11 +6,15 @@ namespace Codeworx.Identity.OAuth.Token
     [DataContract]
     public class TokenExchangeRequest : TokenRequest
     {
-        public TokenExchangeRequest(string clientId, string clientSecret, string audience, string scope)
-            : base(clientSecret, Constants.OAuth.GrantType.RefreshToken, clientSecret)
+        public TokenExchangeRequest(string clientId, string clientSecret, string audience, string scope, string subjectToken, string subjectTokenType, string actorToken, string actorTokenType)
+            : base(clientId, Constants.OAuth.GrantType.TokenExchange, clientSecret)
         {
             Audience = audience;
             Scope = scope;
+            SubjectToken = subjectToken;
+            SubjectTokenType = subjectTokenType;
+            ActorToken = actorToken;
+            ActorTokenType = actorToken;
         }
 
         [RegularExpression(Constants.OAuth.AudienceValidation)]
@@ -21,29 +25,22 @@ namespace Codeworx.Identity.OAuth.Token
         [DataMember(Order = 2, Name = Constants.OAuth.ScopeName)]
         public string Scope { get; set; }
 
-        ////subject_token
-        ////   REQUIRED.A security token that represents the identity of the     
-        ////   party on behalf of whom the request is being made.  Typically, the
-        ////   subject of this token will be the subject of the security token
-        ////   issued in response to the request.
+        [Required]
+        [RegularExpression(Constants.OAuth.SubjectTokenValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.SubjectTokenName)]
+        public string SubjectToken { get; set; }
 
-        ////subject_token_type
-        ////   REQUIRED.  An identifier, as described in Section 3, that
-        ////   indicates the type of the security token in the "subject_token"
+        [Required]
+        [RegularExpression(Constants.OAuth.SubjectTokenTypeValidation)]
+        [DataMember(Order = 4, Name = Constants.OAuth.SubjectTokenTypeName)]
+        public string SubjectTokenType { get; set; }
 
-        ////   parameter.
+        [RegularExpression(Constants.OAuth.ActorTokenValidation)]
+        [DataMember(Order = 3, Name = Constants.OAuth.ActorTokenName)]
+        public string ActorToken { get; set; }
 
-        ////actor_token
-        ////   OPTIONAL.  A security token that represents the identity of the
-        ////   acting party.Typically, this will be the party that is
-
-        ////   authorized to use the requested security token and act on behalf
-        ////   of the subject.
-
-        ////actor_token_type
-        ////   An identifier, as described in Section 3, that indicates the type
-        ////   of the security token in the "actor_token" parameter.This is
-        ////   REQUIRED when the "actor_token" parameter is present in the
-        ////   request but MUST NOT be included otherwise.
+        [RegularExpression(Constants.OAuth.ActorTokenTypeValidation)]
+        [DataMember(Order = 4, Name = Constants.OAuth.ActorTokenTypeName)]
+        public string ActorTokenType { get; set; }
     }
 }

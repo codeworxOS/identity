@@ -14,10 +14,6 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
-            else
-            {
-                builder.WithClientId(request.ClientId);
-            }
 
             if (!Validator.TryValidateProperty(request.GrantType, new ValidationContext(request) { MemberName = nameof(request.GrantType) }, new List<ValidationResult>()))
             {
@@ -27,10 +23,6 @@ namespace Codeworx.Identity.OAuth.Token
             if (!Validator.TryValidateProperty(request.ClientSecret, new ValidationContext(request) { MemberName = nameof(request.ClientSecret) }, new List<ValidationResult>()))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientSecretName);
-            }
-            else
-            {
-                builder.WithClientSecret(request.ClientSecret);
             }
 
             if (!Validator.TryValidateProperty(request.Scope, new ValidationContext(request) { MemberName = nameof(request.Scope) }, new List<ValidationResult>()))

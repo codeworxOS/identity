@@ -12,24 +12,26 @@
         public const string DefaultAdminUserName = "admin";
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
-        public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
-        public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
+        public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
+        public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";
         public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
         public const string DefaultSecondTenantName = "Sendond Tenant";
-        public const string DefaultServiceAccountClientId = "ADAD0B0F-E136-4726-B49F-FA45253E0DBD";
+        public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
         public const string DefaultServiceAccountId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
         public const string DefaultServiceAccountName = "service.account";
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
-        public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
+        public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
         public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
         public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
+        public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
+        public const string ForcePasswordUserName = "changepassword";
         public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
         public const string FormsLoginProviderName = "Form";
         public const string GenericLoginError = "There was an unexpected login error!";
@@ -42,8 +44,6 @@
         public const string LoginProviderIdParameter = "login_provider_id";
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
-        public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
-        public const string ForcePasswordUserName = "changepassword";
         public const string NotExistingUserName = "notExistingUser";
 
         public const string ProductName = "CodeworxIdentity";
@@ -78,11 +78,13 @@
 
         public static class Claims
         {
+            public const string AtHash = "at_hash";
             public const string Audience = "aud";
             public const string CurrentTenant = "current_tenant";
             public const string DefaultTenant = "default_tenant";
             public const string ExternalToken = "external_token";
             public const string ExternalTokenKey = "external_token_key";
+            public const string ForceChangePassword = "force_change_password";
             public const string Group = "group";
             public const string Id = "id";
             public const string Issuer = "iss";
@@ -90,8 +92,6 @@
             public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
-            public const string AtHash = "at_hash";
-            public const string ForceChangePassword = "force_change_password";
         }
 
         public static class Forms
@@ -118,11 +118,15 @@
 
         public static class OAuth
         {
-            public const string AudienceName = "audience";
-            public const string AudienceValidation = VsChars;
             public const string AccessTokenName = "access_token";
             public const string AccessTokenValidation = VsChars;
+            public const string ActorTokenName = "actor_token";
+            public const string ActorTokenTypeName = "actor_token_type";
+            public const string ActorTokenTypeValidation = VsChars;
+            public const string ActorTokenValidation = VsChars;
             public const string AdditionalParameterValidation = GrantTypeValidation;
+            public const string AudienceName = "audience";
+            public const string AudienceValidation = VsChars;
             public const string ClientIdName = "client_id";
             public const string ClientIdValidation = VsChars;
             public const string ClientSecretName = "client_secret";
@@ -158,6 +162,10 @@
             public const string ScopeValidation = @"^(?<scope>" + NqChar + @"+)(\s{1}(?<scope>" + NqChar + @"+))*$";
             public const string StateName = "state";
             public const string StateValidation = VsChars;
+            public const string SubjectTokenName = "subject_token";
+            public const string SubjectTokenTypeName = "subject_token_type";
+            public const string SubjectTokenTypeValidation = VsChars;
+            public const string SubjectTokenValidation = VsChars;
             public const string TokenTypeName = "token_type";
             public const string TokenTypeValidation = GrantTypeValidation;
 
@@ -170,6 +178,7 @@
                 public const string InvalidGrant = "invalid_grant";
                 public const string InvalidRequest = "invalid_request";
                 public const string InvalidScope = "invalid_scope";
+                public const string InvalidTarget = "invalid_target";
                 public const string ServerError = "server_error";
                 public const string TemporarilyUnavailable = "temporarily_unavailable";
                 public const string UnauthorizedClient = "unauthorized_client";
@@ -286,6 +295,14 @@
         public class Icons
         {
             public const string Windows = "icon-windows";
+        }
+
+        public class TokenExchange
+        {
+            public class TokenType
+            {
+                public const string AccessToken = "urn:ietf:params:oauth:token-type:access_token";
+            }
         }
     }
 }

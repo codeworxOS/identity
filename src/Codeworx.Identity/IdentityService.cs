@@ -46,7 +46,7 @@ namespace Codeworx.Identity
                 throw new System.ArgumentNullException(nameof(identityDataParameters));
             }
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(identityDataParameters.User);
+            var currentUser = await _userService.GetUserByIdentityAsync(identityDataParameters.User);
 
             if (currentUser == null)
             {
@@ -60,7 +60,7 @@ namespace Codeworx.Identity
 
             var externalTokenKey = identityDataParameters.User.FindFirst(Constants.Claims.ExternalTokenKey)?.Value;
 
-            var result = new IdentityData(identityDataParameters.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
+            var result = new IdentityData(identityDataParameters.Client.ClientId, currentUser.Identity, currentUser.Name, claims, externalTokenKey);
 
             return result;
         }
