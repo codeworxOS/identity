@@ -61,6 +61,21 @@
     <Folder Include="OpenId\Token\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\Translation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Translation.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Translation.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Translation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
   <!--<Target Name="TypeScriptCompile" BeforeTargets="Build">
     <Exec Command="tsc" WorkingDirectory="assets" />
   </Target>-->
