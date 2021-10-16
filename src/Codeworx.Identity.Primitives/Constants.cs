@@ -2,8 +2,6 @@
 {
     public static class Constants
     {
-        public const string AuthenticationExceptionMessage = "Username or password incorrect.";
-
         public const string BasicHeader = "Basic";
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
@@ -14,7 +12,9 @@
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "EADB8036-4AA6-4468-9349-43FF541EBF5E";
         public const string DefaultCodeFlowPublicClientId = "809B3854-C354-49B9-90DC-83F80AC5F4C2";
-        public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
+        public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
+        public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
+        public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
@@ -25,16 +25,11 @@
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "B45ABA81-AAC1-403F-93DD-1CE42F745ED2";
-        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
-        public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
         public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
         public const string ExternalWindowsProviderName = "Windows";
         public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
         public const string FormsLoginProviderName = "Form";
-        public const string GenericLoginError = "There was an unexpected login error!";
-        public const string InvalidCredentialsError = "Username or password is not valid!";
-        public const string InvitationNotSupported = "Invitation feature is not supported!";
         public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
@@ -49,7 +44,6 @@
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
         public const string TenantNameProperty = "tenantName";
-        public const string UnknownLoginProviderError = "Invalid provider!";
         public const string UserNameParameterName = "username";
         public const string WindowsAuthenticationSchema = "Windows";
         private const string NameChar = @"[a-zA-Z0-9_]";

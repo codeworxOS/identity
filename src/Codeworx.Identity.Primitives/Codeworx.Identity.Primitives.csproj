@@ -16,5 +16,8 @@
   <ItemGroup>
     <Folder Include="Converter\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 
 </Project>

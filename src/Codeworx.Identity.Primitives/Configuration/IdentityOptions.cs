@@ -18,13 +18,18 @@ namespace Codeworx.Identity.Configuration
             OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
             OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
             OpenIdWellKnownPrefix = string.Empty;
-            PasswordDescription = Constants.DefaultPasswordDescription;
+            PasswordDescription = new Dictionary<string, string>()
+            {
+                { "en", Constants.DefaultPasswordDescriptionEn },
+                { "de", Constants.DefaultPasswordDescriptionDe },
+            };
             PasswordRegex = Constants.DefaultPasswordRegex;
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
             UserInfoEndpoint = "/userinfo";
             WindowsAuthenticationEnabled = false;
             CompanyName = "Identity";
+            Favicon = Constants.DefaultFavicon;
         }
 
         public string AccountEndpoint { get; set; }
@@ -34,6 +39,8 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
+
+        public string Favicon { get; set; }
 
         public TimeSpan InvitationValidity { get; set; }
 
@@ -49,7 +56,7 @@ namespace Codeworx.Identity.Configuration
 
         public string OpenIdWellKnownPrefix { get; set; }
 
-        public string PasswordDescription { get; set; }
+        public IDictionary<string, string> PasswordDescription { get; set; }
 
         public string PasswordRegex { get; set; }
 
@@ -71,6 +78,7 @@ namespace Codeworx.Identity.Configuration
             target.AuthenticationCookie = this.AuthenticationCookie;
             target.AuthenticationScheme = this.AuthenticationScheme;
             target.CookieExpiration = this.CookieExpiration;
+            target.Favicon = this.Favicon;
             target.InvitationValidity = this.InvitationValidity;
             target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;
             target.OauthTokenEndpoint = this.OauthTokenEndpoint;

@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <base href="{{base-href}}">
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-    <title>Select tenant</title>
+    {{> Favicon}}
+    <title>{{Translate 'SelectTenantPageTitle'}}</title>
     {{> Styles}}
 </head>
 <body>
@@ -17,12 +17,12 @@
             <option value="{{Key}}">{{Name}}</option>
             {{/Tenants}}
         </select>
-        <button type="submit" id="select">Select</button>
+        <button type="submit" id="select">{{Translate 'Select'}}</button>
 
         {{#CanSetDefault}}
         <div>
             <input type="checkbox" id="setDefault" name="setDefault" />
-            <label htmlFor="setDefault">Set as default</label>
+            <label htmlFor="setDefault">{{Translate 'SetAsDefault'}}</label>
         </div>
         {{/CanSetDefault}}
     </form>
