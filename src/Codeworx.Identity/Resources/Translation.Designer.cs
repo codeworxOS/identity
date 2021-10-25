@@ -178,7 +178,7 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled..
+        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wrong credentials were provided or Windows authentication support is disabled..
         /// </summary>
         internal static string Http401Description {
             get {
