@@ -21,6 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="assets\account\forgot_password.html" />
+    <None Remove="assets\account\forgot_password_complete.html" />
     <None Remove="assets\account\invitation.html" />
     <None Remove="assets\account\password_change.html" />
     <None Remove="assets\account\redirect.html" />
@@ -33,17 +35,21 @@
     <None Remove="assets\images\microsoft-64.png" />
     <None Remove="assets\images\tick-32.png" />
     <None Remove="assets\images\windows-64.png" />
+    <None Remove="assets\notification\forgot_password.html" />
     <None Remove="assets\redirect_link.html" />
     <None Remove="assets\redirect_link_profile.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="assets\account\forgot_password_complete.html" />
+    <EmbeddedResource Include="assets\account\forgot_password.html" />
     <EmbeddedResource Include="assets\account\profile.html" />
     <EmbeddedResource Include="assets\account\invitation.html" />
     <EmbeddedResource Include="assets\account\password_change.html" />
     <EmbeddedResource Include="assets\account\redirect.html" />
     <EmbeddedResource Include="assets\account\login.html" />
     <EmbeddedResource Include="assets\account\tenant.html" />
+    <EmbeddedResource Include="assets\notification\forgot_password.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -53,6 +59,21 @@
 
   <ItemGroup>
     <Folder Include="OpenId\Token\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Translation.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Translation.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Translation.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Translation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <!--<Target Name="TypeScriptCompile" BeforeTargets="Build">

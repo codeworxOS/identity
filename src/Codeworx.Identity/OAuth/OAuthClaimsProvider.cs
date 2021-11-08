@@ -23,7 +23,7 @@ namespace Codeworx.Identity.OAuth
             var issuerClaim = AssignedClaim.Create(Constants.Claims.Issuer, _baseUri.BaseUri.ToString().TrimEnd('/'));
             result.Add(issuerClaim);
 
-            var audienceClaim = AssignedClaim.Create(Constants.Claims.Audience, parameters.ClientId);
+            var audienceClaim = AssignedClaim.Create(Constants.Claims.Audience, parameters.Client.ClientId);
             result.Add(audienceClaim);
 
             if (parameters.Scopes.Any())

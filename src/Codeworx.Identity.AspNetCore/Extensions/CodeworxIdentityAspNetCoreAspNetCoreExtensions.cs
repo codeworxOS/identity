@@ -37,6 +37,7 @@ using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -199,6 +200,10 @@ namespace Codeworx.Identity.AspNetCore
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<PasswordChangeMiddleware>())
+                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/forgot-password"),
+                       p => p
+                            .UseMiddleware<ForgotPasswordMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/winlogin", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<WindowsLoginMiddleware>())
@@ -253,6 +258,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<PasswordChangeRequest>, PasswordChangeRequestBinder>();
             collection.AddTransient<IRequestBinder<ProfileRequest>, ProfileRequestBinder>();
             collection.AddTransient<IRequestBinder<ProfileLinkRequest>, ProfileLinkRequestBinder>();
+            collection.AddTransient<IRequestBinder<ForgotPasswordRequest>, ForgotPasswordRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -287,6 +293,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<ProfileResponse>, ProfileResponseBinder>();
             collection.AddTransient<IResponseBinder<ProfileLinkResponse>, ProfileLinkResponseBinder>();
             collection.AddTransient<IResponseBinder<ForceChangePasswordResponse>, ForceChangePasswordResponseBinder>();
+            collection.AddTransient<IResponseBinder<ForgotPasswordViewResponse>, ForgotPasswordViewResponseBinder>();
+            collection.AddTransient<IResponseBinder<ForgotPasswordResponse>, ForgotPasswordResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
@@ -358,6 +366,8 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
 
             collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();
+
+            collection.AddSingleton<IStringResources, DefaultStringResources>();
 
             return builder;
         }

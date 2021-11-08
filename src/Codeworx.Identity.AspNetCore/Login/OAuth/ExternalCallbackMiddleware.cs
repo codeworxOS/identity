@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
@@ -21,7 +22,8 @@ namespace Codeworx.Identity.AspNetCore
             IRequestBinder<ExternalCallbackRequest> requestBinder,
             IResponseBinder<SignInResponse> signInBinder,
             IResponseBinder<LoginRedirectResponse> loginRedirectResponseBinder,
-            ILoginService loginService)
+            ILoginService loginService,
+            IStringResources stringResources)
         {
             ExternalCallbackRequest callbackRequest = null;
 
@@ -33,7 +35,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             catch (LoginProviderNotFoundException)
             {
-                var response = new LoginRedirectResponse(providerError: Constants.UnknownLoginProviderError);
+                var message = stringResources.GetResource(StringResource.UnknownLoginProviderError);
+                var response = new LoginRedirectResponse(providerError: message);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
             catch (AuthenticationException ex)
@@ -48,7 +51,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             catch (Exception)
             {
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, Constants.GenericLoginError);
+                var message = stringResources.GetResource(StringResource.GenericLoginError);
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, message);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
         }

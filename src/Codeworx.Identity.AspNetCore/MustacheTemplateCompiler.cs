@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Resources;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
 
@@ -12,20 +13,34 @@ namespace Codeworx.Identity.AspNetCore
     {
         private readonly IDisposable _subscription;
         private readonly IHandlebars _handlebars;
+        private readonly IStringResources _stringResources;
         private bool _disposedValue = false;
         private IdentityOptions _options;
 
-        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates)
+        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IStringResources stringResources)
         {
+            _stringResources = stringResources;
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
+            _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
             _handlebars.RegisterHelper("RegistrationTemplate", (writer, context, parameters) =>
             {
                 if (context is ILoginRegistrationGroup info)
                 {
                     writer.WriteSafeString(info.Template);
+                }
+            });
+
+            _handlebars.RegisterHelper("Translate", (writer, context, parameters) =>
+            {
+                if (parameters.Length == 1 && parameters[0] is string resource)
+                {
+                    if (Enum.TryParse<StringResource>(resource, out var stringResource))
+                    {
+                        writer.WriteSafeString(_stringResources.GetResource(stringResource));
+                    }
                 }
             });
 
@@ -63,6 +78,11 @@ namespace Codeworx.Identity.AspNetCore
         private static string GetStyles(IEnumerable<string> styles)
         {
             return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+        }
+
+        private static string GetFavicon(string favicon)
+        {
+            return $"<link rel=\"icon\" href=\"{favicon}\">";
         }
     }
 

@@ -2,14 +2,15 @@
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Codeworx.Identity.Cache;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     internal class RefreshTokenParameters : IRefreshTokenParameters
     {
-        public RefreshTokenParameters(string clientId, string clientSecret, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem)
+        public RefreshTokenParameters(IClientRegistration client, string clientSecret, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem)
         {
-            ClientId = clientId;
+            Client = client;
             Scopes = scopes.ToImmutableList();
             User = user;
             ClientSecret = clientSecret;
@@ -17,7 +18,7 @@ namespace Codeworx.Identity.OAuth.Token
             CacheItem = cacheItem;
         }
 
-        public string ClientId { get; }
+        public IClientRegistration Client { get; }
 
         public string Nonce { get; }
 

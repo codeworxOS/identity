@@ -14,10 +14,6 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
-            else
-            {
-                builder.WithClientId(request.ClientId);
-            }
 
             if (!Validator.TryValidateProperty(request.GrantType, new ValidationContext(request) { MemberName = nameof(request.GrantType) }, new List<ValidationResult>()))
             {

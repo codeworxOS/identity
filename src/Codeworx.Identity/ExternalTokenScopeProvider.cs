@@ -15,7 +15,7 @@ namespace Codeworx.Identity
             _externalTokenCache = externalTokenCache;
         }
 
-        public Task<IEnumerable<IScope>> GetScopes()
+        public Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null)
         {
             if (_externalTokenCache != null)
             {

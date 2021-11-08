@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
@@ -18,6 +19,7 @@ namespace Codeworx.Identity.Test
 
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
+                                                new DummyLimitedScope1ClientRegistration(),
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
                                                 new ServiceAccountClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
@@ -34,8 +36,36 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IEnumerable<IClientRegistration>>(_oAuthClientRegistrations);
         }
 
+        private class DummyLimitedScope1ClientRegistration : IDummyClientRegistration
 
-        private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
+        {
+
+            public DummyLimitedScope1ClientRegistration()
+            {
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = new IScope[] {
+                   new Scope("openid"),
+                   new Scope("scope1")
+                };
+            }
+
+            public string ClientId => TestDefaults.LimitedScope1ClientId;
+
+            public string ClientSecretHash => null;
+
+            public ClientType ClientType => ClientType.UserAgent;
+
+            public TimeSpan TokenExpiration => TimeSpan.FromHours(1);
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public IUser User => null;
+        }
+
+
+        private class DummyOAuthAuthorizationCodeClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
             {
@@ -44,6 +74,8 @@ namespace Codeworx.Identity.Test
 
                 this.ClientType = ClientType.Web;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
@@ -58,15 +90,19 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => null;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
-        private class DummyOAuthAuthorizationTokenClientRegistration : IClientRegistration
+        private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationTokenClientRegistration()
             {
                 this.ClientType = ClientType.UserAgent;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
             public string ClientId => Constants.DefaultTokenFlowClientId;
@@ -82,9 +118,11 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => null;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
-        private class ServiceAccountClientRegistration : IClientRegistration
+        private class ServiceAccountClientRegistration : IDummyClientRegistration
         {
             public ServiceAccountClientRegistration(string hashValue)
             {
@@ -92,6 +130,8 @@ namespace Codeworx.Identity.Test
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.ClientSecretHash = hashValue;
+
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
             public string ClientId => Constants.DefaultServiceAccountClientId;
@@ -107,6 +147,8 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => new DummyUserService.DummyUser();
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
     }
 }

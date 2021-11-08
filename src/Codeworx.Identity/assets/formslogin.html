@@ -2,16 +2,24 @@
 <form method="post" id="loginForm">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
 
-    <input type="text" id="username" name="username" placeholder="User" value="{{Username}}" />
-    <input type="password" id="password" name="password" placeholder="Password" />
-    <input type="checkbox" id="remember" name="remember-me" /><label for="remember">
+    <input type="text" id="username" name="username" placeholder="{{Translate 'Username'}}" value="{{Username}}" />
+    <input type="password" id="password" name="password" placeholder="{{Translate 'Password'}}" />
+    <input type="checkbox" id="remember" name="remember-me" />
+    <label for="remember">
         <svg width="18" height="18">
             <rect x="1" y="1" width="16" height="16" rx="3" stroke="black" stroke-width="2" fill="transparent" />
             <path id="checked" d="M 4 8 L 8 12 L 14 6" fill="none" stroke="black" stroke-width="3" />
         </svg>
-        Remember me
+        {{Translate 'RememberMe'}}
     </label>
+    {{#ForgotPasswordUrl}}
+    <div class="forgot-password-box">
+        <a class="forgot-password-link" href="{{.}}">
+            {{Translate 'ForgotPassword'}}
+        </a>
+    </div>
+    {{/ForgotPasswordUrl}}
     <div class="error">{{Error}}</div>
-    <button type="submit" class="login-submit" id="loginButton">login</button>
+    <button type="submit" class="login-submit" id="loginButton">{{Translate 'Login'}}</button>
 </form>
 {{/Registrations}}
