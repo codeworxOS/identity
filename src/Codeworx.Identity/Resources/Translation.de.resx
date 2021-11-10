@@ -243,6 +243,9 @@
   <data name="SetPassword" xml:space="preserve">
     <value>Passwort vergeben</value>
   </data>
+  <data name="SetPasswordPageTitle" xml:space="preserve">
+    <value>Passwort vergeben</value>
+  </data>
   <data name="UnknownLoginProviderError" xml:space="preserve">
     <value>Ungültiger Anmeldungsmechanismus!</value>
   </data>

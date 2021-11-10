@@ -40,6 +40,8 @@
         public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
         public const string ForcePasswordUserName = "changepassword";
         public const string NotExistingUserName = "notExistingUser";
+        public const string NoPasswordUserId = "65AB0982-F4CE-4ADA-B94E-C77CC3A5F075";
+        public const string NoPasswordUserName = "nopassword";
 
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
