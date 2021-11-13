@@ -20,6 +20,7 @@ namespace Codeworx.Identity.Test
         {
             _users = new List<IDummyUser>();
             _users.Add(new DummyUser());
+            _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
         }
@@ -78,6 +79,32 @@ namespace Codeworx.Identity.Test
             public string Identity => Constants.DefaultAdminUserId;
 
             public string Name => Constants.DefaultAdminUserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class DummyUserWithoutPassword : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = null;
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => Constants.NoPasswordUserId;
+
+            public string Name => Constants.NoPasswordUserName;
 
             public string PasswordHash => _password;
 
