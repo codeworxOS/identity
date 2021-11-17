@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Token
@@ -13,7 +14,7 @@ namespace Codeworx.Identity.OAuth.Token
             _tokenServiceSelectors = tokenServiceSelectors;
         }
 
-        public async Task<TokenResponse> ProcessAsync(TokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(TokenRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -24,7 +25,7 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 if (item.CanProcess(request))
                 {
-                    return await item.ProcessAsync(request).ConfigureAwait(false);
+                    return await item.ProcessAsync(request, token).ConfigureAwait(false);
                 }
             }
 

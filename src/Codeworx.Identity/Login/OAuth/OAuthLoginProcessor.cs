@@ -80,6 +80,8 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendPath("me");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     break;
+                default:
+                    throw new NotSupportedException();
             }
 
             if (!string.IsNullOrEmpty(request.Prompt))
