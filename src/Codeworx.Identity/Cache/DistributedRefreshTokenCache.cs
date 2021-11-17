@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
@@ -39,15 +40,15 @@ namespace Codeworx.Identity.Cache
             _logger = logger;
         }
 
-        public Task ExtendLifetimeAsync(string key, TimeSpan extendBy)
+        public Task ExtendLifetimeAsync(string key, TimeSpan extendBy, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IRefreshTokenCacheItem> GetAsync(string key)
+        public async Task<IRefreshTokenCacheItem> GetAsync(string key, CancellationToken token = default)
         {
             GetKeys(key, out var cacheKey, out var encryptionKey);
-            var cachedGrantInformation = await _cache.GetStringAsync(cacheKey).ConfigureAwait(false);
+            var cachedGrantInformation = await _cache.GetStringAsync(cacheKey, token).ConfigureAwait(false);
             if (cachedGrantInformation == null)
             {
                 return null;
@@ -60,7 +61,7 @@ namespace Codeworx.Identity.Cache
             return new RefreshTokenCacheItem(identityData);
         }
 
-        public async Task<string> SetAsync(IdentityData data, TimeSpan validFor)
+        public async Task<string> SetAsync(IdentityData data, TimeSpan validFor, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
 
@@ -69,7 +70,8 @@ namespace Codeworx.Identity.Cache
             await _cache.SetStringAsync(
                 cacheKey,
                 encrypted.Data,
-                new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = validFor, });
+                new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = validFor, },
+                token);
 
             return $"{cacheKey}.{encrypted.Key}";
         }

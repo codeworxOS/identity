@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Token;
@@ -14,22 +15,25 @@ namespace Codeworx.Identity.OAuth.Token
         private readonly IRefreshTokenCache _refreshTokenCache;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
         private readonly IAuthorizationCodeCache _cache;
+        private readonly IExternalTokenCache _externalTokenCache;
 
         public AuthorizationCodeTokenService(
             IAuthorizationCodeCache cache,
             IRequestValidator<AuthorizationCodeTokenRequest> validator,
             IClientAuthenticationService clientAuthenticationService,
             IRefreshTokenCache refreshTokenCache,
-            IEnumerable<ITokenProvider> tokenProviders)
+            IEnumerable<ITokenProvider> tokenProviders,
+            IExternalTokenCache externalTokenCache = null)
         {
             _validator = validator;
             _clientAuthenticationService = clientAuthenticationService;
             _refreshTokenCache = refreshTokenCache;
-            this._tokenProviders = tokenProviders;
+            _tokenProviders = tokenProviders;
             _cache = cache;
+            _externalTokenCache = externalTokenCache;
         }
 
-        public async Task<TokenResponse> ProcessAsync(AuthorizationCodeTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(AuthorizationCodeTokenRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -82,7 +86,14 @@ namespace Codeworx.Identity.OAuth.Token
 
                 if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
-                    refreshToken = await _refreshTokenCache.SetAsync(identityData, TimeSpan.FromDays(30 * 6));
+                    var validFor = TimeSpan.FromDays(30 * 6);
+
+                    refreshToken = await _refreshTokenCache.SetAsync(identityData, validFor, token);
+
+                    if (!string.IsNullOrWhiteSpace(identityData.ExternalTokenKey) && _externalTokenCache != null)
+                    {
+                        await _externalTokenCache.ExtendAsync(identityData.ExternalTokenKey, validFor, token).ConfigureAwait(false);
+                    }
                 }
             }
 
