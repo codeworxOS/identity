@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
@@ -11,7 +10,6 @@ using System.Security.Claims;
 using Moq;
 using Codeworx.Identity.Model;
 using System.Collections.Immutable;
-using Microsoft.Extensions.DependencyInjection;
 using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test.AspNetCore
@@ -21,33 +19,62 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test] 
         public async Task TestRedirectUrl_BothWithoutSlash_ExpectsOk()
         {
-            var result = await AuthorizeRequest("https://example.org/redirect", "https://example.org/redirect");
+            var result = await AuthorizeRequest("https://example.org", "https://example.org");
             Assert.IsNotNull(result.RedirectUri);
         }
 
         [Test]
-        public async Task TestRedirectUrl_RequestWithoutSlash_ExpectsOk()
+        public void TestRedirectUrl_RequestWithoutSlash_ExpectsException()
         {
-            var result = await AuthorizeRequest("https://example.org/redirect", "https://example.org/redirect/");
-            Assert.IsNotNull(result.RedirectUri);
+            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
+                await AuthorizeRequest("https://example.org", "https://example.org/"));
         }
 
         [Test]
-        public async Task TestRedirectUrl_ValidUrlWithoutSlash_ExpectsOk()
+        public void TestRedirectUrl_ValidUrlWithoutSlash_ExpectsException()
         {
-            var result = await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect");
-            Assert.IsNotNull(result.RedirectUri);
+            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
+                await AuthorizeRequest("https://example.org/", "https://example.org"));
         }
 
         [Test]
         public async Task TestRedirectUrl_BothWithSlash_ExpectsOk()
         {
-            var result = await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect/");
+            var result = await AuthorizeRequest("https://example.org/", "https://example.org/");
             Assert.IsNotNull(result.RedirectUri);
         }
 
         [Test]
-        public void TestRedirectUrl_DifferentUrl_ExpectsException()
+        public async Task TestRedirectUrlWithPath_BothWithoutSlash_ExpectsOk()
+        {
+            var result = await AuthorizeRequest("https://example.org/redirect", "https://example.org/redirect");
+            Assert.IsNotNull(result.RedirectUri);
+        }
+
+        [Test]
+        public void TestRedirectUrlWithPath_RequestWithoutSlash_ExpectsException()
+        {
+            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
+                await AuthorizeRequest("https://example.org/redirect", "https://example.org/redirect/"));
+        }
+
+        [Test]
+        public void TestRedirectUrlWithPath_ValidUrlWithoutSlash_ExpectsException()
+        {
+            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
+                await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect"));
+        }
+
+        [Test]
+        public async Task TestRedirectUrlWithPath_BothWithSlash_ExpectsOk()
+        {
+            var result = await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect/");
+            Assert.IsNotNull(result.RedirectUri);
+        }
+
+
+        [Test]
+        public void TestRedirectUrlWithPath_DifferentUrl_ExpectsException()
         {
             Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => 
                 await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect/different"));
