@@ -135,28 +135,35 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [HttpGet]
         public async Task<IEnumerable<UserListData>> GetUsersAsync([FromQuery] Guid? tenantId = null)
         {
-            IQueryable<User> query = _db.Context.Set<User>();
+            var query = from u in _db.Context.Set<User>()
+                        from i in u.Invitations.Where(p => !p.IsDisabled && p.ValidUntil > DateTime.UtcNow).Take(1).DefaultIfEmpty()
+                        select new
+                        {
+                            User = u,
+                            OpenInvitation = i,
+                        };
 
             if (tenantId.HasValue)
             {
-                query = query.Where(p => p.Tenants.Any(x => x.TenantId == tenantId.Value));
+                query = query.Where(p => p.User.Tenants.Any(x => x.TenantId == tenantId.Value));
             }
 
             var users = await query.ToListAsync();
             var result = new List<UserListData>();
 
-            foreach (var user in users)
+            foreach (var item in users)
             {
                 var data = new UserListData
                 {
-                    Id = user.Id,
-                    Login = user.Name,
-                    Created = user.Created,
-                    DefaultTenantId = user.DefaultTenantId,
-                    IsDisabled = user.IsDisabled,
+                    Id = item.User.Id,
+                    Login = item.User.Name,
+                    Created = item.User.Created,
+                    DefaultTenantId = item.User.DefaultTenantId,
+                    IsDisabled = item.User.IsDisabled,
+                    HasOpenInvitation = item.OpenInvitation != null,
                 };
 
-                _db.Context.Entry(user).MapAdditionalProperties(data);
+                _db.Context.Entry(item.User).MapAdditionalProperties(data);
 
                 result.Add(data);
             }
@@ -224,6 +231,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 foreach (var group in groups)
                 {
                     data.Groups.Add(group);
+                }
+            }
+
+            if (expands.Contains(nameof(UserData.Invitations).ToLower()))
+            {
+                var invitations = await _db.Context.Set<UserInvitation>()
+                    .Where(p => p.UserId == user.Id)
+                    .Select(p => new InvitationData
+                    {
+                        CanChangeLogin = p.CanChangeLogin,
+                        IsDisabled = p.IsDisabled,
+                        IsActive = !p.IsDisabled && p.ValidUntil > DateTime.UtcNow,
+                        ValidUntil = p.ValidUntil,
+                    }).ToListAsync();
+
+                foreach (var invitation in invitations)
+                {
+                    data.Invitations.Add(invitation);
                 }
             }
 
