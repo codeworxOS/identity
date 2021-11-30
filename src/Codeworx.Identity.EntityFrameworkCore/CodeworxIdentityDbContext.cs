@@ -36,7 +36,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<AvailableLicense> AvailableLicenses { get; set; }
 
-        public DbSet<ClaimType> CleimTypes { get; set; }
+        public DbSet<ClaimType> ClaimTypes { get; set; }
 
         public DbSet<UserInvitation> UserInvitations { get; set; }
 
