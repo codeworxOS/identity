@@ -15,21 +15,28 @@ namespace Codeworx.Identity
         private ImmutableArray<string> _segments;
 
         public UriBuilder(string baseUrl)
-            : this(new Uri(baseUrl))
+            : this(new Uri(baseUrl, UriKind.RelativeOrAbsolute))
         {
         }
 
         public UriBuilder(Uri baseUrl)
         {
             var uri = baseUrl;
-
-            if (!uri.IsDefaultPort)
+            if (uri.IsAbsoluteUri)
             {
-                Port = uri.Port;
+                if (!uri.IsDefaultPort)
+                {
+                    Port = uri.Port;
+                }
+
+                Schema = uri.Scheme;
+                Host = uri.Host;
+            }
+            else
+            {
+                uri = new Uri(new Uri("http://example.com"), uri);
             }
 
-            Schema = uri.Scheme;
-            Host = uri.Host;
             _query = GetParameters(uri.Query.TrimStart('?'));
             _fragment = GetParameters(uri.Fragment.TrimStart('#'));
 
@@ -88,7 +95,13 @@ namespace Codeworx.Identity
 
         public override string ToString()
         {
-            var result = $"{Schema}://{Host}";
+            var result = string.Empty;
+
+            if (Schema != null && Host != null)
+            {
+                result = $"{Schema}://{Host}";
+            }
+
             if (Port.HasValue)
             {
                 result += $":{Port.Value}";
