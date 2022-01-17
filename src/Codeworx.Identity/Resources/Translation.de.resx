@@ -252,4 +252,7 @@
   <data name="Username" xml:space="preserve">
     <value>Benutzer</value>
   </data>
+  <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
+    <value>Der Account ist gesperrt weil das Passwort zu oft falsch eingegeben wurde.</value>
+  </data>
 </root>

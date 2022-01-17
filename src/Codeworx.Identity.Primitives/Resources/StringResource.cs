@@ -47,5 +47,6 @@
         PasswordChangeSamePasswordError,
         PasswordChangeEqualToLoginError,
         LanguageCode,
+        MaxFailedLoginAttemptsReached,
     }
 }

@@ -11,6 +11,7 @@ namespace Codeworx.Identity.Test
             return builder.Users<DummyUserService>(ServiceLifetime.Singleton)
                           .PasswordValidator<DummyPasswordValidator>()
                           .LoginRegistrations<DummyLoginRegistrationProvider>()
+                          .FailedLogin<DummyFailedLoginService>()
                           .ReplaceService<IChangePasswordService, DummyChangePasswordService>(ServiceLifetime.Scoped)
                           .ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped)
                           .ReplaceService<ITenantService, DummyTenantService>(ServiceLifetime.Scoped)

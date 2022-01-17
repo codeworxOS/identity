@@ -19,6 +19,7 @@ namespace Codeworx.Identity
         private readonly IdentityOptions _options;
         private readonly IInvitationService _invitationService;
         private readonly IStringResources _stringResources;
+        private readonly IFailedLoginService _failedLoginService;
         private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IUserService _userService;
@@ -31,6 +32,7 @@ namespace Codeworx.Identity
             IOptionsSnapshot<IdentityOptions> options,
             IInvitationService invitationService,
             IStringResources stringResources,
+            IFailedLoginService failedLoginService = null,
             ILinkUserService linkUserService = null)
         {
             _userService = userService;
@@ -40,6 +42,7 @@ namespace Codeworx.Identity
             _options = options.Value;
             _invitationService = invitationService;
             _stringResources = stringResources;
+            _failedLoginService = failedLoginService;
             _linkUserService = linkUserService;
         }
 
@@ -79,10 +82,26 @@ namespace Codeworx.Identity
                 throw new AuthenticationException(message);
             }
 
+            if (_options.MaxFailedLogins.HasValue && user.FailedLoginCount > _options.MaxFailedLogins.Value)
+            {
+                var message = _stringResources.GetResource(StringResource.MaxFailedLoginAttemptsReached);
+                throw new AuthenticationException(message);
+            }
+
             if (!await _passwordValidator.Validate(user, password))
             {
+                if (_failedLoginService != null)
+                {
+                    await _failedLoginService.SetFailedLoginAsync(user).ConfigureAwait(false);
+                }
+
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
+            }
+
+            if (_failedLoginService != null && user.FailedLoginCount > 0)
+            {
+                user = await _failedLoginService.ResetFailedLoginsAsync(user);
             }
 
             return await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);

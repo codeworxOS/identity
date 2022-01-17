@@ -252,4 +252,7 @@
   <data name="Username" xml:space="preserve">
     <value>Username</value>
   </data>
+  <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
+    <value>The account is locked because a wrong password was entered too often.</value>
+  </data>
 </root>
