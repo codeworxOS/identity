@@ -76,7 +76,15 @@ namespace Codeworx.Identity.Account
                 throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
             }
 
-            await _passwordService.SetPasswordAsync(user, request.NewPassword);
+            try
+            {
+                await _passwordService.SetPasswordAsync(user, request.NewPassword);
+            }
+            catch (PasswordChangeException e)
+            {
+                var errorResponse = new PasswordChangeViewResponse(user.Name, e.Message);
+                throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
+            }
 
             return new PasswordChangeResponse(request.ReturnUrl, request.Prompt);
         }

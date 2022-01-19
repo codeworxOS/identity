@@ -252,4 +252,7 @@
   <data name="Username" xml:space="preserve">
     <value>Benutzer</value>
   </data>
+  <data name="PasswordChangePasswordReuseError" xml:space="preserve">
+    <value>Das neue Passwort darf nicht mit vorherigen Passwörtern übereinstimmen!</value>
+  </data>
 </root>

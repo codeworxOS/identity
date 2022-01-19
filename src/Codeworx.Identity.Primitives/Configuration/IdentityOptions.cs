@@ -30,6 +30,7 @@ namespace Codeworx.Identity.Configuration
             WindowsAuthenticationEnabled = false;
             CompanyName = "Identity";
             Favicon = Constants.DefaultFavicon;
+            PasswordHistoryLength = 0;
         }
 
         public string AccountEndpoint { get; set; }
@@ -71,6 +72,8 @@ namespace Codeworx.Identity.Configuration
         public string CompanyName { get; set; }
 
         public string SupportEmail { get; set; }
+
+        public int PasswordHistoryLength { get; set; }
 
         public void CopyTo(IdentityOptions target)
         {
