@@ -38,9 +38,9 @@ namespace Codeworx.Identity.Test.Services
         }
 
         [Test]
-        public async Task ChangePasswordWithoutOldPassword_ExpectsNoEntryInHistroyTable()
+        public async Task ChangePasswordWithoutOldPassword_ExpectsNoEntryInHistoryTable()
         {
-            var user = new EntityFrameworkCore.Model.User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = null };
+            var user = new User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = null };
 
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -67,15 +67,15 @@ namespace Codeworx.Identity.Test.Services
         }
 
         [Test]
-        public async Task ChangePassword_ExpectsEntryInHistroyTable()
+        public async Task ChangePassword_ExpectsEntryInHistoryTable()
         {
-            string oldPasswordHash;
+            string initialPasswordHash;
             User user;
             using (var scope = _serviceProvider.CreateScope())
             {
                 var hashingProvider = scope.ServiceProvider.GetRequiredService<IHashingProvider>();
-                oldPasswordHash = hashingProvider.Create("oldPassword");
-                user = new User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = oldPasswordHash };
+                initialPasswordHash = hashingProvider.Create("initial");
+                user = new User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = initialPasswordHash };
 
                 var ctx = scope.ServiceProvider.GetRequiredService<CodeworxIdentityDbContext>();
                 ctx.Users.Add(user);
@@ -95,7 +95,7 @@ namespace Codeworx.Identity.Test.Services
             {
                 var ctx = scope.ServiceProvider.GetRequiredService<CodeworxIdentityDbContext>();
                 var passwordHistory = await ctx.UserPasswordHistory.Where(x => x.UserId == user.Id).SingleOrDefaultAsync();
-                Assert.AreEqual(oldPasswordHash, passwordHistory.PasswordHash);
+                Assert.AreEqual(initialPasswordHash, passwordHistory.PasswordHash);
             }
         }
 
@@ -107,13 +107,13 @@ namespace Codeworx.Identity.Test.Services
             using (var scope = _serviceProvider.CreateScope())
             {
                 var hashingProvider = scope.ServiceProvider.GetRequiredService<IHashingProvider>();
-                var oldPasswordHash = hashingProvider.Create("oldPassword");
-                user = new User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = oldPasswordHash };
+                var initialPasswordHash = hashingProvider.Create("initial");
+                user = new User { Id = Guid.NewGuid(), Name = "test", Created = DateTime.Now, PasswordHash = initialPasswordHash };
 
                 var ctx = scope.ServiceProvider.GetRequiredService<CodeworxIdentityDbContext>();
                 ctx.Users.Add(user);
 
-                reusedPassword = "oldPassword1";
+                reusedPassword = "reusedPassword";
                 var oldPasswordHash1 = hashingProvider.Create(reusedPassword);
                 ctx.UserPasswordHistory.Add(
                     new UserPasswordHistory { ChangedAt = DateTime.UtcNow, PasswordHash = oldPasswordHash1, UserId = user.Id });
@@ -130,6 +130,49 @@ namespace Codeworx.Identity.Test.Services
                 var changePasswordService = scope.ServiceProvider.GetRequiredService<IChangePasswordService>();
 
                 Assert.ThrowsAsync<PasswordChangeException>(
+                    () => changePasswordService.SetPasswordAsync(
+                        new EntityFrameworkCore.Data.User { Identity = user.Id.ToString("N") },
+                        reusedPassword));
+            }
+        }
+
+        [Test]
+        public async Task PasswordReuseOutOfHistory_ExpectsException()
+        {
+            User user;
+            string reusedPassword;
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var hashingProvider = scope.ServiceProvider.GetRequiredService<IHashingProvider>();
+                var identityOptions = scope.ServiceProvider.GetRequiredService<IOptions<IdentityOptions>>().Value;
+
+                var initialPasswordHash = hashingProvider.Create("initial");
+                var date = DateTime.UtcNow;
+                user = new User { Id = Guid.NewGuid(), Name = "test", Created = date, PasswordHash = initialPasswordHash };
+
+                var ctx = scope.ServiceProvider.GetRequiredService<CodeworxIdentityDbContext>();
+                ctx.Users.Add(user);
+
+                reusedPassword = "reusedPassword";
+                var reusedPasswordHash = hashingProvider.Create("reusedPassword");
+                ctx.UserPasswordHistory.Add(
+                    new UserPasswordHistory { ChangedAt = date, PasswordHash = reusedPasswordHash, UserId = user.Id });
+
+                for (var i = 0; i < identityOptions.PasswordHistoryLength; i++)
+                {
+                    var oldPasswordHash = hashingProvider.Create($"oldPassword{i}");
+                    ctx.UserPasswordHistory.Add(
+                        new UserPasswordHistory { ChangedAt = date.AddSeconds(i + 1), PasswordHash = oldPasswordHash, UserId = user.Id });
+                }
+
+                await ctx.SaveChangesAsync();
+            }
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var changePasswordService = scope.ServiceProvider.GetRequiredService<IChangePasswordService>();
+
+                Assert.DoesNotThrowAsync(
                     () => changePasswordService.SetPasswordAsync(
                         new EntityFrameworkCore.Data.User { Identity = user.Id.ToString("N") },
                         reusedPassword));
