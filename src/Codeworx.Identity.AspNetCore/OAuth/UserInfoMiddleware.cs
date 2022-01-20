@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
@@ -18,8 +19,10 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, ITokenProvider tokenProvider)
+        public async Task Invoke(HttpContext context, IEnumerable<ITokenProvider> tokenProviders)
         {
+            var tokenProvider = tokenProviders.Where(p => p.TokenType == Constants.Token.Jwt).First();
+
             var token = await tokenProvider.CreateAsync(null);
             string tokenValue = null;
 

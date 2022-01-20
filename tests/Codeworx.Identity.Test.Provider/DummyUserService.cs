@@ -30,7 +30,7 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier));
         }
 
-        public Task<Model.IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public Task<Model.IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var id = Guid.Parse(identity.GetUserId());
             return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));

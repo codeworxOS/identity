@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Codeworx.Identity.OAuth;
-using Codeworx.Identity.OAuth.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Codeworx.Identity.AspNetCore;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using NUnit.Framework;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.OAuth;
+using Microsoft.Extensions.DependencyInjection;
+using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Claims
 {

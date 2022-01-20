@@ -33,15 +33,14 @@ namespace Codeworx.Identity.OAuth.Authorization
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);
 
-            var client = parameters.Client;
             var payload = data.GetTokenClaims(ClaimTarget.AccessToken);
             var issuer = _baseUriAccessor?.BaseUri.OriginalString;
 
-            await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(payload, parameters.Client.TokenExpiration).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 
-            return responseBuilder.WithAccessToken(accessToken, client.TokenExpiration);
+            return responseBuilder.WithAccessToken(accessToken, parameters.Client.TokenExpiration);
         }
     }
 }

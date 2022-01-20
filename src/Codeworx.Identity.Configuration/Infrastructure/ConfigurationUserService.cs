@@ -42,7 +42,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             return Task.FromResult<IUser>(result);
         }
 
-        public async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user)
+        public async Task<IUser> GetUserByIdentityAsync(ClaimsIdentity user)
         {
             var id = user.GetUserId();
 

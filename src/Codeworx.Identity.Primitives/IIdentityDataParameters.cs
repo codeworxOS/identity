@@ -8,11 +8,7 @@ namespace Codeworx.Identity
     {
         IClientRegistration Client { get; }
 
-        string Nonce { get; }
-
         IReadOnlyCollection<string> Scopes { get; }
-
-        string State { get; }
 
         ClaimsIdentity User { get; }
 

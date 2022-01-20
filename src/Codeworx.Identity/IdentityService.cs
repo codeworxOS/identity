@@ -53,7 +53,7 @@ namespace Codeworx.Identity
                 throw new System.ArgumentNullException(nameof(identityDataParameters));
             }
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(identityDataParameters.User);
+            var currentUser = await _userService.GetUserByIdentityAsync(identityDataParameters.User);
 
             if (currentUser == null)
             {
