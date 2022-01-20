@@ -264,6 +264,7 @@
 
         public static class Templates
         {
+            public const string NewInvitationNotification = "new_invitation_notification";
             public const string ForgotPasswordNotification = "forgot_password_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";

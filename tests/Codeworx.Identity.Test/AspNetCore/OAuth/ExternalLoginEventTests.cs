@@ -75,7 +75,6 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 {
                     throw new ArgumentException(nameof(userService));
                 }
-
             }
 
             public Task BeginLoginAsync(IExternalLoginData data)
@@ -110,6 +109,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                     Identity = Guid.NewGuid().ToString();
                     Name = email;
                     ExternalIdentifiers.Add(provider, externalId);
+                    FailedLoginCount = 0;
                 }
 
                 public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
@@ -125,6 +125,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 public bool ForceChangePassword => _forceChangePassword;
 
                 public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+                public int FailedLoginCount { get; set; }
 
                 public void ResetPassword(string password)
                 {

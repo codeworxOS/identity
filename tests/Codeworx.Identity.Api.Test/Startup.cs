@@ -3,6 +3,7 @@ using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.EntityFrameworkCore.Api;
+using Codeworx.Identity.Mail;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,8 @@ namespace Codeworx.Identity.Api.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
+
             services.AddControllers()
                 .AddApplicationPart(typeof(TenantController).Assembly)
                 .AddNewtonsoftJson();
@@ -35,7 +38,8 @@ namespace Codeworx.Identity.Api.Test
             services.AddDbContext<TestIdentityContext>(p => p.UseSqlite("Data Source=apitest.sqlite"));
 
             services.AddCodeworxIdentity(this.Configuration)
-                .UseDbContext<TestIdentityContext>();
+                .UseDbContext<TestIdentityContext>()
+                .AddSmtpMailConnector();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<IdentityOptions> identityOptions, IServiceProvider serviceProvider)

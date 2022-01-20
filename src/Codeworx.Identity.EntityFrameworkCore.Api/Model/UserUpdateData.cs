@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
@@ -13,6 +14,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public Guid Id { get; set; }
 
+        [Required]
         public string Login { get; set; }
 
         public Guid? DefaultTenantId { get; set; }

@@ -30,7 +30,10 @@ namespace Codeworx.Identity.Configuration
             WindowsAuthenticationEnabled = false;
             CompanyName = "Identity";
             Favicon = Constants.DefaultFavicon;
+            MaxFailedLogins = null;
         }
+
+        public int? MaxFailedLogins { get; set; }
 
         public string AccountEndpoint { get; set; }
 
@@ -101,6 +104,7 @@ namespace Codeworx.Identity.Configuration
 
             target.UserInfoEndpoint = this.UserInfoEndpoint;
             target.WindowsAuthenticationEnabled = this.WindowsAuthenticationEnabled;
+            target.MaxFailedLogins = this.MaxFailedLogins;
         }
     }
 }
