@@ -68,7 +68,7 @@ namespace Codeworx.Identity.Login
 
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
-            return new SignInResponse(identity, returnUrl);
+            return new SignInResponse(identity, returnUrl, loginRequest.Remember);
         }
 
         private string GetPasswodChangeUrl(ProviderRequest request)
