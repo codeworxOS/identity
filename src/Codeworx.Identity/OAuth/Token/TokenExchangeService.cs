@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Token;
@@ -32,7 +33,7 @@ namespace Codeworx.Identity.OAuth.Token
             _identityService = identityService;
         }
 
-        public async Task<TokenResponse> ProcessAsync(TokenExchangeRequest request)
+        public async Task<TokenResponse> ProcessAsync(TokenExchangeRequest request, CancellationToken token = default)
         {
             if (request == null)
             {

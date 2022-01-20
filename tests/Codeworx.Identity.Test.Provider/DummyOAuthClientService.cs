@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Test
         }
 
 
-        private class DummyOAuthAuthorizationCodePublicClientRegistration : IClientRegistration
+        private class DummyOAuthAuthorizationCodePublicClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationCodePublicClientRegistration()
             {
@@ -75,6 +75,7 @@ namespace Codeworx.Identity.Test
                 this.ClientType = ClientType.Web;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
             public string ClientId => Constants.DefaultCodeFlowPublicClientId;
@@ -88,10 +89,12 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => null;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
 
-        private class DummyOAuthAuthorizationCodeClientRegistration : IClientRegistration
+        private class DummyOAuthAuthorizationCodeClientRegistration : IDummyClientRegistration
         {
             public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
             {

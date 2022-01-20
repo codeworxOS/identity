@@ -14,7 +14,9 @@
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
         public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
         public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";
-        public const string DefaultPasswordDescription = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
+        public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
+        public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
+        public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
@@ -45,6 +47,8 @@
         public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
         public const string MultiTenantUserName = "multitenant";
         public const string NotExistingUserName = "notExistingUser";
+        public const string NoPasswordUserId = "65AB0982-F4CE-4ADA-B94E-C77CC3A5F075";
+        public const string NoPasswordUserName = "nopassword";
 
         public const string ProductName = "CodeworxIdentity";
         public const string ReturnUrlParameter = "returnurl";
@@ -268,6 +272,7 @@
         {
             public const string Groups = "groups";
             public const string Tenant = "tenant";
+            public const string ProfileEmail = "profile:email";
 
             public static class ExternalToken
             {
@@ -279,6 +284,7 @@
 
         public static class Templates
         {
+            public const string NewInvitationNotification = "new_invitation_notification";
             public const string ForgotPasswordNotification = "forgot_password_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
