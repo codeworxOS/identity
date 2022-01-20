@@ -53,7 +53,14 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
             }
 
-            if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirectUrl, p)))
+            var redirect = new Uri(redirectUrl, UriKind.RelativeOrAbsolute);
+
+            if (!redirect.IsAbsoluteUri)
+            {
+                redirect = new Uri(_baseUriAccessor.BaseUri, redirect);
+            }
+
+            if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirect, p)))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName);
             }
@@ -99,22 +106,21 @@ namespace Codeworx.Identity.OAuth.Authorization
             }
         }
 
-        private bool CheckRedirectUrl(string redirectUrl, Uri compare)
+        private bool CheckRedirectUrl(Uri redirect, Uri compare)
         {
             if (!compare.IsAbsoluteUri)
             {
                 compare = new Uri(_baseUriAccessor.BaseUri, compare);
             }
 
-            var target = new Uri(redirectUrl);
-            if (target.Host.Equals(compare.Host, StringComparison.OrdinalIgnoreCase) &&
+            if (redirect.Host.Equals(compare.Host, StringComparison.OrdinalIgnoreCase) &&
                 compare.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
                 compare.PathAndQuery == "/")
             {
                 return true;
             }
 
-            return redirectUrl.StartsWith(compare.ToString(), System.StringComparison.OrdinalIgnoreCase);
+            return redirect.Equals(compare);
         }
     }
 }

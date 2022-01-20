@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Codeworx.Identity.Login;
+﻿using System.Threading.Tasks;
 
 namespace Codeworx.Identity.Test
 {
