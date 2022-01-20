@@ -13,6 +13,6 @@ namespace Codeworx.Identity.AspNetCore.Login
 
         Task SignOutAsync(HttpContext context);
 
-        Task SignInAsync(HttpContext context, ClaimsPrincipal principal);
+        Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist);
     }
 }
