@@ -37,8 +37,10 @@ using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId;
 using Codeworx.Identity.OpenId.Model;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -228,6 +230,8 @@ namespace Codeworx.Identity.AspNetCore
                                  identityOptions.AuthenticationScheme,
                                  p =>
                                  {
+                                     p.Events.OnValidatePrincipal = OnValidatePrincipal;
+                                     p.SlidingExpiration = true;
                                      p.Cookie.Name = identityOptions.AuthenticationCookie;
                                      p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
@@ -374,7 +378,38 @@ namespace Codeworx.Identity.AspNetCore
 
             collection.AddHttpClient<IExternalOAuthTokenService, ExternalOAuthTokenService>();
 
+            collection.AddSingleton<IStringResources, DefaultStringResources>();
+
             return builder;
+        }
+
+        private static async Task OnValidatePrincipal(CookieValidatePrincipalContext context)
+        {
+            if (context.Properties.AllowRefresh ?? true)
+            {
+                var clock = context.HttpContext.RequestServices.GetRequiredService<ISystemClock>();
+
+                var currentUtc = clock.UtcNow;
+                var issuedUtc = context.Properties.IssuedUtc;
+                var expiresUtc = context.Properties.ExpiresUtc;
+                var allowRefresh = context.Properties.AllowRefresh ?? true;
+                if (issuedUtc != null && expiresUtc != null && allowRefresh)
+                {
+                    var timeElapsed = currentUtc.Subtract(issuedUtc.Value);
+                    var timeRemaining = expiresUtc.Value.Subtract(currentUtc);
+
+                    if (timeRemaining < timeElapsed)
+                    {
+                        var cache = context.HttpContext.RequestServices.GetRequiredService<IExternalTokenCache>();
+                        var key = context.Principal.FindFirst(Constants.Claims.ExternalTokenKey)?.Value;
+                        if (key != null)
+                        {
+                            var extend = expiresUtc.Value.Subtract(issuedUtc.Value);
+                            await cache.ExtendAsync(key, extend).ConfigureAwait(false);
+                        }
+                    }
+                }
+            }
         }
 
         private static string GetFormKeyName(PropertyInfo item)

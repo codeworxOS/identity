@@ -7,6 +7,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
@@ -17,6 +18,8 @@ namespace Codeworx.Identity
         private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
         private readonly IdentityOptions _options;
         private readonly IInvitationService _invitationService;
+        private readonly IStringResources _stringResources;
+        private readonly IFailedLoginService _failedLoginService;
         private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
         private readonly IUserService _userService;
@@ -28,6 +31,8 @@ namespace Codeworx.Identity
             IEnumerable<IExternalLoginEvent> loginEvents,
             IOptionsSnapshot<IdentityOptions> options,
             IInvitationService invitationService,
+            IStringResources stringResources,
+            IFailedLoginService failedLoginService = null,
             ILinkUserService linkUserService = null)
         {
             _userService = userService;
@@ -36,6 +41,8 @@ namespace Codeworx.Identity
             _loginEvents = loginEvents.ToImmutableList();
             _options = options.Value;
             _invitationService = invitationService;
+            _stringResources = stringResources;
+            _failedLoginService = failedLoginService;
             _linkUserService = linkUserService;
         }
 
@@ -50,7 +57,8 @@ namespace Codeworx.Identity
 
             if (currentUser == null)
             {
-                throw new AuthenticationException();
+                var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
+                throw new AuthenticationException(message);
             }
 
             var claims = new List<AssignedClaim>();
@@ -70,12 +78,30 @@ namespace Codeworx.Identity
             var user = await _userService.GetUserByNameAsync(username);
             if (user == null)
             {
-                throw new AuthenticationException();
+                var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
+                throw new AuthenticationException(message);
+            }
+
+            if (_options.MaxFailedLogins.HasValue && user.FailedLoginCount > _options.MaxFailedLogins.Value)
+            {
+                var message = _stringResources.GetResource(StringResource.MaxFailedLoginAttemptsReached);
+                throw new AuthenticationException(message);
             }
 
             if (!await _passwordValidator.Validate(user, password))
             {
-                throw new AuthenticationException();
+                if (_failedLoginService != null)
+                {
+                    await _failedLoginService.SetFailedLoginAsync(user).ConfigureAwait(false);
+                }
+
+                var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
+                throw new AuthenticationException(message);
+            }
+
+            if (_failedLoginService != null && user.FailedLoginCount > 0)
+            {
+                user = await _failedLoginService.ResetFailedLoginsAsync(user);
             }
 
             return await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
@@ -99,12 +125,14 @@ namespace Codeworx.Identity
 
                 if (!supported || _linkUserService == null)
                 {
-                    throw new AuthenticationException(Constants.InvitationNotSupported);
+                    var message = _stringResources.GetResource(StringResource.InvitationNotSupportedError);
+                    throw new AuthenticationException(message);
                 }
 
                 if (user != null)
                 {
-                    throw new AuthenticationException(Constants.ExternalAccountAlreadyLinkedError);
+                    var message = _stringResources.GetResource(StringResource.ExternalAccountAlreadyLinkedError);
+                    throw new AuthenticationException(message);
                 }
 
                 var invitation = await _invitationService.RedeemInvitationAsync(externalLoginData.InvitationCode).ConfigureAwait(false);
@@ -126,7 +154,8 @@ namespace Codeworx.Identity
 
                 if (user == null)
                 {
-                    throw new AuthenticationException(Constants.ExternalAccountNotLinked);
+                    var message = _stringResources.GetResource(StringResource.ExternalAccountNotLinkedError);
+                    throw new AuthenticationException(message);
                 }
             }
 

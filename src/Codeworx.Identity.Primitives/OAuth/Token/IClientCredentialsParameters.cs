@@ -2,5 +2,6 @@
 {
     public interface IClientCredentialsParameters : IIdentityDataParameters
     {
+        string ClientSecret { get; }
     }
 }

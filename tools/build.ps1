@@ -2,7 +2,7 @@ Import-Module -Name "./Build-Versioning.psm1"
 
 
 $projects = "..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj",
-            "..\src\Codeworx.Identity.AspNetcore\Codeworx.Identity.AspNetcore.csproj", 
+            "..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj", 
             "..\src\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj", 
             "..\src\Codeworx.Identity.Configuration\Codeworx.Identity.Configuration.csproj",
             "..\src\Codeworx.Identity\Codeworx.Identity.csproj"

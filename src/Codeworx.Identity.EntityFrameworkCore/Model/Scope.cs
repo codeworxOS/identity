@@ -10,11 +10,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         {
             this.Claims = new HashSet<ScopeClaim>();
             this.Children = new HashSet<ScopeHierarchy>();
+            this.ScopeAssignments = new HashSet<ScopeAssignment>();
         }
 
         public ICollection<ScopeClaim> Claims { get; }
 
         public ScopeHierarchy Parent { get; set; }
+
+        public ICollection<ScopeAssignment> ScopeAssignments { get; set; }
 
         public Guid Id { get; set; }
 

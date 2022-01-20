@@ -3,8 +3,8 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title>OIDC Form_Post Response</title>
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <title>{{Translate 'OidcFormPostResponseTitle'}}</title>
+    {{> Favicon}}
 </head>
 <body Onload="document.forms[0].submit()">
     <form method="post" action="{{RedirectUri}}">
@@ -12,8 +12,8 @@
         <input type="hidden" name="state" value="{{State}}" />
 
         <noscript>
-            <p>JavaScript is disabled. We strongly recommend to enable it. Click the button below to continue.</p>
-            <input type="submit" name="continue" value="Continue" />
+            <p>{{Translate 'JavascriptErrorMessage'}}</p>
+            <input type="submit" name="continue" value="{{Translate 'Continue'}}" />
         </noscript>
     </form>
 </body>

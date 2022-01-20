@@ -152,6 +152,9 @@ namespace Codeworx.Identity.Cryptography.Argon2
                     return new Argon2Config { Type = Argon2Type.DataDependentAddressing };
                 case Argon2Mode.Argon2id:
                     return new Argon2Config { Type = Argon2Type.HybridAddressing };
+                case Argon2Mode.None:
+                default:
+                    throw new NotSupportedException();
             }
 
             throw new NotSupportedException($"Mode {mode} not supported!");
