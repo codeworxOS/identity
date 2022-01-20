@@ -123,6 +123,8 @@ namespace Codeworx.Identity.Test
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
+            public int FailedLoginCount { get; set; }
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;

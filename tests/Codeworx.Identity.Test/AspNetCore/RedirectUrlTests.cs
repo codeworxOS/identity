@@ -16,7 +16,7 @@ namespace Codeworx.Identity.Test.AspNetCore
 {
     public class RedirectUrlTests
     {
-        [Test] 
+        [Test]
         public async Task TestRedirectUrl_BothWithoutSlash_ExpectsOk()
         {
             var result = await AuthorizeRequest("https://example.org", "https://example.org");
@@ -24,17 +24,19 @@ namespace Codeworx.Identity.Test.AspNetCore
         }
 
         [Test]
-        public void TestRedirectUrl_RequestWithoutSlash_ExpectsException()
+        public async Task TestRedirectUrl_RequestWithoutSlash_ExpectsOK()
         {
-            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
-                await AuthorizeRequest("https://example.org", "https://example.org/"));
+
+            var result = await AuthorizeRequest("https://example.org", "https://example.org/");
+
+            Assert.IsNotNull(result.RedirectUri);
         }
 
         [Test]
-        public void TestRedirectUrl_ValidUrlWithoutSlash_ExpectsException()
+        public async Task TestRedirectUrl_ValidUrlWithoutSlash_ExpectsOK()
         {
-            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
-                await AuthorizeRequest("https://example.org/", "https://example.org"));
+            var result = await AuthorizeRequest("https://example.org/", "https://example.org");
+            Assert.IsNotNull(result.RedirectUri);
         }
 
         [Test]
@@ -76,7 +78,7 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test]
         public void TestRedirectUrlWithPath_DifferentUrl_ExpectsException()
         {
-            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => 
+            Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () =>
                 await AuthorizeRequest("https://example.org/redirect/", "https://example.org/redirect/different"));
         }
 
