@@ -11,6 +11,7 @@ using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId.Authorization;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.View;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -96,6 +97,9 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Transient);
+
+            this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);
         }
 
         public IServiceCollection ServiceCollection { get; }
