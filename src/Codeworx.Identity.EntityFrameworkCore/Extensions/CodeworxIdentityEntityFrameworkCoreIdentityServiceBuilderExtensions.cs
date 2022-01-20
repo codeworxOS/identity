@@ -34,6 +34,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .Clients<EntityClientService<TContext>>()
                          .ReplaceService<IChangePasswordService, EntityChangePasswordService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IDefaultTenantService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
+                         .ReplaceService<IFailedLoginService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<ILinkUserService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IRefreshTokenCache, RefreshTokenCache<TContext>>(ServiceLifetime.Scoped)

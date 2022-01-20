@@ -67,12 +67,19 @@ namespace Codeworx.Identity.Test
             void ResetPassword(string password);
 
             IDictionary<string, string> ExternalIdentifiers { get; }
+
+            new int FailedLoginCount { get; set; }
         }
 
         public class DummyUser : IDummyUser
         {
             private bool _forceChangePassword;
             private string _password = Constants.DefaultAdminUserName;
+
+            public DummyUser()
+            {
+                FailedLoginCount = 0;
+            }
 
             public string DefaultTenantKey => null;
 
@@ -87,6 +94,8 @@ namespace Codeworx.Identity.Test
             public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
 
             public void ResetPassword(string password)
             {
@@ -127,6 +136,7 @@ namespace Codeworx.Identity.Test
             private string _password = Constants.MultiTenantUserName;
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
+                FailedLoginCount = 0;
                 this.DefaultTenantKey = defaultTenantKey;
             }
 
@@ -142,6 +152,8 @@ namespace Codeworx.Identity.Test
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
+            public int FailedLoginCount { get; set; }
+
             public bool ForceChangePassword => _forceChangePassword;
 
             public void ResetPassword(string password)
@@ -156,6 +168,11 @@ namespace Codeworx.Identity.Test
             private bool _forceChangePassword = true;
             private string _password = Constants.ForcePasswordUserName;
 
+            public ForceChangePasswordUser()
+            {
+                FailedLoginCount = 0;
+            }
+
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.ForcePasswordUserId;
@@ -169,6 +186,8 @@ namespace Codeworx.Identity.Test
             public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
+
+            public int FailedLoginCount { get; set; }
 
             public void ResetPassword(string password)
             {
