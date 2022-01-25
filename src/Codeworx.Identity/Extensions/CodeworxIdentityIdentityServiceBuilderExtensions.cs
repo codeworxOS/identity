@@ -21,7 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder.ServiceCollection.Configure<SmtpOptions>(configuration);
             }
 
-            builder.ReplaceService<IMailConnector, SmtpMailConnector>(ServiceLifetime.Singleton);
+            builder.ReplaceService<IMailConnector, SmtpMailConnector>(ServiceLifetime.Scoped);
+            builder.ReplaceService<IMailAddressProvider, DefaultMailAddressProvider>(ServiceLifetime.Scoped);
 
             return builder;
         }
