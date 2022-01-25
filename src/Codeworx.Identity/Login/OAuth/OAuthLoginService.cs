@@ -58,7 +58,7 @@ namespace Codeworx.Identity.Login.OAuth
                 state = null;
             }
 
-            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, nonce, callbackUriBuilder.ToString(), scopes, request.Prompt);
+            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, nonce, callbackUriBuilder.ToString(), scopes, request.Prompt, config.AuthorizationParameters);
 
             return response;
         }

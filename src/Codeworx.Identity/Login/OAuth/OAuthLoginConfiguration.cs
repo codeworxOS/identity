@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Codeworx.Identity.Login.OAuth
 {
@@ -11,6 +12,8 @@ namespace Codeworx.Identity.Login.OAuth
             TokenHandling = ExternalTokenHandling.None;
             ClaimSource = ClaimSource.AccessToken;
             ClientAuthenticationMode = ClientAuthenticationMode.Header;
+            AuthorizationParameters = new Dictionary<string, object>();
+            TokenParameters = new Dictionary<string, object>();
         }
 
         public ClientAuthenticationMode ClientAuthenticationMode { get; set; }
@@ -36,6 +39,10 @@ namespace Codeworx.Identity.Login.OAuth
         public string ClientSecret { get; set; }
 
         public ExternalTokenHandling TokenHandling { get; set; }
+
+        public Dictionary<string, object> AuthorizationParameters { get; }
+
+        public Dictionary<string, object> TokenParameters { get; }
 
         public Uri GetTokenEndpointUri()
         {
