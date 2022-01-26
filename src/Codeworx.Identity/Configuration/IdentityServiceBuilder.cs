@@ -60,7 +60,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
             this.ReplaceService<IForgotPasswordService, ForgotPasswordService>(ServiceLifetime.Scoped);
-            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Singleton);
+            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);

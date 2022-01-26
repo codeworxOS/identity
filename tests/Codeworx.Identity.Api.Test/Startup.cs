@@ -37,6 +37,11 @@ namespace Codeworx.Identity.Api.Test
 
             services.AddDbContext<TestIdentityContext>(p => p.UseSqlite("Data Source=apitest.sqlite"));
 
+            services.AddAuthorization(p =>
+            {
+                p.AddPolicy(Policies.Admin, builder => builder.RequireClaim("upn", "admin"));
+            });
+
             services.AddCodeworxIdentity(this.Configuration)
                 .UseDbContext<TestIdentityContext>()
                 .AddSmtpMailConnector();
