@@ -16,6 +16,7 @@ namespace Codeworx.Identity.Test
         private string _subjectToken = null;
         private string _actorToken = null;
         private string _audience = null;
+        private string _requestedTokenType;
 
         public TokenRequestBuilder WithAudience(string value)
         {
@@ -86,6 +87,13 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
+        public TokenRequestBuilder WithRequestedTokenType(string value)
+        {
+            _requestedTokenType = value;
+
+            return this;
+        }
+
         public TokenRequest Build()
         {
             if (_grantType == Constants.OAuth.GrantType.AuthorizationCode)
@@ -102,7 +110,7 @@ namespace Codeworx.Identity.Test
             }
             else if (_grantType == Constants.OAuth.GrantType.TokenExchange)
             {
-                return new TokenExchangeRequest(_clientId, _clientSecret, _audience, _scopes, _subjectToken, Constants.TokenExchange.TokenType.AccessToken, _actorToken, Constants.TokenExchange.TokenType.AccessToken);
+                return new TokenExchangeRequest(_clientId, _clientSecret, _audience, _scopes, _subjectToken, Constants.TokenExchange.TokenType.AccessToken, _actorToken, Constants.TokenExchange.TokenType.AccessToken, _requestedTokenType);
             }
 
             throw new NotSupportedException("Grant type not supported!");

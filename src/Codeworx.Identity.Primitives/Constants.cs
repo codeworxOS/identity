@@ -162,6 +162,8 @@
             public const string ResponseModeValidation = VsChars;
             public const string ResponseTypeName = "response_type";
             public const string ResponseTypeValidation = @"^(?<response>[a-zA-Z0-9_]+){1}(\s{1}(?<response>[a-zA-Z0-9_]+))*$";
+            public const string RequestedTokenTypeValidation = VsChars;
+            public const string RequestedTokenTypeName = "requested_token_type";
             public const string ScopeName = "scope";
             public const string ScopeValidation = @"^(?<scope>" + NqChar + @"+)(\s{1}(?<scope>" + NqChar + @"+))*$";
             public const string StateName = "state";
@@ -308,6 +310,7 @@
             public class TokenType
             {
                 public const string AccessToken = "urn:ietf:params:oauth:token-type:access_token";
+                public const string IdToken = "urn:ietf:params:oauth:token-type:id_token";
             }
         }
     }

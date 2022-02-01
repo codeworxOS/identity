@@ -6,7 +6,7 @@ namespace Codeworx.Identity.OAuth.Token
     [DataContract]
     public class TokenExchangeRequest : TokenRequest
     {
-        public TokenExchangeRequest(string clientId, string clientSecret, string audience, string scope, string subjectToken, string subjectTokenType, string actorToken, string actorTokenType)
+        public TokenExchangeRequest(string clientId, string clientSecret, string audience, string scope, string subjectToken, string subjectTokenType, string actorToken, string actorTokenType, string requestedTokenType)
             : base(clientId, Constants.OAuth.GrantType.TokenExchange, clientSecret)
         {
             Audience = audience;
@@ -15,6 +15,7 @@ namespace Codeworx.Identity.OAuth.Token
             SubjectTokenType = subjectTokenType;
             ActorToken = actorToken;
             ActorTokenType = actorToken;
+            RequestedTokenType = requestedTokenType;
         }
 
         [RegularExpression(Constants.OAuth.AudienceValidation)]
@@ -36,11 +37,15 @@ namespace Codeworx.Identity.OAuth.Token
         public string SubjectTokenType { get; set; }
 
         [RegularExpression(Constants.OAuth.ActorTokenValidation)]
-        [DataMember(Order = 3, Name = Constants.OAuth.ActorTokenName)]
+        [DataMember(Order = 5, Name = Constants.OAuth.ActorTokenName)]
         public string ActorToken { get; set; }
 
         [RegularExpression(Constants.OAuth.ActorTokenTypeValidation)]
-        [DataMember(Order = 4, Name = Constants.OAuth.ActorTokenTypeName)]
+        [DataMember(Order = 6, Name = Constants.OAuth.ActorTokenTypeName)]
         public string ActorTokenType { get; set; }
+
+        [RegularExpression(Constants.OAuth.RequestedTokenTypeValidation)]
+        [DataMember(Order = 7, Name = Constants.OAuth.RequestedTokenTypeName)]
+        public string RequestedTokenType { get; set; }
     }
 }

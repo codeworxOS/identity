@@ -14,8 +14,9 @@ namespace Codeworx.Identity.OAuth.Token
         private IClientRegistration _client;
         private string[] _scopes;
         private string _audience;
+        private string[] _requestedTokenTypes;
 
-        public ITokenExchangeParameters Parameters => new TokenExchangeParameters(_client, _scopes, _user, _audience, _subjectToken, _subjectTokenType, _actorToken, _actorTokenType);
+        public ITokenExchangeParameters Parameters => new TokenExchangeParameters(_client, _scopes, _user, _audience, _subjectToken, _subjectTokenType, _actorToken, _actorTokenType, _requestedTokenTypes);
 
         public void SetValue(string property, object value)
         {
@@ -44,6 +45,9 @@ namespace Codeworx.Identity.OAuth.Token
                     break;
                 case nameof(ITokenExchangeParameters.ActorTokenType):
                     _actorTokenType = (string)value;
+                    break;
+                case nameof(ITokenExchangeParameters.RequestedTokenTypes):
+                    _requestedTokenTypes = (string[])value;
                     break;
                 default:
                     throw new NotSupportedException($"Property {property} not supported!");

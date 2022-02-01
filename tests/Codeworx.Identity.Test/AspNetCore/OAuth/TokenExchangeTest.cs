@@ -135,6 +135,74 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
         }
 
+        [Test]
+        public async Task GetOnBehalfOfToken_IdToken_ExpectsOK()
+        {
+            var rootScope = "openid scope1";
+
+            var token = await GetTokenResponse(rootScope);
+
+            var request = new TokenRequestBuilder()
+                                        .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
+                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientSecret("clientSecret")
+                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithRequestedTokenType(Constants.TokenExchange.TokenType.IdToken)
+                                        .WithSubjectToken(token.AccessToken)
+                                        .WithScopes("openid scope2")
+                                        .Build();
+
+            var body = JsonConvert.SerializeObject(request);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(body);
+            var content = new FormUrlEncodedContent(data);
+            var response = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+
+            var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(await response.Content.ReadAsStringAsync());
+
+            Assert.IsNull(tokenResponse.AccessToken);
+            Assert.IsNotNull(tokenResponse.IdentityToken);
+        }
+
+    [Test]
+        public async Task GetOnBehalfOfToken_IdToken_And_AccessToken_ExpectsOK()
+        {
+            var rootScope = "openid scope1";
+
+            var token = await GetTokenResponse(rootScope);
+
+            var request = new TokenRequestBuilder()
+                                        .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
+                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientSecret("clientSecret")
+                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithRequestedTokenType(Constants.TokenExchange.TokenType.IdToken + " " + Constants.TokenExchange.TokenType.AccessToken)
+                                        .WithSubjectToken(token.AccessToken)
+                                        .WithScopes("openid scope2")
+                                        .Build();
+
+            var body = JsonConvert.SerializeObject(request);
+
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(body);
+            var content = new FormUrlEncodedContent(data);
+            var response = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+
+            var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(await response.Content.ReadAsStringAsync());
+
+            Assert.IsNotNull(tokenResponse.AccessToken);
+            Assert.IsNotNull(tokenResponse.IdentityToken);
+        }
+
         private async Task<TokenResponse> GetTokenResponse(string scopes)
         {
             await this.Authenticate();

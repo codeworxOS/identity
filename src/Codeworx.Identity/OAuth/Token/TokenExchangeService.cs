@@ -53,10 +53,28 @@ namespace Codeworx.Identity.OAuth.Token
 
             var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
 
-            var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
+            string accessTokenValue = null;
+            string identityTokenValue = null;
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), parameters.Client.TokenExpiration)
-                    .ConfigureAwait(false);
+            if (!parameters.RequestedTokenTypes.Any() || parameters.RequestedTokenTypes.Contains(Constants.TokenExchange.TokenType.AccessToken))
+            {
+                var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
+
+                await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), parameters.Client.TokenExpiration)
+                        .ConfigureAwait(false);
+
+                accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
+            }
+
+            if (parameters.RequestedTokenTypes.Contains(Constants.TokenExchange.TokenType.IdToken))
+            {
+                var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
+
+                await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), parameters.Client.TokenExpiration)
+                        .ConfigureAwait(false);
+
+                identityTokenValue = await identityToken.SerializeAsync().ConfigureAwait(false);
+            }
 
             string refreshToken = null;
 
@@ -74,9 +92,7 @@ namespace Codeworx.Identity.OAuth.Token
                 }
             }
 
-            var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
-
-            return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)parameters.Client.TokenExpiration.TotalSeconds, scope, refreshToken);
+            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)parameters.Client.TokenExpiration.TotalSeconds, scope, refreshToken);
         }
     }
 }

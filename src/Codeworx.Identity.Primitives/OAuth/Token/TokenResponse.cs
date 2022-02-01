@@ -9,7 +9,7 @@ namespace Codeworx.Identity.OAuth.Token
         public TokenResponse(string accessToken, string identityToken, string tokenType, int expiresIn, string scope, string refreshToken = null)
         {
             this.AccessToken = accessToken;
-            this.IdToken = identityToken;
+            this.IdentityToken = identityToken;
             this.ExpiresIn = expiresIn;
             this.RefreshToken = refreshToken;
             this.Scope = scope;
@@ -39,6 +39,6 @@ namespace Codeworx.Identity.OAuth.Token
 
         [RegularExpression(Constants.OpenId.IdTokenValidation)]
         [DataMember(Order = 6, Name = Constants.OpenId.IdTokenName)]
-        public string IdToken { get; }
+        public string IdentityToken { get; }
     }
 }

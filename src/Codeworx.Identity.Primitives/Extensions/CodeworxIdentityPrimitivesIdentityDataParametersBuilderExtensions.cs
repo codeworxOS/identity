@@ -29,6 +29,13 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithRequestedTokenTypes<TBuilder>(this TBuilder builder, string[] requestedTokenTypes)
+    where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
+        {
+            builder.SetValue(p => p.RequestedTokenTypes, requestedTokenTypes);
+            return builder;
+        }
+
         public static TBuilder WithAudience<TBuilder>(this TBuilder builder, string audience)
             where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {

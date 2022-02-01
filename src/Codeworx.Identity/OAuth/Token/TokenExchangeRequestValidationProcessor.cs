@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -82,6 +83,15 @@ namespace Codeworx.Identity.OAuth.Token
             else
             {
                 builder.WithActorTokenType(request.ActorTokenType);
+            }
+
+            if (!Validator.TryValidateProperty(request.RequestedTokenType, new ValidationContext(request) { MemberName = nameof(request.RequestedTokenType) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RequestedTokenTypeName);
+            }
+            else
+            {
+                builder.WithRequestedTokenTypes(request.RequestedTokenType?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? new string[] { });
             }
 
             return Task.CompletedTask;

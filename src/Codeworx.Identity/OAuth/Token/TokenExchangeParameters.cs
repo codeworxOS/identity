@@ -15,16 +15,18 @@ namespace Codeworx.Identity.OAuth.Token
             string subjectToken,
             string subjectTokenType,
             string actorToken,
-            string actorTokenType)
+            string actorTokenType,
+            string[] requestedTokenTypes)
         {
             Client = client;
-            Scopes = scopes.ToImmutableList();
+            Scopes = scopes?.ToImmutableList() ?? ImmutableList<string>.Empty;
             User = user;
             Audience = audience;
             SubjectToken = subjectToken;
             SubjectTokenType = subjectTokenType;
             ActorToken = actorToken;
             ActorTokenType = actorTokenType;
+            RequestedTokenTypes = requestedTokenTypes?.ToImmutableList() ?? ImmutableList<string>.Empty;
         }
 
         public IClientRegistration Client { get; }
@@ -42,6 +44,8 @@ namespace Codeworx.Identity.OAuth.Token
         public string ActorToken { get; }
 
         public string ActorTokenType { get; }
+
+        public IReadOnlyCollection<string> RequestedTokenTypes { get; }
 
         public string Audience { get; }
 

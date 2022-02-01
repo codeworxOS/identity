@@ -22,6 +22,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             string subjectTokenType = null;
             string actorToken = null;
             string actorTokenType = null;
+            string requestedTokenType = null;
 
             if (AuthenticationHeaderValue.TryParse(request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
             {
@@ -42,6 +43,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             request.Form.TryGetValue(Constants.OAuth.SubjectTokenTypeName, out var subjectTokenTypeValues);
             request.Form.TryGetValue(Constants.OAuth.ActorTokenName, out var actorTokenValues);
             request.Form.TryGetValue(Constants.OAuth.ActorTokenTypeName, out var actorTokenTypeValues);
+            request.Form.TryGetValue(Constants.OAuth.RequestedTokenTypeName, out var requesteTokenTypeValues);
 
             if (clientIdValues.Count > 1 ||
                 clientSecretValues.Count > 1 ||
@@ -50,7 +52,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                 subjectTokenValues.Count > 1 ||
                 subjectTokenTypeValues.Count > 1 ||
                 actorTokenValues.Count > 1 ||
-                actorTokenTypeValues.Count > 1)
+                actorTokenTypeValues.Count > 1 ||
+                requesteTokenTypeValues.Count > 1)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);
             }
@@ -73,6 +76,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             subjectTokenType = subjectTokenTypeValues.FirstOrDefault();
             actorToken = actorTokenValues.FirstOrDefault();
             actorTokenType = actorTokenTypeValues.FirstOrDefault();
+            requestedTokenType = requesteTokenTypeValues.FirstOrDefault();
 
             return Task.FromResult(new TokenExchangeRequest(
                                                 clientId,
@@ -82,7 +86,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                                                 subjectToken,
                                                 subjectTokenType,
                                                 actorToken,
-                                                actorTokenType));
+                                                actorTokenType,
+                                                requestedTokenType));
         }
     }
 }
