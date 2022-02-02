@@ -55,7 +55,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj" />
     <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
   </ItemGroup>
 

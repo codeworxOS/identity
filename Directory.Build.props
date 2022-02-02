@@ -11,6 +11,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
