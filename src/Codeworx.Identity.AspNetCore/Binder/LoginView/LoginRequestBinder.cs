@@ -63,8 +63,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                     var username = request.Form["username"].FirstOrDefault();
                     var password = request.Form["password"].FirstOrDefault();
                     providerId = request.Form["provider-id"].FirstOrDefault();
+                    var remember = request.Form["remember"].FirstOrDefault() == "on";
 
-                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt);
+                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt, remember);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

@@ -26,7 +26,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             var principal = new ClaimsPrincipal(responseData.Identity);
             var returnUrl = responseData.ReturnUrl;
 
-            await _handler.SignInAsync(response.HttpContext, principal);
+            await _handler.SignInAsync(response.HttpContext, principal, responseData.Remember);
 
             if (responseData.Identity.HasClaim(Constants.Claims.ForceChangePassword, "true"))
             {

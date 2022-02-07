@@ -22,14 +22,21 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public async Task ProcessAsync(IIdentityDataParametersBuilder<IAuthorizationParameters> builder, AuthorizationRequest request)
         {
+            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
+            {
+                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
+            }
+
             var client = await _clientService.GetById(request.ClientId).ConfigureAwait(false);
 
             if (client == null)
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
             }
-
-            builder.WithClient(client);
+            else
+            {
+                builder.WithClient(client);
+            }
 
             if (request.RedirectUri != null)
             {
@@ -53,7 +60,14 @@ namespace Codeworx.Identity.OAuth.Authorization
                 }
             }
 
-            if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirectUrl, p)))
+            var redirect = new Uri(redirectUrl, UriKind.RelativeOrAbsolute);
+
+            if (!redirect.IsAbsoluteUri)
+            {
+                redirect = new Uri(_baseUriAccessor.BaseUri, redirect);
+            }
+
+            if (!client.ValidRedirectUrls.Any(p => CheckRedirectUrl(redirect, p)))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.RedirectUriName);
             }
@@ -92,29 +106,23 @@ namespace Codeworx.Identity.OAuth.Authorization
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.StateName);
             }
-
-            if (!Validator.TryValidateProperty(request.ClientId, new ValidationContext(request) { MemberName = nameof(request.ClientId) }, new List<ValidationResult>()))
-            {
-                builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientIdName);
-            }
         }
 
-        private bool CheckRedirectUrl(string redirectUrl, Uri compare)
+        private bool CheckRedirectUrl(Uri redirect, Uri compare)
         {
             if (!compare.IsAbsoluteUri)
             {
                 compare = new Uri(_baseUriAccessor.BaseUri, compare);
             }
 
-            var target = new Uri(redirectUrl);
-            if (target.Host.Equals(compare.Host, StringComparison.OrdinalIgnoreCase) &&
+            if (redirect.Host.Equals(compare.Host, StringComparison.OrdinalIgnoreCase) &&
                 compare.Host.Equals(Constants.Localhost, StringComparison.OrdinalIgnoreCase) &&
                 compare.PathAndQuery == "/")
             {
                 return true;
             }
 
-            return redirectUrl.StartsWith(compare.ToString(), System.StringComparison.OrdinalIgnoreCase);
+            return redirect.Equals(compare);
         }
     }
 }

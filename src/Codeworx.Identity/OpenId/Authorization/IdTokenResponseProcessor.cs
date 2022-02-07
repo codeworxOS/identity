@@ -38,12 +38,11 @@ namespace Codeworx.Identity.OpenId.Authorization
             var provider = _tokenProviders.First(p => p.TokenType == "jwt");
             var token = await provider.CreateAsync(null);
 
-            var client = parameters.Client;
             var payload = data.GetTokenClaims(ClaimTarget.IdToken);
 
             this.AddAtHashClaim(responseBuilder.Response.Token, payload);
 
-            await token.SetPayloadAsync(payload, client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(payload, parameters.Client.TokenExpiration).ConfigureAwait(false);
             var identityToken = await token.SerializeAsync().ConfigureAwait(false);
 
             return responseBuilder.WithIdToken(identityToken);

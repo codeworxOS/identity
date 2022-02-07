@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +17,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public bool CanProcess(TokenRequest request) => request is TTokenRequest;
 
-        public async Task<TokenResponse> ProcessAsync(TokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(TokenRequest request, CancellationToken token = default)
         {
             if (!(request is TTokenRequest tokenRequest))
             {
@@ -24,7 +25,7 @@ namespace Codeworx.Identity.OAuth.Token
             }
 
             var target = _serviceProvider.GetRequiredService<ITokenService<TTokenRequest>>();
-            return await target.ProcessAsync(tokenRequest);
+            return await target.ProcessAsync(tokenRequest, token);
         }
     }
 }

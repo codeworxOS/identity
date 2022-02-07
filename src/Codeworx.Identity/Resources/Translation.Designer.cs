@@ -178,7 +178,7 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled..
+        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wrong credentials were provided or Windows authentication support is disabled..
         /// </summary>
         internal static string Http401Description {
             get {
@@ -273,6 +273,15 @@ namespace Codeworx.Identity.Resources {
         internal static string LoginPageTitle {
             get {
                 return ResourceManager.GetString("LoginPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The account is locked because a wrong password was entered too often..
+        /// </summary>
+        internal static string MaxFailedLoginAttemptsReached {
+            get {
+                return ResourceManager.GetString("MaxFailedLoginAttemptsReached", resourceCulture);
             }
         }
         
@@ -444,6 +453,15 @@ namespace Codeworx.Identity.Resources {
         internal static string SetPassword {
             get {
                 return ResourceManager.GetString("SetPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Password.
+        /// </summary>
+        internal static string SetPasswordPageTitle {
+            get {
+                return ResourceManager.GetString("SetPasswordPageTitle", resourceCulture);
             }
         }
         

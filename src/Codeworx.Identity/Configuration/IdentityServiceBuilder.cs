@@ -11,6 +11,7 @@ using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId.Authorization;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.View;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -59,7 +60,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
             this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
             this.ReplaceService<IForgotPasswordService, ForgotPasswordService>(ServiceLifetime.Scoped);
-            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Singleton);
+            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
@@ -80,10 +81,12 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITokenService<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITokenService<ClientCredentialsTokenRequest>, ClientCredentialsTokenService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITokenService<RefreshTokenRequest>, RefreshTokenService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenService<TokenExchangeRequest>, TokenExchangeService>(ServiceLifetime.Scoped);
 
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<AuthorizationCodeTokenRequest>>(ServiceLifetime.Scoped);
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>(ServiceLifetime.Scoped);
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<RefreshTokenRequest>>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<TokenExchangeRequest>>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
 
@@ -93,6 +96,10 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Transient);
+
+            this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);
         }
 
         public IServiceCollection ServiceCollection { get; }

@@ -32,16 +32,19 @@ namespace Codeworx.Identity.OAuth
                 result.Add(scopeClaim);
             }
 
-            if (!string.IsNullOrWhiteSpace(parameters.Nonce))
+            if (parameters is IAuthorizationParameters authorizationParameters)
             {
-                var nonceClaim = AssignedClaim.Create(Constants.OAuth.NonceName, parameters.Nonce);
-                result.Add(nonceClaim);
-            }
+                if (!string.IsNullOrWhiteSpace(authorizationParameters.Nonce))
+                {
+                    var nonceClaim = AssignedClaim.Create(Constants.OAuth.NonceName, authorizationParameters.Nonce);
+                    result.Add(nonceClaim);
+                }
 
-            if (!string.IsNullOrWhiteSpace(parameters.State))
-            {
-                var stateClaim = AssignedClaim.Create(Constants.OAuth.StateName, parameters.State);
-                result.Add(stateClaim);
+                if (!string.IsNullOrWhiteSpace(authorizationParameters.State))
+                {
+                    var stateClaim = AssignedClaim.Create(Constants.OAuth.StateName, authorizationParameters.State);
+                    result.Add(stateClaim);
+                }
             }
 
             return Task.FromResult<IEnumerable<AssignedClaim>>(result);

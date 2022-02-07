@@ -157,7 +157,7 @@
     <value>There was an unexpected login error!</value>
   </data>
   <data name="Http401Description" xml:space="preserve">
-    <value>This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled.</value>
+    <value>This normally indicates that your browser does not support Windows authentication, wrong credentials were provided or Windows authentication support is disabled.</value>
   </data>
   <data name="Http401Header" xml:space="preserve">
     <value>Oops! You could not be authenticated</value>
@@ -243,6 +243,9 @@
   <data name="SetPassword" xml:space="preserve">
     <value>Set Password</value>
   </data>
+  <data name="SetPasswordPageTitle" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
   <data name="UnknownLoginProviderError" xml:space="preserve">
     <value>Invalid provider!</value>
   </data>
@@ -251,6 +254,9 @@
   </data>
   <data name="Username" xml:space="preserve">
     <value>Username</value>
+  </data>
+  <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
+    <value>The account is locked because a wrong password was entered too often.</value>
   </data>
   <data name="PasswordChangePasswordReuseError" xml:space="preserve">
     <value>The new password cannot be equal to a previously used password!</value>

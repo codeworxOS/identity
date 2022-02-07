@@ -48,6 +48,8 @@
                     return Translation.LoginPageTitle;
                 case StringResource.ChangePasswordPageTitle:
                     return Translation.ChangePasswordPageTitle;
+                case StringResource.SetPasswordPageTitle:
+                    return Translation.SetPasswordPageTitle;
                 case StringResource.CurrentPassword:
                     return Translation.CurrentPassword;
                 case StringResource.NewPassword:
@@ -98,7 +100,8 @@
                     return Translation.PasswordChangePasswordReuseError;
                 case StringResource.LanguageCode:
                     return Translation.LanguageCode;
-
+                case StringResource.MaxFailedLoginAttemptsReached:
+                    return Translation.MaxFailedLoginAttemptsReached;
                 default:
                     throw new MissingResourceException(resource);
             }

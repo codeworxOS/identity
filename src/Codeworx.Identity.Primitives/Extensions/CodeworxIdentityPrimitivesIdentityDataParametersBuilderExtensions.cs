@@ -15,24 +15,31 @@ namespace Codeworx.Identity
             builder.SetValue(((MemberExpression)propertySelector.Body).Member.Name, value);
         }
 
-        public static TBuilder WithClient<TBuilder>(this TBuilder builder, IClientRegistration client)
-            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+        public static TBuilder WithActorToken<TBuilder>(this TBuilder builder, string actorToken)
+            where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
-            builder.SetValue(p => p.Client, client);
+            builder.SetValue(p => p.ActorToken, actorToken);
             return builder;
         }
 
-        public static TBuilder WithClientSecret<TBuilder>(this TBuilder builder, string clientSecret)
-            where TBuilder : IIdentityDataParametersBuilder<IClientCredentialsParameters>
+        public static TBuilder WithActorTokenType<TBuilder>(this TBuilder builder, string actorTokenType)
+            where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
-            builder.SetValue(p => p.ClientSecret, clientSecret);
+            builder.SetValue(p => p.ActorTokenType, actorTokenType);
             return builder;
         }
 
-        public static TBuilder WithRefreshTokenClientSecret<TBuilder>(this TBuilder builder, string clientSecret)
-          where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        public static TBuilder WithRequestedTokenTypes<TBuilder>(this TBuilder builder, string[] requestedTokenTypes)
+    where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
-            builder.SetValue(p => p.ClientSecret, clientSecret);
+            builder.SetValue(p => p.RequestedTokenTypes, requestedTokenTypes);
+            return builder;
+        }
+
+        public static TBuilder WithAudience<TBuilder>(this TBuilder builder, string audience)
+            where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
+        {
+            builder.SetValue(p => p.Audience, audience);
             return builder;
         }
 
@@ -43,8 +50,15 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithClient<TBuilder>(this TBuilder builder, IClientRegistration client)
+                                            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+        {
+            builder.SetValue(p => p.Client, client);
+            return builder;
+        }
+
         public static TBuilder WithNonce<TBuilder>(this TBuilder builder, string nonce)
-            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+            where TBuilder : IIdentityDataParametersBuilder<IAuthorizationParameters>
         {
             builder.SetValue(p => p.Nonce, nonce);
             return builder;
@@ -71,6 +85,20 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
+    where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
+        public static TBuilder WithTokenExchangeUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
+    where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
         public static TBuilder WithResponseMode<TBuilder>(this TBuilder builder, string responseMode)
                     where TBuilder : IIdentityDataParametersBuilder<IAuthorizationParameters>
         {
@@ -93,21 +121,28 @@ namespace Codeworx.Identity
         }
 
         public static TBuilder WithState<TBuilder>(this TBuilder builder, string state)
-                                                                                    where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+                                                                                    where TBuilder : IIdentityDataParametersBuilder<IAuthorizationParameters>
         {
             builder.SetValue(p => p.State, state);
             return builder;
         }
 
-        public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
-            where TBuilder : IIdentityDataParametersBuilder<IClientCredentialsParameters>
+        public static TBuilder WithSubjectToken<TBuilder>(this TBuilder builder, string subjectToken)
+    where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
-            builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.SubjectToken, subjectToken);
             return builder;
         }
 
-        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
-    where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        public static TBuilder WithSubjectTokenType<TBuilder>(this TBuilder builder, string subjectTokenType)
+            where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
+        {
+            builder.SetValue(p => p.SubjectTokenType, subjectTokenType);
+            return builder;
+        }
+
+        public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
+            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
             builder.SetValue(p => p.User, user);
             return builder;

@@ -23,6 +23,7 @@
         AcceptInvitationPageTitle,
         LoginPageTitle,
         ChangePasswordPageTitle,
+        SetPasswordPageTitle,
         CurrentPassword,
         NewPassword,
         ProfilePageTitle,
@@ -48,5 +49,6 @@
         PasswordChangeEqualToLoginError,
         PasswordChangePasswordReuseError,
         LanguageCode,
+        MaxFailedLoginAttemptsReached,
     }
 }

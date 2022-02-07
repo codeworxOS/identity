@@ -43,7 +43,8 @@ namespace Codeworx.Identity.Login
                 case ProviderRequestType.Invitation:
                     return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, error);
                 case ProviderRequestType.Profile:
-                    return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, GetPasswodChangeUrl(request), error);
+                    var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
+                    return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);
             }
 
             throw new NotSupportedException($"Request type {request.Type} not supported!");
@@ -67,7 +68,7 @@ namespace Codeworx.Identity.Login
 
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
-            return new SignInResponse(identity, returnUrl);
+            return new SignInResponse(identity, returnUrl, loginRequest.Remember);
         }
 
         private string GetPasswodChangeUrl(ProviderRequest request)

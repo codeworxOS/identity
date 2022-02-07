@@ -24,10 +24,6 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.ClientSecretName);
             }
-            else
-            {
-                builder.WithClientSecret(request.ClientSecret);
-            }
 
             if (!Validator.TryValidateProperty(request.Scope, new ValidationContext(request) { MemberName = nameof(request.Scope) }, new List<ValidationResult>()))
             {

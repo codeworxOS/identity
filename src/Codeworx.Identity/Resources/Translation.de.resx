@@ -243,6 +243,9 @@
   <data name="SetPassword" xml:space="preserve">
     <value>Passwort vergeben</value>
   </data>
+  <data name="SetPasswordPageTitle" xml:space="preserve">
+    <value>Passwort vergeben</value>
+  </data>
   <data name="UnknownLoginProviderError" xml:space="preserve">
     <value>Ungültiger Anmeldungsmechanismus!</value>
   </data>
@@ -251,6 +254,9 @@
   </data>
   <data name="Username" xml:space="preserve">
     <value>Benutzer</value>
+  </data>
+  <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
+    <value>Der Account ist gesperrt weil das Passwort zu oft falsch eingegeben wurde.</value>
   </data>
   <data name="PasswordChangePasswordReuseError" xml:space="preserve">
     <value>Das neue Passwort darf nicht mit vorherigen Passwörtern übereinstimmen!</value>

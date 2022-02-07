@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 
@@ -10,7 +10,7 @@ namespace Codeworx.Identity.OAuth.Token
     public class RefreshTokenService : ITokenService<RefreshTokenRequest>
     {
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
-        private readonly IReadOnlyList<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> _processors;
+        private readonly IEnumerable<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> _processors;
         private readonly IUserService _userService;
         private readonly IClientService _clientService;
         private readonly IIdentityService _identityService;
@@ -23,13 +23,13 @@ namespace Codeworx.Identity.OAuth.Token
             IIdentityService identityService)
         {
             _tokenProviders = tokenProviders;
-            _processors = processors.OrderBy(p => p.SortOrder).ToImmutableList();
+            _processors = processors;
             _userService = userService;
             _clientService = clientService;
             _identityService = identityService;
         }
 
-        public async Task<TokenResponse> ProcessAsync(RefreshTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(RefreshTokenRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -38,7 +38,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var builder = new RefreshTokenParametersBuilder();
 
-            foreach (var processor in _processors)
+            foreach (var processor in _processors.OrderBy(p => p.SortOrder))
             {
                 await processor.ProcessAsync(builder, request).ConfigureAwait(false);
             }
@@ -49,14 +49,12 @@ namespace Codeworx.Identity.OAuth.Token
 
             var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
 
-            var client = parameters.Client;
-
             var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
             var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), client.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), parameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), client.TokenExpiration)
+            await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), parameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
 
             string refreshToken = null;
@@ -78,7 +76,7 @@ namespace Codeworx.Identity.OAuth.Token
             var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
             var identityTokenValue = await identityToken.SerializeAsync().ConfigureAwait(false);
 
-            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope, refreshToken);
+            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)parameters.Client.TokenExpiration.TotalSeconds, scope, refreshToken);
         }
     }
 }

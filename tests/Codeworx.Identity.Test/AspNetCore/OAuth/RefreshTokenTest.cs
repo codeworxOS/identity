@@ -255,7 +255,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         }
 
         [Test]
-        public async Task RedeemRefreshCodeWithDifferentClientId_ExpectsUnauthorized()
+        public async Task RedeemRefreshCodeWithDifferentClientId_ExpectsInvalidGrant()
         {
             var tokenResponseData = await GetTokenResponse("openid offline_access");
 
@@ -276,10 +276,10 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
             uriBuilder.AppendPath("oauth20/token");
             var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
-            Assert.AreEqual(System.Net.HttpStatusCode.Unauthorized, refreshResponse.StatusCode);
+            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, refreshResponse.StatusCode);
 
             var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(await refreshResponse.Content.ReadAsStringAsync());
-            Assert.AreEqual("invalid_client", errorResponse.Error);
+            Assert.AreEqual(Constants.OAuth.Error.InvalidGrant, errorResponse.Error);
         }
 
 

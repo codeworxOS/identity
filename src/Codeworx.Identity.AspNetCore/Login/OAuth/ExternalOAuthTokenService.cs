@@ -53,6 +53,12 @@ namespace Codeworx.Identity.AspNetCore
             var tokenEndpointUri = oauthConfiguration.GetTokenEndpointUri();
             var message = new HttpRequestMessage(HttpMethod.Post, tokenEndpointUri);
 
+            var body = new Dictionary<string, string>(content);
+            foreach (var item in oauthConfiguration.TokenParameters)
+            {
+                body.Add(item.Key, $"{item.Value}");
+            }
+
             if (oauthConfiguration.ClientSecret != null)
             {
                 if (oauthConfiguration.ClientAuthenticationMode == ClientAuthenticationMode.Header)
@@ -60,12 +66,10 @@ namespace Codeworx.Identity.AspNetCore
                     var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
                     message.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
 
-                    message.Content = new FormUrlEncodedContent(content);
+                    message.Content = new FormUrlEncodedContent(body);
                 }
                 else
                 {
-                    var body = new Dictionary<string, string>(content);
-
                     if (!body.ContainsKey(Constants.OAuth.ClientIdName))
                     {
                         body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
@@ -81,7 +85,7 @@ namespace Codeworx.Identity.AspNetCore
             }
             else
             {
-                message.Content = new FormUrlEncodedContent(content);
+                message.Content = new FormUrlEncodedContent(body);
             }
 
             return message;

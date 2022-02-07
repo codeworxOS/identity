@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Account
             _stringResources = stringResources;
         }
 
-        public async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
+        public virtual async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
         {
             if (_passwordService == null)
             {
@@ -38,41 +38,50 @@ namespace Codeworx.Identity.Account
 
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
-            var policy = await _policyProvider.GetPolicyAsync();
             string error = null;
             bool hasError = false;
 
-            var isPasswordValid = await _passwordValidator.Validate(user, request.CurrentPassword);
+            var hasCurrentPassword = !string.IsNullOrEmpty(user.PasswordHash);
+            if (hasCurrentPassword)
+            {
+                var isPasswordValid = await _passwordValidator.Validate(user, request.CurrentPassword);
 
-            if (!isPasswordValid)
-            {
-                error = _stringResources.GetResource(StringResource.PasswordChangeWrongPasswordError);
-                hasError = true;
+                if (!isPasswordValid)
+                {
+                    error = _stringResources.GetResource(StringResource.PasswordChangeWrongPasswordError);
+                    hasError = true;
+                }
+                else if (request.NewPassword == request.CurrentPassword)
+                {
+                    error = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
+                    hasError = true;
+                }
             }
-            else if (request.NewPassword != request.ConfirmPassword)
+
+            if (!hasError)
             {
-                error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
-                hasError = true;
-            }
-            else if (request.NewPassword == request.CurrentPassword)
-            {
-                error = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
-                hasError = true;
-            }
-            else if (user.Identity == request.NewPassword)
-            {
-                error = _stringResources.GetResource(StringResource.PasswordChangeEqualToLoginError);
-                hasError = true;
-            }
-            else if (!Regex.IsMatch(request.NewPassword, policy.Regex))
-            {
-                error = policy.GetDescription(_stringResources);
-                hasError = true;
+                var policy = await _policyProvider.GetPolicyAsync();
+
+                if (request.NewPassword != request.ConfirmPassword)
+                {
+                    error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
+                    hasError = true;
+                }
+                else if (user.Identity == request.NewPassword)
+                {
+                    error = _stringResources.GetResource(StringResource.PasswordChangeEqualToLoginError);
+                    hasError = true;
+                }
+                else if (!Regex.IsMatch(request.NewPassword, policy.Regex))
+                {
+                    error = policy.GetDescription(_stringResources);
+                    hasError = true;
+                }
             }
 
             if (hasError)
             {
-                var errorResponse = new PasswordChangeViewResponse(user.Name, error);
+                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, error);
                 throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
             }
 
@@ -82,14 +91,14 @@ namespace Codeworx.Identity.Account
             }
             catch (PasswordChangeException e)
             {
-                var errorResponse = new PasswordChangeViewResponse(user.Name, e.Message);
+                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, e.Message);
                 throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
             }
 
             return new PasswordChangeResponse(request.ReturnUrl, request.Prompt);
         }
 
-        public async Task<PasswordChangeViewResponse> ShowChangePasswordViewAsync(PasswordChangeRequest request)
+        public virtual async Task<PasswordChangeViewResponse> ShowChangePasswordViewAsync(PasswordChangeRequest request)
         {
             if (_passwordService == null)
             {
@@ -98,7 +107,8 @@ namespace Codeworx.Identity.Account
 
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
-            var viewResponse = new PasswordChangeViewResponse(user.Name);
+            var hasCurrentPassword = !string.IsNullOrEmpty(user.PasswordHash);
+            var viewResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword);
 
             return viewResponse;
         }

@@ -21,6 +21,7 @@ namespace Codeworx.Identity.Test
                                             {
                                                 new DummyLimitedScope1ClientRegistration(),
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                             };
@@ -62,6 +63,34 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public IUser User => null;
+        }
+
+
+        private class DummyOAuthAuthorizationCodePublicClientRegistration : IDummyClientRegistration
+        {
+            public DummyOAuthAuthorizationCodePublicClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Web;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+            }
+
+            public string ClientId => Constants.DefaultCodeFlowPublicClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
 
 

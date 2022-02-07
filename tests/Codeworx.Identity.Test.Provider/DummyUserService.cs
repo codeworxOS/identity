@@ -20,6 +20,7 @@ namespace Codeworx.Identity.Test
         {
             _users = new List<IDummyUser>();
             _users.Add(new DummyUser());
+            _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
         }
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier));
         }
 
-        public Task<Model.IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public Task<Model.IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var id = Guid.Parse(identity.GetUserId());
             return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));
@@ -66,12 +67,19 @@ namespace Codeworx.Identity.Test
             void ResetPassword(string password);
 
             IDictionary<string, string> ExternalIdentifiers { get; }
+
+            new int FailedLoginCount { get; set; }
         }
 
         public class DummyUser : IDummyUser
         {
             private bool _forceChangePassword;
             private string _password = Constants.DefaultAdminUserName;
+
+            public DummyUser()
+            {
+                FailedLoginCount = 0;
+            }
 
             public string DefaultTenantKey => null;
 
@@ -87,6 +95,36 @@ namespace Codeworx.Identity.Test
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class DummyUserWithoutPassword : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = null;
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => Constants.NoPasswordUserId;
+
+            public string Name => Constants.NoPasswordUserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;
@@ -100,6 +138,7 @@ namespace Codeworx.Identity.Test
             private string _password = Constants.MultiTenantUserName;
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
+                FailedLoginCount = 0;
                 this.DefaultTenantKey = defaultTenantKey;
             }
 
@@ -115,6 +154,8 @@ namespace Codeworx.Identity.Test
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
+            public int FailedLoginCount { get; set; }
+
             public bool ForceChangePassword => _forceChangePassword;
 
             public void ResetPassword(string password)
@@ -129,6 +170,11 @@ namespace Codeworx.Identity.Test
             private bool _forceChangePassword = true;
             private string _password = Constants.ForcePasswordUserName;
 
+            public ForceChangePasswordUser()
+            {
+                FailedLoginCount = 0;
+            }
+
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.ForcePasswordUserId;
@@ -142,6 +188,8 @@ namespace Codeworx.Identity.Test
             public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
+
+            public int FailedLoginCount { get; set; }
 
             public void ResetPassword(string password)
             {

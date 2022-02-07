@@ -7,7 +7,7 @@
             MemorySize = 65535;
             HashLength = 32;
             Iterations = 5;
-            Argon2Mode = Argon2Mode.Argon2i;
+            Argon2Mode = Argon2Mode.Argon2id;
         }
 
         public int MemorySize { get; set; }

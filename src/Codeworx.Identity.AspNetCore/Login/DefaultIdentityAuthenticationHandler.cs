@@ -49,9 +49,16 @@ namespace Codeworx.Identity.AspNetCore.Login
             GC.SuppressFinalize(this);
         }
 
-        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal)
+        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist)
         {
-            await context.SignInAsync(_options.AuthenticationScheme, principal);
+            var properties = new AuthenticationProperties();
+            if (persist)
+            {
+                properties.IsPersistent = true;
+                properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(90);
+            }
+
+            await context.SignInAsync(_options.AuthenticationScheme, principal, properties);
         }
 
         public async Task SignOutAsync(HttpContext context)

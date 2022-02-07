@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Login.OAuth
 {
     public class OAuthRedirectResponse
     {
-        public OAuthRedirectResponse(string authorizationEndpoint, string clientId, string state, string nonce, string callbackUri, IEnumerable<string> scopes, string prompt)
+        public OAuthRedirectResponse(string authorizationEndpoint, string clientId, string state, string nonce, string callbackUri, IEnumerable<string> scopes, string prompt, Dictionary<string, object> authrizationParameters)
         {
             AuthorizationEndpoint = authorizationEndpoint;
             Scopes = scopes.ToImmutableList();
@@ -14,6 +14,7 @@ namespace Codeworx.Identity.Login.OAuth
             Nonce = nonce;
             CallbackUri = callbackUri;
             Prompt = prompt;
+            AuthrizationParameters = authrizationParameters;
         }
 
         public string AuthorizationEndpoint { get; }
@@ -29,5 +30,7 @@ namespace Codeworx.Identity.Login.OAuth
         public string CallbackUri { get; }
 
         public string Prompt { get; }
+
+        public Dictionary<string, object> AuthrizationParameters { get; }
     }
 }
