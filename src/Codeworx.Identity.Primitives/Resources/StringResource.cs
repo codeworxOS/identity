@@ -23,6 +23,7 @@
         AcceptInvitationPageTitle,
         LoginPageTitle,
         ChangePasswordPageTitle,
+        SetPasswordPageTitle,
         CurrentPassword,
         NewPassword,
         ProfilePageTitle,

@@ -48,6 +48,8 @@
                     return Translation.LoginPageTitle;
                 case StringResource.ChangePasswordPageTitle:
                     return Translation.ChangePasswordPageTitle;
+                case StringResource.SetPasswordPageTitle:
+                    return Translation.SetPasswordPageTitle;
                 case StringResource.CurrentPassword:
                     return Translation.CurrentPassword;
                 case StringResource.NewPassword:

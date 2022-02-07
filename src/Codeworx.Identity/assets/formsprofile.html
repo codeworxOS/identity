@@ -3,7 +3,10 @@
     <input type="text" id="username" name="username" readonly="readonly" placeholder="{{Translate 'Username'}}" value="{{UserName}}" />
     {{#CanChangePassword}}
     <div class="change-password-box">
-        <a class="change-password-link" href="{{PasswordChangeUrl}}">{{Translate 'ChangePassword'}}</a>
+        <a class="change-password-link" href="{{PasswordChangeUrl}}">
+            {{#HasCurrentPassword}}{{Translate 'ChangePassword'}}{{/HasCurrentPassword}}
+            {{^HasCurrentPassword}}{{Translate 'SetPassword'}}{{/HasCurrentPassword}}
+        </a>
     </div>
     {{/CanChangePassword}}
     <div class="error">{{Error}}</div>

@@ -36,6 +36,7 @@
     <None Remove="assets\images\tick-32.png" />
     <None Remove="assets\images\windows-64.png" />
     <None Remove="assets\notification\forgot_password.html" />
+    <None Remove="assets\notification\new_invitation.html" />
     <None Remove="assets\redirect_link.html" />
     <None Remove="assets\redirect_link_profile.html" />
   </ItemGroup>
@@ -49,6 +50,7 @@
     <EmbeddedResource Include="assets\account\redirect.html" />
     <EmbeddedResource Include="assets\account\login.html" />
     <EmbeddedResource Include="assets\account\tenant.html" />
+    <EmbeddedResource Include="assets\notification\new_invitation.html" />
     <EmbeddedResource Include="assets\notification\forgot_password.html" />
   </ItemGroup>
 

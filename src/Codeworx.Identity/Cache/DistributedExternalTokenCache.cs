@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Login;
@@ -33,12 +34,12 @@ namespace Codeworx.Identity.Cache
             _dataEncryption = dataEncryption;
         }
 
-        public virtual async Task<ExternalTokenData> GetAsync(string key, TimeSpan extend)
+        public async Task ExtendAsync(string key, TimeSpan extension, CancellationToken token = default)
         {
             string cacheKey, encryptionKey;
             GetKeys(key, out cacheKey, out encryptionKey);
 
-            var entry = await _cache.GetStringAsync(cacheKey)
+            var entry = await _cache.GetStringAsync(cacheKey, token)
                                          .ConfigureAwait(false);
 
             if (entry == null)
@@ -49,17 +50,34 @@ namespace Codeworx.Identity.Cache
             }
 
             await _cache.SetStringAsync(
-              cacheKey,
-              entry,
-              new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = extend })
-                .ConfigureAwait(false);
+             cacheKey,
+             entry,
+             new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = extension },
+             token)
+               .ConfigureAwait(false);
+        }
+
+        public virtual async Task<ExternalTokenData> GetAsync(string key, CancellationToken token = default)
+        {
+            string cacheKey, encryptionKey;
+            GetKeys(key, out cacheKey, out encryptionKey);
+
+            var entry = await _cache.GetStringAsync(cacheKey, token)
+                                         .ConfigureAwait(false);
+
+            if (entry == null)
+            {
+                _logKeyNotFound(_logger, cacheKey, null);
+
+                throw new CacheEntryNotFoundException();
+            }
 
             var decoded = await _dataEncryption.DecryptAsync(entry, encryptionKey);
 
             return JsonConvert.DeserializeObject<ExternalTokenData>(decoded);
         }
 
-        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor)
+        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
 
@@ -69,23 +87,34 @@ namespace Codeworx.Identity.Cache
             await _cache.SetStringAsync(
                 cacheKey,
                 encryped.Data,
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = validFor })
+                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = validFor },
+                token)
             .ConfigureAwait(false);
 
             return $"{cacheKey}.{encryped.Key}";
         }
 
-        public virtual async Task UpdateAsync(string key, ExternalTokenData value, TimeSpan validFor)
+        public virtual async Task UpdateAsync(string key, ExternalTokenData value, CancellationToken token = default)
         {
             string cacheKey, encryptionKey;
             GetKeys(key, out cacheKey, out encryptionKey);
+
+            var entry = await _cache.GetStringAsync(cacheKey, token)
+                             .ConfigureAwait(false);
+
+            if (entry == null)
+            {
+                _logKeyNotFound(_logger, cacheKey, null);
+
+                throw new CacheEntryNotFoundException();
+            }
 
             var encoded = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(value), encryptionKey);
 
             await _cache.SetStringAsync(
                 cacheKey,
                 encoded.Data,
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = validFor })
+                token)
             .ConfigureAwait(false);
         }
 

@@ -158,7 +158,9 @@ namespace Codeworx.Identity.Cryptography.Json
 
             public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
+#pragma warning disable IDE0010 // Add missing cases
                 switch (reader.TokenType)
+#pragma warning restore IDE0010 // Add missing cases
                 {
                     case Newtonsoft.Json.JsonToken.StartArray:
                         return JToken.Load(reader).ToObject<List<object>>();
