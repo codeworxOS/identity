@@ -255,6 +255,9 @@
   <data name="Username" xml:space="preserve">
     <value>Username</value>
   </data>
+  <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
+    <value>The account is locked because a wrong password was entered too often.</value>
+  </data>
   <data name="PasswordChangePasswordReuseError" xml:space="preserve">
     <value>The new password cannot be equal to a previously used password!</value>
   </data>

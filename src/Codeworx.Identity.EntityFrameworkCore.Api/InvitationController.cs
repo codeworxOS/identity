@@ -6,6 +6,7 @@ using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Options;
 namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
     [Route("api/identity/users/{id:guid}/invitations")]
+    [Authorize(Policy = Policies.Admin)]
     public class InvitationController
     {
         private readonly IContextWrapper _db;

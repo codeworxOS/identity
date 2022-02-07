@@ -103,6 +103,7 @@ namespace Codeworx.Identity
             {
                 var queryParams = from q in Query
                                   from value in q.Value
+                                  orderby q.Key
                                   select $"{Uri.EscapeDataString(q.Key)}={Uri.EscapeDataString(value)}";
 
                 result += $"?{string.Join("&", queryParams)}";
@@ -112,6 +113,7 @@ namespace Codeworx.Identity
             {
                 var queryParams = from q in Fragment
                                   from value in q.Value
+                                  orderby q.Key
                                   select $"{Uri.EscapeDataString(q.Key)}={Uri.EscapeDataString(value)}";
 
                 result += $"#{string.Join("&", queryParams)}";

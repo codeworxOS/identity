@@ -277,6 +277,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The account is locked because a wrong password was entered too often..
+        /// </summary>
+        internal static string MaxFailedLoginAttemptsReached {
+            get {
+                return ResourceManager.GetString("MaxFailedLoginAttemptsReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New password.
         /// </summary>
         internal static string NewPassword {

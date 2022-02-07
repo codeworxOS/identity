@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Account
             _stringResources = stringResources;
         }
 
-        public async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
+        public virtual async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
         {
             if (_passwordService == null)
             {
@@ -98,7 +98,7 @@ namespace Codeworx.Identity.Account
             return new PasswordChangeResponse(request.ReturnUrl, request.Prompt);
         }
 
-        public async Task<PasswordChangeViewResponse> ShowChangePasswordViewAsync(PasswordChangeRequest request)
+        public virtual async Task<PasswordChangeViewResponse> ShowChangePasswordViewAsync(PasswordChangeRequest request)
         {
             if (_passwordService == null)
             {

@@ -100,7 +100,8 @@
                     return Translation.PasswordChangePasswordReuseError;
                 case StringResource.LanguageCode:
                     return Translation.LanguageCode;
-
+                case StringResource.MaxFailedLoginAttemptsReached:
+                    return Translation.MaxFailedLoginAttemptsReached;
                 default:
                     throw new MissingResourceException(resource);
             }

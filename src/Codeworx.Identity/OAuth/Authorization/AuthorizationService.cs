@@ -48,7 +48,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 .WithResponseMode(parameters.ResponseMode)
                 .WithRedirectUri(parameters.RedirectUri);
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(parameters.User)
+            var currentUser = await _userService.GetUserByIdentityAsync(parameters.User)
                                          .ConfigureAwait(false);
 
             if (currentUser == null)
