@@ -10,7 +10,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         {
             builder.ToTable("UserPasswordHistory");
 
-            builder.HasKey(p => p.PasswordHash);
+            builder.HasKey(p => new { p.UserId, p.PasswordHash, });
             builder.HasOne(p => p.User)
                 .WithMany(p => p.PasswordHistory)
                 .HasForeignKey(p => p.UserId)

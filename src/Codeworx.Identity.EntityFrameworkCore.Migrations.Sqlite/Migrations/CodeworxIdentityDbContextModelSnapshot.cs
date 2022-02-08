@@ -432,6 +432,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
                 {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
@@ -439,12 +442,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<DateTime>("ChangedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("PasswordHash");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "PasswordHash");
 
                     b.ToTable("UserPasswordHistory");
                 });

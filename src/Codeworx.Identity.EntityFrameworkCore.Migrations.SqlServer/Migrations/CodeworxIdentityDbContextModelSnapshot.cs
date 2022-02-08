@@ -435,6 +435,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
                 {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("PasswordHash")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
@@ -442,12 +445,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.Property<DateTime>("ChangedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("PasswordHash");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "PasswordHash");
 
                     b.ToTable("UserPasswordHistory");
                 });
