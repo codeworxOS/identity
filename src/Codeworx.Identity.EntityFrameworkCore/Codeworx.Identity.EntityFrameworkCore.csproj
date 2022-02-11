@@ -10,9 +10,9 @@
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
 		<Ef>5</Ef>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(EfVersion)'=='3' Or '$(EfVersion)'=='2'">
+	<PropertyGroup Condition="'$(EfVersion)'=='3'">
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<Ef>$(EfVersion)</Ef>
+		<Ef>3</Ef>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.1'">
 		<Ef>5</Ef>
