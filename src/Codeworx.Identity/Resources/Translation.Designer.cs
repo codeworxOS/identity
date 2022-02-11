@@ -349,6 +349,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new password cannot be equal to a previously used password!.
+        /// </summary>
+        internal static string PasswordChangePasswordReuseError {
+            get {
+                return ResourceManager.GetString("PasswordChangePasswordReuseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The new password cannot be equal to the current password!.
         /// </summary>
         internal static string PasswordChangeSamePasswordError {

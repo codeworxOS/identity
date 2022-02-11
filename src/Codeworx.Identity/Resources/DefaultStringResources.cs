@@ -96,6 +96,8 @@
                     return Translation.PasswordChangeSamePasswordError;
                 case StringResource.PasswordChangeEqualToLoginError:
                     return Translation.PasswordChangeEqualToLoginError;
+                case StringResource.PasswordChangePasswordReuseError:
+                    return Translation.PasswordChangePasswordReuseError;
                 case StringResource.LanguageCode:
                     return Translation.LanguageCode;
                 case StringResource.MaxFailedLoginAttemptsReached:

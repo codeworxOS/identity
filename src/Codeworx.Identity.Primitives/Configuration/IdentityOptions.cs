@@ -31,6 +31,7 @@ namespace Codeworx.Identity.Configuration
             CompanyName = "Identity";
             Favicon = Constants.DefaultFavicon;
             MaxFailedLogins = null;
+            PasswordHistoryLength = 0;
         }
 
         public int? MaxFailedLogins { get; set; }
@@ -75,6 +76,8 @@ namespace Codeworx.Identity.Configuration
 
         public string SupportEmail { get; set; }
 
+        public int PasswordHistoryLength { get; set; }
+
         public void CopyTo(IdentityOptions target)
         {
             target.AccountEndpoint = this.AccountEndpoint;
@@ -105,6 +108,7 @@ namespace Codeworx.Identity.Configuration
             target.UserInfoEndpoint = this.UserInfoEndpoint;
             target.WindowsAuthenticationEnabled = this.WindowsAuthenticationEnabled;
             target.MaxFailedLogins = this.MaxFailedLogins;
+            target.PasswordHistoryLength = this.PasswordHistoryLength;
         }
     }
 }
