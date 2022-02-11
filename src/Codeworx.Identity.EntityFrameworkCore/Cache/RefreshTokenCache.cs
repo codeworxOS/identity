@@ -105,8 +105,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 set.Add(refreshToken);
 
                 await _context.SaveChangesAsync(token).ConfigureAwait(false);
-                await transaction.CommitAsync(token).ConfigureAwait(false);
 
+#if NETSTANDARD2_0
+                transaction.Commit();
+#else
+                await transaction.CommitAsync(token).ConfigureAwait(false);
+#endif
                 return $"{cacheKey}.{encrypted.Key}";
             }
         }

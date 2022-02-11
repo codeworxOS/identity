@@ -1,30 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Configurations>Debug;Release;MsSql</Configurations>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(EfVersion)' == '' Or '$(EfVersion)' == '5'">
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <EfVersion>5</EfVersion>
-  </PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'==''">
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='5'">
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<Ef>5</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='3' Or '$(EfVersion)'=='2'">
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<Ef>$(EfVersion)</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.1'">
+		<Ef>5</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.0'">
+		<Ef>3</Ef>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(EfVersion)' == '3' Or '$(EfVersion)' == '2'">
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '5'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)' == '5'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '3'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)' == '3'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '2'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.0" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Remove="StyleCop.Analyzers" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)' == '2'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Remove="StyleCop.Analyzers" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
+	</ItemGroup>
 </Project>

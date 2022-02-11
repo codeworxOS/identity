@@ -5,6 +5,7 @@
     <RootNamespace>Codeworx.Identity</RootNamespace>
     <PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;MsSql</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,40 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup Condition="'$(EfVersion)'==''">
-        <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(EfVersion)'=='5'">
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <Ef>5</Ef>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(EfVersion)'=='3' Or '$(EfVersion)'=='2'">
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Ef>$(EfVersion)</Ef>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.1'">
-    <Ef>5</Ef>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.0'">
-    <Ef>3</Ef>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Configurations>Debug;Release;MsSql</Configurations>
+	</PropertyGroup>
 
-  
-  <ItemGroup Condition="'$(Ef)'=='5'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(EfVersion)'==''">
+		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='5'">
+		<TargetFrameworks>netstandard2.1</TargetFrameworks>
+		<Ef>5</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='3' Or '$(EfVersion)'=='2'">
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<Ef>$(EfVersion)</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.1'">
+		<Ef>5</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.0'">
+		<Ef>3</Ef>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(Ef)'=='3'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0" />
-  </ItemGroup>
 
-  <ItemGroup Condition="'$(Ef)'=='2'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)'=='5'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)'=='3'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(Ef)'=='2'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+	</ItemGroup>
 </Project>
