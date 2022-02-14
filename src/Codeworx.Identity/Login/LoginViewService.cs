@@ -39,7 +39,13 @@ namespace Codeworx.Identity.Login
             }
             else
             {
-                builder = new UriBuilder(returnUrl);
+                var returnUri = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+                if (!returnUri.IsAbsoluteUri)
+                {
+                    returnUri = new Uri(_baseUriAccessor.BaseUri, returnUri);
+                }
+
+                builder = new UriBuilder(returnUri);
             }
 
             if (loggedin.LoginProviderId != null)
