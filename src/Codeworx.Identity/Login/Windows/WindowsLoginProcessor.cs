@@ -71,18 +71,32 @@ namespace Codeworx.Identity.Login.Windows
                 throw new ArgumentNullException(nameof(request));
             }
 
+            var loginRequest = ToWindowsLoginRequest(request);
+            var returnUrl = await GetReturnUrl(registration, request);
+
+            var loginData = new WindowsLoginData(registration, loginRequest.WindowsIdentity, returnUrl, loginRequest.InvitationCode);
+
+            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
+
+            return new SignInResponse(identity, returnUrl);
+        }
+
+        public Task<string> GetReturnUrl(ILoginRegistration registration, object request)
+        {
+            var loginRequest = ToWindowsLoginRequest(request);
+            return Task.FromResult(loginRequest.ReturnUrl);
+        }
+
+        private WindowsLoginRequest ToWindowsLoginRequest(object request)
+        {
             var loginRequest = request as WindowsLoginRequest;
 
             if (loginRequest == null)
             {
-                throw new ArgumentException($"The argument ist not of type {RequestParameterType}", nameof(request));
+                throw new ArgumentException($"The argument is not of type {RequestParameterType}", nameof(request));
             }
 
-            var loginData = new WindowsLoginData(registration, loginRequest.WindowsIdentity, loginRequest.ReturnUrl, loginRequest.InvitationCode);
-
-            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
-
-            return new SignInResponse(identity, loginRequest.ReturnUrl);
+            return loginRequest;
         }
     }
 }

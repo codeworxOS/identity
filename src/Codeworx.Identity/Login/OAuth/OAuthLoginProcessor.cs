@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -127,35 +128,10 @@ namespace Codeworx.Identity.Login.OAuth
 
             _processingLoginMessage(_logger, registration.Id, null);
 
-            var loginRequest = ToOAuthLoginRequest(request);
             var oauthConfiguration = this.ToOAuthLoginConfiguration(registration.ProcessorConfiguration);
 
-            var callbackUriBuilder = new UriBuilder(_baseUri);
-            callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
-            callbackUriBuilder.AppendPath("callback");
-            callbackUriBuilder.AppendPath(registration.Id);
-
-            var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
-
-            var cacheKey = loginRequest.State;
-            StateLookupItem stateItem = null;
-
-            if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
-            {
-                cacheKey = externalIdentity.FindFirst(Constants.OAuth.NonceName)?.Value;
-            }
-
-            if (cacheKey != null)
-            {
-                stateItem = await _stateCache.GetAsync(cacheKey);
-            }
-
-            if (stateItem == null)
-            {
-                var ex = new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
-                _stateNotFoundMessage(_logger, ex);
-                throw ex;
-            }
+            var externalIdentity = await GetExternalIdentity(request, registration);
+            var stateItem = await GetStateItem(externalIdentity, request, registration);
 
             var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
             var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
@@ -189,13 +165,62 @@ namespace Codeworx.Identity.Login.OAuth
             return new SignInResponse(identity, stateItem.ReturnUrl);
         }
 
+        public async Task<string> GetReturnUrl(ILoginRegistration registration, object request)
+        {
+            var externalIdentity = await GetExternalIdentity(request, registration);
+            var stateItem = await GetStateItem(externalIdentity, request, registration);
+            return stateItem.ReturnUrl;
+        }
+
+        private async Task<ClaimsIdentity> GetExternalIdentity(object request, ILoginRegistration registration)
+        {
+            var loginRequest = ToOAuthLoginRequest(request);
+            var oauthConfiguration = this.ToOAuthLoginConfiguration(registration.ProcessorConfiguration);
+
+            var callbackUriBuilder = new UriBuilder(_baseUri);
+            callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
+            callbackUriBuilder.AppendPath("callback");
+            callbackUriBuilder.AppendPath(registration.Id);
+
+            var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
+            return externalIdentity;
+        }
+
+        private async Task<StateLookupItem> GetStateItem(ClaimsIdentity externalIdentity, object request, ILoginRegistration registration)
+        {
+            var loginRequest = ToOAuthLoginRequest(request);
+            var oauthConfiguration = this.ToOAuthLoginConfiguration(registration.ProcessorConfiguration);
+
+            var cacheKey = loginRequest.State;
+            StateLookupItem stateItem = null;
+
+            if (oauthConfiguration.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
+            {
+                cacheKey = externalIdentity.FindFirst(Constants.OAuth.NonceName)?.Value;
+            }
+
+            if (cacheKey != null)
+            {
+                stateItem = await _stateCache.GetAsync(cacheKey);
+            }
+
+            if (stateItem == null)
+            {
+                var ex = new ErrorResponseException<InvalidStateResponse>(new InvalidStateResponse("State is invalid."));
+                _stateNotFoundMessage(_logger, ex);
+                throw ex;
+            }
+
+            return stateItem;
+        }
+
         private OAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)
         {
             var oauthConfiguration = configuration as OAuthLoginConfiguration;
 
             if (oauthConfiguration == null)
             {
-                throw new ArgumentException($"The argument ist not of type OAuthLoginConfiguration", nameof(configuration));
+                throw new ArgumentException($"The argument is not of type OAuthLoginConfiguration", nameof(configuration));
             }
 
             return oauthConfiguration;
@@ -207,7 +232,7 @@ namespace Codeworx.Identity.Login.OAuth
 
             if (loginRequest == null)
             {
-                throw new ArgumentException($"The argument ist not of type {RequestParameterType}", nameof(request));
+                throw new ArgumentException($"The argument is not of type {RequestParameterType}", nameof(request));
             }
 
             return loginRequest;

@@ -23,7 +23,8 @@ namespace Codeworx.Identity.AspNetCore
             IResponseBinder<SignInResponse> signInBinder,
             IResponseBinder<LoginRedirectResponse> loginRedirectResponseBinder,
             ILoginService loginService,
-            IStringResources stringResources)
+            IStringResources stringResources,
+            IServiceProvider serviceProvider)
         {
             ExternalCallbackRequest callbackRequest = null;
 
@@ -41,7 +42,8 @@ namespace Codeworx.Identity.AspNetCore
             }
             catch (AuthenticationException ex)
             {
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, ex.Message);
+                var returnUrl = await GetReturnUrl(callbackRequest, loginService, serviceProvider);
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, ex.Message, returnUrl);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
             catch (ErrorResponseException error)
@@ -52,9 +54,28 @@ namespace Codeworx.Identity.AspNetCore
             catch (Exception)
             {
                 var message = stringResources.GetResource(StringResource.GenericLoginError);
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, message);
+                var returnUrl = await GetReturnUrl(callbackRequest, loginService, serviceProvider);
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, message, returnUrl);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
+        }
+
+        private async Task<string> GetReturnUrl(ExternalCallbackRequest callbackRequest, ILoginService loginService, IServiceProvider serviceProvider)
+        {
+            var loginRegistration = await loginService.GetLoginRegistrationInfoAsync(callbackRequest.ProviderId);
+            if (loginRegistration == null)
+            {
+                return null;
+            }
+
+            var processor = serviceProvider.GetService(loginRegistration.ProcessorType) as ILoginProcessor;
+            if (processor == null)
+            {
+                return null;
+            }
+
+            var returnUrl = await processor.GetReturnUrl(loginRegistration, callbackRequest);
+            return returnUrl;
         }
     }
 }

@@ -59,7 +59,7 @@ namespace Codeworx.Identity.Login
 
             var loginRequest = ToLoginFormRequest(request);
 
-            var returnUrl = loginRequest.ReturnUrl;
+            var returnUrl = await GetReturnUrl(registration, request);
 
             if (string.IsNullOrWhiteSpace(returnUrl))
             {
@@ -69,6 +69,12 @@ namespace Codeworx.Identity.Login
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
             return new SignInResponse(identity, returnUrl, loginRequest.Remember);
+        }
+
+        public Task<string> GetReturnUrl(ILoginRegistration registration, object request)
+        {
+            var loginRequest = ToLoginFormRequest(request);
+            return Task.FromResult(loginRequest.ReturnUrl);
         }
 
         private string GetPasswodChangeUrl(ProviderRequest request)
@@ -122,7 +128,7 @@ namespace Codeworx.Identity.Login
 
             if (loginRequest == null)
             {
-                throw new ArgumentException($"The argument ist not of type {RequestParameterType}", nameof(request));
+                throw new ArgumentException($"The argument is not of type {RequestParameterType}", nameof(request));
             }
 
             return loginRequest;
