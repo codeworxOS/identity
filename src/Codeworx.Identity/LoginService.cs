@@ -123,20 +123,31 @@ namespace Codeworx.Identity
                 var response = await processorInfo.Processor.ProcessAsync(processorInfo.Registration, parameter).ConfigureAwait(false);
                 return response;
             }
-            catch (AuthenticationException authException)
+            catch (ReturnUrlException exception)
             {
-                _loginFailed(_logger, providerId, authException);
-                throw;
-            }
-            catch (LoginProviderNotFoundException)
-            {
-                _processorNotFoundMessage(_logger, providerId, null);
+                LogSignInException(exception.InnerException, providerId);
                 throw;
             }
             catch (Exception ex)
             {
-                _unhandledErrorProcessingLogin(_logger, providerId, ex);
+                LogSignInException(ex, providerId);
                 throw;
+            }
+        }
+
+        private void LogSignInException(Exception ex, string providerId)
+        {
+            if (ex is AuthenticationException authException)
+            {
+                _loginFailed(_logger, providerId, authException);
+            }
+            else if (ex is LoginProviderNotFoundException)
+            {
+                _processorNotFoundMessage(_logger, providerId, null);
+            }
+            else
+            {
+                _unhandledErrorProcessingLogin(_logger, providerId, ex);
             }
         }
 
