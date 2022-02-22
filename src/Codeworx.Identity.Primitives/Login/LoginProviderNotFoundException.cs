@@ -3,10 +3,10 @@ using System.Runtime.Serialization;
 
 namespace Codeworx.Identity.Login
 {
-    public class LoginProviderNotFoundException : Exception
+    public class LoginProviderNotFoundException : Exception, IEndUserErrorMessage
     {
-        public LoginProviderNotFoundException(string providerId)
-            : base($"Login provider {providerId} not found!")
+        public LoginProviderNotFoundException(string providerId, string message)
+            : base(message)
         {
         }
 
@@ -18,6 +18,11 @@ namespace Codeworx.Identity.Login
         protected LoginProviderNotFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
+        }
+
+        public string GetMessage()
+        {
+            return this.Message;
         }
     }
 }

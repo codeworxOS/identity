@@ -157,36 +157,52 @@ namespace Codeworx.Identity.Login.OAuth
                 throw ex;
             }
 
-            var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
-            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
-
-            if (oauthConfiguration.TokenHandling != ExternalTokenHandling.None)
+            try
             {
-                var access_token = externalIdentity.FindFirst(Constants.OAuth.AccessTokenName)?.Value;
-                var id_token = externalIdentity.FindFirst(Constants.OpenId.IdTokenName)?.Value;
-                var refresh_token = externalIdentity.FindFirst(Constants.OAuth.RefreshTokenName)?.Value;
+                var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
+                var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 
-                var data = new ExternalTokenData
+                if (oauthConfiguration.TokenHandling != ExternalTokenHandling.None)
                 {
-                    AccessToken = access_token,
-                    IdToken = id_token,
-                    RefreshToken = refresh_token,
-                    RegistrationId = registration.Id,
-                };
+                    var access_token = externalIdentity.FindFirst(Constants.OAuth.AccessTokenName)?.Value;
+                    var id_token = externalIdentity.FindFirst(Constants.OpenId.IdTokenName)?.Value;
+                    var refresh_token = externalIdentity.FindFirst(Constants.OAuth.RefreshTokenName)?.Value;
 
-                if (_externalTokenCache == null)
-                {
-                    var ex = new MissingDependencyException(typeof(IExternalTokenCache));
-                    _externalTokenCacheMissingMessage(_logger, ex);
-                    throw ex;
+                    var data = new ExternalTokenData
+                    {
+                        AccessToken = access_token,
+                        IdToken = id_token,
+                        RefreshToken = refresh_token,
+                        RegistrationId = registration.Id,
+                    };
+
+                    if (_externalTokenCache == null)
+                    {
+                        var ex = new MissingDependencyException(typeof(IExternalTokenCache));
+                        _externalTokenCacheMissingMessage(_logger, ex);
+                        throw ex;
+                    }
+
+                    var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
+
+                    identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
                 }
 
-                var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
-
-                identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
+                return new SignInResponse(identity, stateItem.ReturnUrl);
             }
+            catch (ErrorResponseException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (ex is IErrorWithReturnUrl)
+                {
+                    throw;
+                }
 
-            return new SignInResponse(identity, stateItem.ReturnUrl);
+                throw new ReturnUrlException("OAuth login failed.", ex, stateItem.ReturnUrl);
+            }
         }
 
         private OAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)

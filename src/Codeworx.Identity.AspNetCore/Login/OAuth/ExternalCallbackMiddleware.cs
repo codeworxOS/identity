@@ -33,26 +33,27 @@ namespace Codeworx.Identity.AspNetCore
                 SignInResponse signInResponse = await loginService.SignInAsync(callbackRequest.ProviderId, callbackRequest.LoginRequest);
                 await signInBinder.BindAsync(signInResponse, context.Response);
             }
-            catch (LoginProviderNotFoundException)
+            catch (ErrorResponseException ex)
             {
-                var message = stringResources.GetResource(StringResource.UnknownLoginProviderError);
-                var response = new LoginRedirectResponse(providerError: message);
+                IResponseBinder binder = context.GetResponseBinder(ex.ResponseType);
+                await binder.BindAsync(ex.Response, context.Response);
+            }
+            catch (Exception ex) when (ex is IErrorWithReturnUrl returnUrlException)
+            {
+                var returnUrl = returnUrlException.ReturnUrl;
+                var message = returnUrlException.GetMessage();
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, providerError: message, redirectUri: returnUrl);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
-            catch (AuthenticationException ex)
+            catch (Exception ex)
             {
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, ex.Message);
-                await loginRedirectResponseBinder.BindAsync(response, context.Response);
-            }
-            catch (ErrorResponseException error)
-            {
-                IResponseBinder binder = context.GetResponseBinder(error.ResponseType);
-                await binder.BindAsync(error.Response, context.Response);
-            }
-            catch (Exception)
-            {
-                var message = stringResources.GetResource(StringResource.GenericLoginError);
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, message);
+                string message = stringResources.GetResource(StringResource.GenericLoginError);
+                if (ex is IEndUserErrorMessage endUserError)
+                {
+                    message = endUserError.GetMessage();
+                }
+
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, providerError: message);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
         }
