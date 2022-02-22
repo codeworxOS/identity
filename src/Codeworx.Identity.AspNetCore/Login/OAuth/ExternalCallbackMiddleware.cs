@@ -33,53 +33,29 @@ namespace Codeworx.Identity.AspNetCore
                 SignInResponse signInResponse = await loginService.SignInAsync(callbackRequest.ProviderId, callbackRequest.LoginRequest);
                 await signInBinder.BindAsync(signInResponse, context.Response);
             }
-            catch (Exception ex) when (IsExceptionOfType<LoginProviderNotFoundException>(ex))
+            catch (ErrorResponseException ex)
             {
-                var returnUrl = GetReturnUrl(ex);
-                var message = stringResources.GetResource(StringResource.UnknownLoginProviderError);
-                var response = new LoginRedirectResponse(providerError: message, redirectUri: returnUrl);
-                await loginRedirectResponseBinder.BindAsync(response, context.Response);
+                IResponseBinder binder = context.GetResponseBinder(ex.ResponseType);
+                await binder.BindAsync(ex.Response, context.Response);
             }
-            catch (Exception ex) when (IsExceptionOfType<AuthenticationException>(ex))
+            catch (Exception ex) when (ex is IErrorWithReturnUrl returnUrlException)
             {
-                var exception = GetException<AuthenticationException>(ex);
-                var returnUrl = GetReturnUrl(ex);
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, exception.Message, returnUrl);
+                var returnUrl = returnUrlException.ReturnUrl;
+                var message = returnUrlException.GetMessage();
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, providerError: message, redirectUri: returnUrl);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
-            }
-            catch (Exception ex) when (IsExceptionOfType<ErrorResponseException>(ex))
-            {
-                var exception = GetException<ErrorResponseException>(ex);
-                IResponseBinder binder = context.GetResponseBinder(exception.ResponseType);
-                await binder.BindAsync(exception.Response, context.Response);
             }
             catch (Exception ex)
             {
-                var returnUrl = GetReturnUrl(ex);
-                var message = stringResources.GetResource(StringResource.GenericLoginError);
-                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, message, returnUrl);
+                string message = stringResources.GetResource(StringResource.GenericLoginError);
+                if (ex is IEndUserErrorMessage endUserError)
+                {
+                    message = endUserError.GetMessage();
+                }
+
+                var response = new LoginRedirectResponse(callbackRequest?.ProviderId, providerError: message);
                 await loginRedirectResponseBinder.BindAsync(response, context.Response);
             }
-        }
-
-        private TException GetException<TException>(Exception ex)
-            where TException : Exception
-        {
-            var exception = ex is ReturnUrlException ? ex.InnerException : ex;
-            return exception as TException;
-        }
-
-        private bool IsExceptionOfType<TException>(Exception ex)
-            where TException : Exception
-        {
-            var exception = GetException<TException>(ex);
-            return exception != null;
-        }
-
-        private string GetReturnUrl(Exception ex)
-        {
-            var returnUrl = ex is IWithReturnUrl returnUrlException ? returnUrlException.ReturnUrl : null;
-            return returnUrl;
         }
     }
 }

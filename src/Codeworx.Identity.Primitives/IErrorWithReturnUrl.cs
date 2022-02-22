@@ -1,6 +1,6 @@
 ﻿namespace Codeworx.Identity
 {
-    public interface IWithReturnUrl
+    public interface IErrorWithReturnUrl : IEndUserErrorMessage
     {
         string ReturnUrl { get; }
     }

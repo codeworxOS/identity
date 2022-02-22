@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -23,6 +24,7 @@ namespace Codeworx.Identity
         private readonly IEnumerable<ILoginRegistrationProvider> _providers;
         private readonly IIdentityService _service;
         private readonly ILogger<LoginService> _logger;
+        private readonly IStringResources _resources;
         private readonly IServiceProvider _serviceProvider;
 
         static LoginService()
@@ -51,12 +53,13 @@ namespace Codeworx.Identity
                 "There was an unhandled error Processing the login for provider {providerId}.");
         }
 
-        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service, ILogger<LoginService> logger)
+        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service, ILogger<LoginService> logger, IStringResources resources)
         {
             _providers = providers;
             _serviceProvider = serviceProvider;
             _service = service;
             _logger = logger;
+            _resources = resources;
         }
 
         public async Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId)
@@ -168,7 +171,7 @@ namespace Codeworx.Identity
                 }
             }
 
-            throw new LoginProviderNotFoundException(providerId);
+            throw new LoginProviderNotFoundException(providerId, _resources.GetResource(StringResource.UnknownLoginProviderError));
         }
 
         private class ProcessorInfo

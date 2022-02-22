@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity
 {
-    public class ReturnUrlException : Exception, IWithReturnUrl
+    public class ReturnUrlException : Exception, IErrorWithReturnUrl
     {
         public ReturnUrlException(string message, Exception innerException, string returnUrl)
             : base(message, innerException)
@@ -11,5 +11,15 @@ namespace Codeworx.Identity
         }
 
         public string ReturnUrl { get; }
+
+        public string GetMessage()
+        {
+            if (InnerException is IEndUserErrorMessage endUserError)
+            {
+                return endUserError.GetMessage();
+            }
+
+            return null;
+        }
     }
 }

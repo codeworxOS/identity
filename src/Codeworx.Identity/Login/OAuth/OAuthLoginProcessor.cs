@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -191,9 +190,18 @@ namespace Codeworx.Identity.Login.OAuth
 
                 return new SignInResponse(identity, stateItem.ReturnUrl);
             }
+            catch (ErrorResponseException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw new ReturnUrlException("OAuth login failed", ex, stateItem.ReturnUrl);
+                if (ex is IErrorWithReturnUrl)
+                {
+                    throw;
+                }
+
+                throw new ReturnUrlException("OAuth login failed.", ex, stateItem.ReturnUrl);
             }
         }
 
