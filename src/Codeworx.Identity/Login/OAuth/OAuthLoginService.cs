@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Login.OAuth
         {
             var state = Guid.NewGuid().ToString("N");
             string nonce = null;
-            await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode });
+            await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode }, _identityOptions.StateLookupCacheExpiration);
 
             var callbackUriBuilder = new UriBuilder(_baseUri);
             callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
