@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Login.OAuth;
 
 namespace Codeworx.Identity.Cache
@@ -7,6 +8,6 @@ namespace Codeworx.Identity.Cache
     {
         Task<StateLookupItem> GetAsync(string state);
 
-        Task SetAsync(string state, StateLookupItem value);
+        Task SetAsync(string state, StateLookupItem value, TimeSpan validFor);
     }
 }

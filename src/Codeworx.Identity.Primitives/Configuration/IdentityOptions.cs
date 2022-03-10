@@ -12,6 +12,7 @@ namespace Codeworx.Identity.Configuration
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
             CookieExpiration = TimeSpan.FromHours(1);
             InvitationValidity = TimeSpan.FromDays(60);
+            StateLookupCacheExpiration = TimeSpan.FromMinutes(5);
             OauthAuthorizationEndpoint = "/oauth20";
             OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
             OpenIdAuthorizationEndpoint = "/openid10";
@@ -43,6 +44,8 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
+
+        public TimeSpan StateLookupCacheExpiration { get; set; }
 
         public string Favicon { get; set; }
 
