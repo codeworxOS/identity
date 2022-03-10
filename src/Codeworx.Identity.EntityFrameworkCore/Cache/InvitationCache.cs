@@ -69,6 +69,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     throw exception;
                 }
 
+                var userId = Guid.Parse(factory.UserId);
+
+                var activeInvitations = await cacheSet
+                    .Where(i => i.UserId == userId && !i.IsDisabled && i.ValidUntil > DateTime.UtcNow)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+                foreach (var item in activeInvitations)
+                {
+                    item.IsDisabled = true;
+                }
+
                 var entry = new UserInvitation
                 {
                     InvitationCode = code,
@@ -76,7 +88,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     IsDisabled = false,
                     ValidUntil = DateTime.UtcNow.Add(validity),
                     RedirectUri = factory.RedirectUri,
-                    UserId = Guid.Parse(factory.UserId),
+                    UserId = userId,
                 };
 
                 await cacheSet.AddAsync(entry).ConfigureAwait(false);
