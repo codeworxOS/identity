@@ -7,7 +7,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using NUnit.Framework;
 
-    public class FailedLoginTests : IntegrationTestBase
+    public class FailedLoginTests 
     {
         [Test]
         public async Task FailedLoginsShouldBeCounted()

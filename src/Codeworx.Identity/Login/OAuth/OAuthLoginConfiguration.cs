@@ -10,6 +10,7 @@ namespace Codeworx.Identity.Login.OAuth
             IdentifierClaim = Constants.Claims.Subject;
             RedirectCacheMethod = RedirectCacheMethod.UseState;
             TokenHandling = ExternalTokenHandling.None;
+            ProviderErrorStrategy = ProviderErrorStrategy.AppendLoginPrompt;
             ClaimSource = ClaimSource.AccessToken;
             ClientAuthenticationMode = ClientAuthenticationMode.Header;
             AuthorizationParameters = new Dictionary<string, object>();
@@ -43,6 +44,8 @@ namespace Codeworx.Identity.Login.OAuth
         public Dictionary<string, object> AuthorizationParameters { get; }
 
         public Dictionary<string, object> TokenParameters { get; }
+
+        public ProviderErrorStrategy ProviderErrorStrategy { get; set; }
 
         public Uri GetTokenEndpointUri()
         {
