@@ -21,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
         public override async Task BindAsync(LoginResponse responseData, HttpResponse response)
         {
             var registrations = responseData.Groups.SelectMany(p => p.Registrations).ToList();
-            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri))
+            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri) && !responseData.HasError && string.IsNullOrWhiteSpace(registrations[0].Error))
             {
                 response.Redirect(redirectUri);
                 return;

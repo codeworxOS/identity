@@ -84,13 +84,31 @@ namespace Codeworx.Identity.Login.OAuth
                     throw new NotSupportedException();
             }
 
-            if (!string.IsNullOrEmpty(request.Prompt))
-            {
-                redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);
-            }
+            var prompt = request.Prompt;
 
             string error = null;
-            request.ProviderErrors.TryGetValue(configuration.Id, out error);
+            if (request.ProviderErrors.TryGetValue(configuration.Id, out error))
+            {
+                switch (oauthConfiguration.ProviderErrorStrategy)
+                {
+                    case ProviderErrorStrategy.AppendLoginPrompt:
+
+                        prompt = prompt ?? Constants.OAuth.Prompt.Login;
+                        break;
+                    case ProviderErrorStrategy.AppendSelectAccountPrompt:
+
+                        prompt = prompt ?? Constants.OAuth.Prompt.SelectAccount;
+                        break;
+                    case ProviderErrorStrategy.None:
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(prompt))
+            {
+                redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, prompt);
+            }
 
             ILoginRegistrationInfo result = null;
 
