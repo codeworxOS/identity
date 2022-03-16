@@ -29,7 +29,7 @@ export class TenantSelectorComponent {
     public set selectedTenant(value: TenantInfo) {
         this._selectedTenant = value;
 
-        this.oauthService.scope = 'openid profile tenant ' + this._selectedTenant.key;
+        this.oauthService.scope = 'openid profile group_names tenant ' + this._selectedTenant.key;
         this.oauthService.logOut(true);
         this.oauthService.initLoginFlow();
     }
