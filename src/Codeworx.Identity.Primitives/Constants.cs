@@ -90,6 +90,7 @@
             public const string ExternalTokenKey = "external_token_key";
             public const string ForceChangePassword = "force_change_password";
             public const string Group = "group";
+            public const string GroupNames = "group_names";
             public const string Id = "id";
             public const string Issuer = "iss";
             public const string Name = "name";
@@ -273,6 +274,7 @@
         public static class Scopes
         {
             public const string Groups = "groups";
+            public const string GroupNames = "group_names";
             public const string Tenant = "tenant";
             public const string ProfileEmail = "profile:email";
 
