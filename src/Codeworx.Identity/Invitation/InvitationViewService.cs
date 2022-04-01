@@ -61,9 +61,10 @@ namespace Codeworx.Identity.Invitation
 
             try
             {
-                var invitation = await _service.RedeemInvitationAsync(request.Code);
+                var invitation = await _service.GetInvitationAsync(request.Code);
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
                 await _changePasswordService.SetPasswordAsync(user, request.Password);
+                await _service.RedeemInvitationAsync(request.Code);
                 var identity = await _identityService.GetClaimsIdentityFromUserAsync(user);
 
                 return new SignInResponse(identity, invitation.RedirectUri);
@@ -84,6 +85,12 @@ namespace Codeworx.Identity.Invitation
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
                 var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                throw new ErrorResponseException<InvitationViewResponse>(response);
+            }
+            catch (PasswordChangeException)
+            {
+                var errorMessage = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
+                var response = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, errorMessage));
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
         }
