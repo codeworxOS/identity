@@ -288,6 +288,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasName("IX_RightHolder_Name_Unique");
+
                     b.ToTable("RightHolder");
 
                     b.HasDiscriminator<byte>("Type");
@@ -536,6 +540,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
+
+                    b.Property<string>("ConfirmationCode")
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
+
+                    b.Property<bool>("ConfirmationPending")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");

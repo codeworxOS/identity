@@ -261,4 +261,19 @@
   <data name="PasswordChangePasswordReuseError" xml:space="preserve">
     <value>Das neue Passwort darf nicht mit vorherigen Passwörtern übereinstimmen!</value>
   </data>
+  <data name="UsernameAlreadyTaken" xml:space="preserve">
+    <value>Der Benutzername ist bereits vergeben.</value>
+  </data>
+  <data name="ConfirmationCodeInvalid" xml:space="preserve">
+    <value>Der angegebene Bestätigungscode ist ungültig.</value>
+  </data>
+  <data name="ConfirmationPageTitle" xml:space="preserve">
+    <value>Konto bestätigung</value>
+  </data>
+  <data name="ConfirmationMessage" xml:space="preserve">
+    <value>Wilkommen {0}. Ihr Account ist nun aktiviert.</value>
+  </data>
+  <data name="AccountConfirmationPending" xml:space="preserve">
+    <value>Ihr Konto wurde noch nicht bestätigt.</value>
+  </data>
 </root>

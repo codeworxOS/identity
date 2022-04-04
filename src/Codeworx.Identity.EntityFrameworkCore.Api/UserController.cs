@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Codeworx.Identity.Account;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
@@ -17,33 +20,59 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
     public class UserController
     {
         private readonly IContextWrapper _db;
+        private readonly IUserService _userService;
+        private readonly IConfirmationService _confirmationService;
+        private readonly IdentityOptions _options;
 
-        public UserController(IContextWrapper db)
+        public UserController(IContextWrapper db, IOptionsSnapshot<IdentityOptions> options, IUserService userService, IConfirmationService confirmationService = null)
         {
             _db = db;
+            _userService = userService;
+            _confirmationService = confirmationService;
+            _options = options.Value;
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<UserData> InsertUsersAsync([FromBody] UserInsertData user)
         {
-            var entity = new User
+            using (var transaction = await _db.Context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                Id = Guid.NewGuid(),
-                Created = DateTime.UtcNow,
-                Name = user.Login,
-                ForceChangePassword = user.ForceChangePassword,
-                IsDisabled = user.IsDisabled,
-                DefaultTenantId = user.DefaultTenantId,
-            };
+                var entity = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Created = DateTime.UtcNow,
+                    Name = user.Login,
+                    ForceChangePassword = user.ForceChangePassword,
+                    IsDisabled = user.IsDisabled,
+                    DefaultTenantId = user.DefaultTenantId,
+                };
 
-            _db.Context.Add(entity);
-            var entry = _db.Context.Entry(entity);
+                _db.Context.Add(entity);
+                var entry = _db.Context.Entry(entity);
 
-            entry.UpdateAdditionalProperties(user);
+                entry.UpdateAdditionalProperties(user);
 
-            await _db.Context.SaveChangesAsync();
+                await _db.Context.SaveChangesAsync();
 
-            return await GetUserByIdAsync(entity.Id);
+                if (_options.EnableAccountConfirmation)
+                {
+                    if (_confirmationService == null)
+                    {
+                        // TODO return 412
+                        throw new NotSupportedException("Missing IConfirmationService!");
+                    }
+
+                    var userData = await _userService.GetUserByIdAsync(entity.Id.ToString("N")).ConfigureAwait(false);
+
+                    await _confirmationService.RequireConfirmationAsync(userData).ConfigureAwait(false);
+                }
+
+                transaction.Commit();
+
+                return await GetUserByIdAsync(entity.Id);
+            }
         }
 
         [HttpPut("{id}/tenant/{tenantId}")]
@@ -162,6 +191,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     Created = item.User.Created,
                     DefaultTenantId = item.User.DefaultTenantId,
                     IsDisabled = item.User.IsDisabled,
+                    ConfirmationPending = item.User.ConfirmationPending,
                     HasOpenInvitation = item.OpenInvitation != null,
                 };
 
@@ -199,6 +229,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 DefaultTenantId = user.DefaultTenantId,
                 FailedLoginCount = user.FailedLoginCount,
                 ForceChangePassword = user.ForceChangePassword,
+                ConfirmationPending = user.ConfirmationPending,
                 IsDisabled = user.IsDisabled,
                 LastFailedLoginAttempt = user.LastFailedLoginAttempt,
                 PasswordChanged = user.PasswordChanged,

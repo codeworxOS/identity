@@ -43,6 +43,8 @@ namespace Codeworx.Identity.Login.Windows
                 case ProviderRequestType.Profile:
                     uriBuilder.AppendPath($"{_options.AccountEndpoint}/me/{configuration.Id}");
                     break;
+                default:
+                    throw new NotSupportedException();
             }
 
             string error = null;

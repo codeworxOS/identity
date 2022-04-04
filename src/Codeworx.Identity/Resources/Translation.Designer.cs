@@ -70,6 +70,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The account has not yet been confirmed..
+        /// </summary>
+        internal static string AccountConfirmationPending {
+            get {
+                return ResourceManager.GetString("AccountConfirmationPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change password.
         /// </summary>
         internal static string ChangePassword {
@@ -84,6 +93,33 @@ namespace Codeworx.Identity.Resources {
         internal static string ChangePasswordPageTitle {
             get {
                 return ResourceManager.GetString("ChangePasswordPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided confirmation code is invalid..
+        /// </summary>
+        internal static string ConfirmationCodeInvalid {
+            get {
+                return ResourceManager.GetString("ConfirmationCodeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome {0}. Your account is now confirmed..
+        /// </summary>
+        internal static string ConfirmationMessage {
+            get {
+                return ResourceManager.GetString("ConfirmationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account Confirmation.
+        /// </summary>
+        internal static string ConfirmationPageTitle {
+            get {
+                return ResourceManager.GetString("ConfirmationPageTitle", resourceCulture);
             }
         }
         
@@ -489,6 +525,15 @@ namespace Codeworx.Identity.Resources {
         internal static string Username {
             get {
                 return ResourceManager.GetString("Username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided username is already taken..
+        /// </summary>
+        internal static string UsernameAlreadyTaken {
+            get {
+                return ResourceManager.GetString("UsernameAlreadyTaken", resourceCulture);
             }
         }
     }

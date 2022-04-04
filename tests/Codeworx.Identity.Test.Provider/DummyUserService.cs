@@ -75,6 +75,7 @@ namespace Codeworx.Identity.Test
         {
             private bool _forceChangePassword;
             private string _password = Constants.DefaultAdminUserName;
+            public bool ConfirmationPending => false;
 
             public DummyUser()
             {
@@ -108,7 +109,7 @@ namespace Codeworx.Identity.Test
         {
             private bool _forceChangePassword;
             private string _password = null;
-
+            public bool ConfirmationPending => false;
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.NoPasswordUserId;
@@ -142,6 +143,8 @@ namespace Codeworx.Identity.Test
                 this.DefaultTenantKey = defaultTenantKey;
             }
 
+            public bool ConfirmationPending => false;
+
             public string DefaultTenantKey { get; }
 
             public string Identity => Constants.MultiTenantUserId;
@@ -174,7 +177,7 @@ namespace Codeworx.Identity.Test
             {
                 FailedLoginCount = 0;
             }
-
+            public bool ConfirmationPending => false;
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.ForcePasswordUserId;

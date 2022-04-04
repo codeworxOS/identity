@@ -10,6 +10,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
         {
             builder.ToTable("RightHolder");
 
+            builder.HasIndex(p => p.Name)
+                .IsUnique()
+#if NETSTANDARD2_1
+                .HasDatabaseName("IX_RightHolder_Name_Unique");
+#else
+                .HasName("IX_RightHolder_Name_Unique");
+#endif
+
             builder.Property<byte>("Type")
                 .IsRequired(true);
 

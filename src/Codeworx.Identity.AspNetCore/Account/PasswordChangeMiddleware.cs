@@ -38,6 +38,8 @@ namespace Codeworx.Identity.AspNetCore
                         response = await service.ShowChangePasswordViewAsync(processPasswordChangeRequest);
                         responseBinder = context.GetResponseBinder<PasswordChangeViewResponse>();
                         break;
+                    default:
+                        break;
                 }
 
                 await responseBinder.BindAsync(response, context.Response);

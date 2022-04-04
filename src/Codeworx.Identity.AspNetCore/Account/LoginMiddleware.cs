@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -38,6 +39,8 @@ namespace Codeworx.Identity.AspNetCore
                         response = await service.ProcessLoginAsync(login);
                         responseBinder = context.GetResponseBinder<LoginResponse>();
                         break;
+                    default:
+                        throw new NotSupportedException();
                 }
 
                 await responseBinder.BindAsync(response, context.Response);

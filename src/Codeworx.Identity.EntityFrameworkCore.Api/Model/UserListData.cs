@@ -19,6 +19,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public bool IsDisabled { get; set; }
 
+        public bool ConfirmationPending { get; set; }
+
         public bool HasOpenInvitation { get; set; }
 
         public DateTime Created { get; set; }

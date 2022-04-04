@@ -33,6 +33,7 @@ namespace Codeworx.Identity.Configuration
             Favicon = Constants.DefaultFavicon;
             MaxFailedLogins = null;
             PasswordHistoryLength = 0;
+            EnableAccountConfirmation = false;
         }
 
         public int? MaxFailedLogins { get; set; }
@@ -78,6 +79,8 @@ namespace Codeworx.Identity.Configuration
         public string CompanyName { get; set; }
 
         public string SupportEmail { get; set; }
+
+        public bool EnableAccountConfirmation { get; set; }
 
         public int PasswordHistoryLength { get; set; }
 

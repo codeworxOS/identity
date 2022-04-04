@@ -21,6 +21,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public bool IsDisabled { get; set; }
 
+        public bool ConfirmationPending { get; set; }
+
+        [StringLength(512)]
+        public string ConfirmationCode { get; set; }
+
         public bool ForceChangePassword { get; set; }
 
         public DateTime Created { get; set; }
