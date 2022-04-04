@@ -89,6 +89,7 @@
             public const string ExternalToken = "external_token";
             public const string ExternalTokenKey = "external_token_key";
             public const string ForceChangePassword = "force_change_password";
+            public const string ConfirmationPending = "confirmation_pending";
             public const string Group = "group";
             public const string Id = "id";
             public const string Issuer = "iss";
@@ -286,6 +287,7 @@
 
         public static class Templates
         {
+            public const string ConfirmAccountNotification = "confirm_account_notification";
             public const string NewInvitationNotification = "new_invitation_notification";
             public const string ForgotPasswordNotification = "forgot_password_notification";
             public const string FormsInvitation = "formsinvitation";

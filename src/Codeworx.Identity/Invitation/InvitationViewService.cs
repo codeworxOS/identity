@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
@@ -17,6 +18,7 @@ namespace Codeworx.Identity.Invitation
         private readonly IIdentityService _identityService;
         private readonly IPasswordPolicyProvider _passwordPolicyProvider;
         private readonly IChangePasswordService _changePasswordService;
+        private readonly IChangeUsernameService _changeUsernameService;
 
         public InvitationViewService(
             IInvitationService service,
@@ -25,10 +27,12 @@ namespace Codeworx.Identity.Invitation
             IIdentityService identityService,
             IPasswordPolicyProvider passwordPolicyProvider,
             IChangePasswordService changePasswordService,
-            IStringResources stringResources)
+            IStringResources stringResources,
+            IChangeUsernameService changeUsernameService = null)
         {
             _service = service;
             _stringResources = stringResources;
+            _changeUsernameService = changeUsernameService;
             _userService = userService;
             _loginService = loginService;
             _identityService = identityService;
@@ -61,12 +65,32 @@ namespace Codeworx.Identity.Invitation
 
             try
             {
-                var invitation = await _service.RedeemInvitationAsync(request.Code);
-                var user = await _userService.GetUserByIdAsync(invitation.UserId);
+                var invitation = await _service.GetInvitationAsync(request.Code).ConfigureAwait(false);
+                var user = await _userService.GetUserByIdAsync(invitation.UserId).ConfigureAwait(false);
+
+                if (invitation.CanChangeLogin && user.Name != request.UserName)
+                {
+                    if (_changeUsernameService == null)
+                    {
+                        throw new NotSupportedException("Missing IChangeUsernameService");
+                    }
+
+                    await _changeUsernameService.ChangeUsernameAsync(user, request.UserName).ConfigureAwait(false);
+                }
+
                 await _changePasswordService.SetPasswordAsync(user, request.Password);
+                user = await _userService.GetUserByIdAsync(invitation.UserId);
+                await _service.RedeemInvitationAsync(request.Code).ConfigureAwait(false);
                 var identity = await _identityService.GetClaimsIdentityFromUserAsync(user);
 
                 return new SignInResponse(identity, invitation.RedirectUri);
+            }
+            catch (UsernameAlreadyExistsException)
+            {
+                var errorMessage = _stringResources.GetResource(StringResource.UsernameAlreadyTaken);
+                var viewRequest = new InvitationViewRequest(request.Code, request.Provider, errorMessage);
+                var response = await ShowAsync(viewRequest).ConfigureAwait(false);
+                throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationNotFoundException)
             {
@@ -96,7 +120,7 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code);
 
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, request.Code);
+                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, request.Code, canChangeLogin: invitation.CanChangeLogin);
 
                 if (!string.IsNullOrWhiteSpace(request.Provider))
                 {

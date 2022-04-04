@@ -181,6 +181,11 @@ namespace Codeworx.Identity
                 identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
             }
 
+            if (user.ConfirmationPending)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ConfirmationPending, "true"));
+            }
+
             if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))
             {
                 identity.AddClaim(new Claim(Constants.Claims.DefaultTenant, user.DefaultTenantKey));

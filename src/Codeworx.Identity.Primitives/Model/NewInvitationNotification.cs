@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Model
 
         public string TemplateKey => Constants.Templates.NewInvitationNotification;
 
-        public string Subject => $"{Company} - New Inviation";
+        public string Subject => $"{Company} - New Invitation";
 
         public void CopyTo(IDictionary<string, object> target)
         {

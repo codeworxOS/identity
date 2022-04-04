@@ -24,6 +24,8 @@ namespace Codeworx.Identity.Configuration.Model
 
         public bool ForceChangePassword => false;
 
+        public bool ConfirmationPending => false;
+
         public IReadOnlyList<string> LinkedProviders { get; }
 
         public int FailedLoginCount => 0;

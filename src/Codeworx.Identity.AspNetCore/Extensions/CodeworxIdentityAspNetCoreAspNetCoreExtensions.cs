@@ -184,6 +184,9 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue,
                        p => p.UseMiddleware<InvitationMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/confirm", out var remaining) && remaining.HasValue,
+                       p => p.UseMiddleware<ConfirmationMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
                        p => p.UseMiddleware<RedirectMiddleware>())
                    .MapWhen(
@@ -263,6 +266,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ProfileRequest>, ProfileRequestBinder>();
             collection.AddTransient<IRequestBinder<ProfileLinkRequest>, ProfileLinkRequestBinder>();
             collection.AddTransient<IRequestBinder<ForgotPasswordRequest>, ForgotPasswordRequestBinder>();
+            collection.AddTransient<IRequestBinder<ConfirmationRequest>, ConfirmationRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -299,6 +303,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<ForceChangePasswordResponse>, ForceChangePasswordResponseBinder>();
             collection.AddTransient<IResponseBinder<ForgotPasswordViewResponse>, ForgotPasswordViewResponseBinder>();
             collection.AddTransient<IResponseBinder<ForgotPasswordResponse>, ForgotPasswordResponseBinder>();
+            collection.AddTransient<IResponseBinder<ConfirmationResponse>, ConfirmationResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();

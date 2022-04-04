@@ -6,6 +6,8 @@
         {
             switch (resource)
             {
+                case StringResource.UsernameAlreadyTaken:
+                    return Translation.UsernameAlreadyTaken;
                 case StringResource.Username:
                     return Translation.Username;
                 case StringResource.Password:
@@ -102,6 +104,14 @@
                     return Translation.LanguageCode;
                 case StringResource.MaxFailedLoginAttemptsReached:
                     return Translation.MaxFailedLoginAttemptsReached;
+                case StringResource.ConfirmationCodeInvalid:
+                    return Translation.ConfirmationCodeInvalid;
+                case StringResource.ConfirmationPageTitle:
+                    return Translation.ConfirmationPageTitle;
+                case StringResource.ConfirmationMessage:
+                    return Translation.ConfirmationMessage;
+                case StringResource.AccountConfirmationPending:
+                    return Translation.AccountConfirmationPending;
                 default:
                     throw new MissingResourceException(resource);
             }

@@ -52,6 +52,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 {
                     UserId = entry.UserId.ToString("N"),
                     RedirectUri = entry.RedirectUri,
+                    CanChangeLogin = entry.CanChangeLogin,
                 };
             }
         }
@@ -100,6 +101,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 {
                     UserId = entry.UserId.ToString("N"),
                     RedirectUri = entry.RedirectUri,
+                    CanChangeLogin = entry.CanChangeLogin,
                 };
             }
         }

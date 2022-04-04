@@ -2,6 +2,7 @@
 {
     public enum StringResource
     {
+        UsernameAlreadyTaken,
         Username,
         Password,
         RememberMe,
@@ -50,5 +51,9 @@
         PasswordChangePasswordReuseError,
         LanguageCode,
         MaxFailedLoginAttemptsReached,
+        ConfirmationCodeInvalid,
+        ConfirmationPageTitle,
+        ConfirmationMessage,
+        AccountConfirmationPending,
     }
 }
