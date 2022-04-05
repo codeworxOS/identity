@@ -4,6 +4,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)'==''">
+		<!--<TargetFrameworks>netstandard2.0</TargetFrameworks>-->
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)'=='5'">

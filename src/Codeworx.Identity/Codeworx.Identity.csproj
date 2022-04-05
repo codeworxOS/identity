@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="assets\account\confirmation.html" />
     <None Remove="assets\account\forgot_password.html" />
     <None Remove="assets\account\forgot_password_complete.html" />
     <None Remove="assets\account\invitation.html" />
@@ -36,6 +37,7 @@
     <None Remove="assets\images\microsoft-64.png" />
     <None Remove="assets\images\tick-32.png" />
     <None Remove="assets\images\windows-64.png" />
+    <None Remove="assets\notification\confirm_account.html" />
     <None Remove="assets\notification\forgot_password.html" />
     <None Remove="assets\notification\new_invitation.html" />
     <None Remove="assets\redirect_link.html" />
@@ -45,12 +47,14 @@
   <ItemGroup>
     <EmbeddedResource Include="assets\account\forgot_password_complete.html" />
     <EmbeddedResource Include="assets\account\forgot_password.html" />
+    <EmbeddedResource Include="assets\account\confirmation.html" />
     <EmbeddedResource Include="assets\account\profile.html" />
     <EmbeddedResource Include="assets\account\invitation.html" />
     <EmbeddedResource Include="assets\account\password_change.html" />
     <EmbeddedResource Include="assets\account\redirect.html" />
     <EmbeddedResource Include="assets\account\login.html" />
     <EmbeddedResource Include="assets\account\tenant.html" />
+    <EmbeddedResource Include="assets\notification\confirm_account.html" />
     <EmbeddedResource Include="assets\notification\new_invitation.html" />
     <EmbeddedResource Include="assets\notification\forgot_password.html" />
   </ItemGroup>

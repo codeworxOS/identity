@@ -3,9 +3,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Login
@@ -26,12 +29,24 @@ namespace Codeworx.Identity.AspNetCore.Login
         {
             var result = await context.AuthenticateAsync(_options.AuthenticationScheme);
 
-            if (result.Succeeded && result.Principal.HasClaim(Constants.Claims.ForceChangePassword, "true"))
+            if (result.Succeeded)
             {
-                if (context.Request.Path != _options.AccountEndpoint + "/change-password")
+                if (result.Principal.HasClaim(Constants.Claims.ForceChangePassword, "true"))
                 {
-                    var returnUrl = context.Request.GetDisplayUrl();
-                    throw new ErrorResponseException<ForceChangePasswordResponse>(new ForceChangePasswordResponse(returnUrl));
+                    if (context.Request.Path != _options.AccountEndpoint + "/change-password")
+                    {
+                        var returnUrl = context.Request.GetDisplayUrl();
+                        throw new ErrorResponseException<ForceChangePasswordResponse>(new ForceChangePasswordResponse(returnUrl));
+                    }
+                }
+
+                if (result.Principal.HasClaim(Constants.Claims.ConfirmationPending, "true"))
+                {
+                    var userService = context.RequestServices.GetService<IUserService>();
+                    var user = await userService.GetUserByIdentityAsync((ClaimsIdentity)result.Principal.Identity).ConfigureAwait(false);
+                    var stringResources = context.RequestServices.GetService<IStringResources>();
+
+                    throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
                 }
             }
 

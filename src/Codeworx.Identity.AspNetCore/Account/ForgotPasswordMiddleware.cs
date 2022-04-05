@@ -33,6 +33,8 @@ namespace Codeworx.Identity.AspNetCore.Account
                         response = await service.ShowForgotPasswordViewAsync(forgotPasswordRequest);
                         binder = viewResponseBinder;
                         break;
+                    default:
+                        break;
                 }
 
                 await binder.BindAsync(response, context.Response);
