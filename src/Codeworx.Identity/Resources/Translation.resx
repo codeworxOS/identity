@@ -276,4 +276,7 @@
   <data name="AccountConfirmationPending" xml:space="preserve">
     <value>The account has not yet been confirmed.</value>
   </data>
+  <data name="EmailLoginDescription" xml:space="preserve">
+    <value>The username must be a valid email address.</value>
+  </data>
 </root>

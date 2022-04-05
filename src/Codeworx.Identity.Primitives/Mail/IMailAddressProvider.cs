@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net.Mail;
+using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Mail
 {
     public interface IMailAddressProvider
     {
-        Task<string> GetMailAdressAsync(IUser user);
+        Task<MailAddress> GetMailAdressAsync(IUser user);
     }
 }

@@ -2,9 +2,11 @@
 <form method="post" id="invitationFrom">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
 
-    <input type="text" id="username" name="username"{{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}}placeholder="{{Translate 'Username'}}" value="{{Username}}" />
+    <input type="text" id="username" name="username" {{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}} placeholder="{{Translate 'Username'}}" value="{{Username}}" />
+    {{#CanChangePassword}}
     <input type="password" id="password" name="password" placeholder="{{Translate 'Password'}}" />
     <input type="password" id="confirm-password" name="confirm-password" placeholder="{{Translate 'ConfirmPassword'}}" />
+    {{/CanChangePassword}}
     <div class="error">{{Error}}</div>
     <button type="submit" class="login-submit" id="loginButton">{{Translate 'Save'}}</button>
 </form>

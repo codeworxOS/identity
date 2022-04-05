@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
 using Microsoft.AspNetCore.Authorization;
@@ -47,6 +48,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 if (!userExists)
                 {
                     // TODO return 404
+                    throw new NotSupportedException();
                 }
 
                 var code = invitation.Code ?? Guid.NewGuid().ToString("N");
@@ -58,6 +60,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     if (codeExists)
                     {
                         // TODO return 409
+                        throw new NotSupportedException();
                     }
                 }
 
@@ -71,12 +74,19 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     item.IsDisabled = true;
                 }
 
+                var action = invitation.Action;
+
+                if (action == InvitationAction.None)
+                {
+                    action = InvitationAction.Initial;
+                }
+
                 var entity = new UserInvitation
                 {
                     UserId = id,
                     InvitationCode = code,
                     RedirectUri = invitation.RedriectUri,
-                    CanChangeLogin = invitation.CanChangeLogin ?? false,
+                    Action = action,
                     ValidUntil = DateTime.UtcNow.Add(invitation.ValidFor ?? _options.InvitationValidity),
                     IsDisabled = false,
                 };
@@ -93,6 +103,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     if (!isSupported)
                     {
                         // TODO return 409
+                        throw new NotSupportedException();
                     }
 
                     var user = await _userService.GetUserByIdAsync(id.ToString("N")).ConfigureAwait(false);

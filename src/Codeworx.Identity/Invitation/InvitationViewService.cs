@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Login;
@@ -17,6 +16,7 @@ namespace Codeworx.Identity.Invitation
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
         private readonly IPasswordPolicyProvider _passwordPolicyProvider;
+        private readonly ILoginPolicyProvider _loginPolicyProvider;
         private readonly IChangePasswordService _changePasswordService;
         private readonly IChangeUsernameService _changeUsernameService;
 
@@ -26,6 +26,7 @@ namespace Codeworx.Identity.Invitation
             ILoginService loginService,
             IIdentityService identityService,
             IPasswordPolicyProvider passwordPolicyProvider,
+            ILoginPolicyProvider loginPolicyProvider,
             IChangePasswordService changePasswordService,
             IStringResources stringResources,
             IChangeUsernameService changeUsernameService = null)
@@ -37,52 +38,64 @@ namespace Codeworx.Identity.Invitation
             _loginService = loginService;
             _identityService = identityService;
             _passwordPolicyProvider = passwordPolicyProvider;
+            _loginPolicyProvider = loginPolicyProvider;
             _changePasswordService = changePasswordService;
         }
 
         public async Task<SignInResponse> ProcessAsync(ProcessInvitationViewRequest request)
         {
-            var policy = await _passwordPolicyProvider.GetPolicyAsync();
-            string error = null;
-            bool hasError = false;
-
-            if (request.Password != request.ConfirmPassword)
-            {
-                error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
-                hasError = true;
-            }
-            else if (!Regex.IsMatch(request.Password, policy.Regex))
-            {
-                error = policy.GetDescription(_stringResources);
-                hasError = true;
-            }
-
-            if (hasError)
-            {
-                var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
-                throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
-            }
+            var languageCode = _stringResources.GetResource(StringResource.LanguageCode);
 
             try
             {
                 var invitation = await _service.GetInvitationAsync(request.Code).ConfigureAwait(false);
                 var user = await _userService.GetUserByIdAsync(invitation.UserId).ConfigureAwait(false);
 
-                if (invitation.CanChangeLogin && user.Name != request.UserName)
+                if (invitation.Action.HasFlag(InvitationAction.ChangeLogin) && user.Name != request.UserName)
                 {
                     if (_changeUsernameService == null)
                     {
                         throw new NotSupportedException("Missing IChangeUsernameService");
                     }
 
+                    var loginPolicy = await _loginPolicyProvider.GetPolicyAsync().ConfigureAwait(false);
+                    if (!loginPolicy.IsValid(request.UserName, languageCode, out var error))
+                    {
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
+                    }
+
                     await _changeUsernameService.ChangeUsernameAsync(user, request.UserName).ConfigureAwait(false);
                 }
 
-                await _changePasswordService.SetPasswordAsync(user, request.Password);
                 user = await _userService.GetUserByIdAsync(invitation.UserId);
-                await _service.RedeemInvitationAsync(request.Code).ConfigureAwait(false);
-                var identity = await _identityService.GetClaimsIdentityFromUserAsync(user);
+                if (invitation.Action.HasFlag(InvitationAction.ChangePassword))
+                {
+                    var policy = await _passwordPolicyProvider.GetPolicyAsync();
+                    string error = null;
+                    bool hasError = false;
 
+                    if (request.Password != request.ConfirmPassword)
+                    {
+                        error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
+                        hasError = true;
+                    }
+                    else if (!policy.IsValid(request.Password, languageCode, out error))
+                    {
+                        hasError = true;
+                    }
+
+                    if (hasError)
+                    {
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
+                    }
+
+                    await _changePasswordService.SetPasswordAsync(user, request.Password).ConfigureAwait(false);
+                }
+
+                await _service.RedeemInvitationAsync(request.Code).ConfigureAwait(false);
+                var identity = await _identityService.GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
                 return new SignInResponse(identity, invitation.RedirectUri);
             }
             catch (UsernameAlreadyExistsException)
@@ -120,7 +133,7 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code);
 
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, request.Code, canChangeLogin: invitation.CanChangeLogin);
+                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, invitationCode: request.Code, invitation: invitation);
 
                 if (!string.IsNullOrWhiteSpace(request.Provider))
                 {

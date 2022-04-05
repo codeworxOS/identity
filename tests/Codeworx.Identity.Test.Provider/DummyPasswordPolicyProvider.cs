@@ -7,14 +7,14 @@
 
     public class DummyPasswordPolicyProvider : IPasswordPolicyProvider
     {
-        public static IDictionary<string, string> Description = new Dictionary<string, string> 
+        public static IDictionary<string, string> Description = new Dictionary<string, string>
         {
             { "en", "Password should be 1111 or admin" }
         };
 
-        public Task<PasswordPolicy> GetPolicyAsync()
+        public Task<IStringPolicy> GetPolicyAsync()
         {
-            return Task.FromResult(new PasswordPolicy("1111|admin", Description));
+            return Task.FromResult<IStringPolicy>(new RegexPolicy("1111|admin", Description));
         }
     }
 }

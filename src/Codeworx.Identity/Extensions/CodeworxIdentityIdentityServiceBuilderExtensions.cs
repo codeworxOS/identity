@@ -2,6 +2,7 @@
 using System.Reflection;
 using Codeworx.Identity;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Mail;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -22,7 +23,14 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             builder.ReplaceService<IMailConnector, SmtpMailConnector>(ServiceLifetime.Scoped);
-            builder.ReplaceService<IMailAddressProvider, DefaultMailAddressProvider>(ServiceLifetime.Scoped);
+
+            return builder;
+        }
+
+        public static IIdentityServiceBuilder WithLoginAsEmail(this IIdentityServiceBuilder builder)
+        {
+            builder.ReplaceService<IMailAddressProvider, LoginNameMailAddressProvider>(ServiceLifetime.Singleton);
+            builder.ReplaceService<ILoginPolicyProvider, EmailLoginPolicyProvider>(ServiceLifetime.Scoped);
 
             return builder;
         }

@@ -18,6 +18,9 @@
         public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
         public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
         public const string DefaultPasswordRegex = "(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z]))^.{8,}$";
+        public const string DefaultLoginDescriptionDe = "Der Benutzername muss mindestens 4, maximal 20 Zeichen lang sein und kann Groß- und Kleinbuchstaben sowie . und _ enthalten.";
+        public const string DefaultLoginDescriptionEn = "The login must be at least 4 but no more than 20 characters long and may contain . and _ as well as uppercase and one lowercase characters.";
+        public const string DefaultLoginRegex = "^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$";
         public const string DefaultScopeKey = "all";
         public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
         public const string DefaultSecondTenantName = "Sendond Tenant";
@@ -27,6 +30,7 @@
         public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
         public const string DefaultTenantName = "Default";
         public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
+        public const string EmailRegex = "^(?(\")(\".+?(?<!\\\\)\"@)|(([0-9a-z]((\\.(?!\\.))|[-!#\\$%&'\\*\\+/=\\?\\^`\\{\\}\\|~\\w])*)(?<=[0-9a-z])@))(?(\\[)(\\[(\\d{1,3}\\.){3}\\d{1,3}\\])|(([0-9a-z][-\\w]*[0-9a-z]*\\.)+[a-z0-9][\\-a-z0-9]{0,22}[a-z0-9]))$";
         public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
         public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
         public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";

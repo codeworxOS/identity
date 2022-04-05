@@ -11,18 +11,23 @@ namespace Codeworx.Identity.Notification
     {
         private readonly ITemplateCompiler _templateCompiler;
         private readonly IMailConnector _connector;
+        private readonly IMailAddressProvider _mailAddressProvider;
         private readonly ConcurrentDictionary<string, Func<object, string>> _notificationTemplateCache;
 
-        public NotificationService(ITemplateCompiler templateCompiler, IMailConnector connector = null)
+        public NotificationService(
+            ITemplateCompiler templateCompiler,
+            IMailConnector connector = null,
+            IMailAddressProvider mailAddressProvider = null)
         {
             _templateCompiler = templateCompiler;
             _connector = connector;
+            _mailAddressProvider = mailAddressProvider;
             _notificationTemplateCache = new ConcurrentDictionary<string, Func<object, string>>();
         }
 
         public Task<bool> IsSupportedAsync()
         {
-            return Task.FromResult(_connector != null);
+            return Task.FromResult(_connector != null && _mailAddressProvider != null);
         }
 
         public async Task SendNotificationAsync(INotification notification)
@@ -39,8 +44,9 @@ namespace Codeworx.Identity.Notification
             }
 
             var content = template(data);
+            var recipient = await _mailAddressProvider.GetMailAdressAsync(notification.Target).ConfigureAwait(false);
 
-            await _connector.SendAsync(notification.Target, notification.Subject, content).ConfigureAwait(false);
+            await _connector.SendAsync(recipient, notification.Subject, content).ConfigureAwait(false);
         }
     }
 }

@@ -160,6 +160,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The username must be a valid email address..
+        /// </summary>
+        internal static string EmailLoginDescription {
+            get {
+                return ResourceManager.GetString("EmailLoginDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The external account is already linked to a different user..
         /// </summary>
         internal static string ExternalAccountAlreadyLinkedError {

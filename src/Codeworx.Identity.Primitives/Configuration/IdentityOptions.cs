@@ -18,12 +18,24 @@ namespace Codeworx.Identity.Configuration
             OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
             OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
             OpenIdWellKnownPrefix = string.Empty;
-            PasswordDescription = new Dictionary<string, string>()
+            Password = new RegexPolicyOption
             {
-                { "en", Constants.DefaultPasswordDescriptionEn },
-                { "de", Constants.DefaultPasswordDescriptionDe },
+                Regex = Constants.DefaultPasswordRegex,
+                Description =
+                {
+                    { "en", Constants.DefaultPasswordDescriptionEn },
+                    { "de", Constants.DefaultPasswordDescriptionDe },
+                },
             };
-            PasswordRegex = Constants.DefaultPasswordRegex;
+            Login = new RegexPolicyOption
+            {
+                Regex = Constants.DefaultLoginRegex,
+                Description =
+                {
+                    { "en", Constants.DefaultLoginDescriptionEn },
+                    { "de", Constants.DefaultLoginDescriptionDe },
+                },
+            };
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
             UserInfoEndpoint = "/userinfo";
@@ -61,9 +73,9 @@ namespace Codeworx.Identity.Configuration
 
         public string OpenIdWellKnownPrefix { get; set; }
 
-        public IDictionary<string, string> PasswordDescription { get; set; }
+        public RegexPolicyOption Password { get; set; }
 
-        public string PasswordRegex { get; set; }
+        public RegexPolicyOption Login { get; set; }
 
         public string SelectTenantEndpoint { get; set; }
 
@@ -95,8 +107,8 @@ namespace Codeworx.Identity.Configuration
             target.OpenIdJsonWebKeyEndpoint = this.OpenIdJsonWebKeyEndpoint;
             target.OpenIdTokenEndpoint = this.OpenIdTokenEndpoint;
             target.OpenIdWellKnownPrefix = this.OpenIdWellKnownPrefix;
-            target.PasswordDescription = this.PasswordDescription;
-            target.PasswordRegex = this.PasswordRegex;
+            target.Password = this.Password != null ? new RegexPolicyOption(this.Password) : null;
+            target.Login = this.Login != null ? new RegexPolicyOption(this.Login) : null;
             target.SelectTenantEndpoint = this.SelectTenantEndpoint;
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.Invitation;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -14,7 +15,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public User User { get; set; }
 
-        public bool CanChangeLogin { get; set; }
+        public InvitationAction Action { get; set; }
 
         [StringLength(2000)]
         public string RedirectUri { get; set; }

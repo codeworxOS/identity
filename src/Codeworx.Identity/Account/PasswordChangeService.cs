@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
@@ -38,6 +37,7 @@ namespace Codeworx.Identity.Account
 
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
+            var languageCode = _stringResources.GetResource(StringResource.LanguageCode);
             string error = null;
             bool hasError = false;
 
@@ -72,9 +72,8 @@ namespace Codeworx.Identity.Account
                     error = _stringResources.GetResource(StringResource.PasswordChangeEqualToLoginError);
                     hasError = true;
                 }
-                else if (!Regex.IsMatch(request.NewPassword, policy.Regex))
+                else if (!policy.IsValid(request.NewPassword, languageCode, out error))
                 {
-                    error = policy.GetDescription(_stringResources);
                     hasError = true;
                 }
             }

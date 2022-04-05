@@ -3,7 +3,7 @@ using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Login
 {
-    public interface IPasswordPolicyProvider
+    public interface ILoginPolicyProvider
     {
         Task<IStringPolicy> GetPolicyAsync();
     }
