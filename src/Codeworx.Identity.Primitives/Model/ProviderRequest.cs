@@ -1,24 +1,23 @@
 ﻿using System.Collections.Generic;
+using Codeworx.Identity.Invitation;
 
 namespace Codeworx.Identity.Model
 {
     public class ProviderRequest
     {
-        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, string invitationCode = null, IUser user = null, bool canChangeLogin = false)
+        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, IUser user = null, string invitationCode = null, InvitationItem invitation = null)
         {
             Type = type;
             ReturnUrl = returnUrl;
             UserName = userName;
             Prompt = prompt;
-            InvitationCode = invitationCode;
             User = user;
+            InvitationCode = invitationCode;
             ProviderErrors = new Dictionary<string, string>();
-            CanChangeLogin = canChangeLogin;
+            Invitation = invitation;
         }
 
-        public bool CanChangeLogin { get; }
-
-        public string InvitationCode { get; }
+        public InvitationItem Invitation { get; }
 
         public string Prompt { get; }
 
@@ -29,6 +28,8 @@ namespace Codeworx.Identity.Model
         public ProviderRequestType Type { get; }
 
         public IUser User { get; }
+
+        public string InvitationCode { get; }
 
         public string UserName { get; }
     }

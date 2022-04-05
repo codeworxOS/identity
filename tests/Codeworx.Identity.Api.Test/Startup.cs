@@ -72,6 +72,7 @@ namespace Codeworx.Identity.Api.Test
 
             services.AddCodeworxIdentity(this.Configuration)
                 .UseDbContext<TestIdentityContext>()
+                .WithLoginAsEmail()
                 .AddSmtpMailConnector();
 
             services.AddAuthentication()

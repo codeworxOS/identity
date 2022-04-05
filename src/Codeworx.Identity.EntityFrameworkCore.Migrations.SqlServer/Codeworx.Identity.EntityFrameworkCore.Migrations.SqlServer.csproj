@@ -5,7 +5,7 @@
 
 	<PropertyGroup Condition="'$(EfVersion)'==''">
 		<!--<TargetFrameworks>netstandard2.0;</TargetFrameworks>-->
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;netcoreapp3.1</TargetFrameworks>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)'=='5'">
 		<TargetFrameworks>netstandard2.1</TargetFrameworks>
@@ -19,6 +19,9 @@
 		<Ef>5</Ef>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netstandard2.0'">
+		<Ef>3</Ef>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)'=='' And '$(TargetFramework)'=='netcoreapp3.1'">
 		<Ef>3</Ef>
 	</PropertyGroup>
 

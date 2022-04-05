@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
-using Codeworx.Identity.Model;
+﻿using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.Mail
 {
     public interface IMailConnector
     {
-        Task SendAsync(IUser recipient, string subject, string content);
+        Task SendAsync(MailAddress recipient, string subject, string content);
     }
 }

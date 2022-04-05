@@ -112,6 +112,8 @@
                     return Translation.ConfirmationMessage;
                 case StringResource.AccountConfirmationPending:
                     return Translation.AccountConfirmationPending;
+                case StringResource.EmailLoginDescription:
+                    return Translation.EmailLoginDescription;
                 default:
                     throw new MissingResourceException(resource);
             }

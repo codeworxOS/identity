@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.Extensions.Logging;
@@ -71,6 +72,11 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
                     break;
                 case ProviderRequestType.Invitation:
+                    if (!request.Invitation.Action.HasFlag(InvitationAction.LinkUnlink))
+                    {
+                        return Task.FromResult<ILoginRegistrationInfo>(null);
+                    }
+
                     redirectUriBuilder.AppendPath("oauth");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);

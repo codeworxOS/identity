@@ -55,5 +55,6 @@
         ConfirmationPageTitle,
         ConfirmationMessage,
         AccountConfirmationPending,
+        EmailLoginDescription,
     }
 }

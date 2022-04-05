@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,12 +52,12 @@ namespace Codeworx.Identity.Test.AspNetCore
         public async Task ForgotPasswordWithExistingUser_SendsMail()
         {
             var mailConnector = new Mock<IMailConnector>();
-            mailConnector.Setup(m => m.SendAsync(It.IsAny<Model.IUser>(), It.IsAny<string>(), It.IsAny<string>()))
+            mailConnector.Setup(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Verifiable();
             var testServer = CreateTestServer(mailConnector.Object);
             var testClient = testServer.CreateClient();
 
-            var existingUserName = Constants.DefaultAdminUserName;
+            var existingUserName = TestConstants.DefaultEmailUserName;
             var forgotPasswordUrl = CreateForgotPasswordUrl(testClient, testServer);
             var response = await testClient.PostAsync(
                 forgotPasswordUrl,
@@ -66,15 +68,15 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             Assert.IsTrue(response.IsSuccessStatusCode);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            mailConnector.Verify(m => m.SendAsync(It.IsAny<Model.IUser>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            mailConnector.Verify(m => m.SendAsync(It.Is<IUser>(user => user.Name == existingUserName), It.IsNotNull<string>(), It.IsNotNull<string>()), Times.Once);
+            mailConnector.Verify(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            mailConnector.Verify(m => m.SendAsync(It.Is<MailAddress>(user => user.Address == existingUserName), It.IsNotNull<string>(), It.IsNotNull<string>()), Times.Once);
         }
 
         [Test]
         public async Task ForgotPasswordWithNonExistingUser_DoesNotSendMail()
         {
             var mailConnector = new Mock<IMailConnector>();
-            mailConnector.Setup(m => m.SendAsync(It.IsAny<Model.IUser>(), It.IsAny<string>(), It.IsAny<string>()))
+            mailConnector.Setup(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Verifiable();
             var testServer = CreateTestServer(mailConnector.Object);
             var testClient = testServer.CreateClient();
@@ -90,7 +92,7 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             Assert.IsTrue(response.IsSuccessStatusCode);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            mailConnector.Verify(m => m.SendAsync(It.IsAny<Model.IUser>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            mailConnector.Verify(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
         }
 
         private TestServer CreateTestServer(IMailConnector mailConnector)

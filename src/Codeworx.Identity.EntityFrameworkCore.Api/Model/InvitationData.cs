@@ -1,4 +1,5 @@
 ﻿using System;
+using Codeworx.Identity.Invitation;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
@@ -8,7 +9,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public bool IsActive { get; set; }
 
-        public bool CanChangeLogin { get; set; }
+        public InvitationAction Action { get; set; }
 
         public bool IsDisabled { get; set; }
     }

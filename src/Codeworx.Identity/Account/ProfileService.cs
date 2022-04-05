@@ -60,7 +60,10 @@ namespace Codeworx.Identity.Account
                 {
                     var processor = (ILoginProcessor)_serviceProvider.GetService(registration.ProcessorType);
                     var info = await processor.GetRegistrationInfoAsync(providerRequest, registration);
-                    infos.Add(info);
+                    if (info != null)
+                    {
+                        infos.Add(info);
+                    }
                 }
             }
 
@@ -81,9 +84,11 @@ namespace Codeworx.Identity.Account
             {
                 var invitationCode = Guid.NewGuid().ToString("N");
 
+                var invatation = new InvitationItem { RedirectUri = uriBuilder.ToString(), UserId = request.Identity.GetUserId(), Action = InvitationAction.LinkUnlink };
+
                 await _invitationCache.AddAsync(
                                     invitationCode,
-                                    new InvitationItem { RedirectUri = uriBuilder.ToString(), UserId = request.Identity.GetUserId() },
+                                    invatation,
                                     TimeSpan.FromMinutes(5));
 
                 foreach (var item in _providers)
@@ -93,8 +98,7 @@ namespace Codeworx.Identity.Account
                         if (configuration.Id == request.ProviderId)
                         {
                             var processor = (ILoginProcessor)_serviceProvider.GetService(configuration.ProcessorType);
-                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, invitationCode: invitationCode), configuration);
-
+                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, invitationCode: invitationCode, invitation: invatation), configuration);
                             if (info.HasRedirectUri(out var redirectUri))
                             {
                                 return new ProfileLinkResponse(redirectUri);

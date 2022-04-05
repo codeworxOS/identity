@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.Account;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
@@ -41,7 +42,7 @@ namespace Codeworx.Identity.Login
                 case ProviderRequestType.Login:
                     return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error, await GetForgotPasswordUrl(request));
                 case ProviderRequestType.Invitation:
-                    return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, request.CanChangeLogin, error);
+                    return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, request.Invitation.Action.HasFlag(InvitationAction.ChangeLogin), request.Invitation.Action.HasFlag(InvitationAction.ChangePassword), error);
                 case ProviderRequestType.Profile:
                     var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
                     return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);

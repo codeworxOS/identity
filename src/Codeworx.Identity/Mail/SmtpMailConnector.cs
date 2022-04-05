@@ -1,23 +1,20 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Mail
 {
     public class SmtpMailConnector : IMailConnector
     {
-        private readonly IMailAddressProvider _mailAddressProvider;
         private readonly SmtpOptions _options;
 
-        public SmtpMailConnector(IOptionsSnapshot<SmtpOptions> options, IMailAddressProvider mailAddressProvider)
+        public SmtpMailConnector(IOptionsSnapshot<SmtpOptions> options)
         {
             _options = options.Value;
-            _mailAddressProvider = mailAddressProvider;
         }
 
-        public async Task SendAsync(IUser recipient, string subject, string content)
+        public async Task SendAsync(MailAddress recipient, string subject, string content)
         {
             using (var client = new SmtpClient(_options.Host, _options.Port))
             {
@@ -34,8 +31,10 @@ namespace Codeworx.Identity.Mail
                 client.TargetName = _options.TargetName;
                 client.EnableSsl = true;
 
-                var recipientMail = await _mailAddressProvider.GetMailAdressAsync(recipient);
-                using (var message = new MailMessage(_options.Sender, recipientMail))
+                var to = recipient;
+                var from = new MailAddress(_options.Sender);
+
+                using (var message = new MailMessage(from, to))
                 {
                     message.Body = content;
                     message.IsBodyHtml = true;

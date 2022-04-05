@@ -105,6 +105,7 @@ namespace Codeworx.Identity.Account
             {
                 RedirectUri = request.ReturnUrl,
                 UserId = user.Identity,
+                Action = Invitation.InvitationAction.ChangePassword,
             };
         }
     }

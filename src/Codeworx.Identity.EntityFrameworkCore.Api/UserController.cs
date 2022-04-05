@@ -273,7 +273,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     .Where(p => p.UserId == user.Id)
                     .Select(p => new InvitationData
                     {
-                        CanChangeLogin = p.CanChangeLogin,
+                        Action = p.Action,
                         IsDisabled = p.IsDisabled,
                         IsActive = !p.IsDisabled && p.ValidUntil > DateTime.UtcNow,
                         ValidUntil = p.ValidUntil,

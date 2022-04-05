@@ -106,10 +106,13 @@ namespace Codeworx.Identity
                         throw new ProcessorNotRegisteredException();
                     }
 
-                    var info = await processor.GetRegistrationInfoAsync(request, externalLogin);
+                    var info = await processor.GetRegistrationInfoAsync(request, externalLogin).ConfigureAwait(false);
 
-                    var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
-                    infos.Add(info);
+                    if (info != null)
+                    {
+                        var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
+                        infos.Add(info);
+                    }
                 }
             }
 

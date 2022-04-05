@@ -9,7 +9,7 @@ namespace Codeworx.Identity.Invitation
         public string UserId { get; set; }
 
         [DataMember(Order = 2)]
-        public bool CanChangeLogin { get; set; }
+        public InvitationAction Action { get; set; }
 
         [DataMember(Order = 5)]
         public string RedirectUri { get; set; }

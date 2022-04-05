@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
@@ -36,6 +37,11 @@ namespace Codeworx.Identity.Login.Windows
                     uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
                     break;
                 case ProviderRequestType.Invitation:
+                    if (!request.Invitation.Action.HasFlag(InvitationAction.LinkUnlink))
+                    {
+                        return Task.FromResult<ILoginRegistrationInfo>(null);
+                    }
+
                     uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
                     uriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
                     uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
