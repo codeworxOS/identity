@@ -124,6 +124,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 public bool ForceChangePassword => _forceChangePassword;
 
+                public bool ConfirmationPending => false;
+
                 public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
                 public int FailedLoginCount { get; set; }

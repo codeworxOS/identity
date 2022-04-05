@@ -4,7 +4,7 @@ namespace Codeworx.Identity.Model
 {
     public class ProviderRequest
     {
-        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, string invitationCode = null, IUser user = null)
+        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, string invitationCode = null, IUser user = null, bool canChangeLogin = false)
         {
             Type = type;
             ReturnUrl = returnUrl;
@@ -13,20 +13,23 @@ namespace Codeworx.Identity.Model
             InvitationCode = invitationCode;
             User = user;
             ProviderErrors = new Dictionary<string, string>();
+            CanChangeLogin = canChangeLogin;
         }
 
-        public Dictionary<string, string> ProviderErrors { get; }
-
-        public ProviderRequestType Type { get; }
-
-        public string ReturnUrl { get; }
-
-        public string UserName { get; }
-
-        public string Prompt { get; }
+        public bool CanChangeLogin { get; }
 
         public string InvitationCode { get; }
 
+        public string Prompt { get; }
+
+        public Dictionary<string, string> ProviderErrors { get; }
+
+        public string ReturnUrl { get; }
+
+        public ProviderRequestType Type { get; }
+
         public IUser User { get; }
+
+        public string UserName { get; }
     }
 }

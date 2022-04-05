@@ -144,7 +144,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         protected virtual IQueryable<User> GetUserQuery()
         {
-            return _context.Set<User>().Where(p => !p.IsDisabled);
+            IQueryable<User> query = _context.Set<User>().Where(p => !p.IsDisabled);
+
+            return query;
         }
 
         private async Task<Data.User> ToUserAsync(User user)
@@ -161,6 +163,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 Identity = user.Id.ToString("N"),
                 DefaultTenantKey = user.DefaultTenantId?.ToString("N"),
                 ForceChangePassword = user.ForceChangePassword,
+                ConfirmationPending = user.ConfirmationPending,
                 Name = user.Name,
                 PasswordHash = user.PasswordHash,
                 LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),

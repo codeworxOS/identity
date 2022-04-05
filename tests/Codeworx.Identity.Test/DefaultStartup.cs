@@ -2,7 +2,6 @@
 using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ namespace Codeworx.Identity.Test
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IOptions<IdentityOptions> options, IAuthenticationSchemeProvider schemeProvider)
+        public virtual void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory, IOptions<IdentityOptions> options, IAuthenticationSchemeProvider schemeProvider)
         {
             app.UseCodeworxIdentity(options.Value);
         }
