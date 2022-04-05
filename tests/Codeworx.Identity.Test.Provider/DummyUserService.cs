@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
@@ -20,6 +21,7 @@ namespace Codeworx.Identity.Test
         {
             _users = new List<IDummyUser>();
             _users.Add(new DummyUser());
+            _users.Add(new DummyEmailUser());
             _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
@@ -89,6 +91,40 @@ namespace Codeworx.Identity.Test
             public string Name => Constants.DefaultAdminUserName;
 
             public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class DummyEmailUser : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = TestConstants.DefaultEmailUserPassword;
+            public bool ConfirmationPending => false;
+
+            public DummyEmailUser()
+            {
+                FailedLoginCount = 0;
+            }
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => TestConstants.DefaultEmailUserId;
+
+            public string Name => TestConstants.DefaultEmailUserName;
+
+            public string PasswordHash => TestConstants.DefaultEmailUserPassword;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 

@@ -7,6 +7,7 @@ using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +57,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var testServer = CreateTestServer(mailConnector.Object);
             var testClient = testServer.CreateClient();
 
-            var existingUserName = Constants.DefaultAdminUserName;
+            var existingUserName = TestConstants.DefaultEmailUserName;
             var forgotPasswordUrl = CreateForgotPasswordUrl(testClient, testServer);
             var response = await testClient.PostAsync(
                 forgotPasswordUrl,

@@ -29,6 +29,7 @@ namespace Codeworx.Identity.Test
         public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddCodeworxIdentity(_configuration)
+                .WithLoginAsEmail()
                 .UseTestSetup();
         }
     }
