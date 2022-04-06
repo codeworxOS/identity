@@ -101,7 +101,7 @@ namespace Codeworx.Identity.Invitation
             catch (UsernameAlreadyExistsException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.UsernameAlreadyTaken);
-                var viewRequest = new InvitationViewRequest(request.Code, request.Provider, errorMessage);
+                var viewRequest = new InvitationViewRequest(request.Code, request.ProviderId, errorMessage);
                 var response = await ShowAsync(viewRequest).ConfigureAwait(false);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
