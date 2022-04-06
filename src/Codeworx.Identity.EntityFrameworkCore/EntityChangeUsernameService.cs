@@ -17,21 +17,24 @@ namespace Codeworx.Identity.EntityFrameworkCore
         private readonly TContext _context;
         private readonly IStringResources _stringResources;
         private readonly IConfirmationService _confirmationService;
+        private readonly IUserService _userService;
         private readonly IdentityOptions _options;
 
         public EntityChangeUsernameService(
             TContext context,
             IStringResources stringResources,
             IConfirmationService confirmationService,
+            IUserService userService,
             IOptionsSnapshot<IdentityOptions> options)
         {
             _context = context;
             _stringResources = stringResources;
             _confirmationService = confirmationService;
+            _userService = userService;
             _options = options.Value;
         }
 
-        public async Task ChangeUsernameAsync(IUser user, string username, CancellationToken token = default)
+        public async Task<IUser> ChangeUsernameAsync(IUser user, string username, CancellationToken token = default)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -47,6 +50,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 userEntity.Name = username;
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
+                user = await _userService.GetUserByIdAsync(user.Identity).ConfigureAwait(false);
+
                 if (_options.EnableAccountConfirmation)
                 {
                     if (_confirmationService == null)
@@ -58,6 +63,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 }
 
                 await transaction.CommitAsync(token).ConfigureAwait(false);
+
+                return user;
             }
         }
     }

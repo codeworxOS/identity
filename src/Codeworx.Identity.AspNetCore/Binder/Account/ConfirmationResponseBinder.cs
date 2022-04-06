@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.View;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -13,18 +13,31 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
     {
         private readonly IConfirmationViewTemplateCache _cache;
         private readonly IContentTypeLookup _lookup;
+        private readonly IIdentityAuthenticationHandler _authenticationHandler;
         private readonly IdentityOptions _options;
 
-        public ConfirmationResponseBinder(IConfirmationViewTemplateCache cache, IContentTypeLookup lookup, IOptionsSnapshot<IdentityOptions> options)
+        public ConfirmationResponseBinder(
+            IConfirmationViewTemplateCache cache,
+            IContentTypeLookup lookup,
+            IIdentityAuthenticationHandler authenticationHandler,
+            IOptionsSnapshot<IdentityOptions> options)
         {
             _cache = cache;
             _lookup = lookup;
+            _authenticationHandler = authenticationHandler;
             _options = options.Value;
         }
 
         public override async Task BindAsync(ConfirmationResponse responseData, HttpResponse response)
         {
-            await response.HttpContext.SignOutAsync(_options.AuthenticationScheme).ConfigureAwait(false);
+            if (responseData.Identity != null)
+            {
+                await _authenticationHandler.SignInAsync(response.HttpContext, new System.Security.Claims.ClaimsPrincipal(responseData.Identity), responseData.RememberMe);
+            }
+            else
+            {
+                await _authenticationHandler.SignOutAsync(response.HttpContext);
+            }
 
             if (_lookup.TryGetContentType(".html", out var contentType))
             {

@@ -8,7 +8,7 @@ namespace Codeworx.Identity.Invitation
         None = 0x00,
         ChangePassword = 0x01,
         ChangeLogin = 0x02,
-        LinkUnlink = 0x03,
+        LinkUnlink = 0x04,
         Initial = ChangePassword | LinkUnlink,
         All = ChangePassword | ChangeLogin | LinkUnlink,
     }

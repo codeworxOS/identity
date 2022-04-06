@@ -51,24 +51,6 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code).ConfigureAwait(false);
                 var user = await _userService.GetUserByIdAsync(invitation.UserId).ConfigureAwait(false);
 
-                if (invitation.Action.HasFlag(InvitationAction.ChangeLogin) && user.Name != request.UserName)
-                {
-                    if (_changeUsernameService == null)
-                    {
-                        throw new NotSupportedException("Missing IChangeUsernameService");
-                    }
-
-                    var loginPolicy = await _loginPolicyProvider.GetPolicyAsync().ConfigureAwait(false);
-                    if (!loginPolicy.IsValid(request.UserName, languageCode, out var error))
-                    {
-                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
-                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
-                    }
-
-                    await _changeUsernameService.ChangeUsernameAsync(user, request.UserName).ConfigureAwait(false);
-                }
-
-                user = await _userService.GetUserByIdAsync(invitation.UserId);
                 if (invitation.Action.HasFlag(InvitationAction.ChangePassword))
                 {
                     var policy = await _passwordPolicyProvider.GetPolicyAsync();
@@ -93,6 +75,25 @@ namespace Codeworx.Identity.Invitation
 
                     await _changePasswordService.SetPasswordAsync(user, request.Password).ConfigureAwait(false);
                 }
+
+                if (invitation.Action.HasFlag(InvitationAction.ChangeLogin) && user.Name != request.UserName)
+                {
+                    if (_changeUsernameService == null)
+                    {
+                        throw new NotSupportedException("Missing IChangeUsernameService");
+                    }
+
+                    var loginPolicy = await _loginPolicyProvider.GetPolicyAsync().ConfigureAwait(false);
+                    if (!loginPolicy.IsValid(request.UserName, languageCode, out var error))
+                    {
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
+                    }
+
+                    user = await _changeUsernameService.ChangeUsernameAsync(user, request.UserName).ConfigureAwait(false);
+                }
+
+                user = await _userService.GetUserByIdAsync(user.Identity).ConfigureAwait(false);
 
                 await _service.RedeemInvitationAsync(request.Code).ConfigureAwait(false);
                 var identity = await _identityService.GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
