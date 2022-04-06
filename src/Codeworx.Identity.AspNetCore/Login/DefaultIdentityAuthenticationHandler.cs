@@ -42,11 +42,14 @@ namespace Codeworx.Identity.AspNetCore.Login
 
                 if (result.Principal.HasClaim(Constants.Claims.ConfirmationPending, "true"))
                 {
-                    var userService = context.RequestServices.GetService<IUserService>();
-                    var user = await userService.GetUserByIdentityAsync((ClaimsIdentity)result.Principal.Identity).ConfigureAwait(false);
-                    var stringResources = context.RequestServices.GetService<IStringResources>();
+                    if (!context.Request.Path.StartsWithSegments(_options.AccountEndpoint + "/confirm"))
+                    {
+                        var userService = context.RequestServices.GetService<IUserService>();
+                        var user = await userService.GetUserByIdentityAsync((ClaimsIdentity)result.Principal.Identity).ConfigureAwait(false);
+                        var stringResources = context.RequestServices.GetService<IStringResources>();
 
-                    throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
+                        throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
+                    }
                 }
             }
 

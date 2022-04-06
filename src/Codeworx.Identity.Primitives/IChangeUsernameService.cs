@@ -6,6 +6,6 @@ namespace Codeworx.Identity
 {
     public interface IChangeUsernameService
     {
-        Task ChangeUsernameAsync(IUser user, string username, CancellationToken token = default);
+        Task<IUser> ChangeUsernameAsync(IUser user, string username, CancellationToken token = default);
     }
 }
