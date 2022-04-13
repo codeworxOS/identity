@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.OpenId.Model;
+﻿using System.Security.Cryptography;
+using Codeworx.Identity.OpenId.Model;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Codeworx.Identity.Cryptography
@@ -9,6 +10,6 @@ namespace Codeworx.Identity.Cryptography
 
         KeyParameter SerializeKeyToJsonWebKey(SecurityKey key, string keyId);
 
-        string GetAlgorithm(SecurityKey key);
+        string GetAlgorithm(SecurityKey key, HashAlgorithm hashAlgorithm);
     }
 }

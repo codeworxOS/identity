@@ -37,6 +37,7 @@ namespace Codeworx.Identity.Configuration
                     { "de", Constants.DefaultLoginDescriptionDe },
                 },
             };
+            Signing = new SigningOptions();
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
             UserInfoEndpoint = "/userinfo";
@@ -80,6 +81,8 @@ namespace Codeworx.Identity.Configuration
 
         public RegexPolicyOption Login { get; set; }
 
+        public SigningOptions Signing { get; set; }
+
         public string SelectTenantEndpoint { get; set; }
 
         public List<string> Styles { get; }
@@ -115,6 +118,7 @@ namespace Codeworx.Identity.Configuration
             target.SelectTenantEndpoint = this.SelectTenantEndpoint;
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;
+            target.Signing = new SigningOptions(this.Signing);
 
             target.Styles.Clear();
 
