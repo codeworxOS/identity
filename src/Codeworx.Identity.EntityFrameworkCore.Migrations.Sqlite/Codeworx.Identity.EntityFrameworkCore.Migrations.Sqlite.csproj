@@ -37,6 +37,10 @@
 	<ItemGroup>
 		<PackageReference Remove="StyleCop.Analyzers" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.0.7" />
+	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
 	</ItemGroup>

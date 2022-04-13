@@ -6,9 +6,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "CanChangeLogin",
-                table: "UserInvitation");
+            migrationBuilder.Sql("ALTER TABLE UserInvitation DROP COLUMN CanChangeLogin");
 
             migrationBuilder.AddColumn<int>(
                 name: "Action",
@@ -19,9 +17,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Action",
-                table: "UserInvitation");
+            migrationBuilder.Sql("ALTER TABLE UserInvitation DROP COLUMN Action");
 
             migrationBuilder.AddColumn<bool>(
                 name: "CanChangeLogin",

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -14,6 +15,7 @@ namespace Codeworx.Identity.Cryptography.Json
         private readonly JwtConfiguration _configuration;
         private readonly JsonWebTokenHandler _handler;
         private readonly SecurityKey _signingKey;
+        private readonly HashAlgorithm _hashAlgorithm;
         private TimeSpan _expiration;
         private IDictionary<string, object> _payload;
 
@@ -21,6 +23,7 @@ namespace Codeworx.Identity.Cryptography.Json
         {
             _configuration = configuration;
             _signingKey = defaultSigningKeyProvider.GetKey();
+            _hashAlgorithm = defaultSigningKeyProvider.GetHashAlgorithm();
 
             _handler = new JsonWebTokenHandler();
         }
@@ -137,7 +140,7 @@ namespace Codeworx.Identity.Cryptography.Json
                     break;
 
                 case RsaSecurityKey rsa:
-                    algorithm = $"RS256";
+                    algorithm = $"RS{_hashAlgorithm.HashSize}";
                     break;
 
                 default:
