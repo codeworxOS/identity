@@ -33,7 +33,8 @@ namespace Codeworx.Identity.Api.Test
         {
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
 
-            services.AddControllers()
+            IMvcBuilder mvcBuilder = services
+                .AddControllers()
                 .AddApplicationPart(typeof(TenantController).Assembly)
                 .AddNewtonsoftJson();
 
@@ -55,6 +56,11 @@ namespace Codeworx.Identity.Api.Test
                         },
                     },
                 });
+
+                document.PostProcess = doc =>
+                {
+                    var test = doc.OpenApi;
+                };
 
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
