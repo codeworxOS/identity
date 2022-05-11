@@ -8,7 +8,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 {
     public class AuthorizationErrorResponseBinder : ResponseBinder<AuthorizationErrorResponse>
     {
-        public override async Task BindAsync(AuthorizationErrorResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(AuthorizationErrorResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (response == null)
             {
@@ -22,8 +22,15 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
             if (string.IsNullOrWhiteSpace(responseData.RedirectUri))
             {
-                await response.WriteAsync($"{responseData.Error}\n{responseData.ErrorDescription}")
-                             .ConfigureAwait(false);
+                if (headerOnly)
+                {
+                    response.StatusCode = StatusCodes.Status200OK;
+                }
+                else
+                {
+                    await response.WriteAsync($"{responseData.Error}\n{responseData.ErrorDescription}")
+                                 .ConfigureAwait(false);
+                }
             }
             else
             {

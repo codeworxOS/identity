@@ -7,7 +7,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 {
     public class OAuthRedirectResponseBinder : ResponseBinder<OAuthRedirectResponse>
     {
-        public override Task BindAsync(OAuthRedirectResponse responseData, HttpResponse response)
+        protected override Task BindAsync(OAuthRedirectResponse responseData, HttpResponse response, bool headerOnly)
         {
             var uriBuilder = new UriBuilder(responseData.AuthorizationEndpoint);
             uriBuilder.AppendQueryParameter(Constants.OAuth.ResponseTypeName, Constants.OAuth.ResponseType.Code);

@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
 
             if (request.Query.TryGetValue(Constants.OAuth.ErrorDescriptionName, out var errorDescriptionValues))
             {
-                errorDescription = errorValues;
+                errorDescription = errorDescriptionValues;
             }
 
             return Task.FromResult(new RedirectRequest(error, errorDescription));

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -21,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
             if (request.Path.StartsWithSegments(_options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue)
             {
                 var code = remaining.Value.TrimStart('/');
-                if (HttpMethods.IsGet(request.Method))
+                if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
                 {
                     return Task.FromResult(new InvitationViewRequest(code));
                 }
@@ -36,7 +36,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
                 }
             }
 
-            throw new NotSupportedException("Invalid invitation request");
+            throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
         }
     }
 }

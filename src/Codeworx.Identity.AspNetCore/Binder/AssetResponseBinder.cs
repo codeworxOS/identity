@@ -14,19 +14,22 @@ namespace Codeworx.Identity.AspNetCore.Binder
             this._contentTypeLookup = contentTypeLookup;
         }
 
-        public override async Task BindAsync(AssetResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(AssetResponse responseData, HttpResponse response, bool headerOnly)
         {
-            string contentType;
-            if (_contentTypeLookup.TryGetContentType(responseData.Path, out contentType))
+            if (_contentTypeLookup.TryGetContentType(responseData.Path, out var contentType))
             {
                 response.ContentType = contentType;
             }
 
-            using (var stream = await responseData.GetAssetStream())
+            response.StatusCode = StatusCodes.Status200OK;
+
+            if (!headerOnly)
             {
-                response.ContentLength = stream.Length;
-                response.StatusCode = StatusCodes.Status200OK;
-                await stream.CopyToAsync(response.Body);
+                using (var stream = await responseData.GetAssetStream())
+                {
+                    response.ContentLength = stream.Length;
+                    await stream.CopyToAsync(response.Body);
+                }
             }
         }
     }

@@ -52,7 +52,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, providerId, providerError);
             }
 
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 return new LoginRequest(returnUrl, prompt, providerId, providerError);
             }
