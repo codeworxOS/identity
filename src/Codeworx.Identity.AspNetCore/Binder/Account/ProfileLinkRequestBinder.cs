@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             string providerId = null;
             LinkDirection direction = LinkDirection.Link;
 
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 var authenticationResult = await request.HttpContext.AuthenticateAsync();
 

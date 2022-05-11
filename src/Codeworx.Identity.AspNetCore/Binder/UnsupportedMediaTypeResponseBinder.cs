@@ -6,7 +6,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class UnsupportedMediaTypeResponseBinder : ResponseBinder<UnsupportedMediaTypeResponse>
     {
-        public override Task BindAsync(UnsupportedMediaTypeResponse responseData, HttpResponse response)
+        protected override Task BindAsync(UnsupportedMediaTypeResponse responseData, HttpResponse response, bool headerOnly)
         {
             response.StatusCode = StatusCodes.Status415UnsupportedMediaType;
 

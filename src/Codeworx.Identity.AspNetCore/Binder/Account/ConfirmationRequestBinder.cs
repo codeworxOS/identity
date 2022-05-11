@@ -4,7 +4,6 @@ using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -25,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
 
         public async Task<ConfirmationRequest> BindAsync(HttpRequest request)
         {
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 var authenticationResult = await _authenticationHandler.AuthenticateAsync(request.HttpContext).ConfigureAwait(false);
                 ClaimsIdentity identity = null;

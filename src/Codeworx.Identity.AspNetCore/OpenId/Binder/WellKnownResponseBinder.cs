@@ -9,7 +9,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId.Binder
 {
     public class WellKnownResponseBinder : ResponseBinder<WellKnownResponse>
     {
-        public override async Task BindAsync(WellKnownResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(WellKnownResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (responseData == null)
             {
@@ -23,10 +23,17 @@ namespace Codeworx.Identity.AspNetCore.OpenId.Binder
 
             response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
 
-            var responseString = JsonConvert.SerializeObject(responseData);
+            if (headerOnly)
+            {
+                response.StatusCode = StatusCodes.Status200OK;
+            }
+            else
+            {
+                var responseString = JsonConvert.SerializeObject(responseData);
 
-            await response.WriteAsync(responseString)
-                         .ConfigureAwait(false);
+                await response.WriteAsync(responseString)
+                             .ConfigureAwait(false);
+            }
         }
     }
 }

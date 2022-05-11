@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
             _baseUriAccessor = baseUriAccessor;
         }
 
-        public override Task BindAsync(SelectTenantSuccessResponse responseData, HttpResponse response)
+        protected override Task BindAsync(SelectTenantSuccessResponse responseData, HttpResponse response, bool headerOnly)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             switch (responseData.RequestPath)

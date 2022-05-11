@@ -28,7 +28,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             _options = options.Value;
         }
 
-        public override async Task BindAsync(ConfirmationResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(ConfirmationResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (responseData.Identity != null)
             {
@@ -44,10 +44,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 response.ContentType = contentType;
             }
 
-            var html = await _cache.GetConfirmationView(response.GetViewContextData(responseData)).ConfigureAwait(false);
-
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(html);
+
+            if (!headerOnly)
+            {
+                var html = await _cache.GetConfirmationView(response.GetViewContextData(responseData)).ConfigureAwait(false);
+                await response.WriteAsync(html);
+            }
         }
     }
 }

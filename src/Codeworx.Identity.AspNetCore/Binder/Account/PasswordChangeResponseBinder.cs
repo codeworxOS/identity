@@ -23,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             _handler = handler;
         }
 
-        public override async Task BindAsync(PasswordChangeResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(PasswordChangeResponse responseData, HttpResponse response, bool headerOnly)
         {
             var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             builder.AppendPath(_options.AccountEndpoint);

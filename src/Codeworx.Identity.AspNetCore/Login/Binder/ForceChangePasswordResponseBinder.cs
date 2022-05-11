@@ -19,7 +19,7 @@ namespace Codeworx.Identity.AspNetCore.Login.Binder
             _baseUriAccessor = baseUriAccessor;
         }
 
-        public override Task BindAsync(ForceChangePasswordResponse responseData, HttpResponse response)
+        protected override Task BindAsync(ForceChangePasswordResponse responseData, HttpResponse response, bool headerOnly)
         {
             var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             builder.AppendPath(_options.AccountEndpoint);

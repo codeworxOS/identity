@@ -6,7 +6,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 {
     public class LoggedinResponseBinder : ResponseBinder<LoggedinResponse>
     {
-        public override Task BindAsync(LoggedinResponse responseData, HttpResponse response)
+        protected override Task BindAsync(LoggedinResponse responseData, HttpResponse response, bool headerOnly)
         {
             response.Redirect(responseData.ReturnUrl);
 

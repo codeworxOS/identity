@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
             _baseUriAccessor = baseUriAccessor;
         }
 
-        public override Task BindAsync(LoginRedirectResponse responseData, HttpResponse response)
+        protected override Task BindAsync(LoginRedirectResponse responseData, HttpResponse response, bool headerOnly)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath(_options.AccountEndpoint);

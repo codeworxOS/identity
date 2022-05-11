@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             _lookup = lookup;
         }
 
-        public override Task BindAsync(RegistrationInfoResponse responseData, HttpResponse response)
+        protected override Task BindAsync(RegistrationInfoResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (_lookup.TryGetContentType(Constants.JsonExtension, out string contentType))
             {
@@ -26,13 +26,16 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
             response.StatusCode = StatusCodes.Status200OK;
 
-            var setting = new JsonSerializerSettings();
-            setting.ContractResolver = new CamelCasePropertyNamesContractResolver();
-            var ser = JsonSerializer.Create(setting);
-
-            using (var sw = new StreamWriter(response.Body))
+            if (!headerOnly)
             {
-                ser.Serialize(sw, responseData.Groups);
+                var setting = new JsonSerializerSettings();
+                setting.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                var ser = JsonSerializer.Create(setting);
+
+                using (var sw = new StreamWriter(response.Body))
+                {
+                    ser.Serialize(sw, responseData.Groups);
+                }
             }
 
             return Task.CompletedTask;

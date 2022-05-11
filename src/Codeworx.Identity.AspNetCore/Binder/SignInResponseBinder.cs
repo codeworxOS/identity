@@ -21,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             _handler = handler;
         }
 
-        public override async Task BindAsync(SignInResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(SignInResponse responseData, HttpResponse response, bool headerOnly)
         {
             var principal = new ClaimsPrincipal(responseData.Identity);
             var returnUrl = responseData.ReturnUrl;

@@ -136,7 +136,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 null,
                 config.AuthorizationParameters);
 
-            var binder = new OAuthRedirectResponseBinder();
+            IResponseBinder<OAuthRedirectResponse> binder = new OAuthRedirectResponseBinder();
             var context = new DefaultHttpContext();
             await binder.BindAsync(response, context.Response);
 

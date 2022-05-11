@@ -17,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             _lookup = lookup;
         }
 
-        public override Task BindAsync(ProfileLinkResponse responseData, HttpResponse response)
+        protected override Task BindAsync(ProfileLinkResponse responseData, HttpResponse response, bool headerOnly)
         {
             response.Redirect(responseData.RedirectUrl);
             response.GetTypedHeaders().CacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };

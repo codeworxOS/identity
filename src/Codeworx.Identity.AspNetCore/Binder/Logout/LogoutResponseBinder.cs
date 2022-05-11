@@ -14,7 +14,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Logout
             _handler = handler;
         }
 
-        public override async Task BindAsync(LogoutResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(LogoutResponse responseData, HttpResponse response, bool headerOnly)
         {
             await _handler.SignOutAsync(response.HttpContext);
             response.Redirect(responseData.ReturnUrl);

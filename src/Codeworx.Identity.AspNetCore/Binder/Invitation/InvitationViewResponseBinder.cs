@@ -18,7 +18,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(InvitationViewResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(InvitationViewResponse responseData, HttpResponse response, bool headerOnly)
         {
             var registrations = responseData.Groups.SelectMany(p => p.Registrations).ToList();
             if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri))
@@ -32,10 +32,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
                 response.ContentType = contentType;
             }
 
-            var responseBody = await _templateCache.GetInvitationView(response.GetViewContextData(responseData));
-
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(responseBody);
+
+            if (!headerOnly)
+            {
+                var responseBody = await _templateCache.GetInvitationView(response.GetViewContextData(responseData));
+                await response.WriteAsync(responseBody);
+            }
         }
     }
 }

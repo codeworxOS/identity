@@ -18,7 +18,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             ClaimsIdentity identity = null;
             string loginProviderId = null, loginProviderError = null;
 
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 var authenticationResult = await request.HttpContext.AuthenticateAsync();
 
