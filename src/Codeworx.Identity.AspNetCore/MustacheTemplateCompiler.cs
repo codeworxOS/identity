@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
 using HandlebarsDotNet;
+using HandlebarsDotNet.Helpers;
+using HandlebarsDotNet.PathStructure;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
@@ -24,7 +26,7 @@ namespace Codeworx.Identity.AspNetCore
 
             foreach (var helper in helpers)
             {
-                _handlebars.RegisterHelper(helper.Name, helper.Process);
+                _handlebars.RegisterHelper(new HelperDescriptor(helper));
             }
 
             foreach (var partial in partialTemplates)
@@ -42,7 +44,7 @@ namespace Codeworx.Identity.AspNetCore
         {
             var compiledTemplate = _handlebars.Compile(template);
 
-            return compiledTemplate;
+            return p => compiledTemplate(p);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -66,6 +68,30 @@ namespace Codeworx.Identity.AspNetCore
         private static string GetFavicon(string favicon)
         {
             return $"<link rel=\"icon\" href=\"{favicon}\">";
+        }
+
+        private class HelperDescriptor : IHelperDescriptor<HelperOptions>
+        {
+            private ITemplateHelper _helper;
+
+            public HelperDescriptor(ITemplateHelper helper)
+            {
+                _helper = helper;
+            }
+
+            public PathInfo Name => _helper.Name;
+
+            public object Invoke(in HelperOptions options, in Context context, in Arguments arguments)
+            {
+                return this.ReturnInvoke(options, context, arguments);
+            }
+
+            public void Invoke(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments arguments)
+            {
+                var args = arguments.ToArray();
+
+                _helper.Process(output.CreateWrapper(), context, args);
+            }
         }
     }
 

@@ -39,4 +39,14 @@ New-NugetPackages `
     -OutputPath "..\dist\nuget" `
     -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=5;IdentityCoreVersion=$($coreVersion.NugetVersion)"
 
+    New-NugetPackages `
+    -Projects $projects `
+    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
+    -VersionFilePath "..\version_ef6.json" `
+    -DoNotCleanOutput `
+    -OutputPath "..\dist\nuget" `
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=6;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
+
 Write-Host "##vso[build.updatebuildnumber]$($coreVersion.NugetVersion)"
