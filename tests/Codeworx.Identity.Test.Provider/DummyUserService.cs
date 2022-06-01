@@ -118,6 +118,8 @@ namespace Codeworx.Identity.Test
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
             public bool ForceChangePassword => true;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
         }
     }
 }

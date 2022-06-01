@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1;</TargetFrameworks>
+    <TargetFrameworks>net6;net5;netcoreapp3.1;</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NSwag.AspNetCore" Version="13.11.3" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.16.0" />
   </ItemGroup>
 
   <ItemGroup>

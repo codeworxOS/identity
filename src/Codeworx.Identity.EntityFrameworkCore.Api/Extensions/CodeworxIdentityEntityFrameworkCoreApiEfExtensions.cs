@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using System.Text.Json;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
+#if !NET6_0_OR_GREATER
 using Microsoft.EntityFrameworkCore;
+#endif
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Extensions
@@ -13,7 +15,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Extensions
         {
             foreach (var item in entry.Metadata.GetProperties().Where(p => p.IsShadowProperty()))
             {
+#if NET6_0_OR_GREATER
+                if (item == entry.Metadata.FindDiscriminatorProperty())
+#else
                 if (item == entry.Metadata.GetDiscriminatorProperty())
+#endif
                 {
                     continue;
                 }
@@ -28,7 +34,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Extensions
         {
             foreach (var item in entry.Metadata.GetProperties().Where(p => p.IsShadowProperty()))
             {
+#if NET6_0_OR_GREATER
+                if (item == entry.Metadata.FindDiscriminatorProperty())
+#else
                 if (item == entry.Metadata.GetDiscriminatorProperty())
+#endif
                 {
                     continue;
                 }

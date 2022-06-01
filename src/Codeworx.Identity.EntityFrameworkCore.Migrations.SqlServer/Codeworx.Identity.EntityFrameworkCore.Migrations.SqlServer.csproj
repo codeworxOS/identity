@@ -1,24 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup Condition="'$(EfVersion)' == '' Or '$(EfVersion)' == '5'">
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <EfVersion>5</EfVersion>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net6</TargetFrameworks>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(EfVersion)' == '6'">
+		<TargetFrameworks>net6</TargetFrameworks>
+	</PropertyGroup>
+	
+  <PropertyGroup Condition="'$(EfVersion)' == '5'">
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(EfVersion)' == '3' Or '$(EfVersion)' == '2'">
-    <TargetFramework>netstandard2.0</TargetFramework>
+  <PropertyGroup Condition="'$(EfVersion)' == '3'">
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '5'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<EfVersion>3</EfVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
+		<EfVersion>5</EfVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net6'">
+		<EfVersion>6</EfVersion>
+	</PropertyGroup>
+
+	
+	
+	<ItemGroup Condition="'$(EfVersion)' == '6'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(EfVersion)' == '5'">
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(EfVersion)' == '3'">
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(EfVersion)' == '2'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

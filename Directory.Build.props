@@ -1,30 +1,29 @@
 <Project>
-  <PropertyGroup>
-    <Company>codeworx gmbh</Company>
-    <Copyright>copyright © codeworx 2019</Copyright>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <DebugType>portable</DebugType>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Company>codeworx gmbh</Company>
+		<Copyright>copyright © codeworx 2019</Copyright>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<DebugType>portable</DebugType>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\global\stylecop.json" Link="stylecop.json" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\global\stylecop.json" Link="stylecop.json" />
+		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164">
+			<PrivateAssets>All</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\global\StyleCop.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
+	<PropertyGroup>
+		<CodeAnalysisRuleSet>..\..\global\StyleCop.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
 </Project>
