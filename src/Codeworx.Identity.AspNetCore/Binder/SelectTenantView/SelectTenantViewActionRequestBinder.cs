@@ -1,32 +1,30 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
+using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Response;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.SelectTenantView
 {
     public class SelectTenantViewActionRequestBinder : IRequestBinder<SelectTenantViewActionRequest>
     {
         private readonly IRequestBinder<AuthorizationRequest> _authorizationRequestBinder;
-        private readonly IdentityOptions _options;
+        private readonly IIdentityAuthenticationHandler _handler;
 
         public SelectTenantViewActionRequestBinder(
             IRequestBinder<AuthorizationRequest> authorizationRequestBinder,
-            IOptions<IdentityOptions> options)
+            IIdentityAuthenticationHandler handler)
         {
             _authorizationRequestBinder = authorizationRequestBinder;
-            _options = options.Value;
+            _handler = handler;
         }
 
         public async Task<SelectTenantViewActionRequest> BindAsync(HttpRequest request)
         {
-            var authenticationResult = await request.HttpContext.AuthenticateAsync(_options.AuthenticationScheme);
+            var authenticationResult = await _handler.AuthenticateAsync(request.HttpContext);
 
             if (!authenticationResult.Succeeded)
             {

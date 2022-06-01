@@ -1,5 +1,4 @@
-﻿using System;
-using Codeworx.Identity.Cache;
+﻿using Codeworx.Identity.Cache;
 
 namespace Codeworx.Identity.OAuth.Token
 {
@@ -7,10 +6,6 @@ namespace Codeworx.Identity.OAuth.Token
     {
         string RefreshToken { get; }
 
-        string ClientSecret { get; }
-
         IRefreshTokenCacheItem CacheItem { get; }
-
-        TimeSpan TokenExpiration { get; }
     }
 }

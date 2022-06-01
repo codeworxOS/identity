@@ -93,7 +93,7 @@ namespace Codeworx.Identity
                 ExternalTokenData data = null;
                 try
                 {
-                    data = await externalTokenCache.GetAsync(claim.Value, _options.CookieExpiration).ConfigureAwait(false);
+                    data = await externalTokenCache.GetAsync(claim.Value).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -159,7 +159,7 @@ namespace Codeworx.Identity
                         {
                             try
                             {
-                                await externalTokenCache.UpdateAsync(claim.Value, current, _options.CookieExpiration).ConfigureAwait(false);
+                                await externalTokenCache.UpdateAsync(claim.Value, current).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {

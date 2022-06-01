@@ -65,5 +65,12 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Register<IClientService, TImplementation>(lifetime, factory);
             return builder;
         }
+
+        public static IIdentityServiceBuilder FailedLogin<TImplementation>(this IIdentityServiceBuilder builder, ServiceLifetime lifetime = ServiceLifetime.Scoped, Func<IServiceProvider, TImplementation> factory = null)
+            where TImplementation : class, IFailedLoginService
+        {
+            builder.Register<IFailedLoginService, TImplementation>(lifetime, factory);
+            return builder;
+        }
     }
 }

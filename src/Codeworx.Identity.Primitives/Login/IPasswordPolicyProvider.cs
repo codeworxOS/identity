@@ -5,6 +5,6 @@ namespace Codeworx.Identity.Login
 {
     public interface IPasswordPolicyProvider
     {
-        Task<PasswordPolicy> GetPolicyAsync();
+        Task<IStringPolicy> GetPolicyAsync();
     }
 }

@@ -13,7 +13,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -21,23 +21,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("EndpointConfiguration");
+                    b.Property<string>("EndpointConfiguration")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EndpointType")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<Guid?>("FilterId");
+                    b.Property<Guid?>("FilterId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsDisabled");
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
-                    b.Property<int>("SortOrder");
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -48,12 +55,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderRightHolder", b =>
                 {
-                    b.Property<Guid>("RightHolderId");
+                    b.Property<Guid>("RightHolderId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProviderId");
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ExternalIdentifier")
                         .IsRequired()
+                        .HasColumnType("nvarchar(4000)")
                         .HasMaxLength(4000);
 
                     b.HasKey("RightHolderId", "ProviderId");
@@ -70,15 +80,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AvailableLicense", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LicenseId");
+                    b.Property<Guid>("LicenseId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
-                    b.Property<Guid?>("TenantId");
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ValidUntil");
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -92,12 +107,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Target");
+                    b.Property<int>("Target")
+                        .HasColumnType("int");
 
                     b.Property<string>("TypeKey")
                         .IsRequired()
+                        .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
                     b.HasKey("Id");
@@ -108,15 +126,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimValue", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClaimTypeId");
+                    b.Property<Guid>("ClaimTypeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TenantId");
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Value")
+                        .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
 
                     b.HasKey("Id");
@@ -133,16 +156,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ClientSecretHash")
+                        .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
-                    b.Property<int>("ClientType");
+                    b.Property<int>("ClientType")
+                        .HasColumnType("int");
 
-                    b.Property<TimeSpan>("TokenExpiration");
+                    b.Property<TimeSpan>("TokenExpiration")
+                        .HasColumnType("time");
 
-                    b.Property<Guid?>("UserId");
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -153,9 +181,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientLicense", b =>
                 {
-                    b.Property<Guid>("ClientId");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("LicenseId");
+                    b.Property<Guid>("LicenseId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ClientId", "LicenseId");
 
@@ -167,17 +197,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IdentityCache", b =>
                 {
                     b.Property<string>("Key")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(2000)")
                         .HasMaxLength(2000);
 
-                    b.Property<int>("CacheType");
+                    b.Property<int>("CacheType")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("Disabled");
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("ValidUntil");
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Value")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Key");
 
@@ -187,10 +221,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.License", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("Id");
@@ -200,9 +236,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.LicenseAssignment", b =>
                 {
-                    b.Property<Guid>("LicenseId");
+                    b.Property<Guid>("LicenseId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LicenseId", "UserId");
 
@@ -214,13 +252,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
-                    b.Property<byte>("Type");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
@@ -232,15 +273,22 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(500)")
                         .HasMaxLength(500);
 
-                    b.Property<byte>("Type");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasName("IX_RightHolder_Name_Unique");
 
                     b.ToTable("RightHolder");
 
@@ -249,9 +297,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>
                 {
-                    b.Property<Guid>("RightHolderId");
+                    b.Property<Guid>("RightHolderId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("GroupId");
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("RightHolderId", "GroupId");
 
@@ -263,13 +313,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Scope", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ScopeKey")
                         .IsRequired()
+                        .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
-                    b.Property<byte>("Type");
+                    b.Property<byte>("Type")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
@@ -280,9 +333,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeAssignment", b =>
                 {
-                    b.Property<Guid>("ClientId");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ScopeId");
+                    b.Property<Guid>("ScopeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ClientId", "ScopeId");
 
@@ -293,9 +348,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
                 {
-                    b.Property<Guid>("ScopeId");
+                    b.Property<Guid>("ScopeId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClaimTypeId");
+                    b.Property<Guid>("ClaimTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ScopeId", "ClaimTypeId");
 
@@ -306,9 +363,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeHierarchy", b =>
                 {
-                    b.Property<Guid>("ChildId");
+                    b.Property<Guid>("ChildId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ParentId");
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ChildId");
 
@@ -320,10 +379,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.HasKey("Id");
@@ -333,9 +394,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
                 {
-                    b.Property<Guid>("RightHolderId");
+                    b.Property<Guid>("RightHolderId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TenantId");
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("RightHolderId", "TenantId");
 
@@ -347,19 +410,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
                 {
                     b.Property<string>("InvitationCode")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(4000)")
                         .HasMaxLength(4000);
 
-                    b.Property<bool>("CanChangeLogin");
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsDisabled");
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
 
                     b.Property<string>("RedirectUri")
+                        .HasColumnType("nvarchar(2000)")
                         .HasMaxLength(2000);
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ValidUntil");
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("InvitationCode");
 
@@ -368,22 +436,44 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.ToTable("UserInvitation");
                 });
 
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("UserId", "PasswordHash");
+
+                    b.ToTable("UserPasswordHistory");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
                 {
                     b.Property<string>("Token")
-                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(4000)")
                         .HasMaxLength(4000);
 
-                    b.Property<Guid>("ClientId");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("IdentityData")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDisabled");
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
 
-                    b.Property<Guid>("UserId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ValidUntil");
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Token");
 
@@ -397,11 +487,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ClientId");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Url");
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -414,7 +507,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
 
-                    b.Property<string>("DomainName");
+                    b.Property<string>("DomainName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue((byte)1);
                 });
@@ -424,10 +518,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter");
 
                     b.Property<byte[]>("RangeEnd")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("RangeStart")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
 
                     b.HasDiscriminator().HasValue((byte)2);
                 });
@@ -443,21 +539,36 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<string>("ConfirmationCode")
+                        .HasColumnType("nvarchar(512)")
+                        .HasMaxLength(512);
 
-                    b.Property<Guid?>("DefaultTenantId");
+                    b.Property<bool>("ConfirmationPending")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("FailedLoginCount");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<bool>("ForceChangePassword");
+                    b.Property<Guid?>("DefaultTenantId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("IsDisabled");
+                    b.Property<int>("FailedLoginCount")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime?>("LastFailedLoginAttempt");
+                    b.Property<bool>("ForceChangePassword")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("PasswordChanged");
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastFailedLoginAttempt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PasswordChanged")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(512)")
                         .HasMaxLength(512);
 
                     b.HasIndex("DefaultTenantId");
@@ -469,11 +580,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.Scope");
 
-                    b.Property<Guid>("ClientId");
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("ClientId");
-
-                    b.ToTable("ClientScope");
 
                     b.HasDiscriminator().HasValue((byte)2);
                 });
@@ -491,12 +601,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", "Provider")
                         .WithMany("RightHolders")
                         .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", "RightHolder")
                         .WithMany("Providers")
                         .HasForeignKey("RightHolderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AvailableLicense", b =>
@@ -504,7 +616,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.License", "License")
                         .WithMany()
                         .HasForeignKey("LicenseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
                         .WithMany()
@@ -517,7 +630,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", "ClaimType")
                         .WithMany()
                         .HasForeignKey("ClaimTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
                         .WithMany()
@@ -543,12 +657,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.License", "License")
                         .WithMany("Clients")
                         .HasForeignKey("LicenseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.LicenseAssignment", b =>
@@ -556,12 +672,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.License", "License")
                         .WithMany()
                         .HasForeignKey("LicenseId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>
@@ -569,12 +687,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Group", "Group")
                         .WithMany("Members")
                         .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", "RightHolder")
                         .WithMany("MemberOf")
                         .HasForeignKey("RightHolderId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeAssignment", b =>
@@ -582,12 +702,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany("ScopeAssignments")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Scope", "Scope")
-                        .WithMany()
+                        .WithMany("ScopeAssignments")
                         .HasForeignKey("ScopeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
@@ -595,12 +717,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", "ClaimType")
                         .WithMany()
                         .HasForeignKey("ClaimTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Scope", "Scope")
                         .WithMany("Claims")
                         .HasForeignKey("ScopeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeHierarchy", b =>
@@ -608,12 +732,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Scope", "Child")
                         .WithOne("Parent")
                         .HasForeignKey("Codeworx.Identity.EntityFrameworkCore.Model.ScopeHierarchy", "ChildId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Scope", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
@@ -621,12 +747,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
                         .WithMany("Tenants")
                         .HasForeignKey("RightHolderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
                         .WithMany("Users")
                         .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
@@ -634,7 +762,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
                         .WithMany("Invitations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("PasswordHistory")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
@@ -642,12 +780,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
@@ -655,7 +795,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany("ValidRedirectUrls")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
@@ -670,7 +811,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

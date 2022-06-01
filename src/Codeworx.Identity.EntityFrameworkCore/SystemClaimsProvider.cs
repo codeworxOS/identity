@@ -21,7 +21,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             var result = new List<AssignedClaim>();
 
-            if (parameters.Scopes.Contains(Constants.Scopes.Groups))
+            if (parameters.Scopes.Contains(Constants.Scopes.Groups) || parameters.Scopes.Contains(Constants.Scopes.GroupNames))
             {
                 var search = new List<Guid>();
                 search.Add(Guid.Parse(parameters.User.GetUserId()));
@@ -33,7 +33,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                     var nextLayer = await _db.Set<RightHolder>()
                                         .Where(p => search.Contains(p.Id))
                                         .SelectMany(p => p.MemberOf)
-                                        .Select(p => p.GroupId)
+                                        .Select(p => new { p.GroupId, p.Group.Name })
                                         .Distinct()
                                         .ToListAsync()
                                         .ConfigureAwait(false);
@@ -42,15 +42,23 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     foreach (var item in nextLayer)
                     {
-                        if (!found.Contains(item))
+                        if (!found.Contains(item.GroupId))
                         {
-                            found.Add(item);
-                            search.Add(item);
+                            found.Add(item.GroupId);
+                            search.Add(item.GroupId);
+
+                            if (parameters.Scopes.Contains(Constants.Scopes.GroupNames))
+                            {
+                                result.Add(new AssignedClaim(new[] { Constants.Claims.GroupNames, item.GroupId.ToString("N") }, new[] { item.Name }, ClaimTarget.AllTokens));
+                            }
                         }
                     }
                 }
 
-                result.Add(AssignedClaim.Create(Constants.Claims.Group, found.Select(p => p.ToString("N")), ClaimTarget.AccessToken));
+                if (parameters.Scopes.Contains(Constants.Scopes.Groups))
+                {
+                    result.Add(AssignedClaim.Create(Constants.Claims.Group, found.Select(p => p.ToString("N")), ClaimTarget.AccessToken));
+                }
             }
 
             return result;

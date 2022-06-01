@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.Configuration.Infrastructure;
 using Codeworx.Identity.Configuration.Model;
-using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 
 namespace Codeworx.Identity.Configuration.Extensions
 {
     public static class CodeworxIdentityConfigurationInternalExtensions
     {
-        public static async Task<ClientRegistration> ToRegistration(this ClientConfig config, IUserService userService, IHashingProvider hashing, string id)
+        public static async Task<ClientRegistration> ToRegistration(this ClientConfig config, IUserService userService, IStringResources stringResources, string id)
         {
             var urls = config.RedirectUris;
             IUser user = null;
@@ -19,7 +19,8 @@ namespace Codeworx.Identity.Configuration.Extensions
 
                 if (user == null)
                 {
-                    throw new AuthenticationException($"The User provided for client {id} could not be found.");
+                    var message = string.Format(stringResources.GetResource(StringResource.UserForClientP0NotFoundError), id);
+                    throw new AuthenticationException(message);
                 }
             }
 

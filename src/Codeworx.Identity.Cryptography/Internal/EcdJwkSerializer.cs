@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,7 +21,7 @@ namespace Codeworx.Identity.Cryptography.Internal
             throw new NotSupportedException("Key type not supported!");
         }
 
-        public string GetAlgorithm(SecurityKey key)
+        public string GetAlgorithm(SecurityKey key, HashAlgorithm hashAlgorithm)
         {
             if (key is ECDsaSecurityKey ecdKey)
             {

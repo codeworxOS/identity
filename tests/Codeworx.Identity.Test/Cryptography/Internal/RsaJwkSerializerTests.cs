@@ -59,7 +59,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var instance = new RsaJwkSerializer();
 
-            var actual = instance.GetAlgorithm(key);
+            var actual = instance.GetAlgorithm(key, SHA256.Create());
 
             Assert.AreEqual(expectedAlgorithm, actual);
         }

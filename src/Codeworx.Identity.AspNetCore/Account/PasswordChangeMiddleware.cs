@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Codeworx.Identity.Login;
+using Codeworx.Identity.Account;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
 
@@ -37,6 +37,8 @@ namespace Codeworx.Identity.AspNetCore
                     case PasswordChangeRequest processPasswordChangeRequest:
                         response = await service.ShowChangePasswordViewAsync(processPasswordChangeRequest);
                         responseBinder = context.GetResponseBinder<PasswordChangeViewResponse>();
+                        break;
+                    default:
                         break;
                 }
 

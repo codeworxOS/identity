@@ -4,6 +4,7 @@
     using System.Threading.Tasks;
     using Codeworx.Identity.Account;
     using Codeworx.Identity.Model;
+    using Codeworx.Identity.Resources;
     using Codeworx.Identity.Test.Provider;
     using Moq;
     using NUnit.Framework;
@@ -19,10 +20,16 @@
             _testIdentity = new ClaimsIdentity();
             _testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.DefaultAdminUserId));
             _testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.DefaultAdminUserName));
-            _changeService = new PasswordChangeService(new DummyUserService(), new DummyPasswordValidator(), new DummyPasswordPolicyProvider(), _changePasswordServiceMock.Object);
+
+            _testIdentityWithoutPassword = new ClaimsIdentity();
+            _testIdentityWithoutPassword.AddClaim(new Claim(Constants.Claims.Id, Constants.NoPasswordUserId));
+            _testIdentityWithoutPassword.AddClaim(new Claim(Constants.Claims.Upn, Constants.NoPasswordUserName));
+
+            _changeService = new PasswordChangeService(new DummyUserService(), new DummyPasswordValidator(), new DummyPasswordPolicyProvider(), new DefaultStringResources(), _changePasswordServiceMock.Object);
         }
 
         private ClaimsIdentity _testIdentity;
+        private ClaimsIdentity _testIdentityWithoutPassword;
 
         private PasswordChangeService _changeService;
 
@@ -48,7 +55,7 @@
             Assert.NotNull(exception);
 
             var passwordChangeViewResponse = exception.TypedResponse;
-            Assert.AreEqual(DummyPasswordPolicyProvider.Description, passwordChangeViewResponse.Error);
+            Assert.AreEqual(DummyPasswordPolicyProvider.Description["en"], passwordChangeViewResponse.Error);
 
             _changePasswordServiceMock.Verify(x => x.SetPasswordAsync(It.IsAny<IUser>(), It.IsAny<string>()), Times.Never);
         }
@@ -84,6 +91,31 @@
             Assert.ThrowsAsync<ErrorResponseException<PasswordChangeViewResponse>>(
                 () => _changeService.ProcessChangePasswordAsync(
                     new ProcessPasswordChangeRequest(_testIdentity, Constants.DefaultAdminUserName, Constants.DefaultAdminUserName, Constants.DefaultAdminUserName)));
+
+            _changePasswordServiceMock.Verify(x => x.SetPasswordAsync(It.IsAny<IUser>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Test]
+        public async Task SetPasswordWithValidPassword_ExpectsSuccess()
+        {
+            var returnUrl = "/account/me";
+            var prompt = "prompt text";
+            var response = await _changeService.ProcessChangePasswordAsync(
+                               new ProcessPasswordChangeRequest(_testIdentityWithoutPassword, null, "1111", "1111", returnUrl, prompt));
+
+            Assert.NotNull(response);
+            Assert.AreEqual(returnUrl, response.ReturnUrl);
+            Assert.AreEqual(prompt, response.Prompt);
+
+            _changePasswordServiceMock.Verify(x => x.SetPasswordAsync(It.IsAny<IUser>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void SetPasswordWithNewPasswordMissmatch_ExpectsError()
+        {
+            Assert.ThrowsAsync<ErrorResponseException<PasswordChangeViewResponse>>(
+                () => _changeService.ProcessChangePasswordAsync(
+                    new ProcessPasswordChangeRequest(_testIdentityWithoutPassword, null, "1234", "5647")));
 
             _changePasswordServiceMock.Verify(x => x.SetPasswordAsync(It.IsAny<IUser>(), It.IsAny<string>()), Times.Never);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,8 +10,8 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class AuthorizationService<TRequest> : IAuthorizationService<TRequest>
         where TRequest : AuthorizationRequest
     {
-        private readonly IEnumerable<IIdentityRequestProcessor<IAuthorizationParameters, TRequest>> _requestProcessors;
-        private readonly IEnumerable<IAuthorizationResponseProcessor> _responseProcessors;
+        private readonly IReadOnlyList<IIdentityRequestProcessor<IAuthorizationParameters, TRequest>> _requestProcessors;
+        private readonly IReadOnlyList<IAuthorizationResponseProcessor> _responseProcessors;
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
 
@@ -20,8 +21,8 @@ namespace Codeworx.Identity.OAuth.Authorization
             IUserService userService,
             IIdentityService identityService)
         {
-            _requestProcessors = requestProcessors;
-            _responseProcessors = responseProcessors;
+            _requestProcessors = requestProcessors.OrderBy(p => p.SortOrder).ToImmutableList();
+            _responseProcessors = responseProcessors.ToImmutableList();
             _userService = userService;
             _identityService = identityService;
         }
@@ -35,7 +36,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
             IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, user);
 
-            foreach (var processor in _requestProcessors.OrderBy(p => p.SortOrder))
+            foreach (var processor in _requestProcessors)
             {
                 await processor.ProcessAsync(builder, request).ConfigureAwait(false);
             }
@@ -47,7 +48,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 .WithResponseMode(parameters.ResponseMode)
                 .WithRedirectUri(parameters.RedirectUri);
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(parameters.User)
+            var currentUser = await _userService.GetUserByIdentityAsync(parameters.User)
                                          .ConfigureAwait(false);
 
             if (currentUser == null)

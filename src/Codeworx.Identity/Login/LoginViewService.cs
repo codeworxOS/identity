@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
@@ -9,17 +10,19 @@ namespace Codeworx.Identity.Login
     public class LoginViewService : ILoginViewService
     {
         private readonly ILoginService _loginService;
-        private readonly IIdentityService _identityService;
-        private readonly IUserService _userService;
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IStringResources _stringResources;
         private readonly IdentityOptions _options;
 
-        public LoginViewService(ILoginService loginService, IIdentityService identityService, IUserService userService, IBaseUriAccessor baseUriAccessor, IOptions<IdentityOptions> options)
+        public LoginViewService(
+            ILoginService loginService,
+            IBaseUriAccessor baseUriAccessor,
+            IOptions<IdentityOptions> options,
+            IStringResources stringResources)
         {
             _loginService = loginService;
-            _identityService = identityService;
-            _userService = userService;
             _baseUriAccessor = baseUriAccessor;
+            _stringResources = stringResources;
             _options = options.Value;
         }
 
@@ -36,7 +39,13 @@ namespace Codeworx.Identity.Login
             }
             else
             {
-                builder = new UriBuilder(returnUrl);
+                var returnUri = new Uri(returnUrl, UriKind.RelativeOrAbsolute);
+                if (!returnUri.IsAbsoluteUri)
+                {
+                    returnUri = new Uri(_baseUriAccessor.BaseUri, returnUri);
+                }
+
+                builder = new UriBuilder(returnUri);
             }
 
             if (loggedin.LoginProviderId != null)
@@ -58,7 +67,7 @@ namespace Codeworx.Identity.Login
             var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
             if (request.LoginProviderId != null)
             {
-                providerRequest.ProviderErrors.Add(request.LoginProviderId, request.LoginProviderError ?? Constants.GenericLoginError);
+                providerRequest.ProviderErrors.Add(request.LoginProviderId, request.LoginProviderError ?? _stringResources.GetResource(StringResource.GenericLoginError));
             }
             else if (request.LoginProviderError != null)
             {
@@ -88,12 +97,13 @@ namespace Codeworx.Identity.Login
             catch (LoginProviderNotFoundException)
             {
                 providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
-                errorMessage = Constants.UnknownLoginProviderError;
+                errorMessage = _stringResources.GetResource(StringResource.UnknownLoginProviderError);
             }
             catch (Exception)
             {
                 providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
-                providerRequest.ProviderErrors.Add(request.ProviderId, Constants.GenericLoginError);
+                var message = _stringResources.GetResource(StringResource.GenericLoginError);
+                providerRequest.ProviderErrors.Add(request.ProviderId, message);
             }
 
             var registrationInfos = await _loginService.GetRegistrationInfosAsync(providerRequest);

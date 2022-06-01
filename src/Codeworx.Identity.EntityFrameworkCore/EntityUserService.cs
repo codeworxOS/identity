@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore
 {
-    public class EntityUserService<TContext> : IUserService, IDefaultTenantService, ILinkUserService
+    public class EntityUserService<TContext> : IUserService, IDefaultTenantService, ILinkUserService, IFailedLoginService
         where TContext : DbContext
     {
         private readonly TContext _context;
@@ -31,7 +31,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
-            return await ToUser(user);
+            return await ToUserAsync(user);
         }
 
         public virtual async Task<IUser> GetUserByIdAsync(string userId)
@@ -41,10 +41,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
 
-            return await ToUser(user);
+            return await ToUserAsync(user);
         }
 
-        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public virtual async Task<IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var identifier = identity.GetUserId();
 
@@ -57,7 +57,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
 
-            return await ToUser(user);
+            return await ToUserAsync(user);
         }
 
         public async Task LinkUserAsync(IUser user, IExternalLoginData loginData)
@@ -110,12 +110,46 @@ namespace Codeworx.Identity.EntityFrameworkCore
             }
         }
 
-        protected virtual IQueryable<User> GetUserQuery()
+        public async Task SetFailedLoginAsync(IUser user)
         {
-            return _context.Set<User>().Where(p => !p.IsDisabled);
+            var userSet = GetUserQuery();
+            var id = Guid.Parse(user.Identity);
+
+            var databaseUser = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync().ConfigureAwait(false);
+
+            // With enough patience an attacker could cause the failed login counter to wrap around and become valid again.
+            if (databaseUser.FailedLoginCount < int.MaxValue)
+            {
+                databaseUser.FailedLoginCount++;
+            }
+
+            databaseUser.LastFailedLoginAttempt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        private async Task<Data.User> ToUser(User user)
+        public async Task<IUser> ResetFailedLoginsAsync(IUser user)
+        {
+            var userSet = GetUserQuery();
+            var id = Guid.Parse(user.Identity);
+
+            var databaseUser = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync().ConfigureAwait(false);
+
+            databaseUser.FailedLoginCount = 0;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return await ToUserAsync(databaseUser);
+        }
+
+        protected virtual IQueryable<User> GetUserQuery()
+        {
+            IQueryable<User> query = _context.Set<User>().Where(p => !p.IsDisabled);
+
+            return query;
+        }
+
+        private async Task<Data.User> ToUserAsync(User user)
         {
             if (user == null)
             {
@@ -129,9 +163,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 Identity = user.Id.ToString("N"),
                 DefaultTenantKey = user.DefaultTenantId?.ToString("N"),
                 ForceChangePassword = user.ForceChangePassword,
+                ConfirmationPending = user.ConfirmationPending,
                 Name = user.Name,
                 PasswordHash = user.PasswordHash,
                 LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),
+                FailedLoginCount = user.FailedLoginCount,
             };
         }
     }

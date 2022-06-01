@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -11,11 +11,16 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
     {
         private readonly IdentityOptions _options;
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IIdentityAuthenticationHandler _handler;
 
-        public PasswordChangeResponseBinder(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor)
+        public PasswordChangeResponseBinder(
+            IOptionsSnapshot<IdentityOptions> options,
+            IBaseUriAccessor baseUriAccessor,
+            IIdentityAuthenticationHandler handler)
         {
             _options = options.Value;
             _baseUriAccessor = baseUriAccessor;
+            _handler = handler;
         }
 
         public override async Task BindAsync(PasswordChangeResponse responseData, HttpResponse response)
@@ -34,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 builder.AppendQueryParameter(Constants.ReturnUrlParameter, responseData.ReturnUrl);
             }
 
-            await response.HttpContext.SignOutAsync(_options.AuthenticationScheme);
+            await _handler.SignOutAsync(response.HttpContext);
 
             response.Redirect(builder.ToString());
         }

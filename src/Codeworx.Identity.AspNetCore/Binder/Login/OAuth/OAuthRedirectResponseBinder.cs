@@ -34,6 +34,11 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, responseData.Prompt);
             }
 
+            foreach (var item in responseData.AuthrizationParameters)
+            {
+                uriBuilder.AppendQueryParameter(item.Key, $"{item.Value}");
+            }
+
             response.Redirect(uriBuilder.ToString());
 
             return Task.CompletedTask;

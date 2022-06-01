@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.Login;
 using HandlebarsDotNet;
 using Microsoft.Extensions.Options;
 
@@ -15,19 +14,18 @@ namespace Codeworx.Identity.AspNetCore
         private bool _disposedValue = false;
         private IdentityOptions _options;
 
-        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates)
+        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IEnumerable<ITemplateHelper> helpers)
         {
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
+            _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
-            _handlebars.RegisterHelper("RegistrationTemplate", (writer, context, parameters) =>
+
+            foreach (var helper in helpers)
             {
-                if (context is ILoginRegistrationGroup info)
-                {
-                    writer.WriteSafeString(info.Template);
-                }
-            });
+                _handlebars.RegisterHelper(helper.Name, helper.Process);
+            }
 
             foreach (var partial in partialTemplates)
             {
@@ -63,6 +61,11 @@ namespace Codeworx.Identity.AspNetCore
         private static string GetStyles(IEnumerable<string> styles)
         {
             return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+        }
+
+        private static string GetFavicon(string favicon)
+        {
+            return $"<link rel=\"icon\" href=\"{favicon}\">";
         }
     }
 

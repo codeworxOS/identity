@@ -12,6 +12,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
             this.Clients = new HashSet<ClientConfiguration>();
             this.RefreshTokens = new HashSet<UserRefreshToken>();
             this.Invitations = new HashSet<UserInvitation>();
+            this.PasswordHistory = new HashSet<UserPasswordHistory>();
         }
 
         public Tenant DefaultTenant { get; set; }
@@ -19,6 +20,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public Guid? DefaultTenantId { get; set; }
 
         public bool IsDisabled { get; set; }
+
+        public bool ConfirmationPending { get; set; }
+
+        [StringLength(512)]
+        public string ConfirmationCode { get; set; }
 
         public bool ForceChangePassword { get; set; }
 
@@ -40,5 +46,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public ICollection<UserRefreshToken> RefreshTokens { get; }
 
         public ICollection<UserInvitation> Invitations { get; set; }
+
+        public ICollection<UserPasswordHistory> PasswordHistory { get; set; }
     }
 }

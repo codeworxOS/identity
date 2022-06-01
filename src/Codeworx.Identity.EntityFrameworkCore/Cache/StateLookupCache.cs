@@ -73,7 +73,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        public async Task SetAsync(string state, StateLookupItem value)
+        public async Task SetAsync(string state, StateLookupItem value, TimeSpan validFor)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -90,7 +90,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 {
                     Key = state,
                     CacheType = CacheType.Lookup,
-                    ValidUntil = DateTime.UtcNow.Add(TimeSpan.FromMinutes(5)),
+                    ValidUntil = DateTime.UtcNow.Add(validFor),
                     Value = JsonConvert.SerializeObject(value),
                 };
 

@@ -17,6 +17,8 @@ namespace Codeworx.Identity
         IInvitationViewTemplate,
         IPasswordChangeViewTemplate,
         IProfileViewTemplate,
+        IForgotPasswordViewTemplate,
+        IConfirmationViewTemplate,
         IDisposable
     {
         private readonly IDisposable _optionsMonitor;
@@ -37,6 +39,21 @@ namespace Codeworx.Identity
         public async Task<string> GetChallengeResponse()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.challenge_response.html");
+        }
+
+        public async Task<string> GetConfirmationViewTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.confirmation.html");
+        }
+
+        public async Task<string> GetForgotPasswordCompletedTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.forgot_password_complete.html");
+        }
+
+        public async Task<string> GetForgotPasswordTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.forgot_password.html");
         }
 
         public async Task<string> GetFormPostTemplate()

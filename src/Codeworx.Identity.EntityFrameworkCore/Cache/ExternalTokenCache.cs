@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Cryptography;
@@ -38,18 +39,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public virtual async Task<ExternalTokenData> GetAsync(string key, TimeSpan extend)
+        public async Task ExtendAsync(string key, TimeSpan extension, CancellationToken token = default)
         {
             string cacheKey, encryptionKey;
             GetKeys(key, out cacheKey, out encryptionKey);
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.BeginTransactionAsync(token).ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
 
                 var entry = await cacheSet
                                 .Where(p => p.CacheType == CacheType.ExternalTokenData && p.Key == cacheKey && !p.Disabled)
-                                .FirstOrDefaultAsync()
+                                .FirstOrDefaultAsync(token)
                                 .ConfigureAwait(false);
 
                 if (entry == null)
@@ -67,22 +68,59 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     throw new CacheEntryNotFoundException();
                 }
 
-                entry.ValidUntil = DateTime.UtcNow.Add(extend);
+                var validUntil = DateTime.UtcNow.Add(extension);
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                if (entry.ValidUntil < validUntil)
+                {
+                    entry.ValidUntil = validUntil;
+                    await _context.SaveChangesAsync(token).ConfigureAwait(false);
+                }
+
                 transaction.Commit();
+            }
+        }
+
+        public virtual async Task<ExternalTokenData> GetAsync(string key, CancellationToken token = default)
+        {
+            string cacheKey, encryptionKey;
+            GetKeys(key, out cacheKey, out encryptionKey);
+
+            using (var transaction = await _context.Database.BeginTransactionAsync(token).ConfigureAwait(false))
+            {
+                var cacheSet = _context.Set<IdentityCache>();
+
+                var entry = await cacheSet
+                                .Where(p => p.CacheType == CacheType.ExternalTokenData && p.Key == cacheKey && !p.Disabled)
+                                .FirstOrDefaultAsync(token)
+                                .ConfigureAwait(false);
+
+                if (entry == null)
+                {
+                    _logKeyNotFound(_logger, cacheKey, null);
+                }
+                else if (entry.ValidUntil < DateTime.UtcNow)
+                {
+                    _logKeyExpired(_logger, cacheKey, null);
+                    entry = null;
+                }
+
+                if (entry == null)
+                {
+                    throw new CacheEntryNotFoundException();
+                }
+
                 var data = await _dataEncryption.DecryptAsync(entry.Value, encryptionKey);
 
                 return JsonConvert.DeserializeObject<ExternalTokenData>(data);
             }
         }
 
-        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor)
+        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
             var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(value));
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.BeginTransactionAsync(token).ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
 
@@ -94,9 +132,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     Value = encrypted.Data,
                 };
 
-                await cacheSet.AddAsync(entry).ConfigureAwait(false);
+                await cacheSet.AddAsync(entry, token).ConfigureAwait(false);
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync(token).ConfigureAwait(false);
 
                 transaction.Commit();
             }
@@ -104,18 +142,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             return $"{cacheKey}.{encrypted.Key}";
         }
 
-        public virtual async Task UpdateAsync(string key, ExternalTokenData value, TimeSpan validFor)
+        public virtual async Task UpdateAsync(string key, ExternalTokenData value, CancellationToken token = default)
         {
             string cacheKey, encryptionKey;
             GetKeys(key, out cacheKey, out encryptionKey);
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.BeginTransactionAsync(token).ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
 
                 var entry = await cacheSet
                                 .Where(p => p.CacheType == CacheType.ExternalTokenData && p.Key == cacheKey && !p.Disabled)
-                                .FirstOrDefaultAsync()
+                                .FirstOrDefaultAsync(token)
                                 .ConfigureAwait(false);
 
                 if (entry == null)
@@ -126,10 +164,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
                 var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(value), encryptionKey);
 
-                entry.ValidUntil = DateTime.UtcNow.Add(validFor);
                 entry.Value = encrypted.Data;
 
-                await _context.SaveChangesAsync().ConfigureAwait(false);
+                await _context.SaveChangesAsync(token).ConfigureAwait(false);
                 transaction.Commit();
             }
         }

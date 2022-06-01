@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
@@ -20,6 +21,8 @@ namespace Codeworx.Identity.Test
         {
             _users = new List<IDummyUser>();
             _users.Add(new DummyUser());
+            _users.Add(new DummyEmailUser());
+            _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
         }
@@ -29,7 +32,7 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<Model.IUser>(_users.FirstOrDefault(p => p.ExternalIdentifiers.TryGetValue(provider, out var identifier) && identifier == nameIdentifier));
         }
 
-        public Task<Model.IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public Task<Model.IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var id = Guid.Parse(identity.GetUserId());
             return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));
@@ -63,32 +66,120 @@ namespace Codeworx.Identity.Test
 
         public interface IDummyUser : IUser
         {
+            void ResetPassword(string password);
+
             IDictionary<string, string> ExternalIdentifiers { get; }
+
+            new int FailedLoginCount { get; set; }
         }
 
         public class DummyUser : IDummyUser
         {
+            private bool _forceChangePassword;
+            private string _password = Constants.DefaultAdminUserName;
+            public bool ConfirmationPending => false;
+
+            public DummyUser()
+            {
+                FailedLoginCount = 0;
+            }
+
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.DefaultAdminUserId;
 
             public string Name => Constants.DefaultAdminUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
-            public bool ForceChangePassword => false;
+            public bool ForceChangePassword => _forceChangePassword;
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class DummyEmailUser : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = TestConstants.DefaultEmailUserPassword;
+            public bool ConfirmationPending => false;
+
+            public DummyEmailUser()
+            {
+                FailedLoginCount = 0;
+            }
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => TestConstants.DefaultEmailUserId;
+
+            public string Name => TestConstants.DefaultEmailUserName;
+
+            public string PasswordHash => TestConstants.DefaultEmailUserPassword;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class DummyUserWithoutPassword : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = null;
+            public bool ConfirmationPending => false;
+            public string DefaultTenantKey => null;
+
+            public string Identity => Constants.NoPasswordUserId;
+
+            public string Name => Constants.NoPasswordUserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
         }
 
         public class MultiTenantDummyUser : IDummyUser
         {
+            private bool _forceChangePassword;
+            private string _password = Constants.MultiTenantUserName;
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
+                FailedLoginCount = 0;
                 this.DefaultTenantKey = defaultTenantKey;
             }
+
+            public bool ConfirmationPending => false;
 
             public string DefaultTenantKey { get; }
 
@@ -96,30 +187,54 @@ namespace Codeworx.Identity.Test
 
             public string Name => Constants.MultiTenantUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
-            public bool ForceChangePassword => false;
+            public int FailedLoginCount { get; set; }
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public void ResetPassword(string password)
+            {
+                _password = password;
+                _forceChangePassword = false;
+            }
         }
 
         public class ForceChangePasswordUser : IDummyUser
         {
+            private bool _forceChangePassword = true;
+            private string _password = Constants.ForcePasswordUserName;
+
+            public ForceChangePasswordUser()
+            {
+                FailedLoginCount = 0;
+            }
+            public bool ConfirmationPending => false;
             public string DefaultTenantKey => null;
 
             public string Identity => Constants.ForcePasswordUserId;
 
             public string Name => Constants.ForcePasswordUserName;
 
-            public string PasswordHash => null;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
-            public bool ForceChangePassword => true;
+            public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
+
+            public int FailedLoginCount { get; set; }
+
+            public void ResetPassword(string password)
+            {
+                _password = password;
+                _forceChangePassword = false;
+            }
         }
     }
 }

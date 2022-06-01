@@ -14,6 +14,10 @@ namespace Codeworx.Identity.Model
 
         bool ForceChangePassword { get; }
 
+        bool ConfirmationPending { get; }
+
         IReadOnlyList<string> LinkedProviders { get; }
+
+        int FailedLoginCount { get; }
     }
 }

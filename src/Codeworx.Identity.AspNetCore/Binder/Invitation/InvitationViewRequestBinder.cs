@@ -30,8 +30,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
                     request.Form.TryGetValue(Constants.Forms.ProviderId, out var providerIdValue);
                     request.Form.TryGetValue(Constants.Forms.Password, out var passwordValue);
                     request.Form.TryGetValue(Constants.Forms.ConfirmPassword, out var confirmPasswordValue);
+                    request.Form.TryGetValue(Constants.Forms.UserName, out var userNameValue);
 
-                    return Task.FromResult<InvitationViewRequest>(new ProcessInvitationViewRequest(code, passwordValue, confirmPasswordValue, providerIdValue));
+                    return Task.FromResult<InvitationViewRequest>(new ProcessInvitationViewRequest(code, passwordValue, confirmPasswordValue, providerIdValue, userNameValue));
                 }
             }
 

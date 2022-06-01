@@ -52,6 +52,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 {
                     UserId = entry.UserId.ToString("N"),
                     RedirectUri = entry.RedirectUri,
+                    Action = entry.Action,
                 };
             }
         }
@@ -72,7 +73,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 var entry = new UserInvitation
                 {
                     InvitationCode = code,
-                    CanChangeLogin = false,
+                    Action = factory.Action,
                     IsDisabled = false,
                     ValidUntil = DateTime.UtcNow.Add(validity),
                     RedirectUri = factory.RedirectUri,
@@ -100,6 +101,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 {
                     UserId = entry.UserId.ToString("N"),
                     RedirectUri = entry.RedirectUri,
+                    Action = entry.Action,
                 };
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -15,6 +15,7 @@ namespace Codeworx.Identity.Cryptography.Json
         private readonly JwtConfiguration _configuration;
         private readonly JsonWebTokenHandler _handler;
         private readonly SecurityKey _signingKey;
+        private readonly HashAlgorithm _hashAlgorithm;
         private TimeSpan _expiration;
         private IDictionary<string, object> _payload;
 
@@ -22,6 +23,7 @@ namespace Codeworx.Identity.Cryptography.Json
         {
             _configuration = configuration;
             _signingKey = defaultSigningKeyProvider.GetKey();
+            _hashAlgorithm = defaultSigningKeyProvider.GetHashAlgorithm();
 
             _handler = new JsonWebTokenHandler();
         }
@@ -41,7 +43,7 @@ namespace Codeworx.Identity.Cryptography.Json
             var token = _handler.ReadJsonWebToken(value);
             var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
 
-            _payload = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(decode, new ArraySubObjectConverter());
+            _payload = JsonConvert.DeserializeObject<Dictionary<string, object>>(decode, new ArraySubObjectConverter());
 
             await Task.CompletedTask;
         }
@@ -138,7 +140,7 @@ namespace Codeworx.Identity.Cryptography.Json
                     break;
 
                 case RsaSecurityKey rsa:
-                    algorithm = $"RS256";
+                    algorithm = $"RS{_hashAlgorithm.HashSize}";
                     break;
 
                 default:
@@ -159,12 +161,14 @@ namespace Codeworx.Identity.Cryptography.Json
 
             public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
+#pragma warning disable IDE0010 // Add missing cases
                 switch (reader.TokenType)
+#pragma warning restore IDE0010 // Add missing cases
                 {
                     case Newtonsoft.Json.JsonToken.StartArray:
                         return JToken.Load(reader).ToObject<List<object>>();
                     case Newtonsoft.Json.JsonToken.StartObject:
-                        return JToken.Load(reader).ToObject<ConcurrentDictionary<string, object>>();
+                        return JToken.Load(reader).ToObject<Dictionary<string, object>>();
                     default:
                         if (reader.ValueType == null && reader.TokenType != Newtonsoft.Json.JsonToken.Null)
                         {

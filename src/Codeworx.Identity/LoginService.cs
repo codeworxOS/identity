@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -23,6 +24,7 @@ namespace Codeworx.Identity
         private readonly IEnumerable<ILoginRegistrationProvider> _providers;
         private readonly IIdentityService _service;
         private readonly ILogger<LoginService> _logger;
+        private readonly IStringResources _resources;
         private readonly IServiceProvider _serviceProvider;
 
         static LoginService()
@@ -51,12 +53,13 @@ namespace Codeworx.Identity
                 "There was an unhandled error Processing the login for provider {providerId}.");
         }
 
-        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service, ILogger<LoginService> logger)
+        public LoginService(IEnumerable<ILoginRegistrationProvider> providers, IServiceProvider serviceProvider, IIdentityService service, ILogger<LoginService> logger, IStringResources resources)
         {
             _providers = providers;
             _serviceProvider = serviceProvider;
             _service = service;
             _logger = logger;
+            _resources = resources;
         }
 
         public async Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId)
@@ -103,10 +106,13 @@ namespace Codeworx.Identity
                         throw new ProcessorNotRegisteredException();
                     }
 
-                    var info = await processor.GetRegistrationInfoAsync(request, externalLogin);
+                    var info = await processor.GetRegistrationInfoAsync(request, externalLogin).ConfigureAwait(false);
 
-                    var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
-                    infos.Add(info);
+                    if (info != null)
+                    {
+                        var infos = groups.GetOrAdd(info.Template, p => new List<ILoginRegistrationInfo>());
+                        infos.Add(info);
+                    }
                 }
             }
 
@@ -123,20 +129,31 @@ namespace Codeworx.Identity
                 var response = await processorInfo.Processor.ProcessAsync(processorInfo.Registration, parameter).ConfigureAwait(false);
                 return response;
             }
-            catch (AuthenticationException authException)
+            catch (ReturnUrlException exception)
             {
-                _loginFailed(_logger, providerId, authException);
-                throw;
-            }
-            catch (LoginProviderNotFoundException)
-            {
-                _processorNotFoundMessage(_logger, providerId, null);
+                LogSignInException(exception.InnerException, providerId);
                 throw;
             }
             catch (Exception ex)
             {
-                _unhandledErrorProcessingLogin(_logger, providerId, ex);
+                LogSignInException(ex, providerId);
                 throw;
+            }
+        }
+
+        private void LogSignInException(Exception ex, string providerId)
+        {
+            if (ex is AuthenticationException authException)
+            {
+                _loginFailed(_logger, providerId, authException);
+            }
+            else if (ex is LoginProviderNotFoundException)
+            {
+                _processorNotFoundMessage(_logger, providerId, null);
+            }
+            else
+            {
+                _unhandledErrorProcessingLogin(_logger, providerId, ex);
             }
         }
 
@@ -157,7 +174,7 @@ namespace Codeworx.Identity
                 }
             }
 
-            throw new LoginProviderNotFoundException(providerId);
+            throw new LoginProviderNotFoundException(providerId, _resources.GetResource(StringResource.UnknownLoginProviderError));
         }
 
         private class ProcessorInfo

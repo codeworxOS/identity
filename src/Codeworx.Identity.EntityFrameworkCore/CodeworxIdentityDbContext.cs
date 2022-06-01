@@ -36,9 +36,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<AvailableLicense> AvailableLicenses { get; set; }
 
-        public DbSet<ClaimType> CleimTypes { get; set; }
+        public DbSet<ClaimType> ClaimTypes { get; set; }
 
         public DbSet<UserInvitation> UserInvitations { get; set; }
+
+        public DbSet<UserPasswordHistory> UserPasswordHistory { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,6 +67,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserInvitationEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new UserPasswordHistoryEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserRefreshTokenEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
 

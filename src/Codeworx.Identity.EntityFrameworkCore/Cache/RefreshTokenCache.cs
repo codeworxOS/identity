@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Cryptography;
@@ -41,12 +42,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logger = logger;
         }
 
-        public Task ExtendLifetimeAsync(string key, TimeSpan extendBy)
+        public Task ExtendLifetimeAsync(string key, TimeSpan extendBy, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IRefreshTokenCacheItem> GetAsync(string key)
+        public async Task<IRefreshTokenCacheItem> GetAsync(string key, CancellationToken token = default)
         {
             string cacheKey, encryptionKey;
             GetKeys(key, out cacheKey, out encryptionKey);
@@ -55,7 +56,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
             var entry = await cacheSet
                             .Where(p => p.Token == cacheKey)
-                            .FirstOrDefaultAsync()
+                            .FirstOrDefaultAsync(token)
                             .ConfigureAwait(false);
 
             if (entry == null)
@@ -80,9 +81,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             return new RefreshTokenCacheItem(result, entry.ValidUntil);
         }
 
-        public async Task<string> SetAsync(IdentityData data, TimeSpan validFor)
+        public async Task<string> SetAsync(IdentityData data, TimeSpan validFor, CancellationToken token = default)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.BeginTransactionAsync(token).ConfigureAwait(false))
             {
                 var cacheKey = Guid.NewGuid().ToString("N");
                 var userId = Guid.Parse(data.Identifier);
@@ -90,9 +91,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
                 var set = _context.Set<UserRefreshToken>();
 
-                var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(data));
+                var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
-                var token = new UserRefreshToken
+                var refreshToken = new UserRefreshToken
                 {
                     Token = cacheKey,
                     UserId = userId,
@@ -101,10 +102,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     IdentityData = encrypted.Data,
                 };
 
-                set.Add(token);
+                set.Add(refreshToken);
 
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await _context.SaveChangesAsync(token).ConfigureAwait(false);
+
+                await transaction.CommitAsync(token).ConfigureAwait(false);
 
                 return $"{cacheKey}.{encrypted.Key}";
             }

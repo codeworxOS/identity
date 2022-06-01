@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Login.OAuth
         {
             var state = Guid.NewGuid().ToString("N");
             string nonce = null;
-            await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode });
+            await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode }, _identityOptions.StateLookupCacheExpiration);
 
             var callbackUriBuilder = new UriBuilder(_baseUri);
             callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
@@ -50,8 +50,7 @@ namespace Codeworx.Identity.Login.OAuth
 
             IEnumerable<string> scopes = config.Scope?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries) ?? Enumerable.Empty<string>();
 
-            var endpointBuilder = new UriBuilder(config.BaseUri.ToString());
-            endpointBuilder.AppendPath(config.AuthorizationEndpoint);
+            var endpointBuilder = new UriBuilder(config.GetAuthorizationEndpointUri());
 
             if (config.RedirectCacheMethod == RedirectCacheMethod.UseNonce)
             {
@@ -59,7 +58,7 @@ namespace Codeworx.Identity.Login.OAuth
                 state = null;
             }
 
-            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, nonce, callbackUriBuilder.ToString(), scopes, request.Prompt);
+            var response = new OAuthRedirectResponse(endpointBuilder.ToString(), config.ClientId, state, nonce, callbackUriBuilder.ToString(), scopes, request.Prompt, config.AuthorizationParameters);
 
             return response;
         }

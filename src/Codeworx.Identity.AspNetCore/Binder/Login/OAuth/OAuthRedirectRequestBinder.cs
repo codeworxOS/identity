@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login.OAuth;
+using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
@@ -13,11 +14,16 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
     {
         private readonly IdentityOptions _identityOptions;
         private readonly IInvitationService _invitationService;
+        private readonly IStringResources _stringResources;
 
-        public OAuthRedirectRequestBinder(IOptionsSnapshot<IdentityOptions> options, IInvitationService invitationService)
+        public OAuthRedirectRequestBinder(
+            IOptionsSnapshot<IdentityOptions> options,
+            IInvitationService invitationService,
+            IStringResources stringResources)
         {
             _identityOptions = options.Value;
             _invitationService = invitationService;
+            _stringResources = stringResources;
         }
 
         public async Task<OAuthRedirectRequest> BindAsync(HttpRequest request)
@@ -43,7 +49,8 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 
                     if (!supported)
                     {
-                        throw new NotSupportedException(Constants.InvitationNotSupported);
+                        var message = _stringResources.GetResource(StringResource.InvitationNotSupportedError);
+                        throw new NotSupportedException(message);
                     }
 
                     var invitation = await _invitationService.GetInvitationAsync(invitationCode).ConfigureAwait(false);

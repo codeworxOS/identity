@@ -6,10 +6,12 @@ using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Notification;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId.Authorization;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.View;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +37,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IInvitationViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
             this.ReplaceService<IPasswordChangeViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
             this.ReplaceService<IProfileViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
+            this.ReplaceService<IForgotPasswordViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
+            this.ReplaceService<IConfirmationViewTemplate, DefaultViewTemplate>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplate>());
 
             this.ReplaceService<ILoginViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<ITenantViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
@@ -43,6 +47,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IInvitationViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<IPasswordChangeViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
             this.ReplaceService<IProfileViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
+            this.ReplaceService<IForgotPasswordViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
+            this.ReplaceService<IConfirmationViewTemplateCache, DefaultViewTemplateCache>(ServiceLifetime.Singleton, sp => sp.GetRequiredService<DefaultViewTemplateCache>());
 
             this.ReplaceService<IInvitationService, InvitationService>(ServiceLifetime.Scoped);
             this.ReplaceService<IInvitationViewService, InvitationViewService>(ServiceLifetime.Scoped);
@@ -53,8 +59,12 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
-            this.ReplaceService<IPasswordPolicyProvider, PasswordPolicyProvider>(ServiceLifetime.Scoped);
+            this.ReplaceService<IPasswordPolicyProvider, DefaultPasswordPolicyProvider>(ServiceLifetime.Singleton);
+            this.ReplaceService<ILoginPolicyProvider, DefaultLoginPolicyProvider>(ServiceLifetime.Singleton);
             this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IForgotPasswordService, ForgotPasswordService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IConfirmationViewService, ConfirmationViewService>(ServiceLifetime.Scoped);
+            this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
@@ -75,10 +85,12 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITokenService<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITokenService<ClientCredentialsTokenRequest>, ClientCredentialsTokenService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITokenService<RefreshTokenRequest>, RefreshTokenService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenService<TokenExchangeRequest>, TokenExchangeService>(ServiceLifetime.Scoped);
 
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<AuthorizationCodeTokenRequest>>(ServiceLifetime.Scoped);
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<ClientCredentialsTokenRequest>>(ServiceLifetime.Scoped);
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<RefreshTokenRequest>>(ServiceLifetime.Scoped);
+            this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<TokenExchangeRequest>>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
 
@@ -87,6 +99,12 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, ConfirmAccountNotificationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Transient);
+
+            this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);
         }
 
         public IServiceCollection ServiceCollection { get; }

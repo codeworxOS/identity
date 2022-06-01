@@ -23,46 +23,18 @@ body {
     width: 450px;
 }
 
-    #loginContainer:before {
-        font-family: "Arial Black";
-        font-size: 30px;
-        color: #333333;
-        text-transform: uppercase;
-        text-align: center;
-        padding-bottom: 50px;
-        display: flex;
-        flex-direction: column;
-    }
+#loginContainer h1.login-header {
+    font-family: "Arial Black";
+    font-size: 30px;
+    color: #333333;
+    text-transform: uppercase;
+    text-align: center;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+}
 
-    #loginContainer.login-view:before {
-        content: "Login";
-    }
-
-    #loginContainer.profile-view:before {
-        content: "Profile";
-    }
-
-    #loginContainer.change-password-view:before {
-        content: "Profile";
-    }
-
-    #loginContainer.invitation:before {
-        content: "Set Password";
-    }
-
-    #loginContainer.login-view ul#external:before {
-        content: "Or login with";
-        font-family: Arial;
-        font-size: 16px;
-        width: 100%;
-        color: #999999;
-        text-align: center;
-        margin-bottom: 10px;
-        margin-top: 10px;
-    }
-
-    #loginContainer.invitation ul#external:before {
-        content: "Or connect with";
+    #loginContainer .registration-separator {
         font-family: Arial;
         font-size: 16px;
         width: 100%;
@@ -88,7 +60,12 @@ body {
         height: 60px
     }
 
-    #loginContainer div.change-password-box {
+    #loginContainer div.change-password-box,
+    #loginContainer div.forgot-password-box {
+        text-align: right;
+    }
+
+    #loginContainer div.forgot-password-box {
         text-align: right;
     }
 
@@ -97,7 +74,8 @@ body {
         flex-direction: column;
     }
 
-    #loginContainer a.change-password-link {
+    #loginContainer a.change-password-link,
+    #loginContainer a.forgot-password-link {
         font-family: Arial;
         color: #af110e;
         text-decoration: none;
@@ -107,34 +85,40 @@ body {
     }
 
 
-    #loginContainer input[type="checkbox"] {
-        display: none;
+.forgot-password-complete {
+    font-family: Arial;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+#loginContainer input[type="checkbox"] {
+    display: none;
+}
+
+    #loginContainer input[type="checkbox"] + label {
+        font-family: Arial;
+        color: #999999;
+        line-height: 1.2em;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
     }
 
-        #loginContainer input[type="checkbox"] + label {
-            font-family: Arial;
-            color: #999999;
-            line-height: 1.2em;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
+        #loginContainer input[type="checkbox"] + label svg {
+            margin-right: 8px;
         }
 
-            #loginContainer input[type="checkbox"] + label svg {
-                margin-right: 8px;
+            #loginContainer input[type="checkbox"] + label svg rect {
+                stroke: #af110e;
             }
 
-                #loginContainer input[type="checkbox"] + label svg rect {
-                    stroke: #af110e;
-                }
+            #loginContainer input[type="checkbox"] + label svg #checked {
+                stroke: none;
+            }
 
-                #loginContainer input[type="checkbox"] + label svg #checked {
-                    stroke: none;
-                }
-
-        #loginContainer input[type="checkbox"]:checked + label svg #checked {
-            stroke: #af110e;
-        }
+    #loginContainer input[type="checkbox"]:checked + label svg #checked {
+        stroke: #af110e;
+    }
 
 .login-submit {
     font-size: 16px;

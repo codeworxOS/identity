@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -17,15 +18,18 @@ namespace Codeworx.Identity.AspNetCore.Binder
     {
         private readonly IAuthenticationSchemeProvider _schemaProvider;
         private readonly IInvitationService _invitationService;
+        private readonly IStringResources _stringResources;
         private readonly IdentityOptions _identityOptions;
 
         public WindowsLoginRequestBinder(
             IAuthenticationSchemeProvider schemeProvider,
             IOptionsSnapshot<IdentityOptions> options,
-            IInvitationService invitationService)
+            IInvitationService invitationService,
+            IStringResources stringResources)
         {
             _schemaProvider = schemeProvider;
             _invitationService = invitationService;
+            _stringResources = stringResources;
             _identityOptions = options.Value;
         }
 
@@ -55,7 +59,8 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
                     if (!supported)
                     {
-                        throw new NotSupportedException(Constants.InvitationNotSupported);
+                        var message = _stringResources.GetResource(StringResource.InvitationNotSupportedError);
+                        throw new NotSupportedException(message);
                     }
 
                     invitationCode = invitationValues;

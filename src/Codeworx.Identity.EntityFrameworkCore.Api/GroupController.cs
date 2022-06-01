@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
     [Route("api/identity/groups")]
+    [Authorize(Policy = Policies.Admin)]
     public class GroupController
     {
         private readonly IContextWrapper _db;

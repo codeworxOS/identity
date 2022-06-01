@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 
@@ -8,7 +10,7 @@ namespace Codeworx.Identity.OAuth.Token
 {
     public class ClientCredentialsTokenService : ITokenService<ClientCredentialsTokenRequest>
     {
-        private readonly IEnumerable<IIdentityRequestProcessor<IClientCredentialsParameters, ClientCredentialsTokenRequest>> _processors;
+        private readonly IReadOnlyList<IIdentityRequestProcessor<IClientCredentialsParameters, ClientCredentialsTokenRequest>> _processors;
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
         private readonly IIdentityService _identityService;
@@ -19,13 +21,13 @@ namespace Codeworx.Identity.OAuth.Token
             IEnumerable<ITokenProvider> tokenProviders,
             IIdentityService identityService)
         {
-            _processors = processors;
+            _processors = processors.OrderBy(p => p.SortOrder).ToImmutableList();
             _clientAuthenticationService = clientAuthenticationService;
             _tokenProviders = tokenProviders;
             _identityService = identityService;
         }
 
-        public async Task<TokenResponse> ProcessAsync(ClientCredentialsTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(ClientCredentialsTokenRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -34,7 +36,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var builder = new ClientCredentialsParametersBuilder();
 
-            foreach (var item in _processors.OrderBy(p => p.SortOrder))
+            foreach (var item in _processors)
             {
                 await item.ProcessAsync(builder, request);
             }
@@ -50,7 +52,7 @@ namespace Codeworx.Identity.OAuth.Token
             var identityParameters = builder.Parameters;
             var identityData = await _identityService.GetIdentityAsync(identityParameters).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), identityParameters.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), identityParameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
@@ -64,7 +66,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
 
-            return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)identityParameters.TokenExpiration.TotalSeconds, scope);
+            return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)identityParameters.Client.TokenExpiration.TotalSeconds, scope);
         }
     }
 }

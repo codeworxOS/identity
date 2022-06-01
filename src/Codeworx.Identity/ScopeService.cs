@@ -15,17 +15,17 @@ namespace Codeworx.Identity
             _scopeProvider = scopeProvider;
         }
 
-        public async Task<IEnumerable<IScope>> GetScopes()
+        public async Task<IEnumerable<IScope>> GetScopes(IIdentityDataParameters parameters = null)
         {
             var scopes = new List<IScope>();
             foreach (var provider in _systemScopeProviders)
             {
-                scopes.AddRange(await provider.GetScopes().ConfigureAwait(false));
+                scopes.AddRange(await provider.GetScopes(parameters).ConfigureAwait(false));
             }
 
             if (_scopeProvider != null)
             {
-                scopes.AddRange(await _scopeProvider.GetScopes().ConfigureAwait(false));
+                scopes.AddRange(await _scopeProvider.GetScopes(parameters).ConfigureAwait(false));
             }
 
             return scopes;

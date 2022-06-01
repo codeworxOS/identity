@@ -42,9 +42,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             };
 
             var defaultKey = keyProvider.GetKey();
+            var hashAlgorithm = keyProvider.GetHashAlgorithm();
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
-            var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey) };
+            var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey, hashAlgorithm) };
 
             var content = new WellKnownResponse
             {

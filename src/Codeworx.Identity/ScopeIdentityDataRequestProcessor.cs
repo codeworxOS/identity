@@ -24,12 +24,12 @@ namespace Codeworx.Identity
             var newScopes = new List<string>();
 
             var tempScopes = await _scopeService
-                .GetScopes()
+                .GetScopes(parameters)
                 .ConfigureAwait(false);
 
             var availableScopes = tempScopes.Select(p => p.ScopeKey).ToList();
 
-            if (scopes.Any(p => !availableScopes.Contains(p)))
+            if (scopes.Any(p => !ContainsScope(availableScopes, p)))
             {
                 builder.Throw(Constants.OAuth.Error.InvalidScope, null);
             }
@@ -45,14 +45,20 @@ namespace Codeworx.Identity
             }
 
             builder = builder.WithScopes(newScopes.ToArray());
+        }
 
-            if (request is OpenId.AuthorizationRequest)
+        private bool ContainsScope(List<string> availableScopes, string scope)
+        {
+            if (availableScopes.Contains(scope))
             {
-                if (!builder.Parameters.Scopes.Contains(Constants.OpenId.Scopes.OpenId))
-                {
-                    builder.Throw(Constants.OAuth.Error.InvalidScope, $"The {Constants.OpenId.Scopes.OpenId} scope is missing.");
-                }
+                return true;
             }
+            else if (scope.Contains(":"))
+            {
+                return availableScopes.Contains(scope.Split(':')[0]);
+            }
+
+            return false;
         }
     }
 }

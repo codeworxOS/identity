@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.Configuration;
-using Microsoft.AspNetCore.Authentication;
+using Codeworx.Identity.AspNetCore.Login;
+using Codeworx.Identity.Login;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -15,17 +15,28 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options)
+        public async Task Invoke(HttpContext context, IIdentityAuthenticationHandler handler)
         {
-            var result = await context.AuthenticateAsync(options.Value.AuthenticationScheme);
-
-            if (result.Succeeded)
+            try
             {
-                await _next(context);
-                return;
-            }
+                var result = await handler.AuthenticateAsync(context);
 
-            await context.ChallengeAsync(options.Value.AuthenticationScheme);
+                if (result.Succeeded)
+                {
+                    await _next(context);
+                    return;
+                }
+
+                await handler.ChallengeAsync(context);
+            }
+            catch (ErrorResponseException<ForceChangePasswordResponse> ex)
+            {
+                await context.GetResponseBinder<ForceChangePasswordResponse>().BindAsync(ex.TypedResponse, context.Response);
+            }
+            catch (ErrorResponseException<ConfirmationResponse> ex)
+            {
+                await context.GetResponseBinder<ConfirmationResponse>().BindAsync(ex.TypedResponse, context.Response);
+            }
         }
     }
 }

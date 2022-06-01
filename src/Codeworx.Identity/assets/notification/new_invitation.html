@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>New Invitation</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body style="font-family: Arial;font-size:12px; background-color: #eeeeee;">
+    <div style="background-color: #ffffff; max-width:800px; margin: 50px auto 30px auto ; padding:20px;">
+        <h1 style="font-weight: normal;font-size: 18px;">
+            Hello {{Target.Name}},
+        </h1>
+        <p style="font-weight: bold;margin-top: 30px;">
+            You have been invited to join the {{Company}} network.
+        </p>
+        <p style="text-align: center; margin-top:30px; margin-bottom: 30px;">
+            <h2>{{Code}}</h2>
+            <a style="padding: 10px 20px 10px 20px; background-color: #1a77b9; color: #ffffff; text-decoration:none; font-size: 11px; font-weight:bold;" href="{{InvitationUrl}}">accept</a>
+        </p>
+        <p>
+            If you did not expect this request, please contact us immediately{{#SupportEmail}} at <a href="mailto:{{SupportEmail}}">{{SupportEmail}}</a>.{{/SupportEmail}}{{^SupportEmail}}.{{/SupportEmail}}
+        </p>
+
+        <p>
+            Thank you,</br>
+            The {{Company}} Team
+        </p>
+    </div>
+</body>
+</html>

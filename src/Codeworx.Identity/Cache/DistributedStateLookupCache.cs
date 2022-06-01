@@ -28,12 +28,12 @@ namespace Codeworx.Identity.Cache
             return JsonConvert.DeserializeObject<StateLookupItem>(lookup);
         }
 
-        public async Task SetAsync(string state, StateLookupItem value)
+        public async Task SetAsync(string state, StateLookupItem value, TimeSpan validFor)
         {
             await _cache.SetStringAsync(
                 state,
                 JsonConvert.SerializeObject(value),
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5) })
+                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = validFor })
             .ConfigureAwait(false);
         }
     }

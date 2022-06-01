@@ -24,6 +24,73 @@ namespace Codeworx.Identity.AspNetCore
             _tokenProviders = tokenProviders;
         }
 
+        public static async Task AppendClaimsAsync(IToken token, ClaimsIdentity identity, string source)
+        {
+            var payload = await token.GetPayloadAsync();
+
+            foreach (var item in payload)
+            {
+                if (item.Value is string stringValue)
+                {
+                    AddClaimIfNotExists(identity, item.Key, stringValue, source);
+                }
+                else if (item.Value is IEnumerable<object> enumerable)
+                {
+                    foreach (var value in enumerable)
+                    {
+                        AddClaimIfNotExists(identity, item.Key, value, source);
+                    }
+                }
+                else
+                {
+                    AddClaimIfNotExists(identity, item.Key, item.Value, source);
+                }
+            }
+        }
+
+        public static HttpRequestMessage CreateTokenRequestMessage(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> content)
+        {
+            var tokenEndpointUri = oauthConfiguration.GetTokenEndpointUri();
+            var message = new HttpRequestMessage(HttpMethod.Post, tokenEndpointUri);
+
+            var body = new Dictionary<string, string>(content);
+            foreach (var item in oauthConfiguration.TokenParameters)
+            {
+                body.Add(item.Key, $"{item.Value}");
+            }
+
+            if (oauthConfiguration.ClientSecret != null)
+            {
+                if (oauthConfiguration.ClientAuthenticationMode == ClientAuthenticationMode.Header)
+                {
+                    var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
+                    message.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
+
+                    message.Content = new FormUrlEncodedContent(body);
+                }
+                else
+                {
+                    if (!body.ContainsKey(Constants.OAuth.ClientIdName))
+                    {
+                        body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
+                    }
+
+                    if (!body.ContainsKey(Constants.OAuth.ClientSecretName))
+                    {
+                        body.Add(Constants.OAuth.ClientSecretName, oauthConfiguration.ClientSecret);
+                    }
+
+                    message.Content = new FormUrlEncodedContent(body);
+                }
+            }
+            else
+            {
+                message.Content = new FormUrlEncodedContent(body);
+            }
+
+            return message;
+        }
+
         public virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
         {
             var contentCollection = new Dictionary<string, string>
@@ -78,7 +145,7 @@ namespace Codeworx.Identity.AspNetCore
 
             var identity = new ClaimsIdentity();
 
-            await AddClaimsAsync(token, identity, tokenName);
+            await AppendClaimsAsync(token, identity, tokenName);
             identity.AddClaim(new Claim(Constants.OAuth.AccessTokenName, responseValues.AccessToken));
 
             if (!string.IsNullOrWhiteSpace(responseValues.IdToken))
@@ -90,7 +157,7 @@ namespace Codeworx.Identity.AspNetCore
                     var identityToken = await provider.CreateAsync(null);
                     await identityToken.ParseAsync(responseValues.IdToken);
                     var identityPayload = await identityToken.GetPayloadAsync();
-                    await AddClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
+                    await AppendClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
                 }
             }
 
@@ -104,6 +171,11 @@ namespace Codeworx.Identity.AspNetCore
 
         private static void AddClaimIfNotExists(ClaimsIdentity identity, string key, object value, string source)
         {
+            if (value == null)
+            {
+                return;
+            }
+
             Claim claim = null;
 
             if (value is string stringValue)
@@ -116,7 +188,7 @@ namespace Codeworx.Identity.AspNetCore
             }
             else
             {
-                claim = new Claim(key, value.ToString());
+                claim = new Claim(key, value?.ToString());
             }
 
             claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
@@ -127,42 +199,9 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        private static async Task AddClaimsAsync(IToken token, ClaimsIdentity identity, string source)
-        {
-            var payload = await token.GetPayloadAsync();
-
-            foreach (var item in payload)
-            {
-                if (item.Value is string stringValue)
-                {
-                    AddClaimIfNotExists(identity, item.Key, stringValue, source);
-                }
-                else if (item.Value is IEnumerable<object> enumerable)
-                {
-                    foreach (var value in enumerable)
-                    {
-                        AddClaimIfNotExists(identity, item.Key, value, source);
-                    }
-                }
-                else
-                {
-                    AddClaimIfNotExists(identity, item.Key, item.Value, source);
-                }
-            }
-        }
-
         private async Task<HttpResponseMessage> CreateTokenResponse(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
         {
-            _client.BaseAddress = oauthConfiguration.BaseUri;
-
-            if (oauthConfiguration.ClientSecret != null)
-            {
-                var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
-
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
-            }
-
-            var response = await _client.PostAsync(oauthConfiguration.TokenEndpoint, new FormUrlEncodedContent(contentCollection));
+            var response = await _client.SendAsync(CreateTokenRequestMessage(oauthConfiguration, contentCollection));
             return response;
         }
 

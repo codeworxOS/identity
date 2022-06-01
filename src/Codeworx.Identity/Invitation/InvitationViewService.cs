@@ -1,90 +1,127 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 
 namespace Codeworx.Identity.Invitation
 {
     public class InvitationViewService : IInvitationViewService
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IInvitationService _service;
-        private readonly IEnumerable<ILoginRegistrationProvider> _providers;
+        private readonly IStringResources _stringResources;
         private readonly IUserService _userService;
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
         private readonly IPasswordPolicyProvider _passwordPolicyProvider;
+        private readonly ILoginPolicyProvider _loginPolicyProvider;
         private readonly IChangePasswordService _changePasswordService;
+        private readonly IChangeUsernameService _changeUsernameService;
 
         public InvitationViewService(
-            IServiceProvider serviceProvider,
             IInvitationService service,
             IUserService userService,
             ILoginService loginService,
             IIdentityService identityService,
             IPasswordPolicyProvider passwordPolicyProvider,
+            ILoginPolicyProvider loginPolicyProvider,
             IChangePasswordService changePasswordService,
-            IEnumerable<ILoginRegistrationProvider> providers)
+            IStringResources stringResources,
+            IChangeUsernameService changeUsernameService = null)
         {
-            _serviceProvider = serviceProvider;
             _service = service;
-            _providers = providers;
+            _stringResources = stringResources;
+            _changeUsernameService = changeUsernameService;
             _userService = userService;
             _loginService = loginService;
             _identityService = identityService;
             _passwordPolicyProvider = passwordPolicyProvider;
+            _loginPolicyProvider = loginPolicyProvider;
             _changePasswordService = changePasswordService;
         }
 
         public async Task<SignInResponse> ProcessAsync(ProcessInvitationViewRequest request)
         {
-            var policy = await _passwordPolicyProvider.GetPolicyAsync();
-            string error = null;
-            bool hasError = false;
-
-            if (request.Password != request.ConfirmPassword)
-            {
-                error = "Passwords do not match!";
-                hasError = true;
-            }
-            else if (!Regex.IsMatch(request.Password, policy.Regex))
-            {
-                error = policy.Description;
-                hasError = true;
-            }
-
-            if (hasError)
-            {
-                var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
-                throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
-            }
+            var languageCode = _stringResources.GetResource(StringResource.LanguageCode);
 
             try
             {
-                var invitation = await _service.RedeemInvitationAsync(request.Code);
-                var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                await _changePasswordService.SetPasswordAsync(user, request.Password);
-                var identity = await _identityService.GetClaimsIdentityFromUserAsync(user);
+                var invitation = await _service.GetInvitationAsync(request.Code).ConfigureAwait(false);
+                var user = await _userService.GetUserByIdAsync(invitation.UserId).ConfigureAwait(false);
 
+                if (invitation.Action.HasFlag(InvitationAction.ChangePassword))
+                {
+                    var policy = await _passwordPolicyProvider.GetPolicyAsync();
+                    string error = null;
+                    bool hasError = false;
+
+                    if (request.Password != request.ConfirmPassword)
+                    {
+                        error = _stringResources.GetResource(StringResource.PasswordChangeNotMatchingError);
+                        hasError = true;
+                    }
+                    else if (!policy.IsValid(request.Password, languageCode, out error))
+                    {
+                        hasError = true;
+                    }
+
+                    if (hasError)
+                    {
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
+                    }
+
+                    await _changePasswordService.SetPasswordAsync(user, request.Password).ConfigureAwait(false);
+                }
+
+                if (invitation.Action.HasFlag(InvitationAction.ChangeLogin) && user.Name != request.UserName)
+                {
+                    if (_changeUsernameService == null)
+                    {
+                        throw new NotSupportedException("Missing IChangeUsernameService");
+                    }
+
+                    var loginPolicy = await _loginPolicyProvider.GetPolicyAsync().ConfigureAwait(false);
+                    if (!loginPolicy.IsValid(request.UserName, languageCode, out var error))
+                    {
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
+                    }
+
+                    user = await _changeUsernameService.ChangeUsernameAsync(user, request.UserName).ConfigureAwait(false);
+                }
+
+                user = await _userService.GetUserByIdAsync(user.Identity).ConfigureAwait(false);
+
+                await _service.RedeemInvitationAsync(request.Code).ConfigureAwait(false);
+                var identity = await _identityService.GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
                 return new SignInResponse(identity, invitation.RedirectUri);
+            }
+            catch (UsernameAlreadyExistsException)
+            {
+                var errorMessage = _stringResources.GetResource(StringResource.UsernameAlreadyTaken);
+                var viewRequest = new InvitationViewRequest(request.Code, request.ProviderId, errorMessage);
+                var response = await ShowAsync(viewRequest).ConfigureAwait(false);
+                throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationNotFoundException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is invalid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationExpiredException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationAlreadyRedeemedException)
             {
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
         }
@@ -97,7 +134,7 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code);
 
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, request.Code);
+                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, invitationCode: request.Code, invitation: invitation);
 
                 if (!string.IsNullOrWhiteSpace(request.Provider))
                 {
@@ -110,15 +147,18 @@ namespace Codeworx.Identity.Invitation
             }
             catch (InvitationNotFoundException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is invalid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
             catch (InvitationExpiredException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is expired!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
             catch (InvitationAlreadyRedeemedException)
             {
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), "The invitation code is no longer valid!");
+                var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
             }
 
             return response;
