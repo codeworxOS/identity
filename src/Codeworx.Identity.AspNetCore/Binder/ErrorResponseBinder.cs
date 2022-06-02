@@ -10,7 +10,12 @@ namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class ErrorResponseBinder : ResponseBinder<ErrorResponse>
     {
-        public override async Task BindAsync(ErrorResponse responseData, HttpResponse response)
+        public bool Supports(Type responseType)
+        {
+            return responseType == typeof(ErrorResponse);
+        }
+
+        protected override async Task BindAsync(ErrorResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (response == null)
             {
@@ -44,15 +49,17 @@ namespace Codeworx.Identity.AspNetCore.Binder
             response.Headers.Add(HeaderNames.CacheControl, "no-store");
             response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            var responseString = JsonConvert.SerializeObject(responseData);
+            if (headerOnly)
+            {
+                response.StatusCode = StatusCodes.Status200OK;
+            }
+            else
+            {
+                var responseString = JsonConvert.SerializeObject(responseData);
 
-            await response.WriteAsync(responseString)
-                         .ConfigureAwait(false);
-        }
-
-        public bool Supports(Type responseType)
-        {
-            return responseType == typeof(ErrorResponse);
+                await response.WriteAsync(responseString)
+                             .ConfigureAwait(false);
+            }
         }
     }
 }

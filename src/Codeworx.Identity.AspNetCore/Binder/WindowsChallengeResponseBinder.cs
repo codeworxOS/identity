@@ -18,7 +18,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(WindowsChallengeResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(WindowsChallengeResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (responseData.DoChallenge)
             {

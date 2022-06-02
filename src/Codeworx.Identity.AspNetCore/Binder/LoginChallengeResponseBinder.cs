@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
             _handler = handler;
         }
 
-        public override async Task BindAsync(LoginChallengeResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(LoginChallengeResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (!string.IsNullOrWhiteSpace(responseData.Prompt))
             {

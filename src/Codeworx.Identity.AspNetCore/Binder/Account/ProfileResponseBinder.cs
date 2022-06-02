@@ -17,17 +17,21 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(ProfileResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(ProfileResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (_lookup.TryGetContentType(".html", out var contentType))
             {
                 response.ContentType = contentType;
             }
 
-            var html = await _view.GetProfileView(response.GetViewContextData(responseData));
-
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(html);
+
+            if (!headerOnly)
+            {
+                var html = await _view.GetProfileView(response.GetViewContextData(responseData));
+
+                await response.WriteAsync(html);
+            }
         }
     }
 }

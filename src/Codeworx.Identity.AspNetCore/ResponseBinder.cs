@@ -6,9 +6,7 @@ namespace Codeworx.Identity.AspNetCore
 {
     public abstract class ResponseBinder<TResponse> : IResponseBinder<TResponse>, IResponseBinder
     {
-        public abstract Task BindAsync(TResponse responseData, HttpResponse response);
-
-        Task IResponseBinder.BindAsync(object responseData, HttpResponse response)
+        public Task BindAsync(TResponse responseData, HttpResponse response)
         {
             if (responseData == null)
             {
@@ -20,7 +18,14 @@ namespace Codeworx.Identity.AspNetCore
                 throw new ArgumentNullException(nameof(response));
             }
 
-            return BindAsync((TResponse)responseData, response);
+            return BindAsync(responseData, response, HttpMethods.IsHead(response.HttpContext.Request.Method));
         }
+
+        Task IResponseBinder.BindAsync(object responseData, HttpResponse response)
+        {
+            return ((IResponseBinder<TResponse>)this).BindAsync((TResponse)responseData, response);
+        }
+
+        protected abstract Task BindAsync(TResponse responseData, HttpResponse response, bool headerOnly);
     }
 }

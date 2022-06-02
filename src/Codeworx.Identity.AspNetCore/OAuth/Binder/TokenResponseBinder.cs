@@ -18,7 +18,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             _serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
         }
 
-        public override async Task BindAsync(TokenResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(TokenResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (responseData == null)
             {
@@ -34,17 +34,24 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             response.Headers.Add(HeaderNames.CacheControl, "no-store");
             response.Headers.Add(HeaderNames.Pragma, "no-cache");
 
-            var serializer = JsonSerializer.Create(_serializerSettings);
-
-            using (var memoryStream = new MemoryStream())
+            if (headerOnly)
             {
-                using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 4096, true))
-                {
-                    serializer.Serialize(writer, responseData);
-                }
+                response.StatusCode = StatusCodes.Status200OK;
+            }
+            else
+            {
+                var serializer = JsonSerializer.Create(_serializerSettings);
 
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                await memoryStream.CopyToAsync(response.Body).ConfigureAwait(false);
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 4096, true))
+                    {
+                        serializer.Serialize(writer, responseData);
+                    }
+
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    await memoryStream.CopyToAsync(response.Body).ConfigureAwait(false);
+                }
             }
         }
     }

@@ -6,7 +6,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class NotAcceptableResponseBinder : ResponseBinder<NotAcceptableResponse>
     {
-        public override async Task BindAsync(NotAcceptableResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(NotAcceptableResponse responseData, HttpResponse response, bool headerOnly)
         {
             response.StatusCode = StatusCodes.Status406NotAcceptable;
             await response.WriteAsync(responseData.Reason);

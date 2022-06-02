@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Api.Test
                 .AddApplicationPart(typeof(TenantController).Assembly)
                 .AddNewtonsoftJson();
 
-            ////services.AddOpenApiDocument();
+            ////services.AddOpenApiDocument((document, sp) =>
             services.AddOpenApiDocument<TestIdentityContext>((document, sp) =>
             {
                 document.AddSecurity("JWT", new string[] { }, new OpenApiSecurityScheme
