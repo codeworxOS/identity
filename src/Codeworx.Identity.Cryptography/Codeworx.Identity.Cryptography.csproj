@@ -6,10 +6,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="libsodium" Version="1.0.18.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="2.1.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+		<PackageReference Include="libsodium" Version="1.0.18.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="3.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

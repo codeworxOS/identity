@@ -12,7 +12,7 @@ namespace Codeworx.Identity.Login
 
         public void Process(TextWriter output, dynamic context, params object[] arguments)
         {
-            if (context is ILoginRegistrationGroup info)
+            if (context.Value is ILoginRegistrationGroup info)
             {
                 output.Write(info.Template);
             }

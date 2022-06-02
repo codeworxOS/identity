@@ -12,10 +12,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 
             builder.HasIndex(p => p.Name)
                 .IsUnique()
-#if NETSTANDARD2_1
-                .HasDatabaseName("IX_RightHolder_Name_Unique");
-#else
+#if NETSTANDARD2_0
                 .HasName("IX_RightHolder_Name_Unique");
+#else
+                .HasDatabaseName("IX_RightHolder_Name_Unique");
 #endif
 
             builder.Property<byte>("Type")

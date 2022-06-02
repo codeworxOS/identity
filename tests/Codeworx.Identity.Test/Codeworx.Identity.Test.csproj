@@ -1,18 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5;net6;</TargetFrameworks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <Configurations>Debug;Release;MsSql</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <EfVersion>3</EfVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net5'">
     <EfVersion>5</EfVersion>
   </PropertyGroup>
+	
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net6'">
+		<EfVersion>6</EfVersion>
+	</PropertyGroup>
 
   <ItemGroup>
     <PackageReference Remove="StyleCop.Analyzers" />
@@ -24,11 +27,14 @@
   <ItemGroup Condition="'$(EfVersion)' == '5'">
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" />
   </ItemGroup>
+	<ItemGroup Condition="'$(EfVersion)' == '6'">
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" />
+	</ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="nunit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="nunit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>

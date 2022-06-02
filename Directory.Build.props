@@ -19,14 +19,14 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.164">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\global\StyleCop.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\global\stylecop.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
       <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
