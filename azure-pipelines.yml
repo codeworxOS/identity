@@ -5,7 +5,7 @@
 # https://aka.ms/yaml
 
 pool:
-  name: Hosted Windows 2019 with VS2019
+  vmImage: windows-latest
 
 steps:
 - task: DownloadSecureFile@1
