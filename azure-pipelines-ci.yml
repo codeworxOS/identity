@@ -1,6 +1,6 @@
 
 pool:
-  name: Hosted Windows 2019 with VS2019
+  name: ubuntu-latest
 
 steps:
 
