@@ -124,6 +124,12 @@ namespace Codeworx.Identity.Invitation
                 var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
+            catch (PasswordChangeException)
+            {
+                var errorMessage = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
+                var response = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, errorMessage));
+                throw new ErrorResponseException<InvitationViewResponse>(response);
+            }
         }
 
         public async Task<InvitationViewResponse> ShowAsync(InvitationViewRequest request)
