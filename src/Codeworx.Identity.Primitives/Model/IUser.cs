@@ -16,6 +16,8 @@ namespace Codeworx.Identity.Model
 
         bool ConfirmationPending { get; }
 
+        bool HasMfaRegistration { get; }
+
         IReadOnlyList<string> LinkedProviders { get; }
 
         int FailedLoginCount { get; }

@@ -14,6 +14,7 @@ using Codeworx.Identity.AspNetCore.Binder.Invitation;
 using Codeworx.Identity.AspNetCore.Binder.Login;
 using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.AspNetCore.Binder.LoginView;
+using Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa;
 using Codeworx.Identity.AspNetCore.Binder.Logout;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
 using Codeworx.Identity.AspNetCore.Invitation;
@@ -29,6 +30,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Cryptography.Internal;
 using Codeworx.Identity.Cryptography.Json;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
@@ -172,6 +174,11 @@ namespace Codeworx.Identity.AspNetCore
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
                        p => p.UseMiddleware<LoginMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.AccountEndpoint + "/login/mfa"),
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<MfaLoginMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
                        p => p.UseMiddleware<LogoutMiddleware>())
                    .MapWhen(
@@ -256,6 +263,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<TokenExchangeRequest>, TokenExchangeRequestBinder>();
             collection.AddTransient<IRequestBinder<LoginRequest>, LoginRequestBinder>();
             collection.AddTransient<IRequestBinder<LogoutRequest>, LogoutRequestBinder>();
+            collection.AddTransient<IRequestBinder<MfaLoginRequest>, MfaLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewRequest>, SelectTenantViewRequestBinder>();
             collection.AddTransient<IRequestBinder<SelectTenantViewActionRequest>, SelectTenantViewActionRequestBinder>();
             collection.AddTransient<IRequestBinder<OAuthRedirectRequest>, OAuthRedirectRequestBinder>();
@@ -282,6 +290,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<MethodNotSupportedResponse>, MethodNotSupportedResponseBinder>();
             collection.AddTransient<IResponseBinder<UnsupportedMediaTypeResponse>, UnsupportedMediaTypeResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginResponse>, LoginResponseBinder>();
+            collection.AddTransient<IResponseBinder<MfaLoginResponse>, MfaLoginResponseBinder>();
             collection.AddTransient<IResponseBinder<ProfileResponse>, ProfileResponseBinder>();
             collection.AddTransient<IResponseBinder<InvalidStateResponse>, InvalidStateResponseBinder>();
             collection.AddTransient<IResponseBinder<WellKnownResponse>, WellKnownResponseBinder>();

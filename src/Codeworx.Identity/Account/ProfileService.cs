@@ -56,7 +56,7 @@ namespace Codeworx.Identity.Account
 
             foreach (var provider in _providers)
             {
-                foreach (var registration in await provider.GetLoginRegistrationsAsync())
+                foreach (var registration in await provider.GetLoginRegistrationsAsync(LoginProviderType.Login))
                 {
                     var processor = (ILoginProcessor)_serviceProvider.GetService(registration.ProcessorType);
                     var info = await processor.GetRegistrationInfoAsync(providerRequest, registration);
@@ -93,7 +93,7 @@ namespace Codeworx.Identity.Account
 
                 foreach (var item in _providers)
                 {
-                    foreach (var configuration in await item.GetLoginRegistrationsAsync())
+                    foreach (var configuration in await item.GetLoginRegistrationsAsync(LoginProviderType.Login))
                     {
                         if (configuration.Id == request.ProviderId)
                         {

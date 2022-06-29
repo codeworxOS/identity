@@ -43,6 +43,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Usage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(1);
+
                     b.HasKey("Id");
 
                     b.HasIndex("FilterId");
@@ -155,6 +160,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("AuthenticationMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("ClientSecretHash")
                         .HasColumnType("TEXT")
@@ -379,6 +389,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("AuthenticationMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -535,6 +550,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
+
+                    b.Property<int>("AuthenticationMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("ConfirmationCode")
                         .HasColumnType("TEXT")

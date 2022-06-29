@@ -18,7 +18,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(p => p.ExternalIdentifier)
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETCOREAPP3_1
                 .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")
 #else
                 .HasDatabaseName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")

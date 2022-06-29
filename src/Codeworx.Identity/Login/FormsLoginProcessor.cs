@@ -46,6 +46,8 @@ namespace Codeworx.Identity.Login
                 case ProviderRequestType.Profile:
                     var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
                     return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
                 default:
                     break;
             }

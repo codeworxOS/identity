@@ -30,6 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             {
                 Id = Guid.NewGuid(),
                 Name = tenant.Name,
+                AuthenticationMode = tenant.AuthenticationMode,
             };
             _db.Context.Add(entity);
 
@@ -39,7 +40,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
             await _db.Context.SaveChangesAsync();
 
-            var result = new TenantListData { Id = entity.Id, Name = entity.Name };
+            var result = new TenantListData { Id = entity.Id, Name = entity.Name, AuthenticationMode = entity.AuthenticationMode };
             entry.MapAdditionalProperties(result);
 
             return result;
@@ -89,6 +90,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 {
                     Id = tenant.Id,
                     Name = tenant.Name,
+                    AuthenticationMode = tenant.AuthenticationMode,
                 };
 
                 _db.Context.Entry(tenant).MapAdditionalProperties(data);

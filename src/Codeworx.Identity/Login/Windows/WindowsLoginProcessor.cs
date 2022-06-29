@@ -49,6 +49,8 @@ namespace Codeworx.Identity.Login.Windows
                 case ProviderRequestType.Profile:
                     uriBuilder.AppendPath($"{_options.AccountEndpoint}/me/{configuration.Id}");
                     break;
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
                 default:
                     throw new NotSupportedException();
             }

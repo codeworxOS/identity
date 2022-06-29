@@ -4,6 +4,7 @@ using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Notification;
@@ -56,6 +57,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IProfileService, ProfileService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IMfaViewService, MfaViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);

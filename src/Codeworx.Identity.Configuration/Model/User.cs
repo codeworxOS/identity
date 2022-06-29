@@ -29,5 +29,7 @@ namespace Codeworx.Identity.Configuration.Model
         public IReadOnlyList<string> LinkedProviders { get; }
 
         public int FailedLoginCount => 0;
+
+        public bool HasMfaRegistration => false;
     }
 }

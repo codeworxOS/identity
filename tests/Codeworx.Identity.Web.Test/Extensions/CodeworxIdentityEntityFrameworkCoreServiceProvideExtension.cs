@@ -4,6 +4,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -268,6 +269,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             })
                         });
                     }
+
+                    AuthenticationProvider totpRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.TotpProviderId));
+
+                    if (totpRegistration == null)
+                    {
+                        context.AuthenticationProviders.Add(new AuthenticationProvider
+                        {
+                            Id = Guid.Parse(TestConstants.TotpProviderId),
+                            Name = "Totp",
+                            SortOrder = 50,
+                            EndpointType = new TotpMfaLoginProcessorLookup().Key,
+                            Usage = LoginProviderType.MultiFactor,
+                        });
+                    }
+
 
                     var invitationUser = context.Users.FirstOrDefault(p => p.Id == _invitationUserId);
 

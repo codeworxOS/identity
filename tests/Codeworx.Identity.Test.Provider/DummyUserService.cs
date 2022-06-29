@@ -100,6 +100,8 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
+            public bool HasMfaRegistration => false;
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;
@@ -134,6 +136,8 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
+            public bool HasMfaRegistration => false;
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;
@@ -161,6 +165,8 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
+
+            public bool HasMfaRegistration => false;
 
             public void ResetPassword(string password)
             {
@@ -197,6 +203,8 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
+            public bool HasMfaRegistration => false;
+
             public void ResetPassword(string password)
             {
                 _password = password;
@@ -229,6 +237,8 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
 
             public int FailedLoginCount { get; set; }
+
+            public bool HasMfaRegistration => false;
 
             public void ResetPassword(string password)
             {

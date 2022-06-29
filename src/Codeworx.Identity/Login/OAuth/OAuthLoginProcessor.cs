@@ -86,6 +86,8 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendPath("me");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     break;
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
                 default:
                     throw new NotSupportedException();
             }

@@ -56,6 +56,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Mfa.Totp", "src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj", "{D4ADC577-70A5-476B-9D72-422825BD6959}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -385,6 +387,24 @@ Global
 		{E3A02344-0C51-4622-B303-F38C1D344341}.Release|x64.Build.0 = Release|Any CPU
 		{E3A02344-0C51-4622-B303-F38C1D344341}.Release|x86.ActiveCfg = Release|Any CPU
 		{E3A02344-0C51-4622-B303-F38C1D344341}.Release|x86.Build.0 = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|x64.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|Any CPU.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|x64.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|x64.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|x86.ActiveCfg = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.MsSql|x86.Build.0 = Debug|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|x64.Build.0 = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4ADC577-70A5-476B-9D72-422825BD6959}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -409,6 +429,7 @@ Global
 		{2C6FA098-E6B5-4D62-AAF2-CFB23831A3C4} = {B269A167-BF3F-41CC-97D9-870D888919D2}
 		{E3A02344-0C51-4622-B303-F38C1D344341} = {B269A167-BF3F-41CC-97D9-870D888919D2}
 		{B269A167-BF3F-41CC-97D9-870D888919D2} = {AB02A07B-9A72-4605-BCC3-C2C46357DC0F}
+		{D4ADC577-70A5-476B-9D72-422825BD6959} = {AB02A07B-9A72-4605-BCC3-C2C46357DC0F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3F4DB969-2A92-4815-934F-C78079FDC7B6}

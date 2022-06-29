@@ -20,5 +20,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
         public int FailedLoginCount { get; set; }
 
         public bool ConfirmationPending { get; set; }
+
+        public bool HasMfaRegistration { get; set; }
     }
 }

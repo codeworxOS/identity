@@ -60,6 +60,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new RightHolderGroupConfiguration());
+            modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeAssignmentEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeClaimEntityTypeConfiguration());

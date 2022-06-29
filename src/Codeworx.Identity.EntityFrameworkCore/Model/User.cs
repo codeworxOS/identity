@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -38,6 +39,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         [StringLength(512)]
         public string PasswordHash { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
 
         public ICollection<TenantUser> Tenants { get; }
 
