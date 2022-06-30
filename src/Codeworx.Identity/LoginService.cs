@@ -145,15 +145,18 @@ namespace Codeworx.Identity
         {
             foreach (var item in _providers)
             {
-                IEnumerable<ILoginRegistration> registrations = await item.GetLoginRegistrationsAsync(LoginProviderType.Login);
-
-                foreach (var registration in registrations)
+                foreach (var providerType in new[] { LoginProviderType.Login, LoginProviderType.MultiFactor })
                 {
-                    if (registration.Id == providerId)
-                    {
-                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as ILoginProcessor;
+                    IEnumerable<ILoginRegistration> registrations = await item.GetLoginRegistrationsAsync(providerType);
 
-                        return new ProcessorInfo(processor, registration);
+                    foreach (var registration in registrations)
+                    {
+                        if (registration.Id == providerId)
+                        {
+                            var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as ILoginProcessor;
+
+                            return new ProcessorInfo(processor, registration);
+                        }
                     }
                 }
             }

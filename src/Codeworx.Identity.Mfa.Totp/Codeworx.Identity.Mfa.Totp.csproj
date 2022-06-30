@@ -1,22 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netcoreapp3.1;net5;net6</TargetFrameworks>
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 		<Configurations>Debug;Release;MsSql</Configurations>
-	</PropertyGroup>
+	  <OutputType>Library</OutputType>
+	  <IsPackable>true</IsPackable>
+  </PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="assets\login_totp.html" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="assets\login_totp.html" />
 	  <EmbeddedResource Include="assets\register_totp.html" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
+	  <PackageReference Include="Otp.NET" Version="1.2.2" />
 	  <PackageReference Include="QRCoder" Version="1.4.3" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+	  <ProjectReference Include="..\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
 	</ItemGroup>
 
 </Project>

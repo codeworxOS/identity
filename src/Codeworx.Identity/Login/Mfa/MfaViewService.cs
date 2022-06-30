@@ -21,7 +21,17 @@ namespace Codeworx.Identity.Login.Mfa
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<MfaLoginResponse> ProcessLoginAsync(MfaLoginRequest request)
+        public async Task<SignInResponse> ProcessLoginAsync(MfaProcessLoginRequest request)
+        {
+            var response = await _loginService.SignInAsync(request.ProviderId, request.ProviderRequestParameter).ConfigureAwait(false);
+
+            response.Identity.AddClaim(new System.Security.Claims.Claim("mfa", request.ProviderId));
+            var result = new SignInResponse(response.Identity, request.ReturnUrl);
+
+            return result;
+        }
+
+        public async Task<MfaLoginResponse> ShowLoginAsync(MfaLoginRequest request, string errorProviderId = null, string errorMessage = null)
         {
             var user = await _userService.GetUserByIdentityAsync(request.Identity);
 
@@ -33,6 +43,11 @@ namespace Codeworx.Identity.Login.Mfa
             var requestType = user.HasMfaRegistration ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
             var providerRequest = new ProviderRequest(requestType, request.ReturnUrl, user: user);
+
+            if (errorProviderId != null)
+            {
+                providerRequest.ProviderErrors.Add(errorProviderId, errorMessage);
+            }
 
             var response = await _loginService.GetRegistrationInfosAsync(providerRequest);
 

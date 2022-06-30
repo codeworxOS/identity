@@ -1,9 +1,26 @@
-﻿namespace Codeworx.Identity.Mfa.Totp
+﻿using System.Security.Claims;
+
+namespace Codeworx.Identity.Mfa.Totp
 {
     public class TotpLoginRequest
     {
-        public string OneTimeCode { get; set; }
+        public TotpLoginRequest(string providerId, ClaimsIdentity identity, TotpAction action, string oneTimeCode, string sharedSecret = null)
+        {
+            ProviderId = providerId;
+            Identity = identity;
+            Action = action;
+            OneTimeCode = oneTimeCode;
+            SharedSecret = sharedSecret;
+        }
 
-        public string SharedSecret { get; set; }
+        public string ProviderId { get; }
+
+        public ClaimsIdentity Identity { get; }
+
+        public TotpAction Action { get; }
+
+        public string OneTimeCode { get; }
+
+        public string SharedSecret { get; }
     }
 }

@@ -56,5 +56,9 @@
         ConfirmationMessage,
         AccountConfirmationPending,
         EmailLoginDescription,
+        ProvideOneTimeCode,
+        OneTimeCode,
+        SendCode,
+        InvalidOneTimeCode,
     }
 }

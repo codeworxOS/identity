@@ -20,6 +20,26 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
+        public async Task<string> GetProviderValueAsync(ClaimsIdentity user, string provider)
+        {
+            var userId = Guid.Parse(user.GetUserId());
+
+            var authenticationProviderSet = _context.Set<AuthenticationProvider>();
+            var authenticationProviderRightHolderSet = _context.Set<AuthenticationProviderRightHolder>();
+            var providerId = Guid.Parse(provider);
+
+            var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);
+            var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
+
+            var result = await authenticationProviderRightHolderSet
+                                .Where(p => p.RightHolderId == userId && p.ProviderId == authenticationProviderId)
+                                .Select(p => p.ExternalIdentifier)
+                                .FirstOrDefaultAsync()
+                                .ConfigureAwait(false);
+
+            return result;
+        }
+
         public virtual async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
             IQueryable<User> userQuery = GetUserQuery();

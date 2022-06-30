@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Mfa.Totp
             var coder = new QRCoder.QRCodeGenerator();
             var payload = new OneTimePassword
             {
-                AuthAlgorithm = OneTimePassword.OneTimePasswordAuthAlgorithm.SHA512,
+                AuthAlgorithm = OneTimePassword.OneTimePasswordAuthAlgorithm.SHA1,
                 Digits = 6,
                 Issuer = options.CompanyName,
                 Secret = SharedSecret.ToString(),

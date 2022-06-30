@@ -250,6 +250,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The One-Time code is invalid!.
+        /// </summary>
+        internal static string InvalidOneTimeCode {
+            get {
+                return ResourceManager.GetString("InvalidOneTimeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The invitation code is expired!.
         /// </summary>
         internal static string InvitationCodeExpiredError {
@@ -349,6 +358,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One-Time code.
+        /// </summary>
+        internal static string OneTimeCode {
+            get {
+                return ResourceManager.GetString("OneTimeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to or connect with.
         /// </summary>
         internal static string OrConnectWith {
@@ -430,6 +448,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provide One-Time code:.
+        /// </summary>
+        internal static string ProvideOneTimeCode {
+            get {
+                return ResourceManager.GetString("ProvideOneTimeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remember me.
         /// </summary>
         internal static string RememberMe {
@@ -480,6 +507,15 @@ namespace Codeworx.Identity.Resources {
         internal static string SelectTenantPageTitle {
             get {
                 return ResourceManager.GetString("SelectTenantPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        internal static string SendCode {
+            get {
+                return ResourceManager.GetString("SendCode", resourceCulture);
             }
         }
         
