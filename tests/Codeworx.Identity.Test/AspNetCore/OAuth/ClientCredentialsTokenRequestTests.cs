@@ -6,6 +6,7 @@ using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -20,7 +21,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
 
             var request = new TokenRequestBuilder().WithGrantType(Constants.OAuth.GrantType.ClientCredentials)
-                                                        .WithClientId(Constants.TestData.Clients.DefaultServiceAccountClientId)
+                                                        .WithClientId(TestConstants.Clients.DefaultServiceAccountClientId)
                                                         .WithClientSecret("clientSecret")
                                                         .WithScopes("openid tenant")
                                                         .Build();
@@ -37,7 +38,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 var response = await tokenService.ProcessAsync(request);
 
                 Assert.IsTrue(response.Scope.Contains("tenant"));
-                Assert.IsTrue(response.Scope.Contains(Constants.TestData.Tenants.DefaultTenant.Id, StringComparison.InvariantCultureIgnoreCase));
+                Assert.IsTrue(response.Scope.Contains(TestConstants.Tenants.DefaultTenant.Id, StringComparison.InvariantCultureIgnoreCase));
                 Assert.NotNull(response.AccessToken);
             }
         }

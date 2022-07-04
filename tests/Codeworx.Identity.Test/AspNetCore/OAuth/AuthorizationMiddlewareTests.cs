@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -198,7 +199,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .WithScope("unknown")
                                                            .Build();
 
@@ -267,7 +268,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder()
-                          .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+                          .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                           .WithResponseType("unsupported")
                           .Build();
 
@@ -289,7 +290,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -315,7 +316,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri(string.Empty)
-                                                           .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+                                                           .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);

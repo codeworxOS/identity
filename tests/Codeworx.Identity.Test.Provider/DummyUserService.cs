@@ -46,11 +46,11 @@ namespace Codeworx.Identity.Test
         public Task SetDefaultTenantAsync(string identifier, string tenantKey)
         {
             var id = Guid.Parse(identifier);
-            if (id == Guid.Parse(Constants.TestData.Users.DefaultAdmin.UserId))
+            if (id == Guid.Parse(TestConstants.Users.DefaultAdmin.UserId))
             {
                 throw new KeyNotFoundException();
             }
-            else if (id == Guid.Parse(Constants.TestData.Users.MultiTenant.UserId))
+            else if (id == Guid.Parse(TestConstants.Users.MultiTenant.UserId))
             {
                 _defaultTenantMultiTenantCache = tenantKey;
             }
@@ -88,7 +88,7 @@ namespace Codeworx.Identity.Test
         public class DummyUser : IDummyUser
         {
             private bool _forceChangePassword;
-            private string _password = Constants.TestData.Users.DefaultAdmin.Password;
+            private string _password = TestConstants.Users.DefaultAdmin.Password;
             public bool ConfirmationPending => false;
 
             public DummyUser()
@@ -98,9 +98,9 @@ namespace Codeworx.Identity.Test
 
             public string DefaultTenantKey => null;
 
-            public string Identity => Constants.TestData.Users.DefaultAdmin.UserId;
+            public string Identity => TestConstants.Users.DefaultAdmin.UserId;
 
-            public string Name => Constants.TestData.Users.DefaultAdmin.UserName;
+            public string Name => TestConstants.Users.DefaultAdmin.UserName;
 
             public string PasswordHash => _password;
 
@@ -124,7 +124,7 @@ namespace Codeworx.Identity.Test
         public class DummyEmailUser : IDummyUser
         {
             private bool _forceChangePassword;
-            private string _password = TestConstants.DefaultEmailUserPassword;
+            private string _password = TestConstants.Users.DefaultEmail.Password;
             public bool ConfirmationPending => false;
 
             public DummyEmailUser()
@@ -134,11 +134,11 @@ namespace Codeworx.Identity.Test
 
             public string DefaultTenantKey => null;
 
-            public string Identity => TestConstants.DefaultEmailUserId;
+            public string Identity => TestConstants.Users.DefaultEmail.UserId;
 
-            public string Name => TestConstants.DefaultEmailUserName;
+            public string Name => TestConstants.Users.DefaultEmail.UserName;
 
-            public string PasswordHash => TestConstants.DefaultEmailUserPassword;
+            public string PasswordHash => _password;
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
@@ -164,9 +164,9 @@ namespace Codeworx.Identity.Test
             public bool ConfirmationPending => false;
             public string DefaultTenantKey => null;
 
-            public string Identity => Constants.TestData.Users.NoPassword.UserId;
+            public string Identity => TestConstants.Users.NoPassword.UserId;
 
-            public string Name => Constants.TestData.Users.NoPassword.UserName;
+            public string Name => TestConstants.Users.NoPassword.UserName;
 
             public string PasswordHash => _password;
 
@@ -190,7 +190,7 @@ namespace Codeworx.Identity.Test
         public class MultiTenantDummyUser : IDummyUser
         {
             private bool _forceChangePassword;
-            private string _password = Constants.TestData.Users.MultiTenant.Password;
+            private string _password = TestConstants.Users.MultiTenant.Password;
             public MultiTenantDummyUser(string defaultTenantKey = null)
             {
                 FailedLoginCount = 0;
@@ -201,9 +201,9 @@ namespace Codeworx.Identity.Test
 
             public string DefaultTenantKey { get; }
 
-            public string Identity => Constants.TestData.Users.MultiTenant.UserId;
+            public string Identity => TestConstants.Users.MultiTenant.UserId;
 
-            public string Name => Constants.TestData.Users.MultiTenant.UserName;
+            public string Name => TestConstants.Users.MultiTenant.UserName;
 
             public string PasswordHash => _password;
 
@@ -227,7 +227,7 @@ namespace Codeworx.Identity.Test
         public class ForceChangePasswordUser : IDummyUser
         {
             private bool _forceChangePassword = true;
-            private string _password = Constants.TestData.Users.ForceChangePassword.Password;
+            private string _password = TestConstants.Users.ForceChangePassword.Password;
 
             public ForceChangePasswordUser()
             {
@@ -236,9 +236,9 @@ namespace Codeworx.Identity.Test
             public bool ConfirmationPending => false;
             public string DefaultTenantKey => null;
 
-            public string Identity => Constants.TestData.Users.ForceChangePassword.UserId;
+            public string Identity => TestConstants.Users.ForceChangePassword.UserId;
 
-            public string Name => Constants.TestData.Users.ForceChangePassword.UserName;
+            public string Name => TestConstants.Users.ForceChangePassword.UserName;
 
             public string PasswordHash => _password;
 
@@ -258,5 +258,7 @@ namespace Codeworx.Identity.Test
                 _forceChangePassword = false;
             }
         }
+
+       
     }
 }

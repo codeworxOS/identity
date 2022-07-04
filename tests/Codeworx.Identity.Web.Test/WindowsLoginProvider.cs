@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.ExternalLogin;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Web.Test
 {
@@ -14,8 +15,8 @@ namespace Codeworx.Identity.Web.Test
                 new[] {
                     new ExternalLoginRegistration
                     {
-                        Id = Constants.TestData.LoginProviders.ExternalWindowsProvider.Id,
-                        Name = Constants.TestData.LoginProviders.ExternalWindowsProvider.Name,
+                        Id = TestConstants.LoginProviders.ExternalWindowsProvider.Id,
+                        Name = TestConstants.LoginProviders.ExternalWindowsProvider.Name,
                         ProcessorType = typeof(WindowsLoginProcessor)
                     }
                 });

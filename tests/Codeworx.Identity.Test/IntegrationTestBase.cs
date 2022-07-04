@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,9 +36,9 @@ namespace Codeworx.Identity.Test
             var response = await this.TestClient.PostAsync(options.Value.AccountEndpoint + "/login",
                                                            new FormUrlEncodedContent(new Dictionary<string, string>
                                                                                      {
-                                                                                         {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
-                                                                                         {"username", Constants.TestData.Users.DefaultAdmin.UserName},
-                                                                                         {"password", Constants.TestData.Users.DefaultAdmin.Password}
+                                                                                         {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                                                                         {"username", TestConstants.Users.DefaultAdmin.UserName},
+                                                                                         {"password", TestConstants.Users.DefaultAdmin.Password}
                                                                                      }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);

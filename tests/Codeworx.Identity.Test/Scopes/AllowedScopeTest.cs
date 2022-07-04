@@ -17,7 +17,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public async Task TestAllowedScopsForOAuthAuthorizationRequest_AllowedMainScope_ExpectsOk()
         {
-            var request = new AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1 openid", null);
+            var request = new AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1 openid", null);
             var parameters = await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u));
 
             Assert.True(parameters.Scopes.SequenceEqual(new[] { "scope1", "openid" }));
@@ -26,7 +26,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public async Task TestAllowedScopsForOAuthAuthorizationRequest_AllowedSubScope_ExpectsOk()
         {
-            var request = new AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1:sub1 openid", null);
+            var request = new AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1:sub1 openid", null);
             var parameters = await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u));
 
             Assert.True(parameters.Scopes.SequenceEqual(new[] { "scope1:sub1", "openid" }));
@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public void TestAllowedScopsForOAuthAuthorizationRequest_ForbiddenMainScope_ExpectsError()
         {
-            var request = new AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2 openid", null);
+            var request = new AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2 openid", null);
             var exception = Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u)));
             Assert.AreEqual(Constants.OAuth.Error.InvalidScope, exception.TypedResponse.Error);
         }
@@ -43,7 +43,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public void TestAllowedScopsForOAuthAuthorizationRequest_ForbiddenSubScope_ExpectsError()
         {
-            var request = new AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2:sub1 openid", null);
+            var request = new AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2:sub1 openid", null);
             var exception = Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u)));
             Assert.AreEqual(Constants.OAuth.Error.InvalidScope, exception.TypedResponse.Error);
         }
@@ -51,7 +51,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public async Task TestAllowedScopsForOpenIdAuthorizationRequest_AllowedMainScope_ExpectsOk()
         {
-            var request = new OpenId.AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1 openid", null, null, null, null);
+            var request = new OpenId.AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1 openid", null, null, null, null);
             var parameters = await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u));
 
             Assert.True(parameters.Scopes.SequenceEqual(new[] { "scope1", "openid" }));
@@ -60,7 +60,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public async Task TestAllowedScopsForOpenIdAuthorizationRequest_AllowedSubScope_ExpectsOk()
         {
-            var request = new OpenId.AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1:sub1 openid", null, null, null, null);
+            var request = new OpenId.AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope1:sub1 openid", null, null, null, null);
             var parameters = await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u));
 
             Assert.True(parameters.Scopes.SequenceEqual(new[] { "scope1:sub1", "openid" }));
@@ -69,7 +69,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public void TestAllowedScopsForOpenIdAuthorizationRequest_ForbiddenMainScope_ExpectsError()
         {
-            var request = new OpenId.AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2 openid", null, null, null, null);
+            var request = new OpenId.AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2 openid", null, null, null, null);
             var exception = Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u)));
             Assert.AreEqual(Constants.OAuth.Error.InvalidScope, exception.TypedResponse.Error);
         }
@@ -77,7 +77,7 @@ namespace Codeworx.Identity.Test.Scopes
         [Test]
         public void TestAllowedScopsForOpenIdAuthorizationRequest_ForbiddenSubScope_ExpectsError()
         {
-            var request = new OpenId.AuthorizationRequest(TestDefaults.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2:sub1 openid", null, null, null, null);
+            var request = new OpenId.AuthorizationRequest(TestConstants.Clients.LimitedScope1ClientId, "https://example.org/redirect", "code", "scope2:sub1 openid", null, null, null, null);
             var exception = Assert.ThrowsAsync<ErrorResponseException<AuthorizationErrorResponse>>(async () => await ProcessRequestAsync(request, (r, u) => new AuthorizationParametersBuilder(r, u)));
             Assert.AreEqual(Constants.OAuth.Error.InvalidScope, exception.TypedResponse.Error);
         }
@@ -90,7 +90,7 @@ namespace Codeworx.Identity.Test.Scopes
                 .UseTestSetup();
 
             var sp = services.BuildServiceProvider();
-            var user = await sp.GetRequiredService<IIdentityService>().LoginAsync(Constants.TestData.Users.DefaultAdmin.UserName, Constants.TestData.Users.DefaultAdmin.Password);
+            var user = await sp.GetRequiredService<IIdentityService>().LoginAsync(TestConstants.Users.DefaultAdmin.UserName, TestConstants.Users.DefaultAdmin.Password);
 
             var builder = builderfactory(request, user);
 

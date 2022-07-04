@@ -9,6 +9,7 @@ namespace Codeworx.Identity.Test.AspNetCore
     using System.Threading.Tasks;
     using Codeworx.Identity.Configuration;
     using Codeworx.Identity.OAuth;
+    using Codeworx.Identity.Test.Provider;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
@@ -29,9 +30,9 @@ namespace Codeworx.Identity.Test.AspNetCore
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
-                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
-                                   {"password", Constants.TestData.Users.ForceChangePassword.Password}
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                   {"password", TestConstants.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -46,8 +47,8 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var changePasswordContent = new FormUrlEncodedContent(new Dictionary<string, string>
                                              {
-                                                 {"username", Constants.TestData.Users.ForceChangePassword.UserName},
-                                                 {"current-password", Constants.TestData.Users.ForceChangePassword.Password},
+                                                 {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                                 {"current-password", TestConstants.Users.ForceChangePassword.Password},
                                                  {"password", "aaAAbb11!!"},
                                                  {"confirm-password", "aaAAbb11!!"},
                                              });
@@ -59,8 +60,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
-                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
                                    {"password", "aaAAbb11!!"}
                                }));
 
@@ -81,9 +82,9 @@ namespace Codeworx.Identity.Test.AspNetCore
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
-                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
-                                   {"password", Constants.TestData.Users.ForceChangePassword.Password}
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                   {"password", TestConstants.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -91,7 +92,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
             this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                                 .Build();
 
             var requestString = this.ToRequestString(request);

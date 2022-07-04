@@ -9,6 +9,7 @@ using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
@@ -31,7 +32,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 var windowsIdentity = new ClaimsIdentity();
                 windowsIdentity.AddClaim(new Claim(ClaimTypes.PrimarySid, "abc"));
 
-                var request = new WindowsLoginRequest(Constants.TestData.LoginProviders.ExternalWindowsProvider.Id, windowsIdentity, "http://localhost/return", null);
+                var request = new WindowsLoginRequest(TestConstants.LoginProviders.ExternalWindowsProvider.Id, windowsIdentity, "http://localhost/return", null);
                 var loginService = score.ServiceProvider.GetService<ILoginService>();
 
                 Assert.ThrowsAsync<AuthenticationException>(() => loginService.SignInAsync(request.ProviderId, request));
@@ -56,7 +57,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 windowsIdentity.AddClaim(new Claim(ClaimTypes.Email, "unit@test.com"));
 
                 var loginService = score.ServiceProvider.GetService<ILoginService>();
-                var request = new WindowsLoginRequest(Constants.TestData.LoginProviders.ExternalWindowsProvider.Id, windowsIdentity, "http://localhost/return", null);
+                var request = new WindowsLoginRequest(TestConstants.LoginProviders.ExternalWindowsProvider.Id, windowsIdentity, "http://localhost/return", null);
                 var response = await loginService.SignInAsync(request.ProviderId, request);
 
                 Assert.NotNull(response);

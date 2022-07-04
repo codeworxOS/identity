@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
@@ -8,7 +9,7 @@ namespace Codeworx.Identity.Test
     {
         public Task<IEnumerable<TenantInfo>> GetTenantsAsync()
         {
-            return GetTenants(Constants.TestData.Users.MultiTenant.UserId);
+            return GetTenants(TestConstants.Users.MultiTenant.UserId);
         }
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
@@ -20,19 +21,19 @@ namespace Codeworx.Identity.Test
         {
             IEnumerable<TenantInfo> tenants;
 
-            if (Guid.Parse(identity) == Guid.Parse(Constants.TestData.Users.MultiTenant.UserId))
+            if (Guid.Parse(identity) == Guid.Parse(TestConstants.Users.MultiTenant.UserId))
             {
                 tenants = new[]
                           {
-                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultTenant.Id, Name = Constants.TestData.Tenants.DefaultTenant.Name },
-                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultSecondTenant.Id, Name = Constants.TestData.Tenants.DefaultSecondTenant.Name }
+                              new TenantInfo { Key = TestConstants.Tenants.DefaultTenant.Id, Name = TestConstants.Tenants.DefaultTenant.Name },
+                              new TenantInfo { Key = TestConstants.Tenants.DefaultSecondTenant.Id, Name = TestConstants.Tenants.DefaultSecondTenant.Name }
                           };
             }
             else
             {
                 tenants = new[]
                           {
-                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultTenant.Id, Name = Constants.TestData.Tenants.DefaultTenant.Name }
+                              new TenantInfo { Key = TestConstants.Tenants.DefaultTenant.Id, Name = TestConstants.Tenants.DefaultTenant.Name }
                           };
             }
 
