@@ -90,7 +90,7 @@ namespace Codeworx.Identity.Test.Scopes
                 .UseTestSetup();
 
             var sp = services.BuildServiceProvider();
-            var user = await sp.GetRequiredService<IIdentityService>().LoginAsync(Constants.DefaultAdminUserName, Constants.DefaultAdminUserName);
+            var user = await sp.GetRequiredService<IIdentityService>().LoginAsync(Constants.TestData.Users.DefaultAdmin.UserName, Constants.TestData.Users.DefaultAdmin.Password);
 
             var builder = builderfactory(request, user);
 

@@ -198,7 +198,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                                            .WithScope("unknown")
                                                            .Build();
 
@@ -267,7 +267,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder()
-                          .WithClientId(Constants.DefaultCodeFlowClientId)
+                          .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                           .WithResponseType("unsupported")
                           .Build();
 
@@ -289,7 +289,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
@@ -315,7 +315,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri(string.Empty)
-                                                           .WithClientId(Constants.DefaultCodeFlowClientId)
+                                                           .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);

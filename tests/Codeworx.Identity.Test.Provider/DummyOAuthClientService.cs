@@ -78,7 +78,7 @@ namespace Codeworx.Identity.Test
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
-            public string ClientId => Constants.DefaultCodeFlowPublicClientId;
+            public string ClientId => Constants.TestData.Clients.DefaultCodeFlowPublicClientId;
 
             public Uri DefaultRedirectUri { get; }
             public string ClientSecretHash { get; }
@@ -108,7 +108,7 @@ namespace Codeworx.Identity.Test
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
             }
 
-            public string ClientId => Constants.DefaultCodeFlowClientId;
+            public string ClientId => Constants.TestData.Clients.DefaultCodeFlowClientId;
 
             public Uri DefaultRedirectUri { get; }
             public string ClientSecretHash { get; }
@@ -134,7 +134,7 @@ namespace Codeworx.Identity.Test
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
-            public string ClientId => Constants.DefaultTokenFlowClientId;
+            public string ClientId => Constants.TestData.Clients.DefaultTokenFlowClientId;
 
             public string ClientSecretHash => null;
 
@@ -163,7 +163,7 @@ namespace Codeworx.Identity.Test
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
             }
 
-            public string ClientId => Constants.DefaultServiceAccountClientId;
+            public string ClientId => Constants.TestData.Clients.DefaultServiceAccountClientId;
 
             public string ClientSecretHash { get; }
 

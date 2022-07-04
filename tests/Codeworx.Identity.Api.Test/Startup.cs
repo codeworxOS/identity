@@ -134,8 +134,8 @@ namespace Codeworx.Identity.Api.Test
 
                     var forms = new EntityFrameworkCore.Model.AuthenticationProvider
                     {
-                        Id = Guid.Parse(Constants.FormsLoginProviderId),
-                        Name = Constants.FormsLoginProviderName,
+                        Id = Guid.Parse(Constants.TestData.LoginProviders.FormsLoginProvider.Id),
+                        Name = Constants.TestData.LoginProviders.FormsLoginProvider.Name,
                         EndpointType = "forms",
                         SortOrder = 0,
                     };

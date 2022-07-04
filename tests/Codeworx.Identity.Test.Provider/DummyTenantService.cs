@@ -8,7 +8,7 @@ namespace Codeworx.Identity.Test
     {
         public Task<IEnumerable<TenantInfo>> GetTenantsAsync()
         {
-            return GetTenants(Constants.MultiTenantUserId);
+            return GetTenants(Constants.TestData.Users.MultiTenant.UserId);
         }
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
@@ -20,19 +20,19 @@ namespace Codeworx.Identity.Test
         {
             IEnumerable<TenantInfo> tenants;
 
-            if (Guid.Parse(identity) == Guid.Parse(Constants.MultiTenantUserId))
+            if (Guid.Parse(identity) == Guid.Parse(Constants.TestData.Users.MultiTenant.UserId))
             {
                 tenants = new[]
                           {
-                              new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName },
-                              new TenantInfo { Key = Constants.DefaultSecondTenantId, Name = Constants.DefaultSecondTenantName }
+                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultTenant.Id, Name = Constants.TestData.Tenants.DefaultTenant.Name },
+                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultSecondTenant.Id, Name = Constants.TestData.Tenants.DefaultSecondTenant.Name }
                           };
             }
             else
             {
                 tenants = new[]
                           {
-                              new TenantInfo { Key = Constants.DefaultTenantId, Name = Constants.DefaultTenantName }
+                              new TenantInfo { Key = Constants.TestData.Tenants.DefaultTenant.Id, Name = Constants.TestData.Tenants.DefaultTenant.Name }
                           };
             }
 

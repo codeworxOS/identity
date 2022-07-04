@@ -20,7 +20,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
 
             var request = new TokenRequestBuilder().WithGrantType(Constants.OAuth.GrantType.ClientCredentials)
-                                                        .WithClientId(Constants.DefaultServiceAccountClientId)
+                                                        .WithClientId(Constants.TestData.Clients.DefaultServiceAccountClientId)
                                                         .WithClientSecret("clientSecret")
                                                         .WithScopes("openid tenant")
                                                         .Build();
@@ -37,7 +37,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 var response = await tokenService.ProcessAsync(request);
 
                 Assert.IsTrue(response.Scope.Contains("tenant"));
-                Assert.IsTrue(response.Scope.Contains(Constants.DefaultTenantId, StringComparison.InvariantCultureIgnoreCase));
+                Assert.IsTrue(response.Scope.Contains(Constants.TestData.Tenants.DefaultTenant.Id, StringComparison.InvariantCultureIgnoreCase));
                 Assert.NotNull(response.AccessToken);
             }
         }

@@ -18,13 +18,13 @@
 
             var sp = services.BuildServiceProvider();
             var userService = sp.GetRequiredService<IUserService>();
-            var user = await userService.GetUserByIdAsync(Constants.DefaultAdminUserId);
+            var user = await userService.GetUserByIdAsync(Constants.TestData.Users.DefaultAdmin.UserId);
 
             Assert.AreEqual(0, user.FailedLoginCount);
 
             Assert.ThrowsAsync<AuthenticationException>(
                 () => sp.GetRequiredService<IIdentityService>().LoginAsync(
-                    Constants.DefaultAdminUserName,
+                    Constants.TestData.Users.DefaultAdmin.UserName,
                     "Wrong password"));
             Assert.AreEqual(1, user.FailedLoginCount);
         }
@@ -41,7 +41,7 @@
             var sp = services.BuildServiceProvider();
             var userService = sp.GetRequiredService<IUserService>();
 
-            var user = await userService.GetUserByIdAsync(Constants.DefaultAdminUserId);
+            var user = await userService.GetUserByIdAsync(Constants.TestData.Users.DefaultAdmin.UserId);
             var failedLoginService = sp.GetRequiredService<IFailedLoginService>();
 
             await failedLoginService.SetFailedLoginAsync(user);
@@ -49,8 +49,8 @@
 
             Assert.ThrowsAsync<AuthenticationException>(
                 () => sp.GetRequiredService<IIdentityService>().LoginAsync(
-                          Constants.DefaultAdminUserName,
-                          Constants.DefaultAdminUserName));
+                          Constants.TestData.Users.DefaultAdmin.UserName,
+                          Constants.TestData.Users.DefaultAdmin.Password));
         }
 
         [Test]
@@ -65,13 +65,13 @@
             var sp = services.BuildServiceProvider();
             var userService = sp.GetRequiredService<IUserService>();
 
-            var user = await userService.GetUserByIdAsync(Constants.DefaultAdminUserId);
+            var user = await userService.GetUserByIdAsync(Constants.TestData.Users.DefaultAdmin.UserId);
             var failedLoginService = sp.GetRequiredService<IFailedLoginService>();
 
             await failedLoginService.SetFailedLoginAsync(user);
 
             Assert.AreEqual(1, user.FailedLoginCount);
-            await sp.GetRequiredService<IIdentityService>().LoginAsync(Constants.DefaultAdminUserName, Constants.DefaultAdminUserName);
+            await sp.GetRequiredService<IIdentityService>().LoginAsync(Constants.TestData.Users.DefaultAdmin.UserName, Constants.TestData.Users.DefaultAdmin.Password);
             Assert.AreEqual(0, user.FailedLoginCount);
         }
     }

@@ -8,9 +8,9 @@ namespace Codeworx.Identity.Test
     {
         public Type ProcessorType => typeof(WindowsLoginProcessor);
 
-        public string Name => Constants.ExternalWindowsProviderName;
+        public string Name => Constants.TestData.LoginProviders.ExternalWindowsProvider.Name;
 
-        public string Id => Constants.ExternalWindowsProviderId;
+        public string Id => Constants.TestData.LoginProviders.ExternalWindowsProvider.Id;
 
         public object ProcessorConfiguration => null;
     }

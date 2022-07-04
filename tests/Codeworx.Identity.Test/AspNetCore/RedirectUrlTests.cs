@@ -101,15 +101,15 @@ namespace Codeworx.Identity.Test.AspNetCore
             using (var scope = provider.CreateScope())
             {
                 var request = new AuthorizationRequest(
-                    Constants.DefaultCodeFlowClientId,
+                    Constants.TestData.Clients.DefaultCodeFlowClientId,
                     requestRedirectUrl,
                     Constants.OAuth.ResponseType.Code,
                     "openid",
                     "state");
 
                 var testIdentity = new ClaimsIdentity();
-                testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.DefaultAdminUserId));
-                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.DefaultAdminUserName));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.TestData.Users.DefaultAdmin.UserId));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.TestData.Users.DefaultAdmin.UserName));
                 testIdentity.AddClaim(new Claim(Constants.Claims.ExternalTokenKey, "external_token_key"));
 
                 var authorizationService = scope.ServiceProvider.GetRequiredService<IAuthorizationService<AuthorizationRequest>>();

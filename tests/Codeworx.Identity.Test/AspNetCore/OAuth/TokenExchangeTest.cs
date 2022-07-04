@@ -21,9 +21,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                         .WithClientSecret("clientSecret")
-                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithAudience(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                         .WithSubjectToken(token.AccessToken)
                                         .WithScopes("openid scope2")
                                         .Build();
@@ -53,7 +53,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                         .WithClientSecret("clientSecret")
                                         .WithAudience("abcdefg")
                                         .WithSubjectToken(token.AccessToken)
@@ -84,9 +84,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultTokenFlowClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultTokenFlowClientId)
                                         .WithClientSecret("clientSecret")
-                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithAudience(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                         .WithSubjectToken(token.AccessToken)
                                         .WithScopes("openid scope2")
                                         .Build();
@@ -116,8 +116,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultCodeFlowClientId)
-                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
+                                        .WithAudience(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                         .WithSubjectToken(token.AccessToken)
                                         .WithScopes("openid scope2")
                                         .Build();
@@ -144,9 +144,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                         .WithClientSecret("clientSecret")
-                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithAudience(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                         .WithRequestedTokenType(Constants.TokenExchange.TokenType.IdToken)
                                         .WithSubjectToken(token.AccessToken)
                                         .WithScopes("openid scope2")
@@ -178,9 +178,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder()
                                         .WithGrantType("urn:ietf:params:oauth:grant-type:token-exchange")
-                                        .WithClientId(Constants.DefaultCodeFlowClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                         .WithClientSecret("clientSecret")
-                                        .WithAudience(Constants.DefaultCodeFlowPublicClientId)
+                                        .WithAudience(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                         .WithRequestedTokenType(Constants.TokenExchange.TokenType.IdToken + " " + Constants.TokenExchange.TokenType.AccessToken)
                                         .WithSubjectToken(token.AccessToken)
                                         .WithScopes("openid scope2")
@@ -208,7 +208,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var codeRequest = new OAuthAuthorizationRequestBuilder().WithRedirectUri("https://example.org/redirect")
-                                                                    .WithClientId(Constants.DefaultCodeFlowClientId).WithResponseType("code")
+                                                                    .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId).WithResponseType("code")
                                                                     .WithScope(scopes).Build();
 
             var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
@@ -224,7 +224,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Contains("code", query.Keys);
 
             var request = new TokenRequestBuilder().WithGrantType("authorization_code").WithCode(query["code"])
-                                                   .WithClientId(Constants.DefaultCodeFlowClientId).WithClientSecret("clientSecret")
+                                                   .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId).WithClientSecret("clientSecret")
                                                    .WithRedirectUri("https://example.org/redirect").Build();
 
             var body = JsonConvert.SerializeObject(request);

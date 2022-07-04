@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             var request = new TokenRequestBuilder()
                                         .WithGrantType("client_credentials")
-                                        .WithClientId(Constants.DefaultServiceAccountClientId)
+                                        .WithClientId(Constants.TestData.Clients.DefaultServiceAccountClientId)
                                         .WithClientSecret("clientSecret")
                                         .WithScopes("openid offline_access")
                                         .Build();
@@ -66,7 +66,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var codeRequest = new OAuthAuthorizationRequestBuilder()
                             .WithRedirectUri("https://example.org/redirect")
-                            .WithClientId(Constants.DefaultTokenFlowClientId)
+                            .WithClientId(Constants.TestData.Clients.DefaultTokenFlowClientId)
                             .WithResponseType("token")
                             .WithScope("openid offline_access")
                             .Build();
@@ -98,7 +98,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
-                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .Build();
 
@@ -131,7 +131,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                 .WithGrantType("refresh_token")
                 .WithRefreshCode(tokenResponseData.RefreshToken)
-                .WithClientId(Constants.DefaultCodeFlowClientId)
+                .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                 .WithClientSecret("clientSecret")
                 .WithScopes(scopes)
                 .Build();
@@ -168,7 +168,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                 .WithGrantType("refresh_token")
                 .WithRefreshCode(tokenResponseData.RefreshToken)
-                .WithClientId(Constants.DefaultCodeFlowClientId)
+                .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                 .WithClientSecret("clientSecret")
                 .Build();
 
@@ -209,7 +209,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode("a")
-                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .Build();
 
@@ -236,7 +236,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode($"{new string('a', tokenParts[0].Length)}.{new string('a', tokenParts[1].Length)}")
-                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .Build();
 
@@ -265,7 +265,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
-                                 .WithClientId(Constants.DefaultCodeFlowPublicClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowPublicClientId)
                                  .WithClientSecret("clientSecret")
                                  .Build();
 
@@ -298,7 +298,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
-                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .WithScopes(string.Join(" ", reducedScope))
                                  .Build();
@@ -332,7 +332,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var refreshRequest = new TokenRequestBuilder()
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
-                                 .WithClientId(Constants.DefaultCodeFlowClientId)
+                                 .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                  .WithClientSecret("clientSecret")
                                  .WithScopes(string.Join(" ", reducedScope.Append(additionalScope)))
                                  .Build();
@@ -356,7 +356,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var codeRequest = new OAuthAuthorizationRequestBuilder().WithRedirectUri("https://example.org/redirect")
-                                                                    .WithClientId(Constants.DefaultCodeFlowClientId).WithResponseType("code")
+                                                                    .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId).WithResponseType("code")
                                                                     .WithScope(scopes).Build();
 
             var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
@@ -372,7 +372,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Contains("code", query.Keys);
 
             var request = new TokenRequestBuilder().WithGrantType("authorization_code").WithCode(query["code"])
-                                                   .WithClientId(Constants.DefaultCodeFlowClientId).WithClientSecret("clientSecret")
+                                                   .WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId).WithClientSecret("clientSecret")
                                                    .WithRedirectUri("https://example.org/redirect").Build();
 
             var body = JsonConvert.SerializeObject(request);

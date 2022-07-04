@@ -22,15 +22,15 @@ namespace Codeworx.Identity.Test.Claims
             using (var provider = services.BuildServiceProvider())
             using (var scope = provider.CreateScope())
             {
-                var request = new AuthorizationRequest(Constants.DefaultCodeFlowClientId,
+                var request = new AuthorizationRequest(Constants.TestData.Clients.DefaultCodeFlowClientId,
                     "https://example.org/redirect",
                     Constants.OAuth.ResponseType.Code,
                     Constants.Scopes.ExternalToken.All,
                     "state");
 
                 var testIdentity = new ClaimsIdentity();
-                testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.DefaultAdminUserId));
-                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.DefaultAdminUserName));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.TestData.Users.DefaultAdmin.UserId));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.TestData.Users.DefaultAdmin.UserName));
                 testIdentity.AddClaim(new Claim(Constants.Claims.ExternalTokenKey, "external_token_key"));
 
                 var authorizationService = scope.ServiceProvider.GetRequiredService<IAuthorizationService<AuthorizationRequest>>();

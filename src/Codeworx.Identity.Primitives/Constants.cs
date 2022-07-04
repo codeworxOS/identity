@@ -5,15 +5,10 @@
         public const string AuthenticationExceptionMessage = "Username or password incorrect.";
 
         public const string BasicHeader = "Basic";
-        public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source";
-        public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target";
-        public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
-        public const string DefaultAdminUserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
-        public const string DefaultAdminUserName = "admin";
+        public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source"; // unused?
+        public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target"; // unused?
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
-        public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
-        public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";
         public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
         public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
         public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
@@ -21,44 +16,24 @@
         public const string DefaultLoginDescriptionDe = "Der Benutzername muss mindestens 4, maximal 20 Zeichen lang sein und kann Groß- und Kleinbuchstaben sowie . und _ enthalten.";
         public const string DefaultLoginDescriptionEn = "The login must be at least 4 but no more than 20 characters long and may contain . and _ as well as uppercase and one lowercase characters.";
         public const string DefaultLoginRegex = "^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$";
-        public const string DefaultScopeKey = "all";
-        public const string DefaultSecondTenantId = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
-        public const string DefaultSecondTenantName = "Sendond Tenant";
-        public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
-        public const string DefaultServiceAccountId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
-        public const string DefaultServiceAccountName = "service.account";
-        public const string DefaultTenantId = "F124DF47-A99E-48EE-88B4-97901764E484";
-        public const string DefaultTenantName = "Default";
-        public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
+        public const string DefaultScopeKey = "all"; // unused?
         public const string EmailRegex = "^(?(\")(\".+?(?<!\\\\)\"@)|(([0-9a-z]((\\.(?!\\.))|[-!#\\$%&'\\*\\+/=\\?\\^`\\{\\}\\|~\\w])*)(?<=[0-9a-z])@))(?(\\[)(\\[(\\d{1,3}\\.){3}\\d{1,3}\\])|(([0-9a-z][-\\w]*[0-9a-z]*\\.)+[a-z0-9][\\-a-z0-9]{0,22}[a-z0-9]))$";
-        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user.";
-        public const string ExternalAccountNotLinked = "Your Account is not yet linked.";
-        public const string ExternalOAuthProviderId = "d1e8741e03b5466aa7e3098787ef100d";
-        public const string ExternalWindowsProviderId = "d740e319bbc44ab0b815136cb1f96d2e";
-        public const string ExternalWindowsProviderName = "Windows";
-        public const string ForcePasswordUserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
-        public const string ForcePasswordUserName = "changepassword";
-        public const string FormsLoginProviderId = "55efbccf5f4a4ec2ba412ed4f56dfa92";
-        public const string FormsLoginProviderName = "Form";
-        public const string GenericLoginError = "There was an unexpected login error!";
-        public const string InvalidCredentialsError = "Username or password is not valid!";
-        public const string InvitationNotSupported = "Invitation feature is not supported!";
+        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user."; // unused?
+        public const string ExternalAccountNotLinked = "Your Account is not yet linked."; // unused?
+        public const string GenericLoginError = "There was an unexpected login error!"; // unused?
+        public const string InvalidCredentialsError = "Username or password is not valid!"; // unused?
+        public const string InvitationNotSupported = "Invitation feature is not supported!"; // unused?
         public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
         public const string LoginProviderErrorParameter = "login_provider_error";
         public const string LoginProviderIdParameter = "login_provider_id";
-        public const string MultiTenantUserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
-        public const string MultiTenantUserName = "multitenant";
-        public const string NotExistingUserName = "notExistingUser";
-        public const string NoPasswordUserId = "65AB0982-F4CE-4ADA-B94E-C77CC3A5F075";
-        public const string NoPasswordUserName = "nopassword";
 
-        public const string ProductName = "CodeworxIdentity";
+        public const string ProductName = "CodeworxIdentity"; // unused?
         public const string ReturnUrlParameter = "returnurl";
-        public const string TenantNameProperty = "tenantName";
-        public const string UnknownLoginProviderError = "Invalid provider!";
-        public const string UserNameParameterName = "username";
+        public const string TenantNameProperty = "tenantName"; // unused?
+        public const string UnknownLoginProviderError = "Invalid provider!"; // unused?
+        public const string UserNameParameterName = "username"; // unused?
         public const string WindowsAuthenticationSchema = "Windows";
         private const string NameChar = @"[a-zA-Z0-9_]";
         private const string NqChar = @"[\u0021\u0023-\u005b\u005d-\u007e]";
@@ -76,6 +51,99 @@
 
         private const string VsChar = @"[\u0020-\u007e]";
         private const string VsChars = @"^" + VsChar + @"+$";
+
+        public static class TestData
+        {
+            public static class Groups
+            {
+                public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
+            }
+
+            public static class LoginProviders
+            {
+                public static class ExternalOAuthProvider
+                {
+                    public const string Id = "d1e8741e03b5466aa7e3098787ef100d";
+                    public const string Name = "Basic OAuth";
+                }
+
+                public static class ExternalWindowsProvider
+                {
+                    public const string Id = "d740e319bbc44ab0b815136cb1f96d2e";
+                    public const string Name = "Windows";
+                }
+
+                public static class FormsLoginProvider
+                {
+                    public const string Id = "55efbccf5f4a4ec2ba412ed4f56dfa92";
+                    public const string Name = "Form";
+                }
+            }
+
+            public static class Clients
+            {
+                public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
+                public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";
+                public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
+                public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
+            }
+
+            public static class Users
+            {
+                public static class DefaultAdmin
+                {
+                    public const string UserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
+                    public const string UserName = "admin";
+                    public const string Password = "admin";
+                }
+
+                public static class DefaultServiceAccount
+                {
+                    public const string UserId = "F3C7DD5E-2678-41F8-8018-807C711CF733";
+                    public const string UserName = "service.account";
+                }
+
+                public static class ForceChangePassword
+                {
+                    public const string UserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
+                    public const string UserName = "changepassword";
+                    public const string Password = "changepassword";
+                }
+
+                public static class MultiTenant
+                {
+                    public const string UserId = "23EE9129-E14A-4FE4-9C16-D3473014C57F";
+                    public const string UserName = "multitenant";
+                    public const string Password = "multitenant";
+                }
+
+                public static class NotExisting
+                {
+                    public const string UserName = "notExistingUser";
+                }
+
+                public static class NoPassword
+                {
+                    public const string UserId = "65AB0982-F4CE-4ADA-B94E-C77CC3A5F075";
+                    public const string UserName = "nopassword";
+                }
+            }
+
+            public static class Tenants
+            {
+                public static class DefaultTenant
+                {
+                    public const string Id = "F124DF47-A99E-48EE-88B4-97901764E484";
+                    public const string Name = "Default";
+                }
+
+                public static class DefaultSecondTenant
+                {
+                    public const string Id = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
+                    public const string Name = "Sendond Tenant";
+                }
+            }
+        }
 
         public static class Assets
         {

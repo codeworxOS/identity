@@ -29,9 +29,9 @@ namespace Codeworx.Identity.Test.AspNetCore
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
-                                   {"password", Constants.ForcePasswordUserName}
+                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
+                                   {"password", Constants.TestData.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -46,8 +46,8 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var changePasswordContent = new FormUrlEncodedContent(new Dictionary<string, string>
                                              {
-                                                 {"username", Constants.ForcePasswordUserName},
-                                                 {"current-password", Constants.ForcePasswordUserName},
+                                                 {"username", Constants.TestData.Users.ForceChangePassword.UserName},
+                                                 {"current-password", Constants.TestData.Users.ForceChangePassword.Password},
                                                  {"password", "aaAAbb11!!"},
                                                  {"confirm-password", "aaAAbb11!!"},
                                              });
@@ -59,8 +59,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
+                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
                                    {"password", "aaAAbb11!!"}
                                }));
 
@@ -81,9 +81,9 @@ namespace Codeworx.Identity.Test.AspNetCore
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
-                                   {"password", Constants.ForcePasswordUserName}
+                                   {"provider-id", Constants.TestData.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", Constants.TestData.Users.ForceChangePassword.UserName},
+                                   {"password", Constants.TestData.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -91,7 +91,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
             this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.TestData.Clients.DefaultCodeFlowClientId)
                                                                 .Build();
 
             var requestString = this.ToRequestString(request);

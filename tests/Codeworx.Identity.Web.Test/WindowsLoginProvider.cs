@@ -14,8 +14,8 @@ namespace Codeworx.Identity.Web.Test
                 new[] {
                     new ExternalLoginRegistration
                     {
-                        Id = Constants.ExternalWindowsProviderId,
-                        Name = Constants.ExternalWindowsProviderName,
+                        Id = Constants.TestData.LoginProviders.ExternalWindowsProvider.Id,
+                        Name = Constants.TestData.LoginProviders.ExternalWindowsProvider.Name,
                         ProcessorType = typeof(WindowsLoginProcessor)
                     }
                 });

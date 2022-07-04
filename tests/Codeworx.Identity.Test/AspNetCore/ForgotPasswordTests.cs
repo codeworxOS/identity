@@ -81,7 +81,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var testServer = CreateTestServer(mailConnector.Object);
             var testClient = testServer.CreateClient();
 
-            var notExistingUserName = Constants.NotExistingUserName;
+            var notExistingUserName = Constants.TestData.Users.NotExisting.UserName;
             var forgotPasswordUrl = CreateForgotPasswordUrl(testClient, testServer);
             var response = await testClient.PostAsync(
                 forgotPasswordUrl,
