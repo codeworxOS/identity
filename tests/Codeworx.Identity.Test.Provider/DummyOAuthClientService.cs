@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Test.Provider;
 
@@ -23,7 +24,7 @@ namespace Codeworx.Identity.Test
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashValue),
-                                                new DummyOAuthAuthorizationTokenClientRegistration(),
+                                                new DummyOAuthAuthorizationTokenClientRegistration()
                                             };
         }
 
@@ -48,6 +49,7 @@ namespace Codeworx.Identity.Test
                    new Scope("openid"),
                    new Scope("scope1")
                 };
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
             public string ClientId => TestConstants.Clients.LimitedScope1ClientId;
@@ -63,6 +65,8 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
 
@@ -76,6 +80,7 @@ namespace Codeworx.Identity.Test
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
             public string ClientId => TestConstants.Clients.DefaultCodeFlowPublicClientId;
@@ -91,6 +96,8 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
 
@@ -106,6 +113,7 @@ namespace Codeworx.Identity.Test
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
 
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
             public string ClientId => TestConstants.Clients.DefaultCodeFlowClientId;
@@ -121,6 +129,8 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
@@ -132,6 +142,7 @@ namespace Codeworx.Identity.Test
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
             public string ClientId => TestConstants.Clients.DefaultTokenFlowClientId;
@@ -149,6 +160,8 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
@@ -161,6 +174,7 @@ namespace Codeworx.Identity.Test
                 this.ClientSecretHash = hashValue;
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
             public string ClientId => TestConstants.Clients.DefaultServiceAccountClientId;
@@ -178,6 +192,8 @@ namespace Codeworx.Identity.Test
             public IUser User => new DummyUserService.DummyUser();
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
     }
 }

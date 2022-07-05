@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Configuration.Model
@@ -37,5 +38,7 @@ namespace Codeworx.Identity.Configuration.Model
         public ClientType ClientType { get; }
 
         public IUser User { get; }
+
+        public AuthenticationMode AuthenticationMode { get; }
     }
 }

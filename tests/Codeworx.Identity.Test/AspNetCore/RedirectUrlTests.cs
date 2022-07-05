@@ -11,6 +11,7 @@ using Moq;
 using Codeworx.Identity.Model;
 using System.Collections.Immutable;
 using Codeworx.Identity.Test.Provider;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Test.AspNetCore
 {
@@ -140,6 +141,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes => ImmutableList<IScope>.Empty;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
         }
     }
 }

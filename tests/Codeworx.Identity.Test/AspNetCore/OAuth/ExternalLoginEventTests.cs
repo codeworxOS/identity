@@ -133,6 +133,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 public bool HasMfaRegistration => false;
 
+                public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
                 public void ResetPassword(string password)
                 {
                     _forceChangePassword = false;

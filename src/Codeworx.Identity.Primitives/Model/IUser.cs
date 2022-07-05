@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Model
 {
@@ -17,6 +18,8 @@ namespace Codeworx.Identity.Model
         bool ConfirmationPending { get; }
 
         bool HasMfaRegistration { get; }
+
+        AuthenticationMode AuthenticationMode { get; }
 
         IReadOnlyList<string> LinkedProviders { get; }
 

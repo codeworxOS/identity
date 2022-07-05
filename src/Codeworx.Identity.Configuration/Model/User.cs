@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.Configuration.Model
@@ -31,5 +32,7 @@ namespace Codeworx.Identity.Configuration.Model
         public int FailedLoginCount => 0;
 
         public bool HasMfaRegistration => false;
+
+        public AuthenticationMode AuthenticationMode { get; }
     }
 }

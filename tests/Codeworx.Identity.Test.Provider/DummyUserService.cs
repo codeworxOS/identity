@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Test.Provider;
 
@@ -114,6 +115,8 @@ namespace Codeworx.Identity.Test
 
             public bool HasMfaRegistration => false;
 
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;
@@ -150,6 +153,8 @@ namespace Codeworx.Identity.Test
 
             public bool HasMfaRegistration => false;
 
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
             public void ResetPassword(string password)
             {
                 _forceChangePassword = false;
@@ -179,6 +184,8 @@ namespace Codeworx.Identity.Test
             public int FailedLoginCount { get; set; }
 
             public bool HasMfaRegistration => false;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
 
             public void ResetPassword(string password)
             {
@@ -217,6 +224,8 @@ namespace Codeworx.Identity.Test
 
             public bool HasMfaRegistration => false;
 
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
             public void ResetPassword(string password)
             {
                 _password = password;
@@ -252,6 +261,8 @@ namespace Codeworx.Identity.Test
 
             public bool HasMfaRegistration => false;
 
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
             public void ResetPassword(string password)
             {
                 _password = password;
@@ -259,6 +270,6 @@ namespace Codeworx.Identity.Test
             }
         }
 
-       
+
     }
 }

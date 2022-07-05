@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Model
 {
@@ -16,5 +17,7 @@ namespace Codeworx.Identity.Model
         IReadOnlyList<Uri> ValidRedirectUrls { get; }
 
         IUser User { get; }
+
+        AuthenticationMode AuthenticationMode { get; }
     }
 }
