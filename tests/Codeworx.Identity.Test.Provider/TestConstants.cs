@@ -37,8 +37,10 @@
         public static class Clients
         {
             public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
+            public const string DefaultCodeFlowClientSecret = "clientSecret";
             public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";
             public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
+            public const string DefaultServiceAccountClientSecret = "clientSecret";
             public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
             public const string LimitedScope1ClientId = "B25ECAB6-76A4-498A-AA50-B8699E0BDDA6";
             public const string MfaRequiredClientId = "7D04E0B8-35C4-402E-9C33-DBCCDC7EE83B";

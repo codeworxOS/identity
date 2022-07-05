@@ -16,14 +16,12 @@ namespace Codeworx.Identity.Test
 
         public DummyOAuthClientService(IHashingProvider hashingProvider)
         {
-            var hashValue = hashingProvider.Create("clientSecret");
-
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
                                                 new DummyLimitedScope1ClientRegistration(),
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
-                                                new ServiceAccountClientRegistration(hashValue),
+                                                new ServiceAccountClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                                 new MfaRequiredClientRegistration()
                                             };
@@ -104,9 +102,9 @@ namespace Codeworx.Identity.Test
 
         private class DummyOAuthAuthorizationCodeClientRegistration : IDummyClientRegistration
         {
-            public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
+            public DummyOAuthAuthorizationCodeClientRegistration(IHashingProvider hashingProvider)
             {
-                this.ClientSecretHash = hashValue;
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultCodeFlowClientSecret);
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.ClientType = ClientType.Web;
@@ -167,12 +165,12 @@ namespace Codeworx.Identity.Test
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
         {
-            public ServiceAccountClientRegistration(string hashValue)
+            public ServiceAccountClientRegistration(IHashingProvider hashingProvider)
             {
                 this.ClientType = ClientType.ApiKey;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
-                this.ClientSecretHash = hashValue;
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultServiceAccountClientSecret);
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
                 this.AuthenticationMode = AuthenticationMode.Login;

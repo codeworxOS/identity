@@ -140,7 +140,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
                             Id = Guid.Parse(TestConstants.Clients.DefaultServiceAccountClientId),
-                            ClientSecretHash = hashingProvider.Create("clientSecret"),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultServiceAccountClientSecret),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.ApiKey,
                             UserId = Guid.Parse(TestConstants.Users.DefaultServiceAccount.UserId),
@@ -154,7 +154,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
                             Id = Guid.Parse(TestConstants.Clients.DefaultCodeFlowClientId),
-                            ClientSecretHash = hashingProvider.Create("clientSecret"),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultCodeFlowClientSecret),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.WebBackend,
                             ValidRedirectUrls =

@@ -40,7 +40,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var request = new TokenRequestBuilder()
                                         .WithGrantType("client_credentials")
                                         .WithClientId(TestConstants.Clients.DefaultServiceAccountClientId)
-                                        .WithClientSecret("clientSecret")
+                                        .WithClientSecret(TestConstants.Clients.DefaultServiceAccountClientSecret)
                                         .WithScopes("openid offline_access")
                                         .Build();
 
@@ -100,7 +100,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .Build();
 
             var refreshBody = JsonConvert.SerializeObject(refreshRequest);
@@ -133,7 +133,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 .WithGrantType("refresh_token")
                 .WithRefreshCode(tokenResponseData.RefreshToken)
                 .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                .WithClientSecret("clientSecret")
+                .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                 .WithScopes(scopes)
                 .Build();
 
@@ -170,7 +170,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                 .WithGrantType("refresh_token")
                 .WithRefreshCode(tokenResponseData.RefreshToken)
                 .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                .WithClientSecret("clientSecret")
+                .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                 .Build();
 
             var refreshBody = JsonConvert.SerializeObject(refreshRequest);
@@ -211,7 +211,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode("a")
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .Build();
 
             var refreshBody = JsonConvert.SerializeObject(refreshRequest);
@@ -238,7 +238,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode($"{new string('a', tokenParts[0].Length)}.{new string('a', tokenParts[1].Length)}")
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .Build();
 
             var refreshBody = JsonConvert.SerializeObject(refreshRequest);
@@ -267,7 +267,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowPublicClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .Build();
 
             var refreshBody = JsonConvert.SerializeObject(refreshRequest);
@@ -300,7 +300,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .WithScopes(string.Join(" ", reducedScope))
                                  .Build();
 
@@ -334,7 +334,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                  .WithGrantType("refresh_token")
                                  .WithRefreshCode(tokenResponseData.RefreshToken)
                                  .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                 .WithClientSecret("clientSecret")
+                                 .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                  .WithScopes(string.Join(" ", reducedScope.Append(additionalScope)))
                                  .Build();
 
@@ -373,7 +373,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.Contains("code", query.Keys);
 
             var request = new TokenRequestBuilder().WithGrantType("authorization_code").WithCode(query["code"])
-                                                   .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId).WithClientSecret("clientSecret")
+                                                   .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
+                                                   .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
                                                    .WithRedirectUri("https://example.org/redirect").Build();
 
             var body = JsonConvert.SerializeObject(request);

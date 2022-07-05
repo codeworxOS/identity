@@ -22,7 +22,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var request = new TokenRequestBuilder().WithGrantType(Constants.OAuth.GrantType.ClientCredentials)
                                                         .WithClientId(TestConstants.Clients.DefaultServiceAccountClientId)
-                                                        .WithClientSecret("clientSecret")
+                                                        .WithClientSecret(TestConstants.Clients.DefaultServiceAccountClientSecret)
                                                         .WithScopes("openid tenant")
                                                         .Build();
 
