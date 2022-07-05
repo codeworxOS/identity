@@ -26,6 +26,8 @@ namespace Codeworx.Identity.Test
             _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
+            _users.Add(new MfaRequiredUser());
+            _users.Add(new MfaRequiredOnTenantUser());
         }
 
         public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
@@ -271,5 +273,80 @@ namespace Codeworx.Identity.Test
         }
 
 
+        public class MfaRequiredUser : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = TestConstants.Users.MfaRequired.Password;
+            public bool ConfirmationPending => false;
+
+            public MfaRequiredUser()
+            {
+                FailedLoginCount = 0;
+            }
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => TestConstants.Users.MfaRequired.UserId;
+
+            public string Name => TestConstants.Users.MfaRequired.UserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public bool HasMfaRegistration => false;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Mfa;
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class MfaRequiredOnTenantUser : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = TestConstants.Users.MfaRequired.Password;
+            public bool ConfirmationPending => false;
+
+            public MfaRequiredOnTenantUser()
+            {
+                FailedLoginCount = 0;
+            }
+
+            public string DefaultTenantKey => TestConstants.Tenants.MfaTenant.Id;
+
+            public string Identity => TestConstants.Users.MfaRequired.UserId;
+
+            public string Name => TestConstants.Users.MfaRequired.UserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public bool HasMfaRegistration => false;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
+            public void ResetPassword(string password)
+            {
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
     }
 }

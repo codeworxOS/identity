@@ -24,7 +24,8 @@ namespace Codeworx.Identity.Test
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashValue),
-                                                new DummyOAuthAuthorizationTokenClientRegistration()
+                                                new DummyOAuthAuthorizationTokenClientRegistration(),
+                                                new MfaRequiredClientRegistration()
                                             };
         }
 
@@ -190,6 +191,37 @@ namespace Codeworx.Identity.Test
             public ClientType ClientType { get; }
 
             public IUser User => new DummyUserService.DummyUser();
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        private class MfaRequiredClientRegistration : IDummyClientRegistration
+        {
+            public MfaRequiredClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Native;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AuthenticationMode = AuthenticationMode.Mfa;
+            }
+
+            public string ClientId => TestConstants.Clients.MfaRequiredClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
 

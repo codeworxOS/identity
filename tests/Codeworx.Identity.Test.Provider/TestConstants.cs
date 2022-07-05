@@ -41,6 +41,7 @@
             public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
             public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
             public const string LimitedScope1ClientId = "B25ECAB6-76A4-498A-AA50-B8699E0BDDA6";
+            public const string MfaRequiredClientId = "7D04E0B8-35C4-402E-9C33-DBCCDC7EE83B";
         }
 
         public static class Users
@@ -89,6 +90,20 @@
                 public const string UserId = "65AB0982-F4CE-4ADA-B94E-C77CC3A5F075";
                 public const string UserName = "nopassword";
             }
+
+            public static class MfaRequired
+            {
+                public const string UserId = "ECAFAC6F-548D-45B5-8D14-20A6615E5B44";
+                public const string UserName = "mfaRequired";
+                public const string Password = "mfaRequired";
+            }
+
+            public static class MfaRequiredOnTenant
+            {
+                public const string UserId = "B3DE6D4E-22A3-4BF3-A635-E3BDBEC55994";
+                public const string UserName = "mfaRequiredOnTenant";
+                public const string Password = "mfaRequiredOnTenant";
+            }
         }
 
         public static class Tenants
@@ -103,6 +118,13 @@
             {
                 public const string Id = "BC7B302B-1120-4C66-BBE4-CD25D50854CE";
                 public const string Name = "Sendond Tenant";
+            }
+
+
+            public static class MfaTenant
+            {
+                public const string Id = "454A54E7-9FC6-4C78-976E-DE346AF62804";
+                public const string Name = "MFA Tenant";
             }
         }
     }
