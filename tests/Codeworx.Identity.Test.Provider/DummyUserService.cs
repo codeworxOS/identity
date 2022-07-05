@@ -26,8 +26,7 @@ namespace Codeworx.Identity.Test
             _users.Add(new DummyUserWithoutPassword());
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
-            _users.Add(new MfaRequiredUser());
-            _users.Add(new MfaRequiredOnTenantUser());
+            _users.Add(new MfaTestUser());
         }
 
         public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
@@ -273,60 +272,23 @@ namespace Codeworx.Identity.Test
         }
 
 
-        public class MfaRequiredUser : IDummyUser
+        public class MfaTestUser : IDummyUser
         {
             private bool _forceChangePassword;
-            private string _password = TestConstants.Users.MfaRequired.Password;
+            private string _password = TestConstants.Users.MfaTestUser.Password;
             public bool ConfirmationPending => false;
 
-            public MfaRequiredUser()
+            public MfaTestUser()
             {
                 FailedLoginCount = 0;
+                AuthenticationMode = AuthenticationMode.Mfa;
             }
 
             public string DefaultTenantKey => null;
 
-            public string Identity => TestConstants.Users.MfaRequired.UserId;
+            public string Identity => TestConstants.Users.MfaTestUser.UserId;
 
-            public string Name => TestConstants.Users.MfaRequired.UserName;
-
-            public string PasswordHash => _password;
-
-            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
-
-            public bool ForceChangePassword => _forceChangePassword;
-
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
-
-            public int FailedLoginCount { get; set; }
-
-            public bool HasMfaRegistration => false;
-
-            public AuthenticationMode AuthenticationMode => AuthenticationMode.Mfa;
-
-            public void ResetPassword(string password)
-            {
-                _forceChangePassword = false;
-                _password = password;
-            }
-        }
-
-        public class MfaRequiredOnTenantUser : IDummyUser
-        {
-            private bool _forceChangePassword;
-            private string _password = TestConstants.Users.MfaRequired.Password;
-            public bool ConfirmationPending => false;
-
-            public MfaRequiredOnTenantUser()
-            {
-                FailedLoginCount = 0;
-            }
-
-            public string DefaultTenantKey => TestConstants.Tenants.MfaTenant.Id;
-
-            public string Identity => TestConstants.Users.MfaRequired.UserId;
-
-            public string Name => TestConstants.Users.MfaRequired.UserName;
+            public string Name => TestConstants.Users.MfaTestUser.UserName;
 
             public string PasswordHash => _password;
 
@@ -338,9 +300,20 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
-            public bool HasMfaRegistration => false;
+            public bool HasMfaRegistration { get; private set; }
 
-            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+            public AuthenticationMode AuthenticationMode { get; private set; }
+
+            public void SetMfaRequired(bool isMfaRequired)
+            {
+                AuthenticationMode = isMfaRequired ? AuthenticationMode.Mfa : AuthenticationMode.Login;
+            }
+
+            public void RegisterMfa(string provider, string sharedSecret)
+            {
+                this.HasMfaRegistration = true;
+                this.ExternalIdentifiers.Add(provider, sharedSecret);
+            }
 
             public void ResetPassword(string password)
             {
