@@ -91,18 +91,11 @@
                 public const string UserName = "nopassword";
             }
 
-            public static class MfaRequired
+            public static class MfaTestUser
             {
                 public const string UserId = "ECAFAC6F-548D-45B5-8D14-20A6615E5B44";
                 public const string UserName = "mfaRequired";
                 public const string Password = "mfaRequired";
-            }
-
-            public static class MfaRequiredOnTenant
-            {
-                public const string UserId = "B3DE6D4E-22A3-4BF3-A635-E3BDBEC55994";
-                public const string UserName = "mfaRequiredOnTenant";
-                public const string Password = "mfaRequiredOnTenant";
             }
         }
 
@@ -125,6 +118,12 @@
             {
                 public const string Id = "454A54E7-9FC6-4C78-976E-DE346AF62804";
                 public const string Name = "MFA Tenant";
+            }
+
+            public static class MfaSecondTenant
+            {
+                public const string Id = "4B662DBC-6B62-49AA-B808-19FD3AA98F4E";
+                public const string Name = "MFA Second Tenant";
             }
         }
     }
