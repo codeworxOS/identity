@@ -161,6 +161,23 @@ namespace Codeworx.Identity.Test.MFA
             return refreshTokenResponse;
         }
 
+        protected async Task<HttpResponseMessage> GetOnBehalfOfToken(string sourceClientId, string targetClientId, TokenResponse sourceToken)
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+
+            var tokenRequest = new TokenRequestBuilder()
+                .WithGrantType(Constants.OAuth.GrantType.TokenExchange)
+                .WithClientId(sourceClientId)
+                .WithAudience(targetClientId)
+                .WithSubjectToken(sourceToken.AccessToken)
+                .WithRequestedTokenType($"{Constants.TokenExchange.TokenType.AccessToken} {Constants.TokenExchange.TokenType.IdToken}")
+                .WithScopes("openid")
+                .Build();
+
+            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+            return tokenResponse;
+        }
+
         protected async Task ConfigureApiKeySetup(bool isMfaRequiredOnUser, bool isMfaRequiredOnClient)
         {
             var dummyUserService = (DummyUserService)this.TestServer.Host.Services.GetRequiredService<IUserService>();
