@@ -81,6 +81,28 @@ namespace Codeworx.Identity.Test.MFA
             return authorizationResponse;
         }
 
+
+        protected async Task<HttpResponseMessage> SelectTenant(HttpResponseMessage authorizationResponse, string tenant)
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var isRedirectToTenantSelection = authorizationResponse.StatusCode == HttpStatusCode.Redirect
+                && authorizationResponse.Headers.Location.ToString().Contains(options.Value.SelectTenantEndpoint);
+            if (!isRedirectToTenantSelection)
+            {
+                throw new ArgumentException("expected a redirect to tenant selection page");
+            }
+
+            var tenantSelectionUrl = authorizationResponse.Headers.Location.ToString();
+            var selectTenantResponse = await this.TestClient.PostAsync(tenantSelectionUrl, new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                {"tenantKey", tenant},
+                {"setDefault", false.ToString() }
+
+            }));
+
+            return selectTenantResponse;
+        }
+
         protected async Task<HttpResponseMessage> FulfillMfa(HttpResponseMessage authorizationResponse = null)
         {
             if (authorizationResponse != null)
