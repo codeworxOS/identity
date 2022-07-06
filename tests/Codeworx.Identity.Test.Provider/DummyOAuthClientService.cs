@@ -23,7 +23,8 @@ namespace Codeworx.Identity.Test
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
-                                                new MfaRequiredClientRegistration()
+                                                new MfaRequiredClientRegistration(),
+                                                new MfaTestServiceAccountClientRegistration(hashingProvider)
                                             };
         }
 
@@ -224,6 +225,46 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        public class MfaTestServiceAccountClientRegistration : IDummyClientRegistration
+        {
+            public MfaTestServiceAccountClientRegistration(IHashingProvider hashingProvider)
+            {
+                this.ClientType = ClientType.ApiKey;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.MfaTestServiceAccountClientSecret);
+
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Mfa;
+            }
+
+            public string ClientId => TestConstants.Clients.MfaTestServiceAccountClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User { get; private set; } = new DummyUserService.MfaTestUser();
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; private set; }
+
+            public void SetMfaRequired(bool isMfaRequired)
+            {
+                AuthenticationMode = isMfaRequired ? AuthenticationMode.Mfa : AuthenticationMode.Login;
+            }
+
+            public void UpdateUser(IUser user)
+            {
+                this.User = user;
+            }
         }
     }
 }

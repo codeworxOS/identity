@@ -44,6 +44,8 @@
             public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
             public const string LimitedScope1ClientId = "B25ECAB6-76A4-498A-AA50-B8699E0BDDA6";
             public const string MfaRequiredClientId = "7D04E0B8-35C4-402E-9C33-DBCCDC7EE83B";
+            public const string MfaTestServiceAccountClientId = "4A95E657-DC16-438A-B6FA-F87B42026C38";
+            public const string MfaTestServiceAccountClientSecret = "clientSecret";
         }
 
         public static class Users

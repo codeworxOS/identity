@@ -106,6 +106,38 @@ namespace Codeworx.Identity.Test.MFA
             return response;
         }
 
+        protected async Task ConfigureApiKeySetup(bool isMfaRequiredOnUser, bool isMfaRequiredOnClient)
+        {
+            var dummyUserService = (DummyUserService)this.TestServer.Host.Services.GetRequiredService<IUserService>();
+            var mfaTestUser = (MfaTestUser)dummyUserService.Users.FirstOrDefault(user => Guid.Parse(user.Identity) == Guid.Parse(TestConstants.Users.MfaTestUser.UserId));
+            mfaTestUser.SetMfaRequired(isMfaRequiredOnUser);
+
+            var dummyClientService = (DummyOAuthClientService)this.TestServer.Host.Services.GetRequiredService<IClientService>();
+            var mfaTestClient = (DummyOAuthClientService.MfaTestServiceAccountClientRegistration)(await dummyClientService.GetById(TestConstants.Clients.MfaTestServiceAccountClientId));
+            mfaTestClient.SetMfaRequired(isMfaRequiredOnClient);
+            mfaTestClient.UpdateUser(mfaTestUser);
+        }
+
+        protected async Task<HttpResponseMessage> GetTokenFromApiKey(string clientId, string clientSecret, string defaultTenant)
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+
+            var scopes = "openid";
+            if (!string.IsNullOrEmpty(defaultTenant))
+            {
+                scopes += " tenant " + defaultTenant;
+            }
+
+            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, new FormUrlEncodedContent(new Dictionary<string, string> {
+                { Constants.OAuth.GrantTypeName, Constants.OAuth.GrantType.ClientCredentials },
+                { Constants.OAuth.ClientIdName, clientId },
+                { Constants.OAuth.ClientSecretName, clientSecret },
+                { Constants.OAuth.ScopeName, scopes }
+            }));
+
+            return tokenResponse;
+        }
+
         protected Uri GetRedirectUrl()
         {
             return new Uri("https://example.org/redirect");
