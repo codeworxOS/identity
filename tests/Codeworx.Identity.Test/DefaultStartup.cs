@@ -30,6 +30,7 @@ namespace Codeworx.Identity.Test
         {
             services.AddCodeworxIdentity(_configuration)
                 .WithLoginAsEmail()
+                .AddMfaTotp()
                 .UseTestSetup();
         }
     }
