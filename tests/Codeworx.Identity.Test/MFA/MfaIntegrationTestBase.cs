@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using OtpNet;
 using static Codeworx.Identity.Test.DummyUserService;
 
@@ -62,7 +65,7 @@ namespace Codeworx.Identity.Test.MFA
             var authorizationRequestBuilder = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(clientId);
 
-            var scopes = "openid tenant";
+            var scopes = "openid offline_access tenant";
             if (!string.IsNullOrEmpty(defaultTenant))
             {
                 scopes += $" {defaultTenant}";
@@ -106,6 +109,58 @@ namespace Codeworx.Identity.Test.MFA
             return response;
         }
 
+        protected async Task<HttpResponseMessage> GetToken(HttpResponseMessage authorizationResponse)
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+
+            var tokenRequestBuilder = new TokenRequestBuilder()
+                .WithGrantType(Constants.OAuth.GrantType.AuthorizationCode)
+                .WithRedirectUri(this.GetRedirectUrl().ToString());
+
+            var authorizationRequestQueryParameters = this.GetQueryParameters(authorizationResponse.RequestMessage.RequestUri.Query);
+            var clientId = authorizationRequestQueryParameters[Constants.OAuth.ClientIdName];
+            tokenRequestBuilder.WithClientId(clientId);
+
+            var redirectQueryParameters = this.GetQueryParameters(authorizationResponse.Headers.Location.Query);
+            var code = redirectQueryParameters[Constants.OAuth.CodeName];
+            tokenRequestBuilder.WithCode(code);
+                
+            var tokenRequest = tokenRequestBuilder.Build();
+            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+
+            return tokenResponse;
+        }
+
+        protected async Task<TokenResponse> ExtractToken(HttpResponseMessage tokenResponse)
+        {
+            var tokenResponseData = JsonConvert.DeserializeObject<TokenResponse>(await tokenResponse.Content.ReadAsStringAsync());
+            return tokenResponseData;
+        }
+
+        protected async Task<HttpResponseMessage> RefreshToken(TokenResponse token)
+        {
+            if (string.IsNullOrEmpty(token.RefreshToken))
+            {
+                throw new ArgumentException("no refresh token available");
+            }
+
+            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+
+            var tokenRequestBuilder = new TokenRequestBuilder()
+                .WithGrantType(Constants.OAuth.GrantType.RefreshToken)
+                .WithRefreshCode(token.RefreshToken);
+
+            var jwtToken = new JwtSecurityToken(token.AccessToken);
+            var clientId = jwtToken.Audiences.First();
+            tokenRequestBuilder.WithClientId(clientId);
+
+            var tokenRequest = tokenRequestBuilder.Build();
+
+            var refreshTokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+
+            return refreshTokenResponse;
+        }
+
         protected async Task ConfigureApiKeySetup(bool isMfaRequiredOnUser, bool isMfaRequiredOnClient)
         {
             var dummyUserService = (DummyUserService)this.TestServer.Host.Services.GetRequiredService<IUserService>();
@@ -122,19 +177,14 @@ namespace Codeworx.Identity.Test.MFA
         {
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
 
-            var scopes = "openid";
-            if (!string.IsNullOrEmpty(defaultTenant))
-            {
-                scopes += " tenant " + defaultTenant;
-            }
+            var tokenRequest = new TokenRequestBuilder()
+                .WithGrantType(Constants.OAuth.GrantType.ClientCredentials)
+                .WithClientId(clientId)
+                .WithClientSecret(clientSecret)
+                .WithScopes($"openid tenant {defaultTenant}")
+                .Build();
 
-            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, new FormUrlEncodedContent(new Dictionary<string, string> {
-                { Constants.OAuth.GrantTypeName, Constants.OAuth.GrantType.ClientCredentials },
-                { Constants.OAuth.ClientIdName, clientId },
-                { Constants.OAuth.ClientSecretName, clientSecret },
-                { Constants.OAuth.ScopeName, scopes }
-            }));
-
+            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
             return tokenResponse;
         }
 
@@ -152,6 +202,20 @@ namespace Codeworx.Identity.Test.MFA
             mfaUrlBuilder.AppendPath("login/mfa");
             var mfaUrl = mfaUrlBuilder.ToString();
             return new Uri(mfaUrl);
+        }
+
+        private FormUrlEncodedContent GetRequestBody(TokenRequest tokenRequest)
+        {
+            var body = JsonConvert.SerializeObject(tokenRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(body);
+            var content = new FormUrlEncodedContent(data);
+            return content;
+        }
+
+        private Dictionary<string, string> GetQueryParameters(string queryString)
+        {
+            var queryParameters = queryString.TrimStart('?').Split("&").ToDictionary(p => p.Split('=')[0], p => p.Split('=')[1]);
+            return queryParameters;
         }
     }
 }
