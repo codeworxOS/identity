@@ -48,9 +48,11 @@ namespace Codeworx.Identity.Test.MFA
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
-
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
-            this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+            if (!string.IsNullOrEmpty(authenticationCookie)) 
+            { 
+                this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+            }
 
             return response;
         }
@@ -59,10 +61,14 @@ namespace Codeworx.Identity.Test.MFA
         {
             var authorizationRequestBuilder = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(clientId);
+
+            var scopes = "openid tenant";
             if (!string.IsNullOrEmpty(defaultTenant))
             {
-                authorizationRequestBuilder.WithScope("openid tenant " + defaultTenant);
-            }
+                scopes += $" {defaultTenant}";
+            } 
+            authorizationRequestBuilder.WithScope(scopes);
+            
             var authorizationRequest = authorizationRequestBuilder.Build();
 
             var uriBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
@@ -72,15 +78,18 @@ namespace Codeworx.Identity.Test.MFA
             return authorizationResponse;
         }
 
-        protected async Task<HttpResponseMessage> FulfillMfaIfRequired(HttpResponseMessage authorizationResponse)
+        protected async Task<HttpResponseMessage> FulfillMfa(HttpResponseMessage authorizationResponse = null)
         {
-            if (authorizationResponse.StatusCode != HttpStatusCode.Redirect
-                || !authorizationResponse.Headers.Location.ToString().Contains("login/mfa"))
+            if (authorizationResponse != null)
             {
-                return null;
+                var isRedirectToMfa = authorizationResponse.StatusCode == HttpStatusCode.Redirect
+                && authorizationResponse.Headers.Location.ToString().Contains("login/mfa");
+                if (!isRedirectToMfa) { 
+                    throw new ArgumentException("expected a redirect to mfa page");
+                }
             }
 
-            var mfaUrl = authorizationResponse.Headers.Location.ToString();
+            var mfaUrl = authorizationResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
             var providerId = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N");
 
             var key = Base32Encoding.ToBytes(MfaSharedSecret);
@@ -95,7 +104,6 @@ namespace Codeworx.Identity.Test.MFA
                    }));
 
             return response;
-
         }
 
         protected Uri GetRedirectUrl()
