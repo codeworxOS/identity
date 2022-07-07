@@ -103,18 +103,18 @@ namespace Codeworx.Identity.Test.MFA
             return selectTenantResponse;
         }
 
-        protected async Task<HttpResponseMessage> FulfillMfa(HttpResponseMessage authorizationResponse = null)
+        protected async Task<HttpResponseMessage> FulfillMfa(HttpResponseMessage loginResponse = null)
         {
-            if (authorizationResponse != null)
+            if (loginResponse != null)
             {
-                var isRedirectToMfa = authorizationResponse.StatusCode == HttpStatusCode.Redirect
-                && authorizationResponse.Headers.Location.ToString().Contains("login/mfa");
+                var isRedirectToMfa = loginResponse.StatusCode == HttpStatusCode.Redirect
+                && loginResponse.Headers.Location.ToString().Contains("login/mfa");
                 if (!isRedirectToMfa) { 
                     throw new ArgumentException("expected a redirect to mfa page");
                 }
             }
 
-            var mfaUrl = authorizationResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
+            var mfaUrl = loginResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
             var providerId = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N");
 
             var key = Base32Encoding.ToBytes(MfaSharedSecret);
@@ -127,6 +127,13 @@ namespace Codeworx.Identity.Test.MFA
                        {"provider-id", providerId },
                        {"one-time-code", oneTimeCode}
                    }));
+
+            response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
+            var mfaCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity.mfa")); // TODO change cookie name
+            if (!string.IsNullOrEmpty(mfaCookie))
+            {
+                this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { mfaCookie });
+            }
 
             return response;
         }
@@ -225,6 +232,28 @@ namespace Codeworx.Identity.Test.MFA
 
             var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
             return tokenResponse;
+        }
+
+        protected bool HasLoginCookie(HttpResponseMessage loginResponse)
+        {
+            if (loginResponse.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies))
+            {
+                var hasLoginCookie = cookies.Any(p => p.StartsWith("identity"));
+                return hasLoginCookie;
+            }
+
+            return false;
+        }
+
+        protected bool HasMfaCookie(HttpResponseMessage loginResponse)
+        {
+            if (loginResponse.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies))
+            {
+                var hasMfaCookie = cookies.Any(p => p.StartsWith("identity.mfa")); // TODO change cookie name
+                return hasMfaCookie;
+            }
+
+            return false;
         }
 
         protected Uri GetRedirectUrl()
