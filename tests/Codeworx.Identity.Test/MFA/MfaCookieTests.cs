@@ -10,8 +10,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_NoMfaRequired_NoCookie()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
-
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authentication Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
@@ -24,13 +22,11 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnUser_CookieAfterMfaFulfilled()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: false);
-
-            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authentication Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
 
-            var mfaResponse = await this.FulfillMfa(authenticationResponse);
+            var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse);
             Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
 
@@ -42,8 +38,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnTenant_CookieAfterMfaFulfilled()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
-
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authentication Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
@@ -52,7 +46,7 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
 
-            var mfaResponse = await this.FulfillMfa(authorizationResponse);
+            var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
             Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
         }
@@ -60,8 +54,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnClient_CookieAfterMfaFulfilled()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
-
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authentication Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
@@ -70,7 +62,7 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
 
-            var mfaResponse = await this.FulfillMfa(authorizationResponse);
+            var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
             Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
         }

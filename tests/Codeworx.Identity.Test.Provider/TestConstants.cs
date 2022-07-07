@@ -98,8 +98,17 @@
             public static class MfaTestUser
             {
                 public const string UserId = "ECAFAC6F-548D-45B5-8D14-20A6615E5B44";
+                public const string UserName = "mfaTestUser";
+                public const string Password = "mfaTestUser";
+                public const string MfaSharedSecret = "HXGWF5E326N665KU";
+            }
+
+            public static class MfaTestUserWithMfaRequired
+            {
+                public const string UserId = "B8B51052-B411-402F-B3DB-64E0A3468A73";
                 public const string UserName = "mfaRequired";
                 public const string Password = "mfaRequired";
+                public const string MfaSharedSecret = "HXGWF5E326N665KU";
             }
         }
 

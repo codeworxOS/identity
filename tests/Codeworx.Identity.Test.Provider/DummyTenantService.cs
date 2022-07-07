@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Test
             {
                 return _tenants.Where(tenant => tenant.AuthenticationMode == AuthenticationMode.Login).ToList();
             }
-            else if (Guid.Parse(identity) == Guid.Parse(TestConstants.Users.MfaTestUser.UserId))
+            else if (Guid.Parse(identity) == Guid.Parse(TestConstants.Users.MfaTestUser.UserId) || Guid.Parse(identity) == Guid.Parse(TestConstants.Users.MfaTestUserWithMfaRequired.UserId))
             {
                 return _tenants.ToList();
             }

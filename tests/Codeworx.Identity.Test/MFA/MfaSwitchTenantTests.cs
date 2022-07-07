@@ -91,19 +91,20 @@ namespace Codeworx.Identity.Test.MFA
 
         private async Task PerformTenantSwitchTest(bool isMfaRequiredOnUser, bool isMfaRequiredOnFirstTenant, bool isMfaRequiredOnSecondTenant, bool expectsMfaOnTenantSwitch)
         {
-            this.ConfigureMfaTestUser(isMfaRequired: isMfaRequiredOnUser, isMfaConfigured: true);
-
-            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            var username = isMfaRequiredOnUser ? TestConstants.Users.MfaTestUserWithMfaRequired.UserName : TestConstants.Users.MfaTestUser.UserName;
+            var password = isMfaRequiredOnUser ? TestConstants.Users.MfaTestUserWithMfaRequired.Password : TestConstants.Users.MfaTestUser.Password;
+            var mfaSharedSecret = isMfaRequiredOnUser ? TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret : TestConstants.Users.MfaTestUser.MfaSharedSecret;
+            var authenticationResponse = await this.Authenticate(username, password);
             if (isMfaRequiredOnUser)
             {
-                await this.FulfillMfa(authenticationResponse);
+                await this.FulfillMfa(mfaSharedSecret, authenticationResponse);
             }
 
             var firstTenantId = isMfaRequiredOnFirstTenant ? TestConstants.Tenants.MfaTenant.Id : TestConstants.Tenants.DefaultTenant.Id;
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, firstTenantId);
             if (isMfaRequiredOnFirstTenant) 
             { 
-                await this.FulfillMfa(authorizationResponse);
+                await this.FulfillMfa(mfaSharedSecret, authorizationResponse);
             }
 
             var secondTenantId = isMfaRequiredOnSecondTenant ? TestConstants.Tenants.MfaSecondTenant.Id : TestConstants.Tenants.DefaultSecondTenant.Id;

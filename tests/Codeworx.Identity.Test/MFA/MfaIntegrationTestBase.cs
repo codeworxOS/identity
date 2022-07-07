@@ -19,20 +19,6 @@ namespace Codeworx.Identity.Test.MFA
 {
     public class MfaIntegrationTestBase : IntegrationTestBase
     {
-        private const string MfaSharedSecret = "HXGWF5E326N665KU";
-
-        protected void ConfigureMfaTestUser(bool isMfaRequired, bool isMfaConfigured)
-        {
-            var dummyUserService = (DummyUserService)this.TestServer.Host.Services.GetRequiredService<IUserService>();
-            var mfaTestUser = (MfaTestUser)dummyUserService.Users.FirstOrDefault(user => Guid.Parse(user.Identity) == Guid.Parse(TestConstants.Users.MfaTestUser.UserId));
-
-            mfaTestUser.SetMfaRequired(isMfaRequired);
-            if (isMfaConfigured)
-            {
-                mfaTestUser.RegisterMfa(Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N"), MfaSharedSecret);
-            }
-        }
-
         protected async Task<HttpResponseMessage> Authenticate(string userName, string password)
         {
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
@@ -103,7 +89,7 @@ namespace Codeworx.Identity.Test.MFA
             return selectTenantResponse;
         }
 
-        protected async Task<HttpResponseMessage> FulfillMfa(HttpResponseMessage loginResponse = null)
+        protected async Task<HttpResponseMessage> FulfillMfa(string sharedSecret, HttpResponseMessage loginResponse = null)
         {
             if (loginResponse != null)
             {
@@ -117,7 +103,7 @@ namespace Codeworx.Identity.Test.MFA
             var mfaUrl = loginResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
             var providerId = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N");
 
-            var key = Base32Encoding.ToBytes(MfaSharedSecret);
+            var key = Base32Encoding.ToBytes(sharedSecret);
             var otpProvider = new Totp(key);
             var oneTimeCode = otpProvider.ComputeTotp(DateTime.Now);
 
@@ -205,18 +191,6 @@ namespace Codeworx.Identity.Test.MFA
 
             var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
             return tokenResponse;
-        }
-
-        protected async Task ConfigureApiKeySetup(bool isMfaRequiredOnUser, bool isMfaRequiredOnClient)
-        {
-            var dummyUserService = (DummyUserService)this.TestServer.Host.Services.GetRequiredService<IUserService>();
-            var mfaTestUser = (MfaTestUser)dummyUserService.Users.FirstOrDefault(user => Guid.Parse(user.Identity) == Guid.Parse(TestConstants.Users.MfaTestUser.UserId));
-            mfaTestUser.SetMfaRequired(isMfaRequiredOnUser);
-
-            var dummyClientService = (DummyOAuthClientService)this.TestServer.Host.Services.GetRequiredService<IClientService>();
-            var mfaTestClient = (DummyOAuthClientService.MfaTestServiceAccountClientRegistration)(await dummyClientService.GetById(TestConstants.Clients.MfaTestServiceAccountClientId));
-            mfaTestClient.SetMfaRequired(isMfaRequiredOnClient);
-            mfaTestClient.UpdateUser(mfaTestUser);
         }
 
         protected async Task<HttpResponseMessage> GetTokenFromApiKey(string clientId, string clientSecret, string defaultTenant)

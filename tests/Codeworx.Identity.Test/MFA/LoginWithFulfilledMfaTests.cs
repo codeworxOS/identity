@@ -10,9 +10,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaFulfilled_NoMfaRequired_DoesNotShowMfaAfterAuthorization()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await this.FulfillMfa();
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
 
@@ -23,9 +22,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaFulfilled_MfaRequiredOnUser_DoesNotShowMfaAfterAuthorization()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: true);
-            await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await this.FulfillMfa();
+            await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
 
@@ -36,9 +34,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaFulfilled_MfaRequiredOnTenant_DoesNotShowMfaAfterAuthorization()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await this.FulfillMfa();
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
 
@@ -49,9 +46,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaFulfilled_MfaRequiredOnClient_DoesNotShowMfaAfterAuthorization()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await this.FulfillMfa();
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
 

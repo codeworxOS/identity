@@ -27,6 +27,7 @@ namespace Codeworx.Identity.Test
             _users.Add(new MultiTenantDummyUser(_defaultTenantMultiTenantCache));
             _users.Add(new ForceChangePasswordUser());
             _users.Add(new MfaTestUser());
+            _users.Add(new MfaTestUserWithMfaRequired());
         }
 
         public Task<Model.IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
@@ -281,7 +282,12 @@ namespace Codeworx.Identity.Test
             public MfaTestUser()
             {
                 FailedLoginCount = 0;
-                AuthenticationMode = AuthenticationMode.Mfa;
+                AuthenticationMode = AuthenticationMode.Login;
+                HasMfaRegistration = true;
+                ExternalIdentifiers = new Dictionary<string, string>()
+                {
+                    { Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N"), TestConstants.Users.MfaTestUser.MfaSharedSecret }
+                };
             }
 
             public string DefaultTenantKey => null;
@@ -292,7 +298,7 @@ namespace Codeworx.Identity.Test
 
             public string PasswordHash => _password;
 
-            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+            public IDictionary<string, string> ExternalIdentifiers { get; }
 
             public bool ForceChangePassword => _forceChangePassword;
 
@@ -300,19 +306,62 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
-            public bool HasMfaRegistration { get; private set; }
+            public bool HasMfaRegistration { get; }
 
             public AuthenticationMode AuthenticationMode { get; private set; }
 
-            public void SetMfaRequired(bool isMfaRequired)
+            public void RequireMfa()
             {
-                AuthenticationMode = isMfaRequired ? AuthenticationMode.Mfa : AuthenticationMode.Login;
+                AuthenticationMode = AuthenticationMode.Mfa;
             }
 
-            public void RegisterMfa(string provider, string sharedSecret)
+            public void ResetPassword(string password)
             {
-                this.HasMfaRegistration = true;
-                this.ExternalIdentifiers.Add(provider, sharedSecret);
+                _forceChangePassword = false;
+                _password = password;
+            }
+        }
+
+        public class MfaTestUserWithMfaRequired : IDummyUser
+        {
+            private bool _forceChangePassword;
+            private string _password = TestConstants.Users.MfaTestUserWithMfaRequired.Password;
+            public bool ConfirmationPending => false;
+
+            public MfaTestUserWithMfaRequired()
+            {
+                FailedLoginCount = 0;
+                AuthenticationMode = AuthenticationMode.Mfa;
+                HasMfaRegistration = true;
+                ExternalIdentifiers = new Dictionary<string, string>()
+                {
+                    { Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N"), TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret }
+                };
+            }
+
+            public string DefaultTenantKey => null;
+
+            public string Identity => TestConstants.Users.MfaTestUserWithMfaRequired.UserId;
+
+            public string Name => TestConstants.Users.MfaTestUserWithMfaRequired.UserName;
+
+            public string PasswordHash => _password;
+
+            public IDictionary<string, string> ExternalIdentifiers { get; }
+
+            public bool ForceChangePassword => _forceChangePassword;
+
+            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public int FailedLoginCount { get; set; }
+
+            public bool HasMfaRegistration { get; }
+
+            public AuthenticationMode AuthenticationMode { get; private set; }
+
+            public void ResetMfa()
+            {
+                AuthenticationMode = AuthenticationMode.Login;
             }
 
             public void ResetPassword(string password)

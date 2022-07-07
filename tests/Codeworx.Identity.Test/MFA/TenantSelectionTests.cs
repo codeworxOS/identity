@@ -12,7 +12,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithTenantSelection_NoMfaFulfilled_SelectTenantWithoutMfa_CompleteLogin()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: null);
@@ -29,7 +28,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithTenantSelection_NoMfaFulfilled_SelectTenantWithMfa_RedirectsToMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: null);
@@ -43,9 +41,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithTenantSelection_MfaFulfilled_SelectTenantWithoutMfa_CompleteLogin()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: true);
-            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await FulfillMfa(authenticationResponse);
+            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
+            await FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: null);
             var selectTenantResponse = await this.SelectTenant(authorizationResponse, TestConstants.Tenants.DefaultTenant.Id);
@@ -60,9 +57,8 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithTenantSelection_MfaFulfilled_SelectTenantWithMfa_CompleteLogin()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: true);
-            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
-            await FulfillMfa(authenticationResponse);
+            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
+            await FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: null);
             var selectTenantResponse = await this.SelectTenant(authorizationResponse, TestConstants.Tenants.MfaTenant.Id);

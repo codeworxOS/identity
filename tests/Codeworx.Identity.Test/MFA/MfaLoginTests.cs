@@ -10,7 +10,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_NoMfaRequired_DoesNotShowMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
@@ -22,8 +21,7 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnUser_RedirectsToMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: false);
-            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
 
             Assert.AreEqual(HttpStatusCode.Redirect, authenticationResponse.StatusCode);
             Assert.AreEqual(this.GetMfaUrl(), authenticationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
@@ -32,7 +30,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnTenant_RedirectsToMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
@@ -44,7 +41,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnClient_RedirectsToMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: false);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);

@@ -12,7 +12,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasNoMfa_TargetClientHasNoMfa_Success()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
             var tokenResponse = await this.GetToken(authorizationResult);
@@ -32,10 +31,9 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasMfa_TargetClientHasNoMfa_Success()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
-            await this.FulfillMfa(authorizationResult);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResult);
             var tokenResponse = await this.GetToken(authorizationResult);
             var token = await this.ExtractToken(tokenResponse);
 
@@ -52,7 +50,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasNoMfa_TargetClientHasMfa_ReceivesErrorResponse()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
             var tokenResponse = await this.GetToken(authorizationResult);
@@ -71,10 +68,9 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasMfa_TargetClientHasMfa_Success()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
-            await this.FulfillMfa(authorizationResult);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResult);
             var tokenResponse = await this.GetToken(authorizationResult);
             var token = await this.ExtractToken(tokenResponse);
 

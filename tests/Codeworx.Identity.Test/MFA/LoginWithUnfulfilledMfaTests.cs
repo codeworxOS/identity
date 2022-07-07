@@ -12,8 +12,7 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnUser_MfaNotFulfilled_AuthorizationRequestRedirectsToMfa()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: true, isMfaConfigured: true);
-            await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
 
@@ -24,7 +23,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnTenant_MfaNotFulfilled_GetTokenReceivesErrorResponse()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
 
@@ -38,7 +36,6 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnClient_MfaNotFulfilled_GetTokenReceivesErrorResponse()
         {
-            this.ConfigureMfaTestUser(isMfaRequired: false, isMfaConfigured: true);
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
 
