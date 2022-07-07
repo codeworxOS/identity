@@ -48,7 +48,8 @@ namespace Codeworx.Identity.Test.MFA
         protected async Task<HttpResponseMessage> GetAuthorizationResponse(string clientId, string defaultTenant)
         {
             var authorizationRequestBuilder = new OpenIdAuthorizationRequestBuilder()
-                .WithClientId(clientId);
+                .WithClientId(clientId)
+                .WithRedirectUri(this.GetRedirectUrl().ToString());
 
             var scopes = "openid offline_access tenant";
             if (!string.IsNullOrEmpty(defaultTenant))
@@ -88,7 +89,7 @@ namespace Codeworx.Identity.Test.MFA
             return selectTenantResponse;
         }
 
-        protected async Task<HttpResponseMessage> FulfillMfa(string sharedSecret, HttpResponseMessage loginResponse = null)
+        protected async Task<HttpResponseMessage> FulfillMfa(string sharedSecret, HttpResponseMessage loginResponse = null, bool useWrongCode = false)
         {
             if (loginResponse != null)
             {
@@ -102,9 +103,13 @@ namespace Codeworx.Identity.Test.MFA
             var mfaUrl = loginResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
             var providerId = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N");
 
-            var key = Base32Encoding.ToBytes(sharedSecret);
-            var otpProvider = new Totp(key);
-            var oneTimeCode = otpProvider.ComputeTotp(DateTime.Now);
+            var oneTimeCode = "123456";
+            if (!useWrongCode) 
+            { 
+                var key = Base32Encoding.ToBytes(sharedSecret);
+                var otpProvider = new Totp(key);
+                oneTimeCode = otpProvider.ComputeTotp(DateTime.Now);
+            }
 
             var response = await this.TestClient.PostAsync(mfaUrl,
                    new FormUrlEncodedContent(new Dictionary<string, string>
