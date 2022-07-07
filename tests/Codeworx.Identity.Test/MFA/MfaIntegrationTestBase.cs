@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using OtpNet;
-using static Codeworx.Identity.Test.DummyUserService;
 
 namespace Codeworx.Identity.Test.MFA
 {
@@ -225,6 +224,19 @@ namespace Codeworx.Identity.Test.MFA
             {
                 var hasMfaCookie = cookies.Any(p => p.StartsWith("identity.mfa")); // TODO change cookie name
                 return hasMfaCookie;
+            }
+
+            return false;
+        }
+
+        protected bool HasMfaClaim(TokenResponse token)
+        {
+            var jwtToken = new JwtSecurityToken(token.AccessToken);
+            var mfaClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "mfa"); // TODO change claim name
+            if (mfaClaim != null)
+            {
+                var hasMfaClaim = mfaClaim.Value == "true"; // TODO change claim value
+                return hasMfaClaim;
             }
 
             return false;

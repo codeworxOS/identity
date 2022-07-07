@@ -57,7 +57,7 @@ namespace Codeworx.Identity.Test.MFA
         }
 
         [Test]
-        public async Task RefreshToken_MfaRequiredSwitchedOff_DoesNotShowMfae()
+        public async Task RefreshToken_MfaRequiredSwitchedOff_DoesNotShowMfa()
         {
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
             await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse);
