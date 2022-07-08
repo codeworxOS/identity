@@ -237,14 +237,8 @@ namespace Codeworx.Identity.Test.MFA
         protected bool HasMfaClaim(TokenResponse token)
         {
             var jwtToken = new JwtSecurityToken(token.AccessToken);
-            var mfaClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "mfa"); // TODO change claim name
-            if (mfaClaim != null)
-            {
-                var hasMfaClaim = mfaClaim.Value == "true"; // TODO change claim value
-                return hasMfaClaim;
-            }
-
-            return false;
+            var hasMfaClaim = jwtToken.Claims.Any(claim => claim.Type == "mfa");
+            return hasMfaClaim;
         }
 
         protected Uri GetRedirectUrl()
