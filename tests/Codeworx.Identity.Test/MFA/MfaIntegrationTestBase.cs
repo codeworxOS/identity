@@ -108,7 +108,7 @@ namespace Codeworx.Identity.Test.MFA
             { 
                 var key = Base32Encoding.ToBytes(sharedSecret);
                 var otpProvider = new Totp(key);
-                oneTimeCode = otpProvider.ComputeTotp(DateTime.Now);
+                oneTimeCode = otpProvider.ComputeTotp();
             }
 
             var response = await this.TestClient.PostAsync(mfaUrl,

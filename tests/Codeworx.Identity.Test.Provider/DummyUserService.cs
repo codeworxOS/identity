@@ -10,7 +10,7 @@ using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
-    public class DummyUserService : IUserService, IDefaultTenantService
+    public class DummyUserService : IUserService, IDefaultTenantService, ILinkUserService
     {
         private static string _defaultTenantMultiTenantCache;
 
@@ -77,6 +77,22 @@ namespace Codeworx.Identity.Test
                 .FirstOrDefault();
 
             return Task.FromResult(result);
+        }
+
+        public async Task LinkUserAsync(IUser user, IExternalLoginData loginData)
+        {
+            var sharedSecret = await loginData.GetExternalIdentifierAsync();
+
+            var dummyUser = (IDummyUser)user;
+            dummyUser.ExternalIdentifiers.Add(loginData.LoginRegistration.Id, sharedSecret);
+        }
+
+        public Task UnlinkUserAsync(IUser user, string providerId)
+        {
+            var dummyUser = (IDummyUser)user;
+            dummyUser.ExternalIdentifiers.Remove(providerId);
+
+            return Task.CompletedTask;
         }
 
         public interface IDummyUser : IUser
@@ -283,10 +299,9 @@ namespace Codeworx.Identity.Test
             {
                 FailedLoginCount = 0;
                 AuthenticationMode = AuthenticationMode.Login;
-                HasMfaRegistration = true;
                 ExternalIdentifiers = new Dictionary<string, string>()
                 {
-                    { Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N"), TestConstants.Users.MfaTestUser.MfaSharedSecret }
+                    { TestConstants.LoginProviders.TotpProvider.Id, TestConstants.Users.MfaTestUser.MfaSharedSecret }
                 };
             }
 
@@ -306,7 +321,7 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
-            public bool HasMfaRegistration { get; }
+            public bool HasMfaRegistration => ExternalIdentifiers.ContainsKey(TestConstants.LoginProviders.TotpProvider.Id);
 
             public AuthenticationMode AuthenticationMode { get; private set; }
 
@@ -332,10 +347,9 @@ namespace Codeworx.Identity.Test
             {
                 FailedLoginCount = 0;
                 AuthenticationMode = AuthenticationMode.Mfa;
-                HasMfaRegistration = true;
                 ExternalIdentifiers = new Dictionary<string, string>()
                 {
-                    { Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N"), TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret }
+                    { TestConstants.LoginProviders.TotpProvider.Id, TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret }
                 };
             }
 
@@ -355,13 +369,18 @@ namespace Codeworx.Identity.Test
 
             public int FailedLoginCount { get; set; }
 
-            public bool HasMfaRegistration { get; }
+            public bool HasMfaRegistration => ExternalIdentifiers.ContainsKey(TestConstants.LoginProviders.TotpProvider.Id);
 
             public AuthenticationMode AuthenticationMode { get; private set; }
 
-            public void ResetMfa()
+            public void ResetMfaRequired()
             {
                 AuthenticationMode = AuthenticationMode.Login;
+            }
+
+            public void RemoveMfaRegistration()
+            {
+                ExternalIdentifiers.Remove(TestConstants.LoginProviders.TotpProvider.Id);
             }
 
             public void ResetPassword(string password)

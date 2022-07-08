@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Test.MFA
 
             var dummyUserService = (DummyUserService)this.TestServer.Services.GetService<IUserService>();
             var mfaTestUser = (MfaTestUserWithMfaRequired)dummyUserService.Users.Single(user => user.Identity == TestConstants.Users.MfaTestUserWithMfaRequired.UserId);
-            mfaTestUser.ResetMfa();
+            mfaTestUser.ResetMfaRequired();
             var refreshTokenResponse = await this.RefreshToken(token);
 
             Assert.AreNotEqual(HttpStatusCode.Redirect, refreshTokenResponse.StatusCode);
