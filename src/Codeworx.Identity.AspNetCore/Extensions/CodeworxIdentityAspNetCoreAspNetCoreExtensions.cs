@@ -246,6 +246,17 @@ namespace Codeworx.Identity.AspNetCore
                                      p.LoginPath = identityOptions.AccountEndpoint + "/login";
                                      p.ExpireTimeSpan = identityOptions.CookieExpiration;
                                      cookieOptions?.Invoke(p);
+                                 })
+                    .AddCookie(
+                                 identityOptions.MfaAuthenticationScheme,
+                                 p =>
+                                 {
+                                     p.Events.OnValidatePrincipal = OnValidatePrincipal;
+                                     p.SlidingExpiration = true;
+                                     p.Cookie.Name = identityOptions.MfaAuthenticationCookie;
+                                     p.LoginPath = identityOptions.AccountEndpoint + "/login/mfa";
+                                     p.ExpireTimeSpan = identityOptions.CookieExpiration;
+                                     cookieOptions?.Invoke(p);
                                  });
 
             collection.AddDistributedMemoryCache();

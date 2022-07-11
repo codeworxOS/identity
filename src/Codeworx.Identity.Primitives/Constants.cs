@@ -8,7 +8,9 @@
         public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source"; // unused?
         public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target"; // unused?
         public const string DefaultAuthenticationCookieName = "identity";
+        public const string DefaultMfaAuthenticationCookieName = DefaultAuthenticationCookieName + ".mfa";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
+        public const string DefaultMfaAuthenticationScheme = DefaultAuthenticationScheme + ".Mfa";
         public const string DefaultFavicon = "data:;base64,iVBORw0KGgo=";
         public const string DefaultPasswordDescriptionDe = "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens eine Ziffer, einen Groß- und einen Kleinbuchstaben enthalten.";
         public const string DefaultPasswordDescriptionEn = "The password must be at least 8 characters long and contain at least one digit, one uppercase and one lowercase character.";
@@ -68,6 +70,7 @@
             public const string ExternalToken = "external_token";
             public const string ExternalTokenKey = "external_token_key";
             public const string ForceChangePassword = "force_change_password";
+            public const string ForceMfaLogin = "force_mfa_login";
             public const string ConfirmationPending = "confirmation_pending";
             public const string Group = "group";
             public const string GroupNames = "group_names";

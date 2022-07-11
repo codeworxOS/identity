@@ -71,7 +71,7 @@ namespace Codeworx.Identity.Mfa.Totp
 
                         await _linkUserService.LinkUserAsync(user, new TotpLoginData(configuration, loginRequest.SharedSecret)).ConfigureAwait(false);
 
-                        return new SignInResponse(loginRequest.Identity, null);
+                        return new SignInResponse(loginRequest.Identity, null, AuthenticationMode.Mfa);
                     }
                     else
                     {
@@ -89,7 +89,7 @@ namespace Codeworx.Identity.Mfa.Totp
 
                     if (verified)
                     {
-                        return new SignInResponse(loginRequest.Identity, null);
+                        return new SignInResponse(loginRequest.Identity, null, AuthenticationMode.Mfa);
                     }
                     else
                     {

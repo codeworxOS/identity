@@ -29,7 +29,7 @@
 
             public static class TotpProvider
             {
-                public const string Id = "1f7ac4c2-1fe5-4931-9f25-4bee1e1af992";
+                public const string Id = "1f7ac4c21fe549319f254bee1e1af992";
                 public const string Name = "Totp";
             }
         }

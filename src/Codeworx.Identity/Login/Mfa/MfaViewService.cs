@@ -25,10 +25,7 @@ namespace Codeworx.Identity.Login.Mfa
         {
             var response = await _loginService.SignInAsync(request.ProviderId, request.ProviderRequestParameter).ConfigureAwait(false);
 
-            response.Identity.AddClaim(new System.Security.Claims.Claim("mfa", request.ProviderId));
-            var result = new SignInResponse(response.Identity, request.ReturnUrl);
-
-            return result;
+            return response;
         }
 
         public async Task<MfaLoginResponse> ShowLoginAsync(MfaLoginRequest request, string errorProviderId = null, string errorMessage = null)

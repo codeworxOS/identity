@@ -37,8 +37,8 @@ namespace Codeworx.Identity.Test.MFA
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
-            if (!string.IsNullOrEmpty(authenticationCookie)) 
-            { 
+            if (!string.IsNullOrEmpty(authenticationCookie))
+            {
                 this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
             }
 
@@ -55,9 +55,9 @@ namespace Codeworx.Identity.Test.MFA
             if (!string.IsNullOrEmpty(defaultTenant))
             {
                 scopes += $" {defaultTenant}";
-            } 
+            }
             authorizationRequestBuilder.WithScope(scopes);
-            
+
             var authorizationRequest = authorizationRequestBuilder.Build();
 
             var uriBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
@@ -95,17 +95,18 @@ namespace Codeworx.Identity.Test.MFA
             {
                 var isRedirectToMfa = loginResponse.StatusCode == HttpStatusCode.Redirect
                 && loginResponse.Headers.Location.ToString().Contains("login/mfa");
-                if (!isRedirectToMfa) { 
+                if (!isRedirectToMfa)
+                {
                     throw new ArgumentException("expected a redirect to mfa page");
                 }
             }
 
             var mfaUrl = loginResponse?.Headers.Location.ToString() ?? GetMfaUrl().ToString();
-            var providerId = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id).ToString("N");
+            var providerId = Guid.Parse(TestConstants.LoginProviders.TotpProvider.Id).ToString("N");
 
             var oneTimeCode = "123456";
-            if (!useWrongCode) 
-            { 
+            if (!useWrongCode)
+            {
                 var key = Base32Encoding.ToBytes(sharedSecret);
                 var otpProvider = new Totp(key);
                 oneTimeCode = otpProvider.ComputeTotp();
@@ -143,7 +144,7 @@ namespace Codeworx.Identity.Test.MFA
             var redirectQueryParameters = this.GetQueryParameters(authorizationResponse.Headers.Location.Query);
             var code = redirectQueryParameters[Constants.OAuth.CodeName];
             tokenRequestBuilder.WithCode(code);
-                
+
             var tokenRequest = tokenRequestBuilder.Build();
             var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
 

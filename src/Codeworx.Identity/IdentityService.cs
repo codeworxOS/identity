@@ -181,6 +181,11 @@ namespace Codeworx.Identity
                 identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
             }
 
+            if (user.AuthenticationMode == AuthenticationMode.Mfa)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ForceMfaLogin, "true"));
+            }
+
             if (user.ConfirmationPending)
             {
                 identity.AddClaim(new Claim(Constants.Claims.ConfirmationPending, "true"));
