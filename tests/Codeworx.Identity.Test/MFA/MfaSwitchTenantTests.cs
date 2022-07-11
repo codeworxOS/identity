@@ -120,6 +120,7 @@ namespace Codeworx.Identity.Test.MFA
             {
                 Assert.AreEqual(HttpStatusCode.Redirect, switchTenantAuthorizationResponse.StatusCode);
                 Assert.AreEqual(this.GetRedirectUrl(), switchTenantAuthorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+                Assert.IsTrue(this.HasCodeParameter(switchTenantAuthorizationResponse), "Code Parameter");
             }
 
         }

@@ -242,6 +242,14 @@ namespace Codeworx.Identity.Test.MFA
             return hasMfaClaim;
         }
 
+        protected bool HasCodeParameter(HttpResponseMessage authorizationResponse)
+        {
+            var queryString = authorizationResponse.Headers.Location.Query;
+            var parameters = this.GetQueryParameters(queryString);
+            var hasCodeParameter = parameters.ContainsKey(Constants.OAuth.CodeName);
+            return hasCodeParameter;
+        }
+
         protected Uri GetRedirectUrl()
         {
             return new Uri("https://example.org/redirect");

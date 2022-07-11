@@ -16,6 +16,7 @@ namespace Codeworx.Identity.Test.MFA
 
             Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
             Assert.AreEqual(this.GetRedirectUrl(), authorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
 
         [Test]

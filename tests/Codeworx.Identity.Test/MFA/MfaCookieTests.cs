@@ -15,8 +15,8 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
-            Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
 
         [Test]
@@ -27,12 +27,11 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
 
             var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse);
-            Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.DefaultTenant.Id);
-            Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
-            Assert.IsTrue(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
+
         }
 
         [Test]
@@ -43,12 +42,11 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
-            Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
 
             var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
-            Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
 
         [Test]
@@ -59,12 +57,11 @@ namespace Codeworx.Identity.Test.MFA
             Assert.IsFalse(this.HasMfaCookie(authenticationResponse), "Authentication MFA Cookie");
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
-            Assert.IsTrue(this.HasLoginCookie(authenticationResponse), "Authorization Login Cookie");
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
 
             var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
-            Assert.IsTrue(this.HasLoginCookie(mfaResponse), "MFA Response Login Cookie");
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
     }
 }
