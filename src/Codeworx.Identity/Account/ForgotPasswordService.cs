@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -14,6 +15,7 @@ namespace Codeworx.Identity.Account
         private readonly IBaseUriAccessor _accessor;
         private readonly IInvitationCache _invitationCache;
         private readonly INotificationService _notificationService;
+        private readonly IForgotPasswordDelayService _forgotPasswordDelayService;
         private readonly IdentityOptions _options;
         private readonly IUserService _userService;
 
@@ -22,6 +24,7 @@ namespace Codeworx.Identity.Account
             IOptionsSnapshot<IdentityOptions> options,
             IUserService userService,
             INotificationService notificationService,
+            IForgotPasswordDelayService forgotPasswordDelayService,
             IInvitationCache invitationCache = null)
         {
             _accessor = accessor;
@@ -29,6 +32,7 @@ namespace Codeworx.Identity.Account
             _invitationCache = invitationCache;
             _userService = userService;
             _notificationService = notificationService;
+            _forgotPasswordDelayService = forgotPasswordDelayService;
         }
 
         public async Task<bool> IsSupportedAsync()
@@ -65,6 +69,9 @@ namespace Codeworx.Identity.Account
 
             if (user != null)
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 var invitationCode = Guid.NewGuid().ToString("N");
                 var item = CreateInvitationItem(request, user);
 
@@ -84,6 +91,13 @@ namespace Codeworx.Identity.Account
                 var notification = new ForgotPasswordNotification(invitationUrl, user, _options.CompanyName, _options.SupportEmail);
 
                 await _notificationService.SendNotificationAsync(notification).ConfigureAwait(false);
+
+                sw.Stop();
+                _forgotPasswordDelayService.Record(sw.Elapsed);
+            }
+            else
+            {
+                await _forgotPasswordDelayService.DelayAsync();
             }
 
             return new ForgotPasswordResponse(loginUrl);

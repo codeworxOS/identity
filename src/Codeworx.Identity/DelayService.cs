@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 
 namespace Codeworx.Identity
 {
-    public class LoginDelayService : ILoginDelayService
+    public class DelayService : ILoginDelayService, IForgotPasswordDelayService
     {
         private TimeSpan _delay;
         private int _count;
         private object _locker = new object();
 
-        public LoginDelayService()
+        public DelayService()
         {
             _delay = TimeSpan.FromMilliseconds(40);
             _count = 0;
