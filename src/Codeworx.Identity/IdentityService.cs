@@ -108,6 +108,11 @@ namespace Codeworx.Identity
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
             }
+            else
+            {
+                sw.Stop();
+                _loginDelayService.Record(sw.Elapsed);
+            }
 
             if (_failedLoginService != null && user.FailedLoginCount > 0)
             {
