@@ -51,6 +51,17 @@ namespace Codeworx.Identity.AspNetCore.Login
                         throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
                     }
                 }
+
+                if (mode == AuthenticationMode.Login)
+                {
+                    var claimsIdentity = (ClaimsIdentity)result.Principal.Identity;
+                    var mfaResult = await context.AuthenticateAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+
+                    if (mfaResult.Succeeded)
+                    {
+                        claimsIdentity.AddClaims(mfaResult.Principal.Claims);
+                    }
+                }
             }
 
             return result;
@@ -79,9 +90,10 @@ namespace Codeworx.Identity.AspNetCore.Login
             await context.SignInAsync(GetAuthenticationSchema(mode), principal, properties);
         }
 
-        public async Task SignOutAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
+        public async Task SignOutAsync(HttpContext context)
         {
-            await context.SignOutAsync(GetAuthenticationSchema(mode));
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Login));
         }
 
         protected virtual void Dispose(bool disposing)

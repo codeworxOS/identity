@@ -80,6 +80,7 @@
             public const string Subject = "sub";
             public const string Tenant = "tenant";
             public const string Upn = "upn";
+            public const string Amr = "amr";
         }
 
         public static class Forms
@@ -239,6 +240,12 @@
             public static class ResponseMode
             {
                 public const string FormPost = "form_post";
+            }
+
+            public static class Amr
+            {
+                public const string Mfa = "mfa";
+                public const string Otp = "otp";
             }
 
             public static class ResponseType

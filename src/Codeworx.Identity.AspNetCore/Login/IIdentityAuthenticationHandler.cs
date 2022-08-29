@@ -12,7 +12,7 @@ namespace Codeworx.Identity.AspNetCore.Login
 
         Task ChallengeAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login);
 
-        Task SignOutAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login);
+        Task SignOutAsync(HttpContext context);
 
         Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist, AuthenticationMode mode = AuthenticationMode.Login);
     }

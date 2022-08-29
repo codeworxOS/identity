@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
@@ -89,7 +90,11 @@ namespace Codeworx.Identity.Mfa.Totp
 
                     if (verified)
                     {
-                        return new SignInResponse(loginRequest.Identity, null, AuthenticationMode.Mfa);
+                        var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
+                        identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
+                        identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
+
+                        return new SignInResponse(identity, null, AuthenticationMode.Mfa);
                     }
                     else
                     {

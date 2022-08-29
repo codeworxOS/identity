@@ -24,6 +24,14 @@ namespace Codeworx.Identity.OpenId
                 }
             }
 
+            var amrClaims = parameters.User.FindAll(Constants.Claims.Amr).ToList();
+
+            if (amrClaims.Any())
+            {
+                var amrClaim = AssignedClaim.Create(Constants.Claims.Amr, amrClaims.Select(p => p.Value));
+                result.Add(amrClaim);
+            }
+
             return Task.FromResult<IEnumerable<AssignedClaim>>(result);
         }
     }

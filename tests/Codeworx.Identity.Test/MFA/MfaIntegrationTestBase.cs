@@ -238,7 +238,7 @@ namespace Codeworx.Identity.Test.MFA
         protected bool HasMfaClaim(TokenResponse token)
         {
             var jwtToken = new JwtSecurityToken(token.AccessToken);
-            var hasMfaClaim = jwtToken.Claims.Any(claim => claim.Type == "mfa");
+            var hasMfaClaim = jwtToken.Claims.Any(claim => claim.Type == Constants.Claims.Amr);
             return hasMfaClaim;
         }
 
