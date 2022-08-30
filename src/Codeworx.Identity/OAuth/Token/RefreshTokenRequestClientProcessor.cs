@@ -34,20 +34,22 @@ namespace Codeworx.Identity.OAuth.Token
             ////    ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
             ////}
 
-            var cacheEntry = await _refreshTokenCache.GetAsync(request.RefreshToken).ConfigureAwait(false);
+            try
+            {
+                var cacheEntry = await _refreshTokenCache.GetAsync(request.RefreshToken).ConfigureAwait(false);
 
-            if (cacheEntry == null)
+                if (cacheEntry.IdentityData.ClientId != request.ClientId)
+                {
+                    ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
+                }
+
+                // TODO extend refresh_token lifetime or recreate;
+                builder.WithCacheItem(cacheEntry);
+            }
+            catch (CacheEntryNotFoundException)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
-
-            if (cacheEntry.IdentityData.ClientId != request.ClientId)
-            {
-                ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
-            }
-
-            // TODO extend refresh_token lifetime or recreate;
-            builder.WithCacheItem(cacheEntry);
         }
     }
 }
