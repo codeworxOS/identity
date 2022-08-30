@@ -51,7 +51,7 @@ namespace Codeworx.Identity.Cache
             var cachedGrantInformation = await _cache.GetStringAsync(cacheKey, token).ConfigureAwait(false);
             if (cachedGrantInformation == null)
             {
-                return null;
+                throw new CacheEntryNotFoundException();
             }
 
             var data = await _dataEncryption.DecryptAsync(cachedGrantInformation, encryptionKey);

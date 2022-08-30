@@ -13,6 +13,7 @@ namespace Codeworx.Identity.Test.Services
     using System.Linq;
     using Codeworx.Identity.EntityFrameworkCore.Model;
     using Codeworx.Identity.Resources;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
 
     public class EntityChangePasswordServiceTest : IDisposable
     {
@@ -32,7 +33,7 @@ namespace Codeworx.Identity.Test.Services
             service.AddSingleton<IConfigureOptions<IdentityOptions>>(
                 sp => new ConfigureOptions<IdentityOptions>(i => i.PasswordHistoryLength = 3));
 
-            service.AddDbContext<CodeworxIdentityDbContext>(p => p.UseInMemoryDatabase(databaseId));
+            service.AddDbContext<CodeworxIdentityDbContext>(p => p.UseInMemoryDatabase(databaseId).ConfigureWarnings(w => w.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
 
             _serviceProvider = service.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
         }

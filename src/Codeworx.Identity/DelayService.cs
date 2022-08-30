@@ -25,6 +25,11 @@ namespace Codeworx.Identity
             TimeSpan newValue = TimeSpan.Zero;
             lock (_locker)
             {
+                if (_count == int.MaxValue)
+                {
+                    _count = 1;
+                }
+
                 var current = TimeSpan.FromTicks(_count * _delay.Ticks);
                 _count++;
                 newValue = TimeSpan.FromTicks((current + duration).Ticks / _count);
