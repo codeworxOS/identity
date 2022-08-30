@@ -1,12 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Codeworx.Identity
+﻿namespace Codeworx.Identity
 {
-    public interface ILoginDelayService
+    public interface ILoginDelayService : IDelayService
     {
-        Task DelayAsync();
-
-        void Record(TimeSpan duration);
     }
 }

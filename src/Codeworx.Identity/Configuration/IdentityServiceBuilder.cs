@@ -59,7 +59,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
-            this.ReplaceService<ILoginDelayService, LoginDelayService>(ServiceLifetime.Singleton);
+            this.ReplaceService<ILoginDelayService, DelayService>(ServiceLifetime.Singleton);
+            this.ReplaceService<IForgotPasswordDelayService, DelayService>(ServiceLifetime.Singleton);
             this.ReplaceService<IPasswordPolicyProvider, DefaultPasswordPolicyProvider>(ServiceLifetime.Singleton);
             this.ReplaceService<ILoginPolicyProvider, DefaultLoginPolicyProvider>(ServiceLifetime.Singleton);
             this.ReplaceService<IPasswordChangeService, PasswordChangeService>(ServiceLifetime.Scoped);
