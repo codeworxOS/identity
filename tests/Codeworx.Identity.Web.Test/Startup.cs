@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Web.Test.Tenant;
@@ -91,6 +93,7 @@ namespace Codeworx.Identity.Web.Test
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     .AddSmtpMailConnector()
                     .AddMfaTotp()
+                    .WithLoginAsEmail()
                     .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
             //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
             //.UseConfiguration(_configuration);

@@ -2,11 +2,13 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Notification;
 using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -24,8 +26,8 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test]
         public async Task ForgotPasswordAvailable_ReturnsSuccess()
         {
-            var mailConnector = new Mock<IMailConnector>();
-            var testServer = CreateTestServer(mailConnector.Object);
+            var mock = new Mock<INotificationQueue>();
+            var testServer = CreateTestServer(mock.Object);
             var testClient = testServer.CreateClient();
 
             var forgotPasswordUrl = CreateForgotPasswordUrl(testClient, testServer);
@@ -51,10 +53,10 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test]
         public async Task ForgotPasswordWithExistingUser_SendsMail()
         {
-            var mailConnector = new Mock<IMailConnector>();
-            mailConnector.Setup(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()))
+            var mock = new Mock<INotificationQueue>();
+            mock.Setup(m => m.EnqueueAsync(It.IsAny<ForgotPasswordNotification>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
-            var testServer = CreateTestServer(mailConnector.Object);
+            var testServer = CreateTestServer(mock.Object);
             var testClient = testServer.CreateClient();
 
             var existingUserName = TestConstants.Users.DefaultEmail.UserName;
@@ -68,17 +70,17 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             Assert.IsTrue(response.IsSuccessStatusCode);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            mailConnector.Verify(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-            mailConnector.Verify(m => m.SendAsync(It.Is<MailAddress>(user => user.Address == existingUserName), It.IsNotNull<string>(), It.IsNotNull<string>()), Times.Once);
+            mock.Verify(m => m.EnqueueAsync(It.IsAny<ForgotPasswordNotification>(), It.IsAny<CancellationToken>()), Times.Once);
+            mock.Verify(m => m.EnqueueAsync(It.Is<ForgotPasswordNotification>(n => n.Target.Name == existingUserName), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test]
         public async Task ForgotPasswordWithNonExistingUser_DoesNotSendMail()
         {
-            var mailConnector = new Mock<IMailConnector>();
-            mailConnector.Setup(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()))
+            var mock = new Mock<INotificationQueue>();
+            mock.Setup(m => m.EnqueueAsync(It.IsAny<ForgotPasswordNotification>(), It.IsAny<CancellationToken>()))
                 .Verifiable();
-            var testServer = CreateTestServer(mailConnector.Object);
+            var testServer = CreateTestServer(mock.Object);
             var testClient = testServer.CreateClient();
 
             var notExistingUserName = TestConstants.Users.NotExisting.UserName;
@@ -92,10 +94,10 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             Assert.IsTrue(response.IsSuccessStatusCode);
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            mailConnector.Verify(m => m.SendAsync(It.IsAny<MailAddress>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            mock.Verify(m => m.EnqueueAsync(It.IsAny<ForgotPasswordNotification>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
-        private TestServer CreateTestServer(IMailConnector mailConnector)
+        private TestServer CreateTestServer(INotificationQueue queue)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<DefaultStartup>()
@@ -105,9 +107,9 @@ namespace Codeworx.Identity.Test.AspNetCore
                     return invitationCacheMock.Object;
                 }));
 
-            if (mailConnector != null)
+            if (queue != null)
             {
-                builder.ConfigureServices(services => services.AddSingleton(mailConnector));
+                builder.ConfigureServices(services => services.AddSingleton(queue));
             }
 
             var testServer = new TestServer(builder);

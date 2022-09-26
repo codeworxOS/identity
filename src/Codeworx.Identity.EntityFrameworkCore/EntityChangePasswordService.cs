@@ -29,58 +29,64 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public async Task SetPasswordAsync(IUser user, string password)
         {
-            var hash = _hashing.Create(password);
-
-            var userId = Guid.Parse(user.Identity);
-            var userEntity = await _context.Set<User>().FirstAsync(p => p.Id == userId);
-
-            var passwordHistoryLength = _options.PasswordHistoryLength;
-            if (passwordHistoryLength > 0)
+            await using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                var passwordHistorySet = _context.Set<UserPasswordHistory>();
-                var userPasswordHistory = passwordHistorySet.Where(x => x.UserId == userId)
-                                                               .OrderByDescending(x => x.ChangedAt).ToList();
+                var hash = _hashing.Create(password);
 
-                foreach (var entry in userPasswordHistory.Take(passwordHistoryLength))
+                var userId = Guid.Parse(user.Identity);
+                var userEntity = await _context.Set<User>().FirstAsync(p => p.Id == userId);
+
+                var passwordHistoryLength = _options.PasswordHistoryLength;
+                if (passwordHistoryLength > 0)
                 {
-                    if (_hashing.Validate(password, entry.PasswordHash))
+                    var passwordHistorySet = _context.Set<UserPasswordHistory>();
+                    var userPasswordHistory = passwordHistorySet.Where(x => x.UserId == userId)
+                                                                   .OrderByDescending(x => x.ChangedAt).ToList();
+
+                    foreach (var entry in userPasswordHistory.Take(passwordHistoryLength))
                     {
-                        throw new PasswordChangeException(_stringResources.GetResource(StringResource.PasswordChangePasswordReuseError));
+                        if (_hashing.Validate(password, entry.PasswordHash))
+                        {
+                            throw new PasswordChangeException(_stringResources.GetResource(StringResource.PasswordChangePasswordReuseError));
+                        }
+                    }
+
+                    var passwordsToDelete = userPasswordHistory.Skip(passwordHistoryLength - 1);
+                    passwordHistorySet.RemoveRange(passwordsToDelete);
+
+                    if (userEntity.PasswordHash != null)
+                    {
+                        var passwordHistory = new UserPasswordHistory
+                        {
+                            ChangedAt = DateTime.UtcNow,
+                            PasswordHash = userEntity.PasswordHash,
+                            UserId = userEntity.Id,
+                        };
+
+                        passwordHistorySet.Add(passwordHistory);
                     }
                 }
 
-                var passwordsToDelete = userPasswordHistory.Skip(passwordHistoryLength - 1);
-                passwordHistorySet.RemoveRange(passwordsToDelete);
+                userEntity.PasswordHash = hash;
+                userEntity.PasswordChanged = DateTime.UtcNow;
+                userEntity.FailedLoginCount = 0;
+                userEntity.ForceChangePassword = false;
 
-                if (userEntity.PasswordHash != null)
+                var refreshToken = await _context.Set<UserRefreshToken>()
+                                                .Where(p => p.UserId == userEntity.Id)
+                                                .Where(p => !p.IsDisabled && p.ValidUntil >= DateTime.UtcNow)
+                                                .Select(p => new UserRefreshToken { Token = p.Token, IsDisabled = p.IsDisabled })
+                                                .ToListAsync();
+
+                foreach (var item in refreshToken)
                 {
-                    var passwordHistory = new UserPasswordHistory
-                    {
-                        ChangedAt = DateTime.UtcNow,
-                        PasswordHash = userEntity.PasswordHash,
-                        UserId = userEntity.Id,
-                    };
-
-                    passwordHistorySet.Add(passwordHistory);
+                    _context.Entry(item).State = EntityState.Unchanged;
+                    item.IsDisabled = true;
                 }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-
-            userEntity.PasswordHash = hash;
-            userEntity.PasswordChanged = DateTime.UtcNow;
-            userEntity.FailedLoginCount = 0;
-            userEntity.ForceChangePassword = false;
-
-            var refreshToken = await _context.Set<UserRefreshToken>()
-                                            .Where(p => p.UserId == userEntity.Id)
-                                            .Where(p => !p.IsDisabled && p.ValidUntil >= DateTime.UtcNow)
-                                            .ToListAsync();
-
-            foreach (var item in refreshToken)
-            {
-                item.IsDisabled = true;
-            }
-
-            await _context.SaveChangesAsync();
         }
     }
 }

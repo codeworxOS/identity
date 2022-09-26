@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ namespace Codeworx.Identity
         private readonly IdentityOptions _options;
         private readonly IInvitationService _invitationService;
         private readonly IStringResources _stringResources;
+        private readonly ILoginDelayService _loginDelayService;
         private readonly IFailedLoginService _failedLoginService;
         private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
@@ -32,6 +34,7 @@ namespace Codeworx.Identity
             IOptionsSnapshot<IdentityOptions> options,
             IInvitationService invitationService,
             IStringResources stringResources,
+            ILoginDelayService loginDelayService,
             IFailedLoginService failedLoginService = null,
             ILinkUserService linkUserService = null)
         {
@@ -42,6 +45,7 @@ namespace Codeworx.Identity
             _options = options.Value;
             _invitationService = invitationService;
             _stringResources = stringResources;
+            _loginDelayService = loginDelayService;
             _failedLoginService = failedLoginService;
             _linkUserService = linkUserService;
         }
@@ -78,6 +82,7 @@ namespace Codeworx.Identity
             var user = await _userService.GetUserByNameAsync(username);
             if (user == null)
             {
+                await _loginDelayService.DelayAsync();
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
             }
@@ -88,6 +93,8 @@ namespace Codeworx.Identity
                 throw new AuthenticationException(message);
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
             if (!await _passwordValidator.Validate(user, password))
             {
                 if (_failedLoginService != null)
@@ -98,6 +105,9 @@ namespace Codeworx.Identity
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
             }
+
+            sw.Stop();
+            _loginDelayService.Record(sw.Elapsed);
 
             if (_failedLoginService != null && user.FailedLoginCount > 0)
             {
