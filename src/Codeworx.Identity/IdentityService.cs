@@ -102,12 +102,17 @@ namespace Codeworx.Identity
                     await _failedLoginService.SetFailedLoginAsync(user).ConfigureAwait(false);
                 }
 
+                sw.Stop();
+                _loginDelayService.Record(sw.Elapsed);
+
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
             }
-
-            sw.Stop();
-            _loginDelayService.Record(sw.Elapsed);
+            else
+            {
+                sw.Stop();
+                _loginDelayService.Record(sw.Elapsed);
+            }
 
             if (_failedLoginService != null && user.FailedLoginCount > 0)
             {
