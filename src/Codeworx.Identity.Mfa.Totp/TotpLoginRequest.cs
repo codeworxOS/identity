@@ -4,11 +4,12 @@ namespace Codeworx.Identity.Mfa.Totp
 {
     public class TotpLoginRequest
     {
-        public TotpLoginRequest(string providerId, ClaimsIdentity identity, TotpAction action, string oneTimeCode, string sharedSecret = null)
+        public TotpLoginRequest(string providerId, ClaimsIdentity identity, TotpAction action, string returnUrl, string oneTimeCode, string sharedSecret = null)
         {
             ProviderId = providerId;
             Identity = identity;
             Action = action;
+            ReturnUrl = returnUrl;
             OneTimeCode = oneTimeCode;
             SharedSecret = sharedSecret;
         }
@@ -18,6 +19,8 @@ namespace Codeworx.Identity.Mfa.Totp
         public ClaimsIdentity Identity { get; }
 
         public TotpAction Action { get; }
+
+        public string ReturnUrl { get; }
 
         public string OneTimeCode { get; }
 

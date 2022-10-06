@@ -260,6 +260,7 @@ namespace Codeworx.Identity.Test.MFA
             var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
 
             var mfaUrlBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
+            mfaUrlBuilder.Schema = "https";
             mfaUrlBuilder.AppendPath(options.Value.AccountEndpoint);
             mfaUrlBuilder.AppendPath("login/mfa");
             var mfaUrl = mfaUrlBuilder.ToString();

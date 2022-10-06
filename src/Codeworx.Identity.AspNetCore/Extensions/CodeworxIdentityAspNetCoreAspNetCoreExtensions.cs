@@ -308,6 +308,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<UserInfoResponse>, UserInfoResponseBinder>();
             collection.AddTransient<IResponseBinder<SelectTenantViewResponse>, SelectTenantViewResponseBinder>();
             collection.AddTransient<IResponseBinder<SelectTenantSuccessResponse>, SelectTenantSuccessResponseBinder>();
+            collection.AddTransient<IResponseBinder<MissingMfaResponse>, MissingMfaResponseBinder>();
             collection.AddTransient<IResponseBinder<MissingTenantResponse>, MissingTenantResponseBinder>();
             collection.AddTransient<IResponseBinder<OAuthRedirectResponse>, OAuthRedirectResponseBinder>();
             collection.AddTransient<IResponseBinder<LoginChallengeResponse>, LoginChallengeResponseBinder>();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
@@ -51,8 +52,15 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public ClaimsIdentity User { get; }
 
+        public FlowMode FlowModel => FlowMode.Interactive;
+
         public void Throw(string error, string errorDescription)
         {
+            if (error == Constants.OpenId.Error.MfaAuthenticationRequired)
+            {
+                throw new ErrorResponseException<MissingMfaResponse>(new MissingMfaResponse(Request));
+            }
+
             var errorResponse = new AuthorizationErrorResponse(error, errorDescription, null, this.State, this.RedirectUri, this.ResponseMode);
 
             throw new ErrorResponseException<AuthorizationErrorResponse>(errorResponse);

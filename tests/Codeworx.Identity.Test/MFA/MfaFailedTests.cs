@@ -14,19 +14,18 @@ namespace Codeworx.Identity.Test.MFA
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
             var unfulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse, useWrongCode: true);
 
-            Assert.AreEqual(HttpStatusCode.Redirect, unfulfilledMfaResponse.StatusCode);
-            Assert.AreEqual(this.GetMfaUrl(), unfulfilledMfaResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            Assert.AreEqual(HttpStatusCode.OK, unfulfilledMfaResponse.StatusCode);
         }
 
         [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnUser_MfaFulfilledSecondTime_RedirectsToRedirectUrl()
         {
             var authenticationResponse = await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);
-            var unfulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, authenticationResponse, useWrongCode: true);
-            var fulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, unfulfilledMfaResponse);
+            var unfulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret, useWrongCode: true);
+            Assert.AreEqual(HttpStatusCode.OK, unfulfilledMfaResponse.StatusCode);
 
+            var fulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
             Assert.AreEqual(HttpStatusCode.Redirect, fulfilledMfaResponse.StatusCode);
-            Assert.AreEqual(this.GetRedirectUrl(), fulfilledMfaResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
         }
 
         [Test]
@@ -37,8 +36,7 @@ namespace Codeworx.Identity.Test.MFA
 
             var unfulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse, useWrongCode: true);
 
-            Assert.AreEqual(HttpStatusCode.Redirect, unfulfilledMfaResponse.StatusCode);
-            Assert.AreEqual(this.GetMfaUrl(), unfulfilledMfaResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            Assert.AreEqual(HttpStatusCode.OK, unfulfilledMfaResponse.StatusCode);
         }
 
         [Test]
@@ -48,11 +46,15 @@ namespace Codeworx.Identity.Test.MFA
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
 
             var unfulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse, useWrongCode: true);
-            var fulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, unfulfilledMfaResponse);
+            Assert.AreEqual(HttpStatusCode.OK, unfulfilledMfaResponse.StatusCode);
+            var fulfilledMfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
 
             Assert.AreEqual(HttpStatusCode.Redirect, fulfilledMfaResponse.StatusCode);
-            Assert.AreEqual(this.GetRedirectUrl(), fulfilledMfaResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
-            Assert.IsTrue(this.HasCodeParameter(fulfilledMfaResponse), "Code Parameter");
+            var completeAuthorizeResponse = await this.TestClient.GetAsync(fulfilledMfaResponse.Headers.Location);
+
+            Assert.AreEqual(HttpStatusCode.Redirect, completeAuthorizeResponse.StatusCode);
+            Assert.AreEqual(this.GetRedirectUrl(), completeAuthorizeResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            Assert.IsTrue(this.HasCodeParameter(completeAuthorizeResponse), "Code Parameter");
         }
     }
 }

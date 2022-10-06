@@ -102,7 +102,7 @@ namespace Codeworx.Identity.Test.MFA
 
             var firstTenantId = isMfaRequiredOnFirstTenant ? TestConstants.Tenants.MfaTenant.Id : TestConstants.Tenants.DefaultTenant.Id;
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, firstTenantId);
-            if (isMfaRequiredOnFirstTenant) 
+            if (isMfaRequiredOnFirstTenant && !isMfaRequiredOnUser) 
             { 
                 await this.FulfillMfa(mfaSharedSecret, authorizationResponse);
             }

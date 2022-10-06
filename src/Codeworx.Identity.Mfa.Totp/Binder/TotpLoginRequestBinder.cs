@@ -30,6 +30,7 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
                 string providerId = null;
                 string oneTimeCode = null;
                 string sharedSecret = null;
+                string returnUrl = null;
 
                 if (request.Form.TryGetValue("provider-id", out var providerIdValues))
                 {
@@ -46,7 +47,12 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
                     sharedSecret = sharedSecretValues;
                 }
 
-                var result = new TotpLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, string.IsNullOrWhiteSpace(sharedSecret) ? TotpAction.Login : TotpAction.Register, oneTimeCode, sharedSecret);
+                if (request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrlValues))
+                {
+                    returnUrl = returnUrlValues;
+                }
+
+                var result = new TotpLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, string.IsNullOrWhiteSpace(sharedSecret) ? TotpAction.Login : TotpAction.Register, returnUrl, oneTimeCode, sharedSecret);
 
                 return result;
             }

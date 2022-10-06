@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
@@ -69,10 +70,15 @@ namespace Codeworx.Identity.Mfa.Totp
                         }
 
                         var user = await _userService.GetUserByIdentityAsync(loginRequest.Identity).ConfigureAwait(false);
+                        if (user.LinkedProviders.Contains(configuration.Id))
+                        {
+                            var message = _stringResources.GetResource(StringResource.GenericLoginError);
+                            throw new AuthenticationException(message);
+                        }
 
                         await _linkUserService.LinkUserAsync(user, new TotpLoginData(configuration, loginRequest.SharedSecret)).ConfigureAwait(false);
 
-                        return new SignInResponse(loginRequest.Identity, null, AuthenticationMode.Mfa);
+                        return new SignInResponse(loginRequest.Identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
                     }
                     else
                     {
@@ -84,6 +90,12 @@ namespace Codeworx.Identity.Mfa.Totp
                 {
                     var sharedSecret = await _userService.GetProviderValueAsync(loginRequest.Identity, loginRequest.ProviderId).ConfigureAwait(false);
 
+                    if (sharedSecret == null)
+                    {
+                        var message = _stringResources.GetResource(StringResource.InvalidOneTimeCode);
+                        throw new AuthenticationException(message);
+                    }
+
                     var key = Base32Encoding.ToBytes(sharedSecret);
                     var totp = new OtpNet.Totp(key);
                     var verified = totp.VerifyTotp(loginRequest.OneTimeCode, out var stepMatched, VerificationWindow.RfcSpecifiedNetworkDelay);
@@ -94,7 +106,7 @@ namespace Codeworx.Identity.Mfa.Totp
                         identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
                         identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
 
-                        return new SignInResponse(identity, null, AuthenticationMode.Mfa);
+                        return new SignInResponse(identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
                     }
                     else
                     {

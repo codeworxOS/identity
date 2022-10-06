@@ -227,6 +227,7 @@
             public static class Error
             {
                 public const string AccountSelectionRequired = "account_selection_required";
+                public const string MfaAuthenticationRequired = "mfa_authentication_required";
                 public const string ConsentRequired = "consent_required";
                 public const string InteractionRequired = "interaction_required";
                 public const string InvalidRequestObject = "invalid_request_object";

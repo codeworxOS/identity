@@ -27,6 +27,8 @@ namespace Codeworx.Identity.OAuth.Token
 
         public IRefreshTokenCacheItem CacheItem { get; }
 
+        public FlowMode FlowModel => FlowMode.NonInteractive;
+
         public void Throw(string error, string errorDescription)
         {
             ErrorResponse.Throw(error, errorDescription);

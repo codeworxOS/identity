@@ -30,11 +30,10 @@ namespace Codeworx.Identity.Test.MFA
         {
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
-            var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: null);
-            var selectTenantResponse = await this.SelectTenant(authorizationResponse, TestConstants.Tenants.MfaTenant.Id);
-
-            Assert.AreEqual(HttpStatusCode.Redirect, selectTenantResponse.StatusCode);
-            Assert.AreEqual(this.GetMfaUrl(), selectTenantResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: TestConstants.Tenants.MfaTenant.Id);
+            
+            Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
+            Assert.AreEqual(this.GetMfaUrl(), authorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
         }
 
 

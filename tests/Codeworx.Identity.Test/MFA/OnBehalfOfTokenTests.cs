@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.MFA
 {
-    public class OnBehalfOfTokenTests: MfaIntegrationTestBase
+    public class OnBehalfOfTokenTests : MfaIntegrationTestBase
     {
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasNoMfa_TargetClientHasNoMfa_Success()
@@ -32,8 +32,8 @@ namespace Codeworx.Identity.Test.MFA
         public async Task GetOnBehalfOfToken_SourceClientHasMfa_TargetClientHasNoMfa_Success()
         {
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
-            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResult);
             var tokenResponse = await this.GetToken(authorizationResult);
             var token = await this.ExtractToken(tokenResponse);
 
@@ -62,15 +62,16 @@ namespace Codeworx.Identity.Test.MFA
 
             Assert.AreEqual(HttpStatusCode.BadRequest, onBehalfOfTokenResponse.StatusCode);
             var errorData = JsonConvert.DeserializeObject<ErrorResponse>(await onBehalfOfTokenResponse.Content.ReadAsStringAsync());
-            Assert.AreEqual("mfa_required", errorData.Error); // TODO change error type name
+            Assert.AreEqual(Constants.OpenId.Error.MfaAuthenticationRequired, errorData.Error);
         }
 
         [Test]
         public async Task GetOnBehalfOfToken_SourceClientHasMfa_TargetClientHasMfa_Success()
         {
             await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
+
             var authorizationResult = await this.GetAuthorizationResponse(TestConstants.Clients.MfaRequiredClientId, TestConstants.Tenants.DefaultTenant.Id);
-            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResult);
             var tokenResponse = await this.GetToken(authorizationResult);
             var token = await this.ExtractToken(tokenResponse);
 

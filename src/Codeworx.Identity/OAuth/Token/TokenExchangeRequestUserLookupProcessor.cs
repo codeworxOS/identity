@@ -80,6 +80,14 @@ namespace Codeworx.Identity.OAuth.Token
 
             var claimsIdentity = await _identityService.GetClaimsIdentityFromUserAsync(user);
 
+            if (payload.TryGetValue(Constants.Claims.Amr, out var armClaims) && armClaims is IEnumerable<object> typedClaims)
+            {
+                foreach (var item in typedClaims)
+                {
+                    claimsIdentity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.Amr, $"{item}"));
+                }
+            }
+
             builder.WithUser(claimsIdentity);
         }
     }

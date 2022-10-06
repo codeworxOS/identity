@@ -80,9 +80,10 @@ namespace Codeworx.Identity.Test.MFA
             mfaTestUser.RemoveMfaRegistration();
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
-            var mfaLoginRequest = CreateRegistrationParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
 
-            Assert.ThrowsAsync<ErrorResponseException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
+            var mfaLoginRequest = CreateLoginParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
+
+            Assert.ThrowsAsync<AuthenticationException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
         }
 
         [Test]
@@ -101,7 +102,7 @@ namespace Codeworx.Identity.Test.MFA
         }
 
         [Test]
-        public void PerformRegistration_WrongSharedSecret_ExpectsException()
+        public async Task PerformRegistration_WrongSharedSecret_ExpectsException()
         {
             var sp = CreateDefaultServiceProvider();
 
@@ -110,7 +111,7 @@ namespace Codeworx.Identity.Test.MFA
             mfaTestUser.RemoveMfaRegistration();
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
-            var mfaLoginRequest = CreateRegistrationParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, "wrongSharedSecret");
+            var mfaLoginRequest = CreateRegistrationParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, "sharedSecret", useWrongSharedSecred: true);
 
             Assert.ThrowsAsync<AuthenticationException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
         }
@@ -127,7 +128,7 @@ namespace Codeworx.Identity.Test.MFA
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaLoginRequest = CreateLoginParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
 
-            Assert.ThrowsAsync<ErrorResponseException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
+            Assert.ThrowsAsync<AuthenticationException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
         }
 
         [Test]
@@ -138,7 +139,7 @@ namespace Codeworx.Identity.Test.MFA
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaLoginRequest = CreateRegistrationParameters(TestConstants.Users.MfaTestUserWithMfaRequired.UserId, TestConstants.Users.MfaTestUserWithMfaRequired.MfaSharedSecret);
 
-            Assert.ThrowsAsync<ErrorResponseException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
+            Assert.ThrowsAsync<AuthenticationException>(async () => await mfaViewService.ProcessLoginAsync(mfaLoginRequest));
         }
 
         private ServiceProvider CreateDefaultServiceProvider()
@@ -152,15 +153,15 @@ namespace Codeworx.Identity.Test.MFA
             return sp;
         }
 
-        private MfaProcessLoginRequest CreateRegistrationParameters(string userId, string sharedSecret, bool useWrongOneTimeCode = false)
+        private MfaProcessLoginRequest CreateRegistrationParameters(string userId, string sharedSecret, bool useWrongOneTimeCode = false, bool useWrongSharedSecred = false)
         {
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(Constants.Claims.Id, userId));
 
             var oneTimeCode = "123456";
-            if (!useWrongOneTimeCode) 
-            { 
-                var key = Mfa.Totp.Base32Encoding.ToBytes(sharedSecret);
+            if (!useWrongOneTimeCode)
+            {
+                var key = Mfa.Totp.Base32Encoding.ToBytes(useWrongSharedSecred ? "wrongSharedSecret" : sharedSecret);
                 var otpProvider = new Totp(key);
                 oneTimeCode = otpProvider.ComputeTotp();
             }
@@ -169,6 +170,7 @@ namespace Codeworx.Identity.Test.MFA
                 TestConstants.LoginProviders.TotpProvider.Id,
                 claimsIdentity,
                 TotpAction.Register,
+                null,
                 oneTimeCode,
                 sharedSecret);
             var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity);
@@ -192,6 +194,7 @@ namespace Codeworx.Identity.Test.MFA
                 TestConstants.LoginProviders.TotpProvider.Id,
                 claimsIdentity,
                 TotpAction.Login,
+                null,
                 oneTimeCode);
             var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity);
             return mfaLoginRequest;

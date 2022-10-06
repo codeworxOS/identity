@@ -43,9 +43,14 @@ namespace Codeworx.Identity.Test.MFA
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, TestConstants.Tenants.MfaTenant.Id);
             Assert.IsFalse(this.HasMfaCookie(authorizationResponse), "Authorization MFA Cookie");
+            Assert.AreEqual(this.GetMfaUrl(), authorizationResponse.Headers.Location?.GetLeftPart(System.UriPartial.Path));
 
             var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
+            Assert.AreEqual(HttpStatusCode.Redirect, mfaResponse.StatusCode);
+
+            authorizationResponse = await this.TestClient.GetAsync(mfaResponse.Headers.Location);
+
             Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
 
@@ -61,6 +66,10 @@ namespace Codeworx.Identity.Test.MFA
 
             var mfaResponse = await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret, authorizationResponse);
             Assert.IsTrue(this.HasMfaCookie(mfaResponse), "MFA Response MFA Cookie");
+            Assert.AreEqual(HttpStatusCode.Redirect, mfaResponse.StatusCode);
+
+            authorizationResponse = await this.TestClient.GetAsync(mfaResponse.Headers.Location);
+
             Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
     }

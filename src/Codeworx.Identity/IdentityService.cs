@@ -65,6 +65,21 @@ namespace Codeworx.Identity
                 throw new AuthenticationException(message);
             }
 
+            var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
+
+            if (!hasMfa)
+            {
+                if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.OAuth.ClientIdName);
+                }
+
+                if (currentUser.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
+                }
+            }
+
             var claims = new List<AssignedClaim>();
 
             var c = await _claimsService.GetClaimsAsync(identityDataParameters);
