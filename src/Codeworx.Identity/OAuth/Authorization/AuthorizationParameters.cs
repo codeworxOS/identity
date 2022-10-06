@@ -52,7 +52,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public ClaimsIdentity User { get; }
 
-        public FlowMode FlowModel => FlowMode.Interactive;
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
 
         public void Throw(string error, string errorDescription)
         {

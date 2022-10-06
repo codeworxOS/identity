@@ -49,7 +49,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public string Audience { get; }
 
-        public FlowMode FlowModel => FlowMode.NonInteractive;
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
 
         public void Throw(string error, string errorDescription)
         {

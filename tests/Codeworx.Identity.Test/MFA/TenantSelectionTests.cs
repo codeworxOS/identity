@@ -28,7 +28,7 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task LoginWithTenantSelection_NoMfaFulfilled_SelectTenantWithMfa_RedirectsToMfa()
         {
-            await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            var response = await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
 
             var authorizationResponse = await this.GetAuthorizationResponse(TestConstants.Clients.DefaultTokenFlowClientId, defaultTenant: TestConstants.Tenants.MfaTenant.Id);
             

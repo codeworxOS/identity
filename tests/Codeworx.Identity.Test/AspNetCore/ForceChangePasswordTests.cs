@@ -25,7 +25,6 @@ namespace Codeworx.Identity.Test.AspNetCore
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
-            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, "http://example.com");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
@@ -66,7 +65,7 @@ namespace Codeworx.Identity.Test.AspNetCore
                                }));
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
-            Assert.AreEqual(new Uri("http://example.com"), response.Headers.Location);
+            Assert.AreEqual(new Uri("https://localhost/account/me"), response.Headers.Location);
         }
 
         [Test]
@@ -77,7 +76,6 @@ namespace Codeworx.Identity.Test.AspNetCore
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
-            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, "http://example.com");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>

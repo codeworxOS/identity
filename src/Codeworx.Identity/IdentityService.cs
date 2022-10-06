@@ -67,7 +67,7 @@ namespace Codeworx.Identity
 
             var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
 
-            if (!hasMfa)
+            if (!hasMfa && identityDataParameters.MfaFlowModel == MfaFlowMode.Enabled)
             {
                 if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
                 {

@@ -20,7 +20,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public ClaimsIdentity User { get; }
 
-        public FlowMode FlowModel => FlowMode.NonInteractive;
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Disabled;
 
         public void Throw(string error, string errorDescription)
         {

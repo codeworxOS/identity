@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Test.MFA
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
-            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, this.GetRedirectUrl().ToString());
+            ////loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, this.GetRedirectUrl().ToString());
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
