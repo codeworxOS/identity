@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
@@ -20,6 +21,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
         public Guid? DefaultTenantId { get; set; }
 
         public bool IsDisabled { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
 
         public bool ForceChangePassword { get; set; }
 

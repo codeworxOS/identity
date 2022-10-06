@@ -9,6 +9,7 @@ namespace Codeworx.Identity.Test.AspNetCore
     using System.Threading.Tasks;
     using Codeworx.Identity.Configuration;
     using Codeworx.Identity.OAuth;
+    using Codeworx.Identity.Test.Provider;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using Microsoft.Net.Http.Headers;
@@ -24,14 +25,13 @@ namespace Codeworx.Identity.Test.AspNetCore
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
-            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, "http://example.com");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
-                                   {"password", Constants.ForcePasswordUserName}
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                   {"password", TestConstants.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -46,8 +46,8 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var changePasswordContent = new FormUrlEncodedContent(new Dictionary<string, string>
                                              {
-                                                 {"username", Constants.ForcePasswordUserName},
-                                                 {"current-password", Constants.ForcePasswordUserName},
+                                                 {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                                 {"current-password", TestConstants.Users.ForceChangePassword.Password},
                                                  {"password", "aaAAbb11!!"},
                                                  {"confirm-password", "aaAAbb11!!"},
                                              });
@@ -59,13 +59,13 @@ namespace Codeworx.Identity.Test.AspNetCore
             response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
                                    {"password", "aaAAbb11!!"}
                                }));
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
-            Assert.AreEqual(new Uri("http://example.com"), response.Headers.Location);
+            Assert.AreEqual(new Uri("https://localhost/account/me"), response.Headers.Location);
         }
 
         [Test]
@@ -76,14 +76,13 @@ namespace Codeworx.Identity.Test.AspNetCore
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
-            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, "http://example.com");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
                                new FormUrlEncodedContent(new Dictionary<string, string>
                                {
-                                   {"provider-id", Constants.FormsLoginProviderId},
-                                   {"username", Constants.ForcePasswordUserName},
-                                   {"password", Constants.ForcePasswordUserName}
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                   {"password", TestConstants.Users.ForceChangePassword.Password}
                                }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -91,7 +90,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
             this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                                 .Build();
 
             var requestString = this.ToRequestString(request);

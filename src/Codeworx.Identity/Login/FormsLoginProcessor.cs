@@ -46,6 +46,8 @@ namespace Codeworx.Identity.Login
                 case ProviderRequestType.Profile:
                     var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
                     return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
                 default:
                     break;
             }
@@ -69,17 +71,33 @@ namespace Codeworx.Identity.Login
                 returnUrl = null;
             }
 
+            returnUrl = returnUrl ?? GetDefaultRedirectUrl();
+
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
-            return new SignInResponse(identity, returnUrl, loginRequest.Remember);
+            return new SignInResponse(identity, returnUrl, AuthenticationMode.Login, loginRequest.Remember);
         }
 
-        private string GetPasswodChangeUrl(ProviderRequest request)
+        private string GetDefaultRedirectUrl()
         {
+            var builder = new UriBuilder(_baseUriAccessor.BaseUri);
+            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath("me");
+
+            return builder.ToString();
+        }
+
+        private async Task<string> GetForgotPasswordUrl(ProviderRequest request)
+        {
+            if (!await _forgotPasswordService.IsSupportedAsync().ConfigureAwait(false))
+            {
+                return null;
+            }
+
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
 
             uriBuilder.AppendPath(_options.AccountEndpoint);
-            uriBuilder.AppendPath("change-password");
+            uriBuilder.AppendPath("forgot-password");
 
             if (!string.IsNullOrWhiteSpace(request.Prompt))
             {
@@ -94,17 +112,12 @@ namespace Codeworx.Identity.Login
             return uriBuilder.ToString();
         }
 
-        private async Task<string> GetForgotPasswordUrl(ProviderRequest request)
+        private string GetPasswodChangeUrl(ProviderRequest request)
         {
-            if (!await _forgotPasswordService.IsSupportedAsync().ConfigureAwait(false))
-            {
-                return null;
-            }
-
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
 
             uriBuilder.AppendPath(_options.AccountEndpoint);
-            uriBuilder.AppendPath("forgot-password");
+            uriBuilder.AppendPath("change-password");
 
             if (!string.IsNullOrWhiteSpace(request.Prompt))
             {

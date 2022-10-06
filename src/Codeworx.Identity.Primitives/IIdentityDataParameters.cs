@@ -6,6 +6,8 @@ namespace Codeworx.Identity
 {
     public interface IIdentityDataParameters
     {
+        MfaFlowMode MfaFlowModel { get; }
+
         IClientRegistration Client { get; }
 
         IReadOnlyCollection<string> Scopes { get; }

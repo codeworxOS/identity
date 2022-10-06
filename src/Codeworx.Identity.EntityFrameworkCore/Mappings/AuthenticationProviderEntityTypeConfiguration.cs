@@ -1,4 +1,5 @@
 ﻿using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,6 +15,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                 .WithMany()
                 .HasForeignKey(p => p.FilterId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(p => p.Usage).HasDefaultValue(LoginProviderType.Login);
         }
     }
 }

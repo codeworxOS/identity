@@ -44,6 +44,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     Id = Guid.NewGuid(),
                     Created = DateTime.UtcNow,
                     Name = user.Login,
+                    AuthenticationMode = user.AuthenticationMode,
                     ForceChangePassword = user.ForceChangePassword,
                     IsDisabled = user.IsDisabled,
                     DefaultTenantId = user.DefaultTenantId,
@@ -136,6 +137,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             entity.DefaultTenantId = user.DefaultTenantId;
             entity.IsDisabled = user.IsDisabled;
             entity.Name = user.Login;
+            entity.AuthenticationMode = user.AuthenticationMode;
 
             var entry = _db.Context.Entry(entity);
 
@@ -233,6 +235,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 IsDisabled = user.IsDisabled,
                 LastFailedLoginAttempt = user.LastFailedLoginAttempt,
                 PasswordChanged = user.PasswordChanged,
+                AuthenticationMode = user.AuthenticationMode,
             };
 
             if (expands.Contains(nameof(UserData.Tenants).ToLower()))

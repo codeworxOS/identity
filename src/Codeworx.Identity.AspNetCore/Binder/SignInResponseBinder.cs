@@ -26,12 +26,23 @@ namespace Codeworx.Identity.AspNetCore.Binder
             var principal = new ClaimsPrincipal(responseData.Identity);
             var returnUrl = responseData.ReturnUrl;
 
-            await _handler.SignInAsync(response.HttpContext, principal, responseData.Remember);
+            await _handler.SignInAsync(response.HttpContext, principal, responseData.Remember, responseData.Mode);
 
             if (responseData.Identity.HasClaim(Constants.Claims.ForceChangePassword, "true"))
             {
                 var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                 builder.AppendPath($"{_options.AccountEndpoint}/change-password");
+                if (returnUrl != null)
+                {
+                    builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                }
+
+                returnUrl = builder.ToString();
+            }
+            else if (responseData.Identity.HasClaim(Constants.Claims.ForceMfaLogin, "true"))
+            {
+                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                builder.AppendPath($"{_options.AccountEndpoint}/login/mfa");
                 if (returnUrl != null)
                 {
                     builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);

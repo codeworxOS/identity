@@ -15,11 +15,18 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<OAuthRedirectRequest> requestBinder, IResponseBinder<OAuthRedirectResponse> responseBinder, IOAuthLoginService oauthService)
+        public async Task Invoke(
+            HttpContext context,
+            IOptionsSnapshot<IdentityOptions> options,
+            IRequestBinder<OAuthRedirectRequest> requestBinder,
+            IRequestValidator<OAuthRedirectRequest> requestValidator,
+            IResponseBinder<OAuthRedirectResponse> responseBinder,
+            IOAuthLoginService oauthService)
         {
             try
             {
-                var request = await requestBinder.BindAsync(context.Request);
+                var request = await requestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                await requestValidator.ValidateAsync(request).ConfigureAwait(false);
                 var result = await oauthService.RedirectAsync(request);
                 await responseBinder.BindAsync(result, context.Response);
             }

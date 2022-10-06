@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
@@ -21,6 +22,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public Guid Id { get; set; }
 
         public TimeSpan TokenExpiration { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
 
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }
 

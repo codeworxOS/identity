@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 
 namespace Codeworx.Identity.OAuth.Token
 {
@@ -25,6 +26,13 @@ namespace Codeworx.Identity.OAuth.Token
             if (!string.IsNullOrWhiteSpace(cacheItem.IdentityData.ExternalTokenKey))
             {
                 identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, cacheItem.IdentityData.ExternalTokenKey));
+            }
+
+            var amrClaims = cacheItem.IdentityData.Claims.Where(p => p.Type.Count() == 1 && p.Type.ElementAt(0) == Constants.Claims.Amr).SelectMany(p => p.Values).Distinct().ToList();
+
+            foreach (var item in amrClaims)
+            {
+                identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.Amr, item));
             }
 
             builder.WithRefreshTokenUser(identity);

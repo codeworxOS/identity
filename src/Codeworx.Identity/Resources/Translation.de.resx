@@ -279,4 +279,16 @@
   <data name="EmailLoginDescription" xml:space="preserve">
     <value>Der Benutzername muss eine gültige E-Mail Adresse sein.</value>
   </data>
+  <data name="InvalidOneTimeCode" xml:space="preserve">
+    <value>Der Einmalcode ist ungültig!</value>
+  </data>
+  <data name="OneTimeCode" xml:space="preserve">
+    <value>Einmalcode</value>
+  </data>
+  <data name="ProvideOneTimeCode" xml:space="preserve">
+    <value>Einmalcode eingeben:</value>
+  </data>
+  <data name="SendCode" xml:space="preserve">
+    <value>Senden</value>
+  </data>
 </root>

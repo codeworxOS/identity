@@ -34,7 +34,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             GC.SuppressFinalize(this);
         }
 
-        public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+        public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(LoginProviderType loginProviderType, string userName = null)
         {
             return Task.FromResult<IEnumerable<ILoginRegistration>>(_registrations);
         }

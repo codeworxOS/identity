@@ -6,7 +6,7 @@ namespace Codeworx.Identity.Test
 {
     public class DummyLoginRegistrationProvider : ILoginRegistrationProvider
     {
-        public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+        public virtual Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(LoginProviderType loginProviderType, string userName = null)
         {
             return Task.FromResult<IEnumerable<ILoginRegistration>>(
                 new ILoginRegistration[] {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Data
@@ -20,5 +21,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
         public int FailedLoginCount { get; set; }
 
         public bool ConfirmationPending { get; set; }
+
+        public bool HasMfaRegistration { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
     }
 }

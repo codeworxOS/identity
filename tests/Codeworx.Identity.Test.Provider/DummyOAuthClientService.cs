@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Test.Provider;
 
@@ -15,15 +16,15 @@ namespace Codeworx.Identity.Test
 
         public DummyOAuthClientService(IHashingProvider hashingProvider)
         {
-            var hashValue = hashingProvider.Create("clientSecret");
-
             _oAuthClientRegistrations = new List<IClientRegistration>
                                             {
                                                 new DummyLimitedScope1ClientRegistration(),
-                                                new DummyOAuthAuthorizationCodeClientRegistration(hashValue),
+                                                new DummyOAuthAuthorizationCodeClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
-                                                new ServiceAccountClientRegistration(hashValue),
+                                                new ServiceAccountClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
+                                                new MfaRequiredClientRegistration(),
+                                                new MfaTestServiceAccountClientRegistration(hashingProvider)
                                             };
         }
 
@@ -48,9 +49,10 @@ namespace Codeworx.Identity.Test
                    new Scope("openid"),
                    new Scope("scope1")
                 };
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
-            public string ClientId => TestDefaults.LimitedScope1ClientId;
+            public string ClientId => TestConstants.Clients.LimitedScope1ClientId;
 
             public string ClientSecretHash => null;
 
@@ -63,6 +65,8 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
 
@@ -76,9 +80,10 @@ namespace Codeworx.Identity.Test
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
-            public string ClientId => Constants.DefaultCodeFlowPublicClientId;
+            public string ClientId => TestConstants.Clients.DefaultCodeFlowPublicClientId;
 
             public Uri DefaultRedirectUri { get; }
             public string ClientSecretHash { get; }
@@ -91,14 +96,16 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
 
         private class DummyOAuthAuthorizationCodeClientRegistration : IDummyClientRegistration
         {
-            public DummyOAuthAuthorizationCodeClientRegistration(string hashValue)
+            public DummyOAuthAuthorizationCodeClientRegistration(IHashingProvider hashingProvider)
             {
-                this.ClientSecretHash = hashValue;
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultCodeFlowClientSecret);
                 this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.ClientType = ClientType.Web;
@@ -106,9 +113,10 @@ namespace Codeworx.Identity.Test
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
 
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
-            public string ClientId => Constants.DefaultCodeFlowClientId;
+            public string ClientId => TestConstants.Clients.DefaultCodeFlowClientId;
 
             public Uri DefaultRedirectUri { get; }
             public string ClientSecretHash { get; }
@@ -121,6 +129,8 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
@@ -132,9 +142,10 @@ namespace Codeworx.Identity.Test
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
-            public string ClientId => Constants.DefaultTokenFlowClientId;
+            public string ClientId => TestConstants.Clients.DefaultTokenFlowClientId;
 
             public string ClientSecretHash => null;
 
@@ -149,21 +160,24 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
         {
-            public ServiceAccountClientRegistration(string hashValue)
+            public ServiceAccountClientRegistration(IHashingProvider hashingProvider)
             {
                 this.ClientType = ClientType.ApiKey;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
-                this.ClientSecretHash = hashValue;
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultServiceAccountClientSecret);
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
             }
 
-            public string ClientId => Constants.DefaultServiceAccountClientId;
+            public string ClientId => TestConstants.Clients.DefaultServiceAccountClientId;
 
             public string ClientSecretHash { get; }
 
@@ -178,6 +192,79 @@ namespace Codeworx.Identity.Test
             public IUser User => new DummyUserService.DummyUser();
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        private class MfaRequiredClientRegistration : IDummyClientRegistration
+        {
+            public MfaRequiredClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Native;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.AuthenticationMode = AuthenticationMode.Mfa;
+            }
+
+            public string ClientId => TestConstants.Clients.MfaRequiredClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User => null;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        public class MfaTestServiceAccountClientRegistration : IDummyClientRegistration
+        {
+            public MfaTestServiceAccountClientRegistration(IHashingProvider hashingProvider)
+            {
+                this.ClientType = ClientType.ApiKey;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.MfaTestServiceAccountClientSecret);
+
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Mfa;
+            }
+
+            public string ClientId => TestConstants.Clients.MfaTestServiceAccountClientId;
+
+            public Uri DefaultRedirectUri { get; }
+            public string ClientSecretHash { get; }
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public ClientType ClientType { get; }
+
+            public IUser User { get; private set; } = new DummyUserService.MfaTestUser();
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public AuthenticationMode AuthenticationMode { get; private set; }
+
+            public void SetMfaRequired(bool isMfaRequired)
+            {
+                AuthenticationMode = isMfaRequired ? AuthenticationMode.Mfa : AuthenticationMode.Login;
+            }
+
+            public void UpdateUser(IUser user)
+            {
+                this.User = user;
+            }
         }
     }
 }

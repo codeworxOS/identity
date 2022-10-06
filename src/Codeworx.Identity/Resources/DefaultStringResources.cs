@@ -114,6 +114,14 @@
                     return Translation.AccountConfirmationPending;
                 case StringResource.EmailLoginDescription:
                     return Translation.EmailLoginDescription;
+                case StringResource.ProvideOneTimeCode:
+                    return Translation.ProvideOneTimeCode;
+                case StringResource.OneTimeCode:
+                    return Translation.OneTimeCode;
+                case StringResource.SendCode:
+                    return Translation.SendCode;
+                case StringResource.InvalidOneTimeCode:
+                    return Translation.InvalidOneTimeCode;
                 default:
                     throw new MissingResourceException(resource);
             }

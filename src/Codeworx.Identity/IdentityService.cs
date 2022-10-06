@@ -65,6 +65,21 @@ namespace Codeworx.Identity
                 throw new AuthenticationException(message);
             }
 
+            var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
+
+            if (!hasMfa && identityDataParameters.MfaFlowModel == MfaFlowMode.Enabled)
+            {
+                if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.OAuth.ClientIdName);
+                }
+
+                if (currentUser.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
+                }
+            }
+
             var claims = new List<AssignedClaim>();
 
             var c = await _claimsService.GetClaimsAsync(identityDataParameters);
@@ -194,6 +209,11 @@ namespace Codeworx.Identity
             if (user.ForceChangePassword)
             {
                 identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
+            }
+
+            if (user.AuthenticationMode == AuthenticationMode.Mfa)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ForceMfaLogin, "true"));
             }
 
             if (user.ConfirmationPending)

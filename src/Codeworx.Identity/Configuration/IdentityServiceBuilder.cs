@@ -4,8 +4,10 @@ using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Authorization;
@@ -56,6 +58,7 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IProfileService, ProfileService>(ServiceLifetime.Scoped);
 
             this.ReplaceService<ILoginViewService, LoginViewService>(ServiceLifetime.Scoped);
+            this.ReplaceService<IMfaViewService, MfaViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ITenantViewService, TenantViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<ILoginService, LoginService>(ServiceLifetime.Scoped);
             this.ReplaceService<IIdentityService, IdentityService>(ServiceLifetime.Scoped);
@@ -95,6 +98,13 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<ITokenServiceSelector, TokenServiceSelector<TokenExchangeRequest>>(ServiceLifetime.Scoped);
 
             this.ReplaceService<IRequestValidator<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<MfaLoginRequest>, MfaLoginRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<WindowsLoginRequest>, WindowsLoginRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<OAuthRedirectRequest>, OAuthRedirectRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<PasswordChangeRequest>, PasswordChangeRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<ForgotPasswordRequest>, ForgotPasswordRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<LogoutRequest>, LogoutRequestValidator>(ServiceLifetime.Transient);
+            this.ReplaceService<IRequestValidator<LoginRequest>, LoginRequestValidator>(ServiceLifetime.Transient);
 
             this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, FormsProfileTemplate>(ServiceLifetime.Transient);

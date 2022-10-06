@@ -1,32 +1,17 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.OAuth;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Login
 {
     public class ExternalCallbackRequestBinder : IRequestBinder<ExternalCallbackRequest>
     {
-        private static readonly ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<object>>> _parameterTypeCache;
-        private static readonly MethodInfo _bindMethod;
-
         private readonly IServiceProvider _serviceProvider;
         private readonly ILoginService _loginService;
         private readonly IdentityOptions _identityOptions;
-
-        static ExternalCallbackRequestBinder()
-        {
-            _parameterTypeCache = new ConcurrentDictionary<Type, Func<IServiceProvider, HttpRequest, Task<object>>>();
-
-            Expression<Func<IServiceProvider, HttpRequest, Task<object>>> exp = (sp, req) => BindLoginRequest<object>(sp, req);
-            _bindMethod = ((MethodCallExpression)exp.Body).Method.GetGenericMethodDefinition();
-        }
 
         public ExternalCallbackRequestBinder(IServiceProvider serviceProvider, ILoginService loginService, IOptionsSnapshot<IdentityOptions> options)
         {
@@ -46,42 +31,20 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
                     throw new NotSupportedException($"Invalid uri {request.Path}.");
                 }
 
-                var parameterType = await _loginService.GetParameterTypeAsync(providerId);
+                var parameterType = await _loginService.GetParameterTypeAsync(providerId).ConfigureAwait(false);
 
                 if (parameterType == null)
                 {
                     throw new InvalidOperationException($"Provider {providerId} not found!");
                 }
 
-                var factory = _parameterTypeCache.GetOrAdd(parameterType, CreateFactory);
+                var factory = LoginParameterTypeFactory.GetFactory(parameterType);
                 var loginRequest = await factory(_serviceProvider, request).ConfigureAwait(false);
 
                 return new ExternalCallbackRequest(providerId, loginRequest);
             }
 
             throw new NotSupportedException("Invalid Uri.");
-        }
-
-        private static async Task<object> BindLoginRequest<T>(IServiceProvider sp, HttpRequest request)
-        {
-            var binder = sp.GetRequiredService<IRequestBinder<T>>();
-            return await binder.BindAsync(request).ConfigureAwait(false);
-        }
-
-        private static Func<IServiceProvider, HttpRequest, Task<object>> CreateFactory(Type key)
-        {
-            var serviceProviderParam = Expression.Parameter(typeof(IServiceProvider), "sp");
-            var requestParam = Expression.Parameter(typeof(HttpRequest), "req");
-
-            var expression = Expression.Lambda<Func<IServiceProvider, HttpRequest, Task<object>>>(
-                                    Expression.Call(
-                                            _bindMethod.MakeGenericMethod(key),
-                                            serviceProviderParam,
-                                            requestParam),
-                                    serviceProviderParam,
-                                    requestParam);
-
-            return expression.Compile();
         }
     }
 }

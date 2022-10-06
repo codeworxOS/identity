@@ -6,6 +6,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.EntityFrameworkCore.Api;
 using Codeworx.Identity.Mail;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -134,8 +135,8 @@ namespace Codeworx.Identity.Api.Test
 
                     var forms = new EntityFrameworkCore.Model.AuthenticationProvider
                     {
-                        Id = Guid.Parse(Constants.FormsLoginProviderId),
-                        Name = Constants.FormsLoginProviderName,
+                        Id = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id),
+                        Name = TestConstants.LoginProviders.FormsLoginProvider.Name,
                         EndpointType = "forms",
                         SortOrder = 0,
                     };

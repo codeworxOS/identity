@@ -1,0 +1,15 @@
+﻿{{#Registrations}}
+<form method="post" id="totpRegistration">
+    <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
+    <input type="hidden" id="shared-secret" name="shared-secret" value="{{SharedSecret}}" />
+
+    <div style="width: 200px; height: 200px; background-image: url('{{QrCode}}'); background-repeat: no-repeat; background-size: contain;">
+
+    </div>
+    <label>{{Translate 'ProvideOneTimeCode'}}</label>
+    <input type="text" id="one-time-code" name="one-time-code" placeholder="{{Translate 'OneTimeCode'}}" />
+
+    <button type="submit" class="login-submit" id="loginButton">{{Translate 'SendCode'}}</button>
+    <div class="error">{{Error}}</div>
+</form>
+{{/Registrations}}

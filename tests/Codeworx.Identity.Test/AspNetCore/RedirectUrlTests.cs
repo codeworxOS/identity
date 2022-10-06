@@ -11,6 +11,7 @@ using Moq;
 using Codeworx.Identity.Model;
 using System.Collections.Immutable;
 using Codeworx.Identity.Test.Provider;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Test.AspNetCore
 {
@@ -101,15 +102,15 @@ namespace Codeworx.Identity.Test.AspNetCore
             using (var scope = provider.CreateScope())
             {
                 var request = new AuthorizationRequest(
-                    Constants.DefaultCodeFlowClientId,
+                    TestConstants.Clients.DefaultCodeFlowClientId,
                     requestRedirectUrl,
                     Constants.OAuth.ResponseType.Code,
                     "openid",
                     "state");
 
                 var testIdentity = new ClaimsIdentity();
-                testIdentity.AddClaim(new Claim(Constants.Claims.Id, Constants.DefaultAdminUserId));
-                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, Constants.DefaultAdminUserName));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Id, TestConstants.Users.DefaultAdmin.UserId));
+                testIdentity.AddClaim(new Claim(Constants.Claims.Upn, TestConstants.Users.DefaultAdmin.UserName));
                 testIdentity.AddClaim(new Claim(Constants.Claims.ExternalTokenKey, "external_token_key"));
 
                 var authorizationService = scope.ServiceProvider.GetRequiredService<IAuthorizationService<AuthorizationRequest>>();
@@ -140,6 +141,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             public IUser User => null;
 
             public IReadOnlyList<IScope> AllowedScopes => ImmutableList<IScope>.Empty;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
         }
     }
 }

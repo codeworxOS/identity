@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net6</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net6;netcoreapp3.1</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">
@@ -16,7 +16,7 @@
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'netcoreapp3.1'">
 		<EfVersion>3</EfVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">

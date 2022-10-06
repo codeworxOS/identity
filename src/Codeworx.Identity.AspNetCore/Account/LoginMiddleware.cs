@@ -15,13 +15,15 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, ILoginViewService service)
+        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, IRequestValidator<LoginRequest> loginRequestValidator, ILoginViewService service)
         {
             try
             {
                 object response = null;
-                var request = await loginRequestBinder.BindAsync(context.Request);
+                var request = await loginRequestBinder.BindAsync(context.Request).ConfigureAwait(false);
                 IResponseBinder responseBinder = null;
+
+                await loginRequestValidator.ValidateAsync(request).ConfigureAwait(false);
 
                 switch (request)
                 {

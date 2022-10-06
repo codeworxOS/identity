@@ -20,6 +20,8 @@ namespace Codeworx.Identity.OAuth.Token
 
         public ClaimsIdentity User { get; }
 
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Disabled;
+
         public void Throw(string error, string errorDescription)
         {
             ErrorResponse.Throw(error, errorDescription);

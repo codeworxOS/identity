@@ -12,14 +12,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 
             builder.HasIndex(p => p.Name)
                 .IsUnique()
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NETCOREAPP3_1
                 .HasName("IX_RightHolder_Name_Unique");
 #else
                 .HasDatabaseName("IX_RightHolder_Name_Unique");
 #endif
 
             builder.Property<byte>("Type")
-                .IsRequired(true);
+                    .IsRequired(true);
 
             builder.HasDiscriminator<byte>("Type")
                    .HasValue<User>(1)

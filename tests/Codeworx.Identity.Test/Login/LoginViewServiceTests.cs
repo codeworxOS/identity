@@ -182,7 +182,7 @@
         private class DummyOAuthLoginRegistrationProvider : ILoginRegistrationProvider
         {
 
-            public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+            public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(LoginProviderType loginProviderType, string userName = null)
             {
                 return Task.FromResult<IEnumerable<ILoginRegistration>>(new[]{
                     new DummyOAuthLoginRegistration()
@@ -193,7 +193,7 @@
         private class DummyOAuthLoginRegistrationProviderSelectAccount : ILoginRegistrationProvider
         {
 
-            public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+            public Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(LoginProviderType loginProviderType, string userName = null)
             {
                 return Task.FromResult<IEnumerable<ILoginRegistration>>(new[]{
                     new DummyOAuthLoginRegistration(ProviderErrorStrategy.AppendSelectAccountPrompt)

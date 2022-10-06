@@ -10,6 +10,8 @@ namespace Codeworx.Identity.Configuration
             AccountEndpoint = "/account";
             AuthenticationCookie = Constants.DefaultAuthenticationCookieName;
             AuthenticationScheme = Constants.DefaultAuthenticationScheme;
+            MfaAuthenticationCookie = Constants.DefaultMfaAuthenticationCookieName;
+            MfaAuthenticationScheme = Constants.DefaultMfaAuthenticationScheme;
             CookieExpiration = TimeSpan.FromHours(1);
             InvitationValidity = TimeSpan.FromDays(60);
             StateLookupCacheExpiration = TimeSpan.FromMinutes(5);
@@ -56,6 +58,10 @@ namespace Codeworx.Identity.Configuration
         public string AuthenticationCookie { get; set; }
 
         public string AuthenticationScheme { get; set; }
+
+        public string MfaAuthenticationCookie { get; set; }
+
+        public string MfaAuthenticationScheme { get; set; }
 
         public TimeSpan CookieExpiration { get; set; }
 

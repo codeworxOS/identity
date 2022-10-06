@@ -13,5 +13,7 @@ namespace Codeworx.Identity
         Task<IUser> GetUserByIdAsync(string userId);
 
         Task<IUser> GetUserByNameAsync(string userName);
+
+        Task<string> GetProviderValueAsync(ClaimsIdentity user, string providerId);
     }
 }

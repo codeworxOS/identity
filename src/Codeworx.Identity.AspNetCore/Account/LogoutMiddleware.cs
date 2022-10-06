@@ -15,21 +15,38 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IBaseUriAccessor accessor, IOptionsSnapshot<IdentityOptions> options, IRequestBinder<LogoutRequest> requestBinder, IResponseBinder<LogoutResponse> responseBinder)
+        public async Task Invoke(
+            HttpContext context,
+            IBaseUriAccessor accessor,
+            IOptionsSnapshot<IdentityOptions> options,
+            IRequestBinder<LogoutRequest> requestBinder,
+            IRequestValidator<LogoutRequest> requestValidator,
+            IResponseBinder<LogoutResponse> responseBinder)
         {
-            var request = await requestBinder.BindAsync(context.Request);
-            var returnUrl = request.ReturnUrl;
-            if (returnUrl == null)
+            try
             {
-                var builder = new UriBuilder(accessor.BaseUri.ToString());
-                builder.AppendPath(options.Value.AccountEndpoint);
-                builder.AppendPath("login");
-                returnUrl = builder.ToString();
+                var request = await requestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                await requestValidator.ValidateAsync(request).ConfigureAwait(false);
+
+                var returnUrl = request.ReturnUrl;
+                if (returnUrl == null)
+                {
+                    var builder = new UriBuilder(accessor.BaseUri.ToString());
+                    builder.AppendPath(options.Value.AccountEndpoint);
+                    builder.AppendPath("login");
+                    returnUrl = builder.ToString();
+                }
+
+                var response = new LogoutResponse(returnUrl);
+
+                await responseBinder.BindAsync(response, context.Response);
             }
-
-            var response = new LogoutResponse(returnUrl);
-
-            await responseBinder.BindAsync(response, context.Response);
+            catch (ErrorResponseException error)
+            {
+                var binder = context.GetResponseBinder(error.ResponseType);
+                await binder.BindAsync(error.Response, context.Response);
+                return;
+            }
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Test.Provider;
 
 namespace Codeworx.Identity.Test
 {
     public class OAuthAuthorizationRequestBuilder
     {
-        private string _clientId = Constants.DefaultCodeFlowClientId;
+        private string _clientId = TestConstants.Clients.DefaultCodeFlowClientId;
         private string _redirectUri = "https://example.org/redirect";
         private string _responseType = Constants.OAuth.ResponseType.Code;
         private string _scope;

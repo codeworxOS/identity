@@ -18,13 +18,15 @@ namespace Codeworx.Identity.AspNetCore
         public async Task Invoke(
             HttpContext context,
             IRequestBinder<PasswordChangeRequest> requestBinder,
+            IRequestValidator<PasswordChangeRequest> requestValidator,
             IPasswordChangeService service,
             IServiceProvider serviceProvider)
         {
             try
             {
                 object response = null;
-                var request = await requestBinder.BindAsync(context.Request);
+                var request = await requestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                await requestValidator.ValidateAsync(request).ConfigureAwait(false);
                 IResponseBinder responseBinder = null;
 
                 switch (request)

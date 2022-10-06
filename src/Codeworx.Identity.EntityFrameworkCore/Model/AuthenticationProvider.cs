@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -16,6 +17,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [StringLength(100)]
         [Required]
         public string EndpointType { get; set; }
+
+        public LoginProviderType Usage { get; set; }
 
         public ProviderFilter Filter { get; set; }
 

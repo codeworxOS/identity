@@ -25,9 +25,9 @@ namespace Codeworx.Identity.AspNetCore.Login
             _subscription = optionsMonitor.OnChange(p => _options = p);
         }
 
-        public async Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> AuthenticateAsync(HttpContext context)
+        public async Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> AuthenticateAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
         {
-            var result = await context.AuthenticateAsync(_options.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(GetAuthenticationSchema(mode));
 
             if (result.Succeeded)
             {
@@ -51,14 +51,25 @@ namespace Codeworx.Identity.AspNetCore.Login
                         throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
                     }
                 }
+
+                if (mode == AuthenticationMode.Login)
+                {
+                    var claimsIdentity = (ClaimsIdentity)result.Principal.Identity;
+                    var mfaResult = await context.AuthenticateAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+
+                    if (mfaResult.Succeeded)
+                    {
+                        claimsIdentity.AddClaims(mfaResult.Principal.Claims);
+                    }
+                }
             }
 
             return result;
         }
 
-        public async Task ChallengeAsync(HttpContext context)
+        public async Task ChallengeAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
         {
-            await context.ChallengeAsync(_options.AuthenticationScheme);
+            await context.ChallengeAsync(GetAuthenticationSchema(mode));
         }
 
         public void Dispose()
@@ -67,7 +78,7 @@ namespace Codeworx.Identity.AspNetCore.Login
             GC.SuppressFinalize(this);
         }
 
-        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist)
+        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist, AuthenticationMode mode = AuthenticationMode.Login)
         {
             var properties = new AuthenticationProperties();
             if (persist)
@@ -76,12 +87,13 @@ namespace Codeworx.Identity.AspNetCore.Login
                 properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(90);
             }
 
-            await context.SignInAsync(_options.AuthenticationScheme, principal, properties);
+            await context.SignInAsync(GetAuthenticationSchema(mode), principal, properties);
         }
 
         public async Task SignOutAsync(HttpContext context)
         {
-            await context.SignOutAsync(_options.AuthenticationScheme);
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Login));
         }
 
         protected virtual void Dispose(bool disposing)
@@ -95,6 +107,16 @@ namespace Codeworx.Identity.AspNetCore.Login
 
                 _disposedValue = true;
             }
+        }
+
+        private string GetAuthenticationSchema(AuthenticationMode mode)
+        {
+            if (mode == AuthenticationMode.Mfa)
+            {
+                return _options.MfaAuthenticationScheme;
+            }
+
+            return _options.AuthenticationScheme;
         }
     }
 }

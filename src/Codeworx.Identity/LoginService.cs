@@ -14,17 +14,17 @@ namespace Codeworx.Identity
     // EventIds 143xx
     public class LoginService : ILoginService
     {
-        private static readonly Action<ILogger, string, Exception> _processorNotFoundMessage;
-        private static readonly Action<ILogger, string, Exception> _loginFailed;
-        private static readonly Action<ILogger, ProviderRequestType, string, string, string, Exception> _getRegistrationInfos;
         private static readonly Action<ILogger, string, Exception> _getLoginRegistrationInfo;
         private static readonly Action<ILogger, string, Exception> _getParameterType;
+        private static readonly Action<ILogger, ProviderRequestType, string, string, string, Exception> _getRegistrationInfos;
+        private static readonly Action<ILogger, string, Exception> _loginFailed;
+        private static readonly Action<ILogger, string, Exception> _processorNotFoundMessage;
         private static readonly Action<ILogger, string, Exception> _signIn;
         private static readonly Action<ILogger, string, Exception> _unhandledErrorProcessingLogin;
-        private readonly IEnumerable<ILoginRegistrationProvider> _providers;
-        private readonly IIdentityService _service;
         private readonly ILogger<LoginService> _logger;
+        private readonly IEnumerable<ILoginRegistrationProvider> _providers;
         private readonly IStringResources _resources;
+        private readonly IIdentityService _service;
         private readonly IServiceProvider _serviceProvider;
 
         static LoginService()
@@ -68,7 +68,7 @@ namespace Codeworx.Identity
 
             foreach (var item in _providers)
             {
-                foreach (var externalLogin in await item.GetLoginRegistrationsAsync())
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(LoginProviderType.Login))
                 {
                     if (externalLogin.Id == providerId)
                     {
@@ -97,7 +97,7 @@ namespace Codeworx.Identity
 
             foreach (var item in _providers)
             {
-                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(request.UserName))
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(GetProviderType(request.Type), request.UserName))
                 {
                     var processor = _serviceProvider.GetService(externalLogin.ProcessorType) as ILoginProcessor;
 
@@ -141,6 +141,45 @@ namespace Codeworx.Identity
             }
         }
 
+        private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)
+        {
+            foreach (var item in _providers)
+            {
+                foreach (var providerType in new[] { LoginProviderType.Login, LoginProviderType.MultiFactor })
+                {
+                    IEnumerable<ILoginRegistration> registrations = await item.GetLoginRegistrationsAsync(providerType);
+
+                    foreach (var registration in registrations)
+                    {
+                        if (registration.Id == providerId)
+                        {
+                            var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as ILoginProcessor;
+
+                            return new ProcessorInfo(processor, registration);
+                        }
+                    }
+                }
+            }
+
+            throw new LoginProviderNotFoundException(providerId, _resources.GetResource(StringResource.UnknownLoginProviderError));
+        }
+
+        private LoginProviderType GetProviderType(ProviderRequestType type)
+        {
+            switch (type)
+            {
+                case ProviderRequestType.MfaLogin:
+                case ProviderRequestType.MfaRegister:
+                    return LoginProviderType.MultiFactor;
+
+                case ProviderRequestType.Login:
+                case ProviderRequestType.Invitation:
+                case ProviderRequestType.Profile:
+                default:
+                    return LoginProviderType.Login;
+            }
+        }
+
         private void LogSignInException(Exception ex, string providerId)
         {
             if (ex is AuthenticationException authException)
@@ -155,26 +194,6 @@ namespace Codeworx.Identity
             {
                 _unhandledErrorProcessingLogin(_logger, providerId, ex);
             }
-        }
-
-        private async Task<ProcessorInfo> GetProcessorInfoAsync(string providerId)
-        {
-            foreach (var item in _providers)
-            {
-                IEnumerable<ILoginRegistration> registrations = await item.GetLoginRegistrationsAsync();
-
-                foreach (var registration in registrations)
-                {
-                    if (registration.Id == providerId)
-                    {
-                        var processor = _serviceProvider.GetRequiredService(registration.ProcessorType) as ILoginProcessor;
-
-                        return new ProcessorInfo(processor, registration);
-                    }
-                }
-            }
-
-            throw new LoginProviderNotFoundException(providerId, _resources.GetResource(StringResource.UnknownLoginProviderError));
         }
 
         private class ProcessorInfo
