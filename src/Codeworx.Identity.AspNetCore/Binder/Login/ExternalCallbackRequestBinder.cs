@@ -31,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
                     throw new NotSupportedException($"Invalid uri {request.Path}.");
                 }
 
-                var parameterType = await _loginService.GetParameterTypeAsync(providerId);
+                var parameterType = await _loginService.GetParameterTypeAsync(providerId).ConfigureAwait(false);
 
                 if (parameterType == null)
                 {

@@ -29,7 +29,16 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
         private static async Task<object> BindLoginRequest<T>(IServiceProvider sp, HttpRequest request)
         {
             var binder = sp.GetRequiredService<IRequestBinder<T>>();
-            return await binder.BindAsync(request).ConfigureAwait(false);
+            var validator = sp.GetService<IRequestValidator<T>>();
+
+            var result = await binder.BindAsync(request).ConfigureAwait(false);
+
+            if (validator != null)
+            {
+                await validator.ValidateAsync(result).ConfigureAwait(false);
+            }
+
+            return result;
         }
 
         private static Func<IServiceProvider, HttpRequest, Task<object>> CreateFactory(Type key)

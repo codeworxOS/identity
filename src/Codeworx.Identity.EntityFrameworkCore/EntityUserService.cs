@@ -51,7 +51,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
 
-            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            bool hasMfaRegistration = false;
+
+            if (user != null)
+            {
+                hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            }
 
             return await ToUserAsync(user, hasMfaRegistration);
         }

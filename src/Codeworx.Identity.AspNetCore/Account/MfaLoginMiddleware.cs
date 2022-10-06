@@ -17,13 +17,15 @@ namespace Codeworx.Identity.AspNetCore.Account
         public async Task Invoke(
             HttpContext context,
             IRequestBinder<MfaLoginRequest> mfaLoginRequestBinder,
+            IRequestValidator<MfaLoginRequest> mfaLoginRequestValidator,
             IResponseBinder<MfaLoginResponse> mfaLoginResponseBinder,
             IResponseBinder<SignInResponse> signInResponseBinder,
             IMfaViewService service)
         {
             try
             {
-                var request = await mfaLoginRequestBinder.BindAsync(context.Request);
+                var request = await mfaLoginRequestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                await mfaLoginRequestValidator.ValidateAsync(request).ConfigureAwait(false);
 
                 if (request is MfaProcessLoginRequest processLoginRequest)
                 {
@@ -49,7 +51,7 @@ namespace Codeworx.Identity.AspNetCore.Account
             catch (ErrorResponseException error)
             {
                 var binder = context.GetResponseBinder(error.ResponseType);
-                await binder.BindAsync(error.Response, context.Response);
+                await binder.BindAsync(error.Response, context.Response).ConfigureAwait(false);
                 return;
             }
         }

@@ -30,6 +30,7 @@
         public const string Localhost = "localhost";
         public const string LoginProviderErrorParameter = "login_provider_error";
         public const string LoginProviderIdParameter = "login_provider_id";
+        public const string InvalidReturnUrlError = "invalid_return_url";
 
         public const string ProductName = "CodeworxIdentity"; // TODO unused?
         public const string ReturnUrlParameter = "returnurl";

@@ -14,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ReplaceService<TotpMfaLoginProcessor, TotpMfaLoginProcessor>(ServiceLifetime.Scoped);
             builder.ReplaceService<IRequestBinder<TotpLoginRequest>, TotpLoginRequestBinder>(ServiceLifetime.Scoped);
+            builder.ReplaceService<IRequestValidator<TotpLoginRequest>, TotpLoginRequestValidator>(ServiceLifetime.Scoped);
 
             builder.RegisterMultiple<IProcessorTypeLookup, TotpMfaLoginProcessorLookup>(ServiceLifetime.Singleton);
             builder.RegisterMultiple<IPartialTemplate, RegisterTotpTemplate>(ServiceLifetime.Singleton);
