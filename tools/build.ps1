@@ -5,7 +5,8 @@ $projects = "..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.cs
             "..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj", 
             "..\src\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj", 
             "..\src\Codeworx.Identity.Configuration\Codeworx.Identity.Configuration.csproj",
-            "..\src\Codeworx.Identity\Codeworx.Identity.csproj"
+            "..\src\Codeworx.Identity\Codeworx.Identity.csproj",
+            "..\src\Codeworx.Identity.Mfa.Totp.csproj"
 
 $coreVersion = New-NugetPackages `
     -Projects $projects `
