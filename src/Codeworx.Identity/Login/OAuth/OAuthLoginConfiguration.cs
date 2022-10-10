@@ -39,6 +39,8 @@ namespace Codeworx.Identity.Login.OAuth
 
         public string ClientSecret { get; set; }
 
+        public bool ForwardMfa { get; set; }
+
         public ExternalTokenHandling TokenHandling { get; set; }
 
         public Dictionary<string, object> AuthorizationParameters { get; }

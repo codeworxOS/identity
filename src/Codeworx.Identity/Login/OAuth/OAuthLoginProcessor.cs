@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -212,6 +213,19 @@ namespace Codeworx.Identity.Login.OAuth
                     var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
 
                     identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
+                }
+
+                if (oauthConfiguration.ForwardMfa)
+                {
+                    if (externalIdentity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa))
+                    {
+                        var externalAmrValues = externalIdentity.FindAll(Constants.Claims.Amr).Select(p => p.Value).ToList();
+
+                        var mfaIdentity = new ClaimsIdentity(_identityOptions.MfaAuthenticationScheme);
+                        mfaIdentity.AddClaims(externalAmrValues.Select(p => new Claim(Constants.Claims.Amr, p)));
+
+                        return new SignInResponse(identity, mfaIdentity, stateItem.ReturnUrl);
+                    }
                 }
 
                 return new SignInResponse(identity, stateItem.ReturnUrl);
