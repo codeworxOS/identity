@@ -17,22 +17,28 @@ body {
     align-items: center;
 }
 
+.form-label {
+    font-family: Arial;
+    font-size: 14px;
+    color: #999999;
+}
+
 #loginContainer {
     background: white;
     padding: 70px 50px 40px 50px;
     width: 450px;
 }
 
-#loginContainer h1.login-header {
-    font-family: "Arial Black";
-    font-size: 30px;
-    color: #333333;
-    text-transform: uppercase;
-    text-align: center;
-    padding-bottom: 50px;
-    display: flex;
-    flex-direction: column;
-}
+    #loginContainer h1.login-header {
+        font-family: "Arial Black";
+        font-size: 30px;
+        color: #333333;
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 50px;
+        display: flex;
+        flex-direction: column;
+    }
 
     #loginContainer .registration-separator {
         font-family: Arial;

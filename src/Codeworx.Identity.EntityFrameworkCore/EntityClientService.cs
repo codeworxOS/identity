@@ -48,6 +48,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 TokenExpiration = result.TokenExpiration,
                 ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList(),
                 User = user,
+                AuthenticationMode = result.AuthenticationMode,
             };
         }
     }

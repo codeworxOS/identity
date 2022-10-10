@@ -205,6 +205,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),
                 FailedLoginCount = user.FailedLoginCount,
                 HasMfaRegistration = hasMfaRegistration,
+                AuthenticationMode = user.AuthenticationMode,
             };
         }
     }

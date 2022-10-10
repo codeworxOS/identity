@@ -23,32 +23,42 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
         protected override async Task BindAsync(SignInResponse responseData, HttpResponse response, bool headerOnly)
         {
-            var principal = new ClaimsPrincipal(responseData.Identity);
             var returnUrl = responseData.ReturnUrl;
 
-            await _handler.SignInAsync(response.HttpContext, principal, responseData.Remember, responseData.Mode);
-
-            if (responseData.Identity.HasClaim(Constants.Claims.ForceChangePassword, "true"))
+            if (responseData.Login != null)
             {
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
-                builder.AppendPath($"{_options.AccountEndpoint}/change-password");
-                if (returnUrl != null)
-                {
-                    builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
-                }
+                var identity = responseData.Login.Identity;
+                var principal = new ClaimsPrincipal(identity);
+                await _handler.SignInAsync(response.HttpContext, principal, responseData.Login.Remember, Identity.Login.AuthenticationMode.Login);
 
-                returnUrl = builder.ToString();
+                if (identity.HasClaim(Constants.Claims.ForceChangePassword, "true"))
+                {
+                    var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                    builder.AppendPath($"{_options.AccountEndpoint}/change-password");
+                    if (returnUrl != null)
+                    {
+                        builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    }
+
+                    returnUrl = builder.ToString();
+                }
+                else if (identity.HasClaim(Constants.Claims.ForceMfaLogin, "true") && responseData.Mfa == null)
+                {
+                    var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
+                    builder.AppendPath($"{_options.AccountEndpoint}/login/mfa");
+                    if (returnUrl != null)
+                    {
+                        builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+                    }
+
+                    returnUrl = builder.ToString();
+                }
             }
-            else if (responseData.Identity.HasClaim(Constants.Claims.ForceMfaLogin, "true"))
-            {
-                var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
-                builder.AppendPath($"{_options.AccountEndpoint}/login/mfa");
-                if (returnUrl != null)
-                {
-                    builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
-                }
 
-                returnUrl = builder.ToString();
+            if (responseData.Mfa != null)
+            {
+                var principal = new ClaimsPrincipal(responseData.Mfa.Identity);
+                await _handler.SignInAsync(response.HttpContext, principal, responseData.Mfa.Remember, Identity.Login.AuthenticationMode.Mfa);
             }
 
             if (returnUrl == null)
