@@ -77,8 +77,9 @@ namespace Codeworx.Identity.Mfa.Totp
                         }
 
                         await _linkUserService.LinkUserAsync(user, new TotpLoginData(configuration, loginRequest.SharedSecret)).ConfigureAwait(false);
+                        ClaimsIdentity identity = GenerateMfaIdentity();
 
-                        return new SignInResponse(loginRequest.Identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
+                        return new SignInResponse(identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
                     }
                     else
                     {
@@ -102,9 +103,7 @@ namespace Codeworx.Identity.Mfa.Totp
 
                     if (verified)
                     {
-                        var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
-                        identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
-                        identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
+                        var identity = GenerateMfaIdentity();
 
                         return new SignInResponse(identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
                     }
@@ -117,6 +116,14 @@ namespace Codeworx.Identity.Mfa.Totp
             }
 
             throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("Wrong request parameter!"));
+        }
+
+        private ClaimsIdentity GenerateMfaIdentity()
+        {
+            var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
+            identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
+            identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
+            return identity;
         }
     }
 }
