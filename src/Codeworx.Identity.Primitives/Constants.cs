@@ -263,6 +263,19 @@
             }
         }
 
+        public static class Processors
+        {
+            public const string Totp = "totp";
+
+            public const string Mail = "mail";
+
+            public const string Windows = "windows";
+
+            public const string Forms = "forms";
+
+            public const string OAuth = "oauth";
+        }
+
         public static class Scopes
         {
             public const string Groups = "groups";
@@ -288,6 +301,7 @@
             public const string FormsProfile = "formsprofile";
             public const string Redirect = "redirect";
             public const string RedirectProfile = "redirectprofile";
+            public const string MailMfaRegistration = "register_mfa_registration";
         }
 
         public static class Token
