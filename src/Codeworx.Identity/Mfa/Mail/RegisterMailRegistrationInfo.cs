@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Codeworx.Identity.Login;
+﻿using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Mfa.Mail
 {
     public class RegisterMailRegistrationInfo : ILoginRegistrationInfo
     {
+        public RegisterMailRegistrationInfo(string providerId, string error = null)
+        {
+            ProviderId = providerId;
+            Error = error;
+        }
+
         public string Template => Constants.Templates.MailMfaRegistration;
 
-        public string Error => throw new NotImplementedException();
+        public string Error { get; }
 
-        public string ProviderId => throw new NotImplementedException();
+        public string ProviderId { get; }
 
         public bool HasRedirectUri(out string redirectUri)
         {
-            throw new NotImplementedException();
+            redirectUri = null;
+            return false;
         }
     }
 }

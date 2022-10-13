@@ -88,7 +88,7 @@ namespace Codeworx.Identity.Mfa.Totp
                 }
                 else
                 {
-                    var sharedSecret = await _userService.GetProviderValueAsync(loginRequest.Identity, loginRequest.ProviderId).ConfigureAwait(false);
+                    var sharedSecret = await _userService.GetProviderValueAsync(loginRequest.Identity.GetUserId(), loginRequest.ProviderId).ConfigureAwait(false);
 
                     if (sharedSecret == null)
                     {

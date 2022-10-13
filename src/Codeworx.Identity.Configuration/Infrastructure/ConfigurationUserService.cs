@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             GC.SuppressFinalize(this);
         }
 
-        public Task<string> GetProviderValueAsync(ClaimsIdentity user, string providerId)
+        public Task<string> GetProviderValueAsync(string userId, string providerId)
         {
             return Task.FromResult<string>(null);
         }

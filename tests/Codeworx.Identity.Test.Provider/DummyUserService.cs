@@ -67,9 +67,9 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IUser>(_users.FirstOrDefault(p => Guid.Parse(p.Identity) == id));
         }
 
-        public Task<string> GetProviderValueAsync(ClaimsIdentity user, string providerId)
+        public Task<string> GetProviderValueAsync(string userId, string providerId)
         {
-            var id = Guid.Parse(user.GetUserId());
+            var id = Guid.Parse(userId);
             var result = _users.Where(p => Guid.Parse(p.Identity) == id)
                 .SelectMany(p => p.ExternalIdentifiers)
                 .Where(p => p.Key == providerId)

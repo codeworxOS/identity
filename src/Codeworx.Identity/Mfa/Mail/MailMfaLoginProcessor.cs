@@ -7,19 +7,39 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class MailMfaLoginProcessor : ILoginProcessor
     {
+        private readonly IUserService _userService;
+
+        public MailMfaLoginProcessor(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         public Type RequestParameterType { get; } = typeof(MailLoginRequest);
 
-        public Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration registration)
+        public async Task<ILoginRegistrationInfo> GetRegistrationInfoAsync(ProviderRequest request, ILoginRegistration registration)
         {
-            ////switch (request.Type)
-            ////{
-            ////    case ProviderRequestType.MfaLogin:
-            ////        break;
-            ////    case ProviderRequestType.MfaRegister:
-            ////        break;
-            ////}
+            string error = null;
+            request.ProviderErrors.TryGetValue(registration.Id, out error);
 
-            return null;
+
+            switch (request.Type)
+            {
+                case ProviderRequestType.MfaLogin:
+                    var email = await _userService.GetProviderValueAsync(request.User.Identity, registration.Id);
+                    if (email == null)
+                    {
+                        return null;
+                    }
+
+                    return new MailRegistrationInfo(registration.Id, email, error);
+                case ProviderRequestType.MfaRegister:
+                    return new RegisterMailRegistrationInfo(registration.Id, error);
+                case ProviderRequestType.Login:
+                case ProviderRequestType.Invitation:
+                case ProviderRequestType.Profile:
+                default:
+                    return null;
+            }
         }
 
         public Task<SignInResponse> ProcessAsync(ILoginRegistration configuration, object request)
