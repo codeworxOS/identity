@@ -17,12 +17,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NSwag;
+using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
 
 namespace Codeworx.Identity.Api.Test
 {
     public class Startup
     {
+        private static readonly string ClientId = "809b3854c35449b990dc83f80ac5f4c2";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -118,7 +121,7 @@ namespace Codeworx.Identity.Api.Test
 
                     var client = new EntityFrameworkCore.Model.ClientConfiguration
                     {
-                        Id = Guid.Parse("809b3854c35449b990dc83f80ac5f4c2"),
+                        Id = Guid.Parse(ClientId),
                         ClientType = Model.ClientType.UserAgent,
                         TokenExpiration = TimeSpan.FromHours(1),
                         ValidRedirectUrls =
@@ -155,7 +158,13 @@ namespace Codeworx.Identity.Api.Test
 
             app.UseCodeworxIdentity(identityOptions.Value);
 
-            app.UseSwaggerUi3();
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.OAuth2Client = new OAuth2ClientSettings
+                {
+                    ClientId = ClientId,
+                };
+            });
             app.UseOpenApi();
 
             app.UseRouting();
