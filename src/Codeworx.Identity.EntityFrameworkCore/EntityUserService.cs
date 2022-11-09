@@ -91,7 +91,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 return null;
             }
 
-
             bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
             return await ToUserAsync(user, hasMfaRegistration);
         }
