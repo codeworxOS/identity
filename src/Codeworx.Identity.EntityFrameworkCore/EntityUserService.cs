@@ -50,14 +50,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
 
             var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
-
-            bool hasMfaRegistration = false;
-
-            if (user != null)
+            if (user == null)
             {
-                hasMfaRegistration = await HasMfaRegistrationAsync(user);
+                return null;
             }
 
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
             return await ToUserAsync(user, hasMfaRegistration);
         }
 
@@ -67,8 +65,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var id = Guid.Parse(userId);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
-            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            if (user == null)
+            {
+                return null;
+            }
 
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
             return await ToUserAsync(user, hasMfaRegistration);
         }
 
@@ -84,8 +86,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var userSet = GetUserQuery();
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
-            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            if (user == null)
+            {
+                return null;
+            }
 
+
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
             return await ToUserAsync(user, hasMfaRegistration);
         }
 
@@ -187,11 +194,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         private async Task<Data.User> ToUserAsync(User user, bool hasMfaRegistration)
         {
-            if (user == null)
-            {
-                return null;
-            }
-
             var providers = await _context.Set<Model.AuthenticationProviderRightHolder>().Where(p => p.RightHolderId == user.Id).Select(p => p.ProviderId).ToListAsync();
 
             return new Data.User
