@@ -10,7 +10,7 @@ namespace Codeworx.Identity.Mfa.Mail
             Error = error;
         }
 
-        public string Template => Constants.Templates.MailMfaRegistration;
+        public string Template => Constants.Templates.RegisterMfaMail;
 
         public string Error { get; }
 

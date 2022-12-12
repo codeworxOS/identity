@@ -145,7 +145,7 @@
     <value>Ihr Konto ist noch nicht verknüpft.</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Passwort vergessen</value>
+    <value>Passwort vergessen?</value>
   </data>
   <data name="ForgotPasswordCompletedMessage" xml:space="preserve">
     <value>Wenn ein Konto für die angegebenen Anmeldeinformationen vorhanden ist werden Ihnen Anweisungen zum Zurücksetzen des Passworts zugesandt.</value>
@@ -290,5 +290,29 @@
   </data>
   <data name="SendCode" xml:space="preserve">
     <value>Senden</value>
+  </data>
+  <data name="OneTimeCodeMailSent" xml:space="preserve">
+    <value>Ein Einmalcode wurde an die registrierte e-mail Adresse gesendet:</value>
+  </data>
+  <data name="RegisterMfaEmail" xml:space="preserve">
+    <value>Legen Sie die E-Mail Adresse fest mit der Sie ihre Einmalcodes empfangen möchten.</value>
+  </data>
+  <data name="ConnectAuthenticatorApp" xml:space="preserve">
+    <value>Verbinden Sie Ihren Account mit einer Authenticator App.</value>
+  </data>
+  <data name="MfaProviderListPageTitle" xml:space="preserve">
+    <value>Identitätsüberprüfung</value>
+  </data>
+  <data name="MfaProviderPageTitle" xml:space="preserve">
+    <value>Multi-Faktor-Authentifizierung</value>
+  </data>
+  <data name="ReceiveCodeFromApp" xml:space="preserve">
+    <value>Verwenden Sie die registrierte Authenticator app um einen Einmalcode zu generieren.</value>
+  </data>
+  <data name="UnlinkProvider" xml:space="preserve">
+    <value>Trennen</value>
+  </data>
+  <data name="TotpRegistrationUrl" xml:space="preserve">
+    <value>Ristrierungslink</value>
   </data>
 </root>

@@ -1,350 +1,451 @@
+/* poppins-regular - latin */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''), url('../webfonts/poppins-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.ttf') format('truetype') /* Safari, Android, iOS */
+}
+/* poppins-700 - latin */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    src: local(''), url('../webfonts/poppins-v20-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.woff') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.ttf') format('truetype') /* Safari, Android, iOS */
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
 * {
-    margin: 0;
     padding: 0;
+    margin: 0;
     box-sizing: border-box;
 }
 
-html {
-    background: #af110e url("../images/logo-white.svg") no-repeat 25% 20%;
-    background-size: 120%;
-    height: 100%;
+body {
+    font-family: "Poppins", sans-serif;
+    overflow: hidden;
+    background-image: url(../images/background.jpg);
+    background-position-x: center;
+    background-position-y: center;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-body {
-    height: 100%;
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url(../images/logo.png);
+    background-size: 50px 14px;
+    background-position: right 15px bottom 10px;
+    background-repeat: no-repeat;
+    overflow: auto;
+}
+
+.login-box {
+    width: 400px;
+    text-align: center;
+    background-color: #ffffff;
+    box-shadow: 0 0 5px #CCCCCC;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.login-headline {
+    padding-bottom: 2rem;
+}
+
+    .login-headline h2 {
+        color: #333;
+        font-size: 2rem;
+        border-left: #1A77B9 3px solid;
+    }
+
+.login-content {
+    margin: 0 3rem;
+}
+
+.i {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.form-label {
-    font-family: Arial;
-    font-size: 14px;
-    color: #999999;
-}
-
-#loginContainer {
-    background: white;
-    padding: 70px 50px 40px 50px;
-    width: 450px;
-}
-
-    #loginContainer h1.login-header {
-        font-family: "Arial Black";
-        font-size: 30px;
-        color: #333333;
-        text-transform: uppercase;
-        text-align: center;
-        padding-bottom: 50px;
-        display: flex;
-        flex-direction: column;
+    .i i {
+        transition: 0.3s;
     }
 
-    #loginContainer .registration-separator {
-        font-family: Arial;
-        font-size: 16px;
+.txt_field {
+    position: relative;
+    border-bottom: 2px solid #A1A5B7;
+    margin: 30px 0 0 0;
+    padding-left: 30px;
+}
+
+    .txt_field input {
         width: 100%;
-        color: #999999;
-        text-align: center;
-        margin-bottom: 10px;
-        margin-top: 10px;
-    }
-
-    #loginContainer form {
-        display: flex;
-        flex-direction: column;
-    }
-
-    #loginContainer input {
-        color: #686868;
-        background: #e6e6e6;
-        font-size: 18px;
+        padding: 0 5px;
+        height: 40px;
+        font-size: 1rem;
         border: none;
-        border-radius: 3px;
-        padding: 0 30px 0 65px;
-        margin-bottom: 16px;
-        height: 60px
+        background: none;
+        outline: none;
     }
 
-    #loginContainer div.change-password-box,
-    #loginContainer div.forgot-password-box {
-        text-align: right;
+    .txt_field label {
+        position: absolute;
+        top: 50%;
+        left: 35px;
+        color: #A1A5B7;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        pointer-events: none;
+        transition: .5s;
     }
 
-    #loginContainer div.forgot-password-box {
-        text-align: right;
+    .txt_field span::before {
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 0;
+        width: 0%;
+        height: 2px;
+        background: #1A77B9;
+        transition: .5s;
     }
 
-    #loginContainer div.forms-profile {
-        display: flex;
-        flex-direction: column;
+    .txt_field .i {
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        color: #A1A5B7;
+        transform: translateY(-50%);
+        font-size: 14px;
+        pointer-events: none;
+        transition: .5s;
     }
 
-    #loginContainer a.change-password-link,
-    #loginContainer a.forgot-password-link {
-        font-family: Arial;
-        color: #af110e;
-        text-decoration: none;
-        font-weight: bold;
-        line-height: 1.2em;
-        font-size: 16px;
+    .txt_field input:focus ~ label,
+    .txt_field input:valid ~ label {
+        top: -5px;
+        font-size: 0.7rem;
     }
 
+    .txt_field input:focus ~ .i,
+    .txt_field input:valid ~ .i {
+        color: #1A77B9;
+    }
 
-.forgot-password-complete {
-    font-family: Arial;
-    font-size: 14px;
-    margin-bottom: 20px;
+    .txt_field input:focus ~ span::before,
+    .txt_field input:valid ~ span::before {
+        width: 100%;
+    }
+
+a.forgot-password {
+    font-size: 0.8rem;
+    padding-top: 10px;
+    padding-bottom: 15px;
 }
 
-#loginContainer input[type="checkbox"] {
-    display: none;
+a {
+    display: block;
+    text-align: right;
+    text-decoration: none;
+    color: #A1A5B7;
+    transition: 0.3s;
 }
 
-    #loginContainer input[type="checkbox"] + label {
-        font-family: Arial;
-        color: #999999;
-        line-height: 1.2em;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-    }
+a {
+    color: #1A77B9;
+}
 
-        #loginContainer input[type="checkbox"] + label svg {
-            margin-right: 8px;
-        }
-
-            #loginContainer input[type="checkbox"] + label svg rect {
-                stroke: #af110e;
-            }
-
-            #loginContainer input[type="checkbox"] + label svg #checked {
-                stroke: none;
-            }
-
-    #loginContainer input[type="checkbox"]:checked + label svg #checked {
-        stroke: #af110e;
-    }
-
-.login-submit {
-    font-size: 16px;
-    text-transform: uppercase;
-    color: white;
-    background: #af110e;
+.btn {
+    display: block;
+    width: 100%;
+    height: 50px;
+    outline: none;
     border: none;
     border-radius: 3px;
+    background-color: #1A77B9;
+    font-size: 1.2rem;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    font-weight: bold;
+    margin: 1rem 0;
     cursor: pointer;
-    height: 60px;
-    margin-top: 25px;
+    transition: 0.5s;
 }
 
-    .login-submit:hover {
-        background: red;
+    .btn:hover, .btn:focus {
+        background-color: #16487E;
+        box-shadow: 0 0 5px #CCCCCC;
     }
 
-#loginContainer .error {
-    font-family: Arial;
-    color: red;
-    margin-top: 15px;
-    width: 100%;
+.separator {
+    display: none;
+    align-items: center;
+    text-align: center;
+    height: 0;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    color: #A1A5B7;
 }
 
-#loginContainer #external,
-#loginContainer #external-profile {
+    .separator .separator-text {
+        font-size: 0.90rem;
+        line-height: 1.5;
+        white-space: nowrap;
+    }
+
+    .separator:before,
+    .separator:after {
+        content: " ";
+        width: 50%;
+        border-bottom: 1px solid #A1A5B7;
+        box-sizing: border-box;
+    }
+
+    .separator:before {
+        margin-right: 1.25rem;
+    }
+
+    .separator:after {
+        margin-left: 1.25rem;
+    }
+
+.forms-login-box ~ .external-separator {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    list-style-type: none;
-    margin: -10px;
 }
 
-    #loginContainer #external > * {
-        flex: 1 1 160px;
-        margin: 10px;
-    }
-
-    #loginContainer #external-profile > * {
-        flex: 1 1 auto;
-        margin: 10px;
-    }
-
-.redirect-link {
-    font-family: Arial;
-    text-decoration: none;
-    font-size: 16px;
-    color: #333333;
-    border: 1px solid #e6e6e6;
-    border-radius: 3px;
-    padding: 10px;
+.remember-me-box {
     display: flex;
+    justify-content: left;
+    font-size: 0.9rem;
+    color: #A1A5B7;
 }
 
-a.redirect-link:hover {
-    color: #af110e;
-    border-color: red;
-}
-
-.redirect-link.linked {
-    position: relative;
-}
-
-    .redirect-link.linked .linked-icon {
-        width: 16px;
-        height: 16px;
-        position: absolute;
-        right: -8px;
-        top: 3px;
+    .remember-me-box label {
+        padding-left: 0.5rem;
     }
 
-        .redirect-link.linked .linked-icon .unlink-submit {
-            background-image: url(../images/tick-32.png);
-            background-color: transparent;
-            background-repeat: no-repeat;
-            background-size: 16px;
-            cursor: pointer;
-            width: 16px;
-            height: 16px;
-            border: none;
+    .remember-me-box input[type=checkbox]:hover,
+    .remember-me-box input[type=checkbox]:focus {
+        color: #16487E;
+        accent-color: #16487E;
+        outline: 0;
+    }
+
+        .remember-me-box input[type=checkbox]:hover ~ label,
+        .remember-me-box input[type=checkbox]:focus ~ label {
+            color: #16487E;
         }
 
-            .redirect-link.linked .linked-icon .unlink-submit:hover {
-                background-image: url(../images/cancel-32.png);
-            }
 
-.provider-icon {
-    padding-left: 46px;
-    background-image: url('../images/identity-64.png');
+.external-login-box ~ .form-separator {
+    display: flex;
+}
+
+.external-login-box {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.external-button {
+    width: 100%;
+    display: block;
+    border: 0;
+    box-sizing: border-box;
+    text-align: start;
+    padding: 0.5rem;
+}
+
+    .external-button .unlink {
+        margin-left: auto;
+    }
+
+        .external-button .unlink:hover,
+        .external-button .unlink:focus {
+            color: #16487E;
+            outline: 0;
+        }
+
+    .external-button a.icon-button:focus,
+    .external-button a.icon-button:hover {
+        color: #16487E;
+        border-color: #16487E;
+        border-width: 1px;
+        outline: 0;
+        box-shadow: 0 0 5px #CCCCCC;
+    }
+
+    .external-button a.icon-button {
+        cursor: pointer;
+    }
+
+    .external-button .icon-button {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        border: 1px solid #A1A5B7;
+        border-radius: 3px;
+        height: 40px;
+        padding: 0 0.5rem;
+    }
+
+        .external-button .icon-button .i {
+            padding-right: 0.3rem;
+            font-size: 1.2rem;
+        }
+
+.mfa-provider-select {
+    display: flex;
+    font-family: "Poppins", sans-serif;
+    color: #666;
+    padding: 1rem 0;
+    text-align: start;
+}
+
+    .mfa-provider-select .i {
+        font-size: 2rem;
+        color: #333;
+        margin-right: 1rem;
+    }
+
+    .mfa-provider-select:hover,
+    .mfa-provider-select:focus,
+    .mfa-provider-select:hover i,
+    .mfa-provider-select:focus i {
+        outline: 0;
+        color: #1A77B9;
+    }
+
+    .mfa-provider-select:hover,
+    .mfa-provider-select:focus {
+        padding-left: 0.1rem;
+    }
+
+.mfa-target,
+.verification-description
+.different-provider-box {
+    color: #A1A5B7;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.verification-description {
+    display: block;
+    margin-bottom: 2rem;
+}
+
+.validation-digit-box {
+    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .validation-digit-box ~ .error {
+        margin-top: 1rem;
+    }
+
+    .validation-digit-box ~ .btn {
+        margin-top: 2.5rem;
+    }
+
+.validation-digit {
+    margin: 0.2rem;
+    padding: 0.2rem 0;
+    width: 40px;
+    height: 57px;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    color: #1A77B9;
+    font-size: 2rem;
+    border-radius: 3px;
+    border: 1px solid #666
+}
+
+    .validation-digit:focus,
+    .validation-digit:valid {
+        border: 2px solid #1A77B9;
+        outline: 0;
+    }
+
+.different-provider-box {
+    font-size: 0.8rem;
+}
+
+    .different-provider-box a:hover,
+    .different-provider-box a:focus {
+        outline: 0;
+        color: #16487E;
+        font-weight: 700;
+    }
+
+
+.fa-identity {
+    background-image: url(../images/identity-64.png);
     background-size: 16px;
     background-origin: content-box;
     background-repeat: no-repeat;
-    background-position: -26px center;
+    width: 16px;
+    height: 16px;
 }
 
-    .provider-icon.icon-windows {
-        background-image: url('../images/windows-64.png');
-    }
-
-    .provider-icon.icon-microsoft {
-        background-image: url('../images/microsoft-64.png');
-    }
-
-
-.ispinner {
-    position: relative;
-    width: 20px;
-    height: 20px;
-    margin-bottom: 30px;
-    margin-left: auto;
-    margin-right: auto;
+.fa-activedirectory {
+    background-image: url(../images/windows-64.png);
+    background-size: 16px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
 }
 
-    .ispinner .ispinner-blade {
-        position: absolute;
-        top: 6.5px;
-        left: 8.5px;
-        width: 2.5px;
-        height: 6.5px;
-        background-color: #8e8e93;
-        border-radius: 1.25px;
-        animation: iSpinnerBlade 1s linear infinite;
-        will-change: opacity;
+.mfa-provider-content {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+    .mfa-provider-content .registration-url a {
+        font-size: 0.8rem;
     }
 
-        .ispinner .ispinner-blade:nth-child(1) {
-            transform: rotate(45deg) translateY(-6.5px);
-            animation-delay: -1.625s;
+        .mfa-provider-content .registration-url a:hover,
+        .mfa-provider-content .registration-url a:focus {
+            outline: 0;
+            color: #16487E;
+            font-weight: 700;
         }
 
-        .ispinner .ispinner-blade:nth-child(2) {
-            transform: rotate(90deg) translateY(-6.5px);
-            animation-delay: -1.5s;
-        }
+.error {
+    color: #f5414f;
+    font-size: 0.8rem;
+}
 
-        .ispinner .ispinner-blade:nth-child(3) {
-            transform: rotate(135deg) translateY(-6.5px);
-            animation-delay: -1.375s;
-        }
 
-        .ispinner .ispinner-blade:nth-child(4) {
-            transform: rotate(180deg) translateY(-6.5px);
-            animation-delay: -1.25s;
-        }
-
-        .ispinner .ispinner-blade:nth-child(5) {
-            transform: rotate(225deg) translateY(-6.5px);
-            animation-delay: -1.125s;
-        }
-
-        .ispinner .ispinner-blade:nth-child(6) {
-            transform: rotate(270deg) translateY(-6.5px);
-            animation-delay: -1s;
-        }
-
-        .ispinner .ispinner-blade:nth-child(7) {
-            transform: rotate(315deg) translateY(-6.5px);
-            animation-delay: -0.875s;
-        }
-
-        .ispinner .ispinner-blade:nth-child(8) {
-            transform: rotate(360deg) translateY(-6.5px);
-            animation-delay: -0.75s;
-        }
-
-    .ispinner.ispinner-large {
-        width: 35px;
-        height: 35px;
+@media screen and (max-width: 400px) {
+    .login-box {
+        min-width: 220px;
+        width: 100%;
     }
 
-        .ispinner.ispinner-large .ispinner-blade {
-            top: 11.5px;
-            left: 15px;
-            width: 5px;
-            height: 12px;
-            border-radius: 2.5px;
-        }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(1) {
-                transform: rotate(45deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(2) {
-                transform: rotate(90deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(3) {
-                transform: rotate(135deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(4) {
-                transform: rotate(180deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(5) {
-                transform: rotate(225deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(6) {
-                transform: rotate(270deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(7) {
-                transform: rotate(315deg) translateY(-11.5px);
-            }
-
-            .ispinner.ispinner-large .ispinner-blade:nth-child(8) {
-                transform: rotate(360deg) translateY(-11.5px);
-            }
-
-@keyframes iSpinnerBlade {
-    0% {
-        opacity: 0.85;
+    .login-content {
+        margin: 0 2rem;
     }
+}
 
-    50% {
-        opacity: 0.25;
-    }
-
-    100% {
-        opacity: 0.25;
+@media screen and (max-width: 260px) {
+    .login-content {
+        margin: 0 1rem;
     }
 }

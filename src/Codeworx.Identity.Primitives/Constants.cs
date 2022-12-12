@@ -60,6 +60,7 @@
             public const string Css = "/identity/css";
             public const string Images = "/identity/images";
             public const string Js = "/identity/js";
+            public const string WebFonts = "/identity/webfonts";
         }
 
         public static class Claims
@@ -312,7 +313,7 @@
 
         public class Icons
         {
-            public const string Windows = "icon-windows";
+            public const string Windows = "fa-activedirectory";
         }
 
         public class TokenExchange

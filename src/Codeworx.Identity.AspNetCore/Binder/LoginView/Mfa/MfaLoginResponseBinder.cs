@@ -28,7 +28,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 
             if (!headerOnly)
             {
-                var responseBody = await _view.GetLoginView(response.GetViewContextData(responseData));
+                var responseBody = await _view.GetMfaProvider(response.GetViewContextData(responseData));
 
                 await response.WriteAsync(responseBody);
             }

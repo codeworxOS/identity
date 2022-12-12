@@ -6,6 +6,10 @@ namespace Codeworx.Identity.View
     {
         Task<string> GetLoginTemplate();
 
+        Task<string> GetMfaOverviewTemplate();
+
+        Task<string> GetMfaProviderTemplate();
+
         Task<string> GetChallengeResponse();
     }
 }

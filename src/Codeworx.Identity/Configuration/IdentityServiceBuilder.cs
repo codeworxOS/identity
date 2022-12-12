@@ -7,6 +7,7 @@ using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Mfa.Mail;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
 using Codeworx.Identity.OAuth;
@@ -74,9 +75,11 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);
+            this.ReplaceService<MailMfaLoginProcessor, MailMfaLoginProcessor>(ServiceLifetime.Scoped);
             this.PasswordValidator<PasswordValidator>();
 
             this.ReplaceService<IOAuthLoginService, OAuthLoginService>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IProcessorTypeLookup, MailMfaLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, WindowsLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);
@@ -114,6 +117,8 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, ConfirmAccountNotificationTemplate>(ServiceLifetime.Transient);
             this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, MailMfaLoginTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, MailMfaRegistrationTemplate>(ServiceLifetime.Transient);
 
             this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
             this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);

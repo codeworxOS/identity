@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.AspNetCore.Login;
@@ -28,7 +29,7 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
             if (request.HasFormContentType)
             {
                 string providerId = null;
-                string oneTimeCode = null;
+                string oneTimeCode = string.Empty;
                 string sharedSecret = null;
                 string returnUrl = null;
 
@@ -37,14 +38,14 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
                     providerId = providerIdValues;
                 }
 
-                if (request.Form.TryGetValue("one-time-code", out var oneTimeCodeValues))
-                {
-                    oneTimeCode = oneTimeCodeValues;
-                }
-
                 if (request.Form.TryGetValue("shared-secret", out var sharedSecretValues))
                 {
                     sharedSecret = sharedSecretValues;
+                }
+
+                foreach (var item in request.Form.Where(p => p.Key.StartsWith("code-")).OrderBy(p => p.Key))
+                {
+                    oneTimeCode += item.Value;
                 }
 
                 if (request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrlValues))

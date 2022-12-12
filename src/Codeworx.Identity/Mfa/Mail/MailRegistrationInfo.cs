@@ -36,7 +36,7 @@ namespace Codeworx.Identity.Mfa.Mail
             if (separatorIndex >= 0)
             {
                 var left = emailAddress.Substring(0, separatorIndex);
-                var right = emailAddress.Substring(separatorIndex + 2);
+                var right = emailAddress.Substring(separatorIndex + 1);
                 var extension = right.Substring(right.LastIndexOf('.'));
                 left = $"{left.Substring(0, 1).ToLower()}*****";
 

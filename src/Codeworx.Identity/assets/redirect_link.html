@@ -1,9 +1,25 @@
-﻿
-<ul id="external">
+<div class="separator external-separator">
+    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+</div>
+<div class="external-login-box">
     {{#Registrations}}
-    <li><a href="{{RedirectUri}}" class="redirect-link provider-icon {{CssClass}}">{{Name}}</a></li>
+    <div class="external-button">
+        <a class="icon-button" href="{{RedirectUri}}">
+            {{#CssClass}}
+            <div class="i">
+                <i class="fa-brands {{.}}"></i>
+            </div>
+            {{/CssClass}}
+            {{Name}}
+        </a>
+    </div>
     {{/Registrations}}
-</ul>
-{{#Registrations}}
-{{#Error}}<div class="error">{{.}}</div>{{/Error}}
-{{/Registrations}}
+    {{#Registrations}}
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    {{/Registrations}}
+</div>

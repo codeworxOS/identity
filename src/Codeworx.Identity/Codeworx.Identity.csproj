@@ -10,54 +10,24 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
-	  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
-	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Security.Claims" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="assets\*.html" />
-    <EmbeddedResource Include="assets\css\*.css" />
-    <EmbeddedResource Include="assets\js\*.js" />
+    <EmbeddedResource Include="assets\css\**\*.css" />
+    <EmbeddedResource Include="assets\js\**\*.js" />
     <EmbeddedResource Include="assets\images\*" />
+    <EmbeddedResource Include="assets\account\**\*" />
+    <EmbeddedResource Include="assets\webfonts\**\*" />
+    <EmbeddedResource Include="assets\notification\**\*" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="assets\account\confirmation.html" />
-    <None Remove="assets\account\forgot_password.html" />
-    <None Remove="assets\account\forgot_password_complete.html" />
-    <None Remove="assets\account\invitation.html" />
-    <None Remove="assets\account\password_change.html" />
-    <None Remove="assets\account\redirect.html" />
-    <None Remove="assets\challenge_response.html" />
-    <None Remove="assets\formsinvitation.html" />
-    <None Remove="assets\formslogin.html" />
-    <None Remove="assets\formsprofile.html" />
-    <None Remove="assets\images\cancel-32.png" />
-    <None Remove="assets\images\identity-64.png" />
-    <None Remove="assets\images\microsoft-64.png" />
-    <None Remove="assets\images\tick-32.png" />
-    <None Remove="assets\images\windows-64.png" />
-    <None Remove="assets\notification\confirm_account.html" />
-    <None Remove="assets\notification\forgot_password.html" />
-    <None Remove="assets\notification\new_invitation.html" />
-    <None Remove="assets\redirect_link.html" />
-    <None Remove="assets\redirect_link_profile.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="assets\account\forgot_password_complete.html" />
-    <EmbeddedResource Include="assets\account\forgot_password.html" />
-    <EmbeddedResource Include="assets\account\confirmation.html" />
-    <EmbeddedResource Include="assets\account\profile.html" />
-    <EmbeddedResource Include="assets\account\invitation.html" />
-    <EmbeddedResource Include="assets\account\password_change.html" />
-    <EmbeddedResource Include="assets\account\redirect.html" />
-    <EmbeddedResource Include="assets\account\login.html" />
-    <EmbeddedResource Include="assets\account\tenant.html" />
-    <EmbeddedResource Include="assets\notification\confirm_account.html" />
-    <EmbeddedResource Include="assets\notification\new_invitation.html" />
-    <EmbeddedResource Include="assets\notification\forgot_password.html" />
+    <None Remove="assets\account\mfa_login.html" />
+    <None Remove="assets\account\mfa_provider.html" />
   </ItemGroup>
 
   <ItemGroup>

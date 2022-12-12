@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
@@ -28,7 +29,7 @@ namespace Codeworx.Identity.Login.Mfa
             return response;
         }
 
-        public async Task<MfaLoginResponse> ShowLoginAsync(MfaLoginRequest request, string errorProviderId = null, string errorMessage = null)
+        public async Task<MfaLoginResponse> ShowLoginAsync(MfaLoginRequest request, string errorMessage = null)
         {
             var user = await _userService.GetUserByIdentityAsync(request.Identity);
 
@@ -37,18 +38,19 @@ namespace Codeworx.Identity.Login.Mfa
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("user missing!"));
             }
 
-            var requestType = user.HasMfaRegistration ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
+            var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
             var providerRequest = new ProviderRequest(requestType, request.ReturnUrl, user: user);
-
-            if (errorProviderId != null)
+            if (!string.IsNullOrWhiteSpace(errorMessage))
             {
-                providerRequest.ProviderErrors.Add(errorProviderId, errorMessage);
+                providerRequest.ProviderErrors.Add(request.ProviderId, errorMessage);
             }
 
-            var response = await _loginService.GetRegistrationInfosAsync(providerRequest);
+            var registration = await _loginService.GetLoginRegistrationInfoAsync(request.ProviderId).ConfigureAwait(false);
+            var processor = (ILoginProcessor)_serviceProvider.GetService(registration.ProcessorType);
+            var info = await processor.GetRegistrationInfoAsync(providerRequest, registration).ConfigureAwait(false);
 
-            var result = new MfaLoginResponse(response.Groups, request.ReturnUrl);
+            var result = new MfaLoginResponse(info, request.ReturnUrl);
 
             return result;
         }

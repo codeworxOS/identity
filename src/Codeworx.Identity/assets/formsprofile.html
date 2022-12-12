@@ -1,6 +1,17 @@
-﻿{{#Registrations}}
-<div class="forms-profile">
-    <input type="text" id="username" name="username" readonly="readonly" placeholder="{{Translate 'Username'}}" value="{{UserName}}" />
+{{#each Registrations }}
+<div class="separator form-separator">
+    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+</div>
+<div class="forms-login-box">
+
+    <div class="txt_field">
+        <input type="text" autofocus required readonly="readonly" id="username" name="username" value="{{UserName}}" />
+        <span></span>
+        <label for="username">{{Translate 'Username'}}</label>
+        <div class="i">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
     {{#CanChangePassword}}
     <div class="change-password-box">
         <a class="change-password-link" href="{{PasswordChangeUrl}}">
@@ -9,6 +20,12 @@
         </a>
     </div>
     {{/CanChangePassword}}
-    <div class="error">{{Error}}</div>
+
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
 </div>
-{{/Registrations}}
+{{/each}}

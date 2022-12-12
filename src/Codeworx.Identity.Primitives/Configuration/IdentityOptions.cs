@@ -41,7 +41,8 @@ namespace Codeworx.Identity.Configuration
             };
             Signing = new SigningOptions();
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css", Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css" };
+            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js" };
             UserInfoEndpoint = "/userinfo";
             WindowsAuthenticationEnabled = false;
             CompanyName = "Identity";
@@ -93,6 +94,8 @@ namespace Codeworx.Identity.Configuration
 
         public List<string> Styles { get; }
 
+        public List<string> Scripts { get; }
+
         public string UserInfoEndpoint { get; set; }
 
         public bool WindowsAuthenticationEnabled { get; set; }
@@ -131,6 +134,13 @@ namespace Codeworx.Identity.Configuration
             foreach (var item in this.Styles)
             {
                 target.Styles.Add(item);
+            }
+
+            target.Scripts.Clear();
+
+            foreach (var item in this.Scripts)
+            {
+                target.Scripts.Add(item);
             }
 
             target.UserInfoEndpoint = this.UserInfoEndpoint;

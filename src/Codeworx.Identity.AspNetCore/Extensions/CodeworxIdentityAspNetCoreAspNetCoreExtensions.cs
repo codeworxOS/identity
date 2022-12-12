@@ -178,6 +178,11 @@ namespace Codeworx.Identity.AspNetCore
                        p => p
                             .UseMiddleware<AuthenticationMiddleware>()
                             .UseMiddleware<MfaLoginMiddleware>())
+                    .MapWhen(
+                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/login/mfa"),
+                       p => p
+                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<MfaLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
                        p => p.UseMiddleware<LogoutMiddleware>())

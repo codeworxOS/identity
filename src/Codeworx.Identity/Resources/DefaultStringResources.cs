@@ -122,6 +122,22 @@
                     return Translation.SendCode;
                 case StringResource.InvalidOneTimeCode:
                     return Translation.InvalidOneTimeCode;
+                case StringResource.OneTimeCodeMailSent:
+                    return Translation.OneTimeCodeMailSent;
+                case StringResource.RegisterMfaEmail:
+                    return Translation.RegisterMfaEmail;
+                case StringResource.MfaProviderListPageTitle:
+                    return Translation.MfaProviderListPageTitle;
+                case StringResource.MfaProviderPageTitle:
+                    return Translation.MfaProviderPageTitle;
+                case StringResource.ConnectAuthenticatorApp:
+                    return Translation.ConnectAuthenticatorApp;
+                case StringResource.ReceiveCodeFromApp:
+                    return Translation.ReceiveCodeFromApp;
+                case StringResource.UnlinkProvider:
+                    return Translation.UnlinkProvider;
+                case StringResource.TotpRegistrationUrl:
+                    return Translation.TotpRegistrationUrl;
                 default:
                     throw new MissingResourceException(resource);
             }

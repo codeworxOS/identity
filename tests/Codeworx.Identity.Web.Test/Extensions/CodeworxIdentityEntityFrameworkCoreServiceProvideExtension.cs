@@ -260,7 +260,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 BaseUri = new Uri($"https://login.microsoftonline.com/{configuration.GetValue<string>("TestSetup:ExternalTenantId")}/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
-                                CssClass = "icon-microsoft",
+                                CssClass = "fa-windows",
                                 Scope = configuration.GetValue<string>("TestSetup:ExternalScopes"),
                                 TokenHandling = ExternalTokenHandling.Refresh,
                                 IdentifierClaim = "oid",

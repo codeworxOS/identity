@@ -60,5 +60,13 @@
         OneTimeCode,
         SendCode,
         InvalidOneTimeCode,
+        OneTimeCodeMailSent,
+        RegisterMfaEmail,
+        MfaProviderListPageTitle,
+        MfaProviderPageTitle,
+        ConnectAuthenticatorApp,
+        ReceiveCodeFromApp,
+        UnlinkProvider,
+        TotpRegistrationUrl,
     }
 }

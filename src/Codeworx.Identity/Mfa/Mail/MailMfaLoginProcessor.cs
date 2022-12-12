@@ -21,7 +21,6 @@ namespace Codeworx.Identity.Mfa.Mail
             string error = null;
             request.ProviderErrors.TryGetValue(registration.Id, out error);
 
-
             switch (request.Type)
             {
                 case ProviderRequestType.MfaLogin:

@@ -145,7 +145,7 @@
     <value>Your Account is not yet linked.</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Forgot password</value>
+    <value>Forgot password?</value>
   </data>
   <data name="ForgotPasswordCompletedMessage" xml:space="preserve">
     <value>If an account exists that maches the given credentials, password reset instructions will be sent to you.</value>
@@ -286,9 +286,33 @@
     <value>One-Time code</value>
   </data>
   <data name="ProvideOneTimeCode" xml:space="preserve">
-    <value>Provide One-Time code:</value>
+    <value>Enter your 6 digit code:</value>
   </data>
   <data name="SendCode" xml:space="preserve">
     <value>Send</value>
+  </data>
+  <data name="OneTimeCodeMailSent" xml:space="preserve">
+    <value>A one-time code has been sent to the registered email address:</value>
+  </data>
+  <data name="RegisterMfaEmail" xml:space="preserve">
+    <value>Please enter an e-mail address to receive the one-time code with.</value>
+  </data>
+  <data name="ConnectAuthenticatorApp" xml:space="preserve">
+    <value>Register your account with an authenticator app.</value>
+  </data>
+  <data name="MfaProviderListPageTitle" xml:space="preserve">
+    <value>Validate your identity</value>
+  </data>
+  <data name="MfaProviderPageTitle" xml:space="preserve">
+    <value>Multi Step Verification</value>
+  </data>
+  <data name="ReceiveCodeFromApp" xml:space="preserve">
+    <value>Use the connected authenticator app to get a one-time code.</value>
+  </data>
+  <data name="UnlinkProvider" xml:space="preserve">
+    <value>Unlink</value>
+  </data>
+  <data name="TotpRegistrationUrl" xml:space="preserve">
+    <value>Register via URL</value>
   </data>
 </root>

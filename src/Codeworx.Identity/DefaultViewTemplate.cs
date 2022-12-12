@@ -70,6 +70,16 @@ namespace Codeworx.Identity
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.login.html");
         }
 
+        public async Task<string> GetMfaOverviewTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.mfa_login.html");
+        }
+
+        public async Task<string> GetMfaProviderTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.mfa_provider.html");
+        }
+
         public async Task<string> GetPasswordChangeTemplate()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.password_change.html");

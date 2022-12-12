@@ -24,12 +24,12 @@ namespace Codeworx.Identity.Test.MFA
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(Constants.Claims.Id, TestConstants.Users.MfaTestUserWithMfaRequired.UserId));
-            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity);
+            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, TestConstants.LoginProviders.TotpProvider.Id);
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaViewResponse = await mfaViewService.ShowLoginAsync(mfaLoginRequest);
 
-            var registration = mfaViewResponse.Groups.First().Registrations.First();
+            var registration = mfaViewResponse.Info;
             Assert.AreEqual(TotpConstants.Templates.LoginTotp, registration.Template);
         }
 
@@ -44,12 +44,12 @@ namespace Codeworx.Identity.Test.MFA
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(Constants.Claims.Id, TestConstants.Users.MfaTestUserWithMfaRequired.UserId));
-            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity);
+            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, TestConstants.LoginProviders.TotpProvider.Id);
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaViewResponse = await mfaViewService.ShowLoginAsync(mfaLoginRequest);
 
-            var registration = mfaViewResponse.Groups.First().Registrations.First();
+            var registration = mfaViewResponse.Info;
             Assert.AreEqual(TotpConstants.Templates.RegisterTotp, registration.Template);
         }
 

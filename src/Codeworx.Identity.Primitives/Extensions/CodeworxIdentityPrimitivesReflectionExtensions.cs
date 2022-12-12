@@ -23,7 +23,9 @@ namespace System.Reflection
                 byte[] buffer = new byte[stream.Length];
                 stream.Read(buffer, 0, buffer.Length);
 
-                return Encoding.UTF8.GetString(buffer);
+                var result = Encoding.UTF8.GetString(buffer);
+
+                return result;
             }
         }
     }

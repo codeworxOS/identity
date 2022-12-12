@@ -1,0 +1,9 @@
+﻿{{#Registrations}}
+<form method="post" id="loginForm">
+    <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
+    <label>{{Translate 'OneTimeCodeMailSent'}}{{MaskedEmailAddress}}</label>
+    <input type="text" id="one-time-code" name="one-time-code" value="" />
+    <div class="error">{{Error}}</div>
+    <button type="submit" class="login-submit" id="loginButton">{{Translate 'Login'}}</button>
+</form>
+{{/Registrations}}

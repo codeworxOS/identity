@@ -23,6 +23,7 @@ namespace Codeworx.Identity.AspNetCore
             _handlebars = Handlebars.Create();
             _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
+            _handlebars.RegisterTemplate("Scripts", GetScripts(_options.Scripts));
 
             foreach (var helper in helpers)
             {
@@ -62,7 +63,22 @@ namespace Codeworx.Identity.AspNetCore
 
         private static string GetStyles(IEnumerable<string> styles)
         {
+            if (styles == null)
+            {
+                return string.Empty;
+            }
+
             return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+        }
+
+        private static string GetScripts(IEnumerable<string> scripts)
+        {
+            if (scripts == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join("\r\n", scripts.Select(p => $"<script type=\"text/javascript\" src=\"{p}\" ></script>"));
         }
 
         private static string GetFavicon(string favicon)

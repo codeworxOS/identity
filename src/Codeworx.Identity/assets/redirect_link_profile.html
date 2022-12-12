@@ -1,23 +1,40 @@
-﻿
-<div id="external-profile">
+
+<div class="separator external-separator">
+    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+</div>
+<div class="external-login-box">
     {{#Registrations}}
-    <div class="redirect-link-profile">
+    <div class="external-button">
         {{#IsLinked}}
-        <div class="redirect-link linked provider-icon {{CssClass}}">
-            {{Name}}
-            <div class="linked-icon">
-                <form method="get" action="{{RedirectUri}}">
-                    <button class="unlink-submit" type="submit"></button>
-                </form>
+        <div class="icon-button">
+            {{#CssClass}}
+            <div class="i">
+                <i class="fa-brands {{.}}"></i>
             </div>
+            {{/CssClass}}
+            {{Name}}
+            <a class="unlink" title="{{Translate 'UnlinkProvider'}}" href="{{RedirectUri}}"><i class="fa-solid fa-link-slash"></i></a>
         </div>
         {{/IsLinked}}
+
         {{^IsLinked}}
-        <a class="redirect-link provider-icon {{CssClass}}" href="{{RedirectUri}}">{{Name}}</a>
+        <a class="icon-button" href="{{RedirectUri}}">
+            {{#CssClass}}
+            <div class="i">
+                <i class="fa-brands {{.}}"></i>
+            </div>
+            {{/CssClass}}
+            {{Name}}
+        </a>
         {{/IsLinked}}
     </div>
     {{/Registrations}}
+    {{#Registrations}}
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    {{/Registrations}}
 </div>
-{{#Registrations}}
-{{#Error}}<div class="error">{{.}}</div>{{/Error}}
-{{/Registrations}}

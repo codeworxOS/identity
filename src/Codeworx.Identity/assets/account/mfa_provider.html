@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="{{Translate 'LanguageCode'}}">
+
+<head>
+    <meta charset="UTF-8">
+    <base href="{{base-href}}">
+    {{> Favicon}}
+    <title>{{Translate 'MfaProviderPageTitle'}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {{> Styles}}
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="login-headline">
+                <h2 class="title">{{Translate 'MfaProviderPageTitle'}}</h2>
+            </div>
+            <div class="login-content">
+                {{> (RegistrationTemplate)}}
+                <div class="different-provider-box">
+                    <span>Did not receive a code?</span>
+                    <a href="mfa.html">Chose another option.</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{> Scripts}}
+</body>
+</html>
