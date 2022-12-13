@@ -23,13 +23,7 @@ namespace Codeworx.Identity.Mfa.Mail
 
         public string Template => Constants.Templates.LoginMfaMail;
 
-        public bool HasRedirectUri(out string redirectUri)
-        {
-            redirectUri = null;
-            return false;
-        }
-
-        private static string Mask(string emailAddress)
+        public static string Mask(string emailAddress)
         {
             var separatorIndex = emailAddress.IndexOf('@');
 
@@ -46,6 +40,12 @@ namespace Codeworx.Identity.Mfa.Mail
             }
 
             return null;
+        }
+
+        public bool HasRedirectUri(out string redirectUri)
+        {
+            redirectUri = null;
+            return false;
         }
     }
 }

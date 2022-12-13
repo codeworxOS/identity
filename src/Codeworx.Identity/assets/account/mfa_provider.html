@@ -17,10 +17,12 @@
                 <h2 class="title">{{Translate 'MfaProviderPageTitle'}}</h2>
             </div>
             <div class="login-content">
+                {{#Info }}
                 {{> (RegistrationTemplate)}}
+                {{/Info }}
                 <div class="different-provider-box">
-                    <span>Did not receive a code?</span>
-                    <a href="mfa.html">Chose another option.</a>
+                    <span>{{Translate 'DidNotReceiveCode'}}</span>
+                    <a href="{{ProviderSelectUrl}}">{{Translate 'MfaProviderSelectLink'}}</a>
                 </div>
             </div>
         </div>

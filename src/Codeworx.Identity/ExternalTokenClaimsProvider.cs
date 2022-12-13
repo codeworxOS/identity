@@ -109,7 +109,7 @@ namespace Codeworx.Identity
 
                 var loginService = _serviceProvider.GetRequiredService<ILoginService>();
 
-                var registration = await loginService.GetLoginRegistrationInfoAsync(data.RegistrationId).ConfigureAwait(false);
+                var registration = await loginService.GetLoginRegistrationInfoAsync(data.RegistrationId, LoginProviderType.Login).ConfigureAwait(false);
 
                 if (registration == null)
                 {

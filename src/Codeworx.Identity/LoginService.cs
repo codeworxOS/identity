@@ -62,13 +62,13 @@ namespace Codeworx.Identity
             _resources = resources;
         }
 
-        public async Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId)
+        public async Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId, LoginProviderType providerType)
         {
             _getLoginRegistrationInfo(_logger, providerId, null);
 
             foreach (var item in _providers)
             {
-                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(LoginProviderType.Login))
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(providerType))
                 {
                     if (externalLogin.Id == providerId)
                     {
@@ -170,6 +170,7 @@ namespace Codeworx.Identity
             {
                 case ProviderRequestType.MfaLogin:
                 case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaList:
                     return LoginProviderType.MultiFactor;
 
                 case ProviderRequestType.Login:

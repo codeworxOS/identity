@@ -34,7 +34,7 @@ namespace Codeworx.Identity.Login.OAuth
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(request.ProviderId);
 
-            var info = await _loginService.GetLoginRegistrationInfoAsync(request.ProviderId);
+            var info = await _loginService.GetLoginRegistrationInfoAsync(request.ProviderId, LoginProviderType.Login);
 
             if (info == null)
             {

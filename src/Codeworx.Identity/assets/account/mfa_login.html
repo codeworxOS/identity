@@ -17,15 +17,10 @@
                 <h2 class="title">{{Translate 'MfaProviderListPageTitle'}}</h2>
             </div>
             <div class="login-content">
+                <span class="mfa-target">{{User.Name}}</span>
                 {{#each Groups}}
                 {{> (RegistrationTemplate)}}
                 {{/each}}
-                {{#HasError}}
-                <div class="error">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span>{{Error}}</span>
-                </div>
-                {{/HasError}}
             </div>
         </div>
     </div>

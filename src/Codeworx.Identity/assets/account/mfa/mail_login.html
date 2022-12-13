@@ -1,9 +1,21 @@
-﻿{{#Registrations}}
-<form method="post" id="loginForm">
+﻿<span class="verification-description">{{Translate 'OneTimeCodeMailSent'}} {{MaskedEmailAddress}}</span>
+<form method="post" autocomplete="off">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
-    <label>{{Translate 'OneTimeCodeMailSent'}}{{MaskedEmailAddress}}</label>
-    <input type="text" id="one-time-code" name="one-time-code" value="" />
-    <div class="error">{{Error}}</div>
-    <button type="submit" class="login-submit" id="loginButton">{{Translate 'Login'}}</button>
+    <label>{{Translate 'ProvideOneTimeCode'}}</label>
+    <div class="validation-digit-box">
+        <input class="validation-digit" inputmode="numeric" autofocus maxlength="1" required="required" type="text" name="code-1" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-2" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-3" />
+        -
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-4" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-5" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-6" />
+    </div>
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    <input type="submit" class="btn" name="submit" value="{{Translate 'SendCode'}}" />
 </form>
-{{/Registrations}}

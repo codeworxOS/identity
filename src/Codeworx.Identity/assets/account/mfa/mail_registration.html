@@ -1,9 +1,7 @@
-﻿{{#Registrations}}
-<form method="post" id="loginForm">
+﻿<form method="post" id="loginForm">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
     <label>{{Translate 'RegisterMfaEmail'}}</label>
     <input type="text" id="email" name="email" value="" />
     <div class="error">{{Error}}</div>
     <button type="submit" class="register-submit" id="registerButton">{{Translate 'Save'}}</button>
 </form>
-{{/Registrations}}

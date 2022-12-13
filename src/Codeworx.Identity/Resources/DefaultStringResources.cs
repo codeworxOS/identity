@@ -138,6 +138,14 @@
                     return Translation.UnlinkProvider;
                 case StringResource.TotpRegistrationUrl:
                     return Translation.TotpRegistrationUrl;
+                case StringResource.DidNotReceiveCode:
+                    return Translation.DidNotReceiveCode;
+                case StringResource.MfaProviderSelectLink:
+                    return Translation.MfaProviderSelectLink;
+                case StringResource.OneTimeCodeViaApp:
+                    return Translation.OneTimeCodeViaApp;
+                case StringResource.OneTimeCodeViaEmail:
+                    return Translation.OneTimeCodeViaEmail;
                 default:
                     throw new MissingResourceException(resource);
             }

@@ -68,5 +68,9 @@
         ReceiveCodeFromApp,
         UnlinkProvider,
         TotpRegistrationUrl,
+        DidNotReceiveCode,
+        MfaProviderSelectLink,
+        OneTimeCodeViaEmail,
+        OneTimeCodeViaApp,
     }
 }

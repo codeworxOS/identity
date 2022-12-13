@@ -315,4 +315,16 @@
   <data name="TotpRegistrationUrl" xml:space="preserve">
     <value>Register via URL</value>
   </data>
+  <data name="DidNotReceiveCode" xml:space="preserve">
+    <value>Did not receive a code?</value>
+  </data>
+  <data name="MfaProviderSelectLink" xml:space="preserve">
+    <value>Chose another option.</value>
+  </data>
+  <data name="OneTimeCodeViaApp" xml:space="preserve">
+    <value>One-time code via authenticator app</value>
+  </data>
+  <data name="OneTimeCodeViaEmail" xml:space="preserve">
+    <value>Code via e-mail sent to {0}</value>
+  </data>
 </root>

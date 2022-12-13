@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
@@ -14,19 +15,22 @@ namespace Codeworx.Identity.Mfa.Totp
 {
     public class TotpMfaLoginProcessor : ILoginProcessor
     {
-        private readonly IdentityOptions _options;
-        private readonly IUserService _userService;
-        private readonly IStringResources _stringResources;
+        private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILinkUserService _linkUserService;
+        private readonly IdentityOptions _options;
+        private readonly IStringResources _stringResources;
+        private readonly IUserService _userService;
 
         public TotpMfaLoginProcessor(
             IOptionsSnapshot<IdentityOptions> options,
             IUserService userService,
+            IBaseUriAccessor baseUriAccessor,
             IStringResources stringResources,
             ILinkUserService linkUserService = null)
         {
             _options = options.Value;
             _userService = userService;
+            _baseUriAccessor = baseUriAccessor;
             _stringResources = stringResources;
             _linkUserService = linkUserService;
         }
@@ -44,6 +48,8 @@ namespace Codeworx.Identity.Mfa.Totp
                     return Task.FromResult<ILoginRegistrationInfo>(new LoginTotpInfo(request.User, registration.Id, error));
                 case ProviderRequestType.MfaRegister:
                     return Task.FromResult<ILoginRegistrationInfo>(new RegisterTotpInfo(request.User, _options, registration.Id, error));
+                case ProviderRequestType.MfaList:
+                    return Task.FromResult<ILoginRegistrationInfo>(GetMfaListInfo(request, registration));
                 case ProviderRequestType.Login:
                 case ProviderRequestType.Invitation:
                 case ProviderRequestType.Profile:
@@ -56,7 +62,7 @@ namespace Codeworx.Identity.Mfa.Totp
         {
             if (request is TotpLoginRequest loginRequest)
             {
-                if (loginRequest.Action == TotpAction.Register)
+                if (loginRequest.Action == MfaAction.Register)
                 {
                     var key = Base32Encoding.ToBytes(loginRequest.SharedSecret);
                     var totp = new OtpNet.Totp(key);
@@ -124,6 +130,32 @@ namespace Codeworx.Identity.Mfa.Totp
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
             return identity;
+        }
+
+        private ILoginRegistrationInfo GetMfaListInfo(ProviderRequest request, ILoginRegistration registration)
+        {
+            if (!request.User.LinkedProviders.Contains(registration.Id))
+            {
+                return null;
+            }
+
+            request.ProviderErrors.TryGetValue(registration.Id, out var error);
+
+            var builder = new UriBuilder(_baseUriAccessor.BaseUri);
+            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath("login/mfa");
+            builder.AppendPath(registration.Id);
+            if (!string.IsNullOrWhiteSpace(request.ReturnUrl))
+            {
+                builder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
+            }
+
+            return new MfaProviderListInfo(
+                registration.Id,
+                builder.ToString(),
+                _stringResources.GetResource(StringResource.OneTimeCodeViaApp),
+                "fa-solid fa-qrcode",
+                error);
         }
     }
 }

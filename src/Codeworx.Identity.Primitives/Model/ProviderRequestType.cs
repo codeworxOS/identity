@@ -7,5 +7,6 @@
         Profile = 0x02,
         MfaLogin = 0x03,
         MfaRegister = 0x04,
+        MfaList = 0x05,
     }
 }

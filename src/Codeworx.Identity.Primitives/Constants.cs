@@ -304,6 +304,7 @@
             public const string RedirectProfile = "redirectprofile";
             public const string RegisterMfaMail = "register_mfa_mail";
             public const string LoginMfaMail = "login_mfa_mail";
+            public const string MfaList = "mfa_list";
         }
 
         public static class Token

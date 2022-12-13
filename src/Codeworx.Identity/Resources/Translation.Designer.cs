@@ -169,6 +169,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Did not receive a code?.
+        /// </summary>
+        internal static string DidNotReceiveCode {
+            get {
+                return ResourceManager.GetString("DidNotReceiveCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The username must be a valid email address..
         /// </summary>
         internal static string EmailLoginDescription {
@@ -367,6 +376,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chose another option..
+        /// </summary>
+        internal static string MfaProviderSelectLink {
+            get {
+                return ResourceManager.GetString("MfaProviderSelectLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New password.
         /// </summary>
         internal static string NewPassword {
@@ -399,6 +417,24 @@ namespace Codeworx.Identity.Resources {
         internal static string OneTimeCodeMailSent {
             get {
                 return ResourceManager.GetString("OneTimeCodeMailSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One-time code via authenticator app.
+        /// </summary>
+        internal static string OneTimeCodeViaApp {
+            get {
+                return ResourceManager.GetString("OneTimeCodeViaApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code via e-mail sent to {0}.
+        /// </summary>
+        internal static string OneTimeCodeViaEmail {
+            get {
+                return ResourceManager.GetString("OneTimeCodeViaEmail", resourceCulture);
             }
         }
         

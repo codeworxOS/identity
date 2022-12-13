@@ -1,24 +1,23 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.AspNetCore.Login;
-using Codeworx.Identity.Login.Mfa;
+using Codeworx.Identity.Mfa.Mail;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
 
-namespace Codeworx.Identity.Mfa.Totp.Binder
+namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
 {
-    public class TotpLoginRequestBinder : IRequestBinder<TotpLoginRequest>
+    public class MailLoginRequestBinder : IRequestBinder<MailLoginRequest>
     {
         private readonly IIdentityAuthenticationHandler _handler;
 
-        public TotpLoginRequestBinder(IIdentityAuthenticationHandler handler)
+        public MailLoginRequestBinder(IIdentityAuthenticationHandler handler)
         {
             _handler = handler;
         }
 
-        public async Task<TotpLoginRequest> BindAsync(HttpRequest request)
+        public async Task<MailLoginRequest> BindAsync(HttpRequest request)
         {
             var auth = await _handler.AuthenticateAsync(request.HttpContext).ConfigureAwait(false);
 
@@ -31,17 +30,23 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
             {
                 string providerId = null;
                 string oneTimeCode = string.Empty;
-                string sharedSecret = null;
+                string email = null;
                 string returnUrl = null;
+                string sessionId = null;
 
                 if (request.Form.TryGetValue("provider-id", out var providerIdValues))
                 {
                     providerId = providerIdValues;
                 }
 
-                if (request.Form.TryGetValue("shared-secret", out var sharedSecretValues))
+                if (request.Form.TryGetValue("session-id", out var sessionIdValues))
                 {
-                    sharedSecret = sharedSecretValues;
+                    sessionId = sessionIdValues;
+                }
+
+                if (request.Form.TryGetValue("email", out var emailValues))
+                {
+                    email = emailValues;
                 }
 
                 foreach (var item in request.Form.Where(p => p.Key.StartsWith("code-")).OrderBy(p => p.Key))
@@ -54,8 +59,12 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
                     returnUrl = returnUrlValues;
                 }
 
-                var result = new TotpLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, string.IsNullOrWhiteSpace(sharedSecret) ? MfaAction.Login : MfaAction.Register, returnUrl, oneTimeCode, sharedSecret);
-                return result;
+                if (string.IsNullOrWhiteSpace(sessionId))
+                {
+                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email);
+                }
+
+                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, sessionId);
             }
 
             throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
