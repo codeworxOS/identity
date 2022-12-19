@@ -298,6 +298,7 @@
             public const string ConfirmAccountNotification = "confirm_account_notification";
             public const string NewInvitationNotification = "new_invitation_notification";
             public const string ForgotPasswordNotification = "forgot_password_notification";
+            public const string MfaMailNotification = "mfa_mail_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
             public const string FormsProfile = "formsprofile";

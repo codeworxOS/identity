@@ -29,6 +29,7 @@
     <None Remove="assets\account\mfa_list.html" />
     <None Remove="assets\account\mfa_login.html" />
     <None Remove="assets\account\mfa_provider.html" />
+    <None Remove="assets\notification\mfa_mail.html" />
   </ItemGroup>
 
   <ItemGroup>

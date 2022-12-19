@@ -180,6 +180,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         private async Task<bool> HasMfaRegistrationAsync(User user)
         {
+            if (user == null)
+            {
+                return false;
+            }
+
             return await _context.Set<AuthenticationProviderRightHolder>()
                                         .Where(p => p.RightHolderId == user.Id && p.Provider.Usage == LoginProviderType.MultiFactor)
                                         .AnyAsync();

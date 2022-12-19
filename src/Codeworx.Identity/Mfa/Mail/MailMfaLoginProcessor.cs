@@ -6,6 +6,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Notification;
 using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Microsoft.Extensions.Options;
@@ -14,24 +15,33 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class MailMfaLoginProcessor : ILoginProcessor
     {
-        private readonly IdentityOptions _options;
-        private readonly IUserService _userService;
-        private readonly IStringResources _stringResources;
+        private static Random _random;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILinkUserService _linkUserService;
+        private readonly INotificationService _notification;
+        private readonly IdentityOptions _options;
+        private readonly IStringResources _stringResources;
+        private readonly IUserService _userService;
+
+        static MailMfaLoginProcessor()
+        {
+            _random = new Random();
+        }
 
         public MailMfaLoginProcessor(
             IUserService userService,
             IStringResources stringResources,
             IBaseUriAccessor baseUriAccessor,
             IOptionsSnapshot<IdentityOptions> options,
-            ILinkUserService linkUserService = null)
+            ILinkUserService linkUserService = null,
+            INotificationService notification = null)
         {
             _options = options.Value;
             _userService = userService;
             _stringResources = stringResources;
             _baseUriAccessor = baseUriAccessor;
             _linkUserService = linkUserService;
+            _notification = notification;
         }
 
         public Type RequestParameterType { get; } = typeof(MailLoginRequest);
@@ -51,6 +61,14 @@ namespace Codeworx.Identity.Mfa.Mail
                     }
 
                     var sessionId = Guid.NewGuid().ToString("N");
+                    if (!await _notification.IsSupportedAsync().ConfigureAwait(false))
+                    {
+                        throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("no notification service."));
+                    }
+
+                    var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
+                    var notification = new MfaMailNotification(code, request.User, _options.CompanyName, _options.SupportEmail);
+                    await _notification.SendNotificationAsync(notification).ConfigureAwait(false);
 
                     return new MailRegistrationInfo(registration.Id, email, sessionId, error);
                 case ProviderRequestType.MfaRegister:
@@ -87,6 +105,12 @@ namespace Codeworx.Identity.Mfa.Mail
                 if (string.IsNullOrEmpty(registration.SessionId))
                 {
                     var sessionId = Guid.NewGuid().ToString("N");
+                    var user = await _userService.GetUserByIdentityAsync(registration.Identity).ConfigureAwait(false);
+
+                    var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
+                    var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
+
+                    await _notification.SendNotificationAsync(notification).ConfigureAwait(false);
 
                     var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId);
 
@@ -133,14 +157,6 @@ namespace Codeworx.Identity.Mfa.Mail
             return identity;
         }
 
-        private ILoginRegistrationInfo GetMfaListRegistrationInfoWithMail(ProviderRequest request, ILoginRegistration registration, string email)
-        {
-            var masked = MailRegistrationInfo.Mask(email);
-            var description = string.Format(_stringResources.GetResource(StringResource.OneTimeCodeViaEmail), masked);
-
-            return GetMfaListRegistrationInfoWithDescription(request, registration, description);
-        }
-
         private ILoginRegistrationInfo GetMfaListRegistrationInfoRegister(ProviderRequest request, ILoginRegistration registration)
         {
             var description = _stringResources.GetResource(StringResource.MfaListRegisterMail);
@@ -163,6 +179,14 @@ namespace Codeworx.Identity.Mfa.Mail
             }
 
             return new MfaProviderListInfo(registration.Id, uriBuilder.ToString(), description, "fa-solid fa-at", error);
+        }
+
+        private ILoginRegistrationInfo GetMfaListRegistrationInfoWithMail(ProviderRequest request, ILoginRegistration registration, string email)
+        {
+            var masked = MailRegistrationInfo.Mask(email);
+            var description = string.Format(_stringResources.GetResource(StringResource.OneTimeCodeViaEmail), masked);
+
+            return GetMfaListRegistrationInfoWithDescription(request, registration, description);
         }
     }
 }
