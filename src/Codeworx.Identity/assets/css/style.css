@@ -333,7 +333,8 @@ a {
 
     .mfa-provider-select:hover,
     .mfa-provider-select:focus {
-        padding-left: 0.1rem;
+        margin-left: 0.1rem;
+        margin-right: -0.1rem;
     }
 
 .mfa-target,

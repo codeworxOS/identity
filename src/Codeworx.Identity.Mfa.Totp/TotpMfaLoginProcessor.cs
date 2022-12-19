@@ -134,13 +134,13 @@ namespace Codeworx.Identity.Mfa.Totp
 
         private ILoginRegistrationInfo GetMfaListInfo(ProviderRequest request, ILoginRegistration registration)
         {
-            string description = _stringResources.GetResource(StringResource.OneTimeCodeViaApp);
+            string description = _stringResources.GetResource(StringResource.MfaListRegisterTotp);
 
             if (request.User.LinkedProviders.Contains(registration.Id))
             {
-                description = _stringResources.GetResource(StringResource.MfaListRegisterTotp);
+                description = _stringResources.GetResource(StringResource.OneTimeCodeViaApp);
             }
-            else if (request.User.HasMfaRegistration)
+            else if (request.User.HasMfaRegistration && !request.IsMfaAuthenticated)
             {
                 return null;
             }

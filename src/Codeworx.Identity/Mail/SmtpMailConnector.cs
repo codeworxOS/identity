@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Mail
                 }
 
                 client.TargetName = _options.TargetName;
-                client.EnableSsl = true;
+                client.EnableSsl = _options.EnableSsl;
 
                 var to = recipient;
                 var from = new MailAddress(_options.Sender);

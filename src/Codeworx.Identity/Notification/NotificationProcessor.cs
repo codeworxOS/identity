@@ -29,7 +29,7 @@ namespace Codeworx.Identity.Notification
             _mailAddressProvider = mailAddressProvider;
         }
 
-        public async Task SendNotificationAsync(INotification notification)
+        public Task<string> GetNotificationContentAsync(INotification notification)
         {
             var template = _notificationTemplateCache.GetOrAdd(notification.TemplateKey, p => _templateCompiler.Compile($"{{{{> {p}}}}}"));
             object data = notification;
@@ -42,6 +42,13 @@ namespace Codeworx.Identity.Notification
             }
 
             var content = template(data);
+
+            return Task.FromResult(content);
+        }
+
+        public async Task SendNotificationAsync(INotification notification)
+        {
+            var content = await GetNotificationContentAsync(notification).ConfigureAwait(false);
             var recipient = await _mailAddressProvider.GetMailAdressAsync(notification.Target).ConfigureAwait(false);
 
             await _connector.SendAsync(recipient, notification.Subject, content).ConfigureAwait(false);

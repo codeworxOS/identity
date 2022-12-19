@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
+using Codeworx.Identity.Mail;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
 using Codeworx.Identity.Resources;
@@ -18,7 +19,8 @@ namespace Codeworx.Identity.Mfa.Mail
         private static Random _random;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILinkUserService _linkUserService;
-        private readonly INotificationService _notification;
+        private readonly IMailConnector _mailConnector;
+        private readonly INotificationProcessor _notificationProcessor;
         private readonly IdentityOptions _options;
         private readonly IStringResources _stringResources;
         private readonly IUserService _userService;
@@ -34,14 +36,16 @@ namespace Codeworx.Identity.Mfa.Mail
             IBaseUriAccessor baseUriAccessor,
             IOptionsSnapshot<IdentityOptions> options,
             ILinkUserService linkUserService = null,
-            INotificationService notification = null)
+            IMailConnector mailConnector = null,
+            INotificationProcessor notificationProcessor = null)
         {
             _options = options.Value;
             _userService = userService;
             _stringResources = stringResources;
             _baseUriAccessor = baseUriAccessor;
             _linkUserService = linkUserService;
-            _notification = notification;
+            _mailConnector = mailConnector;
+            _notificationProcessor = notificationProcessor;
         }
 
         public Type RequestParameterType { get; } = typeof(MailLoginRequest);
@@ -60,15 +64,7 @@ namespace Codeworx.Identity.Mfa.Mail
                         return null;
                     }
 
-                    var sessionId = Guid.NewGuid().ToString("N");
-                    if (!await _notification.IsSupportedAsync().ConfigureAwait(false))
-                    {
-                        throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("no notification service."));
-                    }
-
-                    var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
-                    var notification = new MfaMailNotification(code, request.User, _options.CompanyName, _options.SupportEmail);
-                    await _notification.SendNotificationAsync(notification).ConfigureAwait(false);
+                    var sessionId = await SendCodeNotificationAsync(request.User, email).ConfigureAwait(false);
 
                     return new MailRegistrationInfo(registration.Id, email, sessionId, error);
                 case ProviderRequestType.MfaRegister:
@@ -84,12 +80,13 @@ namespace Codeworx.Identity.Mfa.Mail
 
                         return GetMfaListRegistrationInfoWithMail(request, registration, address);
                     }
-                    else if (!request.User.HasMfaRegistration)
+                    else if (request.User.HasMfaRegistration && !request.IsMfaAuthenticated)
                     {
-                        return GetMfaListRegistrationInfoRegister(request, registration);
+                        return null;
                     }
 
-                    return null;
+                    return GetMfaListRegistrationInfoRegister(request, registration);
+
                 case ProviderRequestType.Login:
                 case ProviderRequestType.Invitation:
                 case ProviderRequestType.Profile:
@@ -104,13 +101,9 @@ namespace Codeworx.Identity.Mfa.Mail
             {
                 if (string.IsNullOrEmpty(registration.SessionId))
                 {
-                    var sessionId = Guid.NewGuid().ToString("N");
                     var user = await _userService.GetUserByIdentityAsync(registration.Identity).ConfigureAwait(false);
 
-                    var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
-                    var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
-
-                    await _notification.SendNotificationAsync(notification).ConfigureAwait(false);
+                    var sessionId = await SendCodeNotificationAsync(user, registration.EmailAddress).ConfigureAwait(false);
 
                     var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId);
 
@@ -187,6 +180,23 @@ namespace Codeworx.Identity.Mfa.Mail
             var description = string.Format(_stringResources.GetResource(StringResource.OneTimeCodeViaEmail), masked);
 
             return GetMfaListRegistrationInfoWithDescription(request, registration, description);
+        }
+
+        private async Task<string> SendCodeNotificationAsync(IUser user, string email)
+        {
+            var sessionId = Guid.NewGuid().ToString("N");
+            if (_mailConnector == null || _notificationProcessor == null)
+            {
+                throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("no notification service."));
+            }
+
+            var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
+            var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
+            var content = await _notificationProcessor.GetNotificationContentAsync(notification).ConfigureAwait(false);
+
+            await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content).ConfigureAwait(false);
+
+            return sessionId;
         }
     }
 }

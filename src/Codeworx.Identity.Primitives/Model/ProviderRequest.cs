@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Model
 {
     public class ProviderRequest
     {
-        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, IUser user = null, string invitationCode = null, InvitationItem invitation = null)
+        public ProviderRequest(ProviderRequestType type, string returnUrl = null, string prompt = null, string userName = null, IUser user = null, string invitationCode = null, InvitationItem invitation = null, bool isMfaAuthenticated = false)
         {
             Type = type;
             ReturnUrl = returnUrl;
@@ -15,9 +15,12 @@ namespace Codeworx.Identity.Model
             InvitationCode = invitationCode;
             ProviderErrors = new Dictionary<string, string>();
             Invitation = invitation;
+            IsMfaAuthenticated = isMfaAuthenticated;
         }
 
         public InvitationItem Invitation { get; }
+
+        public bool IsMfaAuthenticated { get; }
 
         public string Prompt { get; }
 

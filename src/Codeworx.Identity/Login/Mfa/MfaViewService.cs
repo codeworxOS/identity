@@ -40,6 +40,7 @@ namespace Codeworx.Identity.Login.Mfa
         public async Task<MfaLoginResponse> ShowLoginAsync(MfaLoginRequest request, string errorMessage = null)
         {
             var user = await _userService.GetUserByIdentityAsync(request.Identity);
+            var hasMfaClaim = request.Identity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
 
             if (user == null)
             {
@@ -48,7 +49,7 @@ namespace Codeworx.Identity.Login.Mfa
 
             var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
-            var providerRequest = new ProviderRequest(requestType, request.ReturnUrl, user: user);
+            var providerRequest = new ProviderRequest(requestType, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim);
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 providerRequest.ProviderErrors.Add(request.ProviderId, errorMessage);
@@ -81,7 +82,9 @@ namespace Codeworx.Identity.Login.Mfa
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("user missing!"));
             }
 
-            var providerRequest = new ProviderRequest(ProviderRequestType.MfaList, request.ReturnUrl, user: user);
+            var hasMfaClaim = request.Identity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
+
+            var providerRequest = new ProviderRequest(ProviderRequestType.MfaList, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim);
 
             var response = await _loginService.GetRegistrationInfosAsync(providerRequest).ConfigureAwait(false);
             return new MfaProviderListResponse(user, response.Groups);
