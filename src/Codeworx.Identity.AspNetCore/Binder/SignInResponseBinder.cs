@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
@@ -12,13 +13,19 @@ namespace Codeworx.Identity.AspNetCore.Binder
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityAuthenticationHandler _handler;
+        private readonly IUserService _userService;
         private readonly IdentityOptions _options;
 
-        public SignInResponseBinder(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor, IIdentityAuthenticationHandler handler)
+        public SignInResponseBinder(
+            IOptionsSnapshot<IdentityOptions> options,
+            IBaseUriAccessor baseUriAccessor,
+            IIdentityAuthenticationHandler handler,
+            IUserService userService)
         {
             _options = options.Value;
             _baseUriAccessor = baseUriAccessor;
             _handler = handler;
+            _userService = userService;
         }
 
         protected override async Task BindAsync(SignInResponse responseData, HttpResponse response, bool headerOnly)
@@ -44,8 +51,18 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 }
                 else if (identity.HasClaim(Constants.Claims.ForceMfaLogin, "true") && responseData.Mfa == null)
                 {
+                    var user = await _userService.GetUserByIdentityAsync(identity).ConfigureAwait(false);
+
                     var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                     builder.AppendPath($"{_options.AccountEndpoint}/login/mfa");
+
+                    var defaultProviderId = user.LinkedProviders?.FirstOrDefault();
+
+                    if (defaultProviderId != null)
+                    {
+                        builder.AppendPath(defaultProviderId);
+                    }
+
                     if (returnUrl != null)
                     {
                         builder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);

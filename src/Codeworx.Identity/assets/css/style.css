@@ -153,7 +153,6 @@ body {
 a.forgot-password {
     font-size: 0.8rem;
     padding-top: 10px;
-    padding-bottom: 15px;
 }
 
 a {
@@ -172,6 +171,8 @@ a {
     display: block;
     width: 100%;
     height: 50px;
+    line-height: 50px;
+    text-align: center;
     outline: none;
     border: none;
     border-radius: 3px;
@@ -180,7 +181,7 @@ a {
     color: #fff;
     font-family: "Poppins", sans-serif;
     font-weight: bold;
-    margin: 1rem 0;
+    margin: 2rem 0 1rem 0;
     cursor: pointer;
     transition: 0.5s;
 }

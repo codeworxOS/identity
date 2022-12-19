@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-
-namespace Codeworx.Identity
+﻿namespace Codeworx.Identity
 {
     public static class Constants
     {

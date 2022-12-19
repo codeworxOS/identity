@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
@@ -11,18 +12,33 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
     {
         private readonly IBaseUriAccessor _accessor;
         private readonly IdentityOptions _options;
+        private readonly IUserService _userService;
 
-        public MissingMfaResponseBinder(IBaseUriAccessor accessor, IOptionsSnapshot<IdentityOptions> options)
+        public MissingMfaResponseBinder(
+            IBaseUriAccessor accessor,
+            IOptionsSnapshot<IdentityOptions> options,
+            ILoginService loginService,
+            IUserService userService)
         {
             _accessor = accessor;
+            _userService = userService;
             _options = options.Value;
         }
 
-        protected override Task BindAsync(MissingMfaResponse responseData, HttpResponse response, bool headerOnly)
+        protected override async Task BindAsync(MissingMfaResponse responseData, HttpResponse response, bool headerOnly)
         {
             var builder = new UriBuilder(_accessor.BaseUri);
             builder.AppendPath(_options.AccountEndpoint);
             builder.AppendPath("login/mfa");
+
+            var user = await _userService.GetUserByIdentityAsync(responseData.Identity);
+
+            var defaultProviderId = user.LinkedProviders?.FirstOrDefault();
+
+            if (defaultProviderId != null)
+            {
+                builder.AppendPath(defaultProviderId);
+            }
 
             if (responseData.Request != null)
             {
@@ -46,8 +62,6 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
             }
 
             response.Redirect(builder.ToString());
-
-            return Task.CompletedTask;
         }
     }
 }

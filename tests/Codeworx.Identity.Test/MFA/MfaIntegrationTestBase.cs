@@ -116,7 +116,12 @@ namespace Codeworx.Identity.Test.MFA
                    new FormUrlEncodedContent(new Dictionary<string, string>
                    {
                        {"provider-id", providerId },
-                       {"one-time-code", oneTimeCode}
+                       {"code-1", oneTimeCode[0].ToString()},
+                       {"code-2", oneTimeCode[1].ToString()},
+                       {"code-3", oneTimeCode[2].ToString()},
+                       {"code-4", oneTimeCode[3].ToString()},
+                       {"code-5", oneTimeCode[4].ToString()},
+                       {"code-6", oneTimeCode[5].ToString()},
                    }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
@@ -263,6 +268,7 @@ namespace Codeworx.Identity.Test.MFA
             mfaUrlBuilder.Schema = "https";
             mfaUrlBuilder.AppendPath(options.Value.AccountEndpoint);
             mfaUrlBuilder.AppendPath("login/mfa");
+            mfaUrlBuilder.AppendPath(TestConstants.LoginProviders.TotpProvider.Id);
             var mfaUrl = mfaUrlBuilder.ToString();
             return new Uri(mfaUrl);
         }
