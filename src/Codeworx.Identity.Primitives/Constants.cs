@@ -1,4 +1,6 @@
-﻿namespace Codeworx.Identity
+﻿using System.Security.Claims;
+
+namespace Codeworx.Identity
 {
     public static class Constants
     {
@@ -249,6 +251,7 @@
             {
                 public const string Mfa = "mfa";
                 public const string Otp = "otp";
+                public const string Mail = "mail";
             }
 
             public static class ResponseType

@@ -169,7 +169,7 @@ namespace Codeworx.Identity.Test.MFA
             var parameters = new TotpLoginRequest(
                 TestConstants.LoginProviders.TotpProvider.Id,
                 claimsIdentity,
-                TotpAction.Register,
+                MfaAction.Register,
                 null,
                 oneTimeCode,
                 sharedSecret);
@@ -193,7 +193,7 @@ namespace Codeworx.Identity.Test.MFA
             var parameters = new TotpLoginRequest(
                 TestConstants.LoginProviders.TotpProvider.Id,
                 claimsIdentity,
-                TotpAction.Login,
+                MfaAction.Login,
                 null,
                 oneTimeCode);
             var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity);

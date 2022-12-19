@@ -59,9 +59,9 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
                     returnUrl = returnUrlValues;
                 }
 
-                if (string.IsNullOrWhiteSpace(sessionId))
+                if (!string.IsNullOrWhiteSpace(email))
                 {
-                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email);
+                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode);
                 }
 
                 return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, sessionId);

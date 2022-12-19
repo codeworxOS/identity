@@ -72,5 +72,8 @@
         MfaProviderSelectLink,
         OneTimeCodeViaEmail,
         OneTimeCodeViaApp,
+        MfaListRegisterMail,
+        MfaListRegisterTotp,
+        EmailAddress,
     }
 }

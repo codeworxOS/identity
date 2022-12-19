@@ -146,6 +146,12 @@
                     return Translation.OneTimeCodeViaApp;
                 case StringResource.OneTimeCodeViaEmail:
                     return Translation.OneTimeCodeViaEmail;
+                case StringResource.MfaListRegisterMail:
+                    return Translation.MfaListRegisterMail;
+                case StringResource.MfaListRegisterTotp:
+                    return Translation.MfaListRegisterTotp;
+                case StringResource.EmailAddress:
+                    return Translation.EmailAddress;
                 default:
                     throw new MissingResourceException(resource);
             }

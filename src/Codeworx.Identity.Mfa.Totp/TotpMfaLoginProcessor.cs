@@ -134,7 +134,13 @@ namespace Codeworx.Identity.Mfa.Totp
 
         private ILoginRegistrationInfo GetMfaListInfo(ProviderRequest request, ILoginRegistration registration)
         {
-            if (!request.User.LinkedProviders.Contains(registration.Id))
+            string description = _stringResources.GetResource(StringResource.OneTimeCodeViaApp);
+
+            if (request.User.LinkedProviders.Contains(registration.Id))
+            {
+                description = _stringResources.GetResource(StringResource.MfaListRegisterTotp);
+            }
+            else if (request.User.HasMfaRegistration)
             {
                 return null;
             }
@@ -153,7 +159,7 @@ namespace Codeworx.Identity.Mfa.Totp
             return new MfaProviderListInfo(
                 registration.Id,
                 builder.ToString(),
-                _stringResources.GetResource(StringResource.OneTimeCodeViaApp),
+                description,
                 "fa-solid fa-qrcode",
                 error);
         }

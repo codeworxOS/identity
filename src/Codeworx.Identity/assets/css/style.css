@@ -132,18 +132,21 @@ body {
     }
 
     .txt_field input:focus ~ label,
-    .txt_field input:valid ~ label {
+    .txt_field input:valid ~ label,
+    .txt_field input:read-only ~ label {
         top: -5px;
         font-size: 0.7rem;
     }
 
     .txt_field input:focus ~ .i,
-    .txt_field input:valid ~ .i {
+    .txt_field input:valid ~ .i,
+    .txt_field input:read-only ~ .i {
         color: #1A77B9;
     }
 
     .txt_field input:focus ~ span::before,
-    .txt_field input:valid ~ span::before {
+    .txt_field input:valid ~ span::before,
+    .txt_field input:read-only ~ span::before {
         width: 100%;
     }
 

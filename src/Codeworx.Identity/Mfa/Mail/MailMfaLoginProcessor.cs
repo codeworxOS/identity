@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
+using Codeworx.Identity.Response;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Mfa.Mail
@@ -16,17 +18,20 @@ namespace Codeworx.Identity.Mfa.Mail
         private readonly IUserService _userService;
         private readonly IStringResources _stringResources;
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly ILinkUserService _linkUserService;
 
         public MailMfaLoginProcessor(
             IUserService userService,
             IStringResources stringResources,
             IBaseUriAccessor baseUriAccessor,
-            IOptionsSnapshot<IdentityOptions> options)
+            IOptionsSnapshot<IdentityOptions> options,
+            ILinkUserService linkUserService = null)
         {
             _options = options.Value;
             _userService = userService;
             _stringResources = stringResources;
             _baseUriAccessor = baseUriAccessor;
+            _linkUserService = linkUserService;
         }
 
         public Type RequestParameterType { get; } = typeof(MailLoginRequest);
@@ -45,7 +50,9 @@ namespace Codeworx.Identity.Mfa.Mail
                         return null;
                     }
 
-                    return new MailRegistrationInfo(registration.Id, email, error);
+                    var sessionId = Guid.NewGuid().ToString("N");
+
+                    return new MailRegistrationInfo(registration.Id, email, sessionId, error);
                 case ProviderRequestType.MfaRegister:
                     return new RegisterMailRegistrationInfo(registration.Id, error);
                 case ProviderRequestType.MfaList:
@@ -57,7 +64,11 @@ namespace Codeworx.Identity.Mfa.Mail
                             return null;
                         }
 
-                        return GetMfaListRegistrationInfo(request, registration, address);
+                        return GetMfaListRegistrationInfoWithMail(request, registration, address);
+                    }
+                    else if (!request.User.HasMfaRegistration)
+                    {
+                        return GetMfaListRegistrationInfoRegister(request, registration);
                     }
 
                     return null;
@@ -69,17 +80,77 @@ namespace Codeworx.Identity.Mfa.Mail
             }
         }
 
-        public Task<SignInResponse> ProcessAsync(ILoginRegistration configuration, object request)
+        public async Task<SignInResponse> ProcessAsync(ILoginRegistration configuration, object request)
         {
-            throw new NotImplementedException();
+            if (request is RegisterMailLoginRequest registration)
+            {
+                if (string.IsNullOrEmpty(registration.SessionId))
+                {
+                    var sessionId = Guid.NewGuid().ToString("N");
+
+                    var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId);
+
+                    var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+                    uriBuilder.AppendPath(_options.AccountEndpoint);
+                    uriBuilder.AppendPath("login/mfa");
+
+                    if (!string.IsNullOrWhiteSpace(registration.ReturnUrl))
+                    {
+                        uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, registration.ReturnUrl);
+                    }
+
+                    throw new ErrorResponseException<MfaLoginResponse>(new MfaLoginResponse(response, uriBuilder.ToString(), registration.ReturnUrl));
+                }
+                else
+                {
+                    if (_linkUserService == null)
+                    {
+                        throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("registration not supported!"));
+                    }
+
+                    var user = await _userService.GetUserByIdentityAsync(registration.Identity).ConfigureAwait(false);
+
+                    await _linkUserService.LinkUserAsync(user, new MailLoginData(configuration, registration.EmailAddress));
+                    var mfaIdentity = GenerateMfaIdentity();
+
+                    return new SignInResponse(mfaIdentity, registration.ReturnUrl, AuthenticationMode.Mfa);
+                }
+            }
+            else if (request is ProcessMailLoginRequest process)
+            {
+                var mfaIdentity = GenerateMfaIdentity();
+                return new SignInResponse(mfaIdentity, process.ReturnUrl, AuthenticationMode.Mfa);
+            }
+
+            throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("unknown"));
         }
 
-        private ILoginRegistrationInfo GetMfaListRegistrationInfo(ProviderRequest request, ILoginRegistration registration, string email)
+        private ClaimsIdentity GenerateMfaIdentity()
         {
-            request.ProviderErrors.TryGetValue(registration.Id, out var error);
+            var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
+            identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
+            identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mail));
+            return identity;
+        }
 
+        private ILoginRegistrationInfo GetMfaListRegistrationInfoWithMail(ProviderRequest request, ILoginRegistration registration, string email)
+        {
             var masked = MailRegistrationInfo.Mask(email);
             var description = string.Format(_stringResources.GetResource(StringResource.OneTimeCodeViaEmail), masked);
+
+            return GetMfaListRegistrationInfoWithDescription(request, registration, description);
+        }
+
+        private ILoginRegistrationInfo GetMfaListRegistrationInfoRegister(ProviderRequest request, ILoginRegistration registration)
+        {
+            var description = _stringResources.GetResource(StringResource.MfaListRegisterMail);
+
+            return GetMfaListRegistrationInfoWithDescription(request, registration, description);
+        }
+
+        private ILoginRegistrationInfo GetMfaListRegistrationInfoWithDescription(ProviderRequest request, ILoginRegistration registration, string description)
+        {
+            request.ProviderErrors.TryGetValue(registration.Id, out var error);
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             uriBuilder.AppendPath(_options.AccountEndpoint);

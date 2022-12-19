@@ -178,6 +178,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to e-mail address.
+        /// </summary>
+        internal static string EmailAddress {
+            get {
+                return ResourceManager.GetString("EmailAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The username must be a valid email address..
         /// </summary>
         internal static string EmailLoginDescription {
@@ -354,6 +363,24 @@ namespace Codeworx.Identity.Resources {
         internal static string MaxFailedLoginAttemptsReached {
             get {
                 return ResourceManager.GetString("MaxFailedLoginAttemptsReached", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register with an e-mail address.
+        /// </summary>
+        internal static string MfaListRegisterMail {
+            get {
+                return ResourceManager.GetString("MfaListRegisterMail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register with your authenticator app.
+        /// </summary>
+        internal static string MfaListRegisterTotp {
+            get {
+                return ResourceManager.GetString("MfaListRegisterTotp", resourceCulture);
             }
         }
         

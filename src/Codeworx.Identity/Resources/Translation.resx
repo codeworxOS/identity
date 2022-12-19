@@ -327,4 +327,13 @@
   <data name="OneTimeCodeViaEmail" xml:space="preserve">
     <value>Code via e-mail sent to {0}</value>
   </data>
+  <data name="MfaListRegisterMail" xml:space="preserve">
+    <value>Register with an e-mail address</value>
+  </data>
+  <data name="MfaListRegisterTotp" xml:space="preserve">
+    <value>Register with your authenticator app</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>e-mail address</value>
+  </data>
 </root>

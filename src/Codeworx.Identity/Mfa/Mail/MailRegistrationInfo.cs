@@ -4,16 +4,19 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class MailRegistrationInfo : ILoginRegistrationInfo
     {
-        public MailRegistrationInfo(string providerId, string emailAddress, string error = null)
+        public MailRegistrationInfo(string providerId, string emailAddress, string sessionId, string error = null)
         {
             ProviderId = providerId;
             EmailAddress = emailAddress;
+            SessionId = sessionId;
             Error = error;
 
             MaskedEmailAddress = Mask(EmailAddress);
         }
 
         public string EmailAddress { get; }
+
+        public string SessionId { get; }
 
         public string Error { get; }
 
