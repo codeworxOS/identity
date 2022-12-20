@@ -1,30 +1,48 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="{{Translate 'LanguageCode'}}">
 
-<html lang="{{Translate 'LanguageCode'}}" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <base href="{{base-href}}">
     {{> Favicon}}
     <title>{{Translate 'SelectTenantPageTitle'}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     {{> Styles}}
 </head>
-<body>
-    <form method="post" id="tenantForm">
-        <select id="tenantSelection" name="tenantKey">
-            {{#Tenants}}
-            <option value="{{Key}}">{{Name}}</option>
-            {{/Tenants}}
-        </select>
-        <button type="submit" id="select">{{Translate 'Select'}}</button>
 
-        {{#CanSetDefault}}
-        <div>
-            <input type="checkbox" id="setDefault" name="setDefault" />
-            <label htmlFor="setDefault">{{Translate 'SetAsDefault'}}</label>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="login-headline">
+                <h2 class="title">{{Translate 'SelectTenantPageTitle'}}</h2>
+            </div>
+            <div class="login-content">
+                <form method="post" id="tenantForm">
+                    <div class="txt_field">
+                        <select id="tenantSelection" name="tenantKey" autofocus required>
+                            {{#Tenants}}
+                            <option value="{{Key}}">{{Name}}</option>
+                            {{/Tenants}}
+                        </select>
+                        <span></span>
+                        <label for="tenantKey">{{Translate 'Select'}}</label>
+                        <div class="i">
+                            <i class="fas fa-sitemap"></i>
+                        </div>
+                    </div>
+
+                    <input type="submit" class="btn" id="submit" name="submit" value="{{Translate 'Select'}}" />
+
+                    {{#CanSetDefault}}
+                    <div class="checkbox-field">
+                        <input type="checkbox" id="setDefault" name="setDefault" />
+                        <label htmlFor="setDefault">{{Translate 'SetAsDefault'}}</label>
+                    </div>
+                    {{/CanSetDefault}}
+                </form>
+            </div>
         </div>
-        {{/CanSetDefault}}
-    </form>
+    </div>
+    {{> Scripts}}
 </body>
 </html>

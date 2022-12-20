@@ -31,10 +31,12 @@ namespace Codeworx.Identity.Mfa.Totp
             };
 
             var result = coder.CreateQrCode(payload);
+
             var data = new QRCoder.PngByteQRCode(result);
             var graphic = data.GetGraphic(4);
 
             this.QrCode = $"data:image/png;base64,{Convert.ToBase64String(graphic)}";
+            this.RegistrationUri = payload.ToString();
         }
 
         public string Template => TotpConstants.Templates.RegisterTotp;
@@ -46,6 +48,8 @@ namespace Codeworx.Identity.Mfa.Totp
         public string ProviderId { get; }
 
         public string QrCode { get; }
+
+        public string RegistrationUri { get; }
 
         public bool HasRedirectUri(out string redirectUri)
         {

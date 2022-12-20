@@ -25,7 +25,7 @@
             var dummyBaseUriAccessor = new DummyBaseUriAccessor();
 
             var loginViewService = new LoginViewService(null, dummyBaseUriAccessor, new OptionsWrapper<IdentityOptions>(new IdentityOptions()), null);
-            var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, null, null));
+            var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
 
             Assert.AreEqual(
                 new Uri(dummyBaseUriAccessor.BaseUri, new Uri("/openid10?query1=one", UriKind.Relative)).ToString(),
@@ -37,7 +37,7 @@
         {
             const string returnUrl = "http://example.com/openid10?query1=one";
             var loginViewService = new LoginViewService(null, new DummyBaseUriAccessor(), new OptionsWrapper<IdentityOptions>(new IdentityOptions()), null);
-            var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, null, null));
+            var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
 
             Assert.AreEqual(returnUrl, result.ReturnUrl);
         }
@@ -56,7 +56,7 @@
             var responseBinder = sp.GetRequiredService<IResponseBinder<LoginResponse>>();
             var ctx = new DefaultHttpContext();
 
-            var request = new LoginRequest("/account/me", null);
+            var request = new LoginRequest("/account/me", null, false);
             var response = await loginView.ProcessLoginAsync(request);
             await responseBinder.BindAsync(response, ctx.Response);
 
@@ -83,7 +83,7 @@
             var responseBinder = sp.GetRequiredService<IResponseBinder<LoginResponse>>();
             var ctx = new DefaultHttpContext();
 
-            var request = new LoginRequest("/account/me", null, "oauthprovider", "LoginError");
+            var request = new LoginRequest("/account/me", null, false, "oauthprovider", "LoginError");
             var response = await loginView.ProcessLoginAsync(request);
             await responseBinder.BindAsync(response, ctx.Response);
 
@@ -103,7 +103,7 @@
 
             var loginView = sp.GetRequiredService<ILoginViewService>();
 
-            var request = new LoginRequest("/account/me", null, "oauthprovider", "LoginError");
+            var request = new LoginRequest("/account/me", null, false, "oauthprovider", "LoginError");
             var response = await loginView.ProcessLoginAsync(request);
 
             Assert.True(response.Groups.First().Registrations.First().HasRedirectUri(out var redirectUri));
@@ -124,7 +124,7 @@
 
             var loginView = sp.GetRequiredService<ILoginViewService>();
 
-            var request = new LoginRequest("/account/me", null, "oauthprovider", "LoginError");
+            var request = new LoginRequest("/account/me", null, false, "oauthprovider", "LoginError");
             var response = await loginView.ProcessLoginAsync(request);
 
             Assert.True(response.Groups.First().Registrations.First().HasRedirectUri(out var redirectUri));
@@ -145,7 +145,7 @@
 
             var loginView = sp.GetRequiredService<ILoginViewService>();
 
-            var request = new LoginRequest("/account/me", "abc", "oauthprovider", "LoginError");
+            var request = new LoginRequest("/account/me", "abc", false, "oauthprovider", "LoginError");
             var response = await loginView.ProcessLoginAsync(request);
 
             Assert.True(response.Groups.First().Registrations.First().HasRedirectUri(out var redirectUri));

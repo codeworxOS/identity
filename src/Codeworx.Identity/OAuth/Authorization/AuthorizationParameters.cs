@@ -58,7 +58,7 @@ namespace Codeworx.Identity.OAuth.Authorization
         {
             if (error == Constants.OpenId.Error.MfaAuthenticationRequired)
             {
-                throw new ErrorResponseException<MissingMfaResponse>(new MissingMfaResponse(Request));
+                throw new ErrorResponseException<MissingMfaResponse>(new MissingMfaResponse(Request, User));
             }
 
             var errorResponse = new AuthorizationErrorResponse(error, errorDescription, null, this.State, this.RedirectUri, this.ResponseMode);

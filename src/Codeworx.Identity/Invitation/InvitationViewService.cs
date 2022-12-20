@@ -69,7 +69,7 @@ namespace Codeworx.Identity.Invitation
 
                     if (hasError)
                     {
-                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.HeaderOnly, request.ProviderId, error));
                         throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
                     }
 
@@ -86,7 +86,7 @@ namespace Codeworx.Identity.Invitation
                     var loginPolicy = await _loginPolicyProvider.GetPolicyAsync().ConfigureAwait(false);
                     if (!loginPolicy.IsValid(request.UserName, languageCode, out var error))
                     {
-                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, error));
+                        var errorResponse = await ShowAsync(new InvitationViewRequest(request.Code, request.HeaderOnly, request.ProviderId, error));
                         throw new ErrorResponseException<InvitationViewResponse>(errorResponse);
                     }
 
@@ -102,7 +102,7 @@ namespace Codeworx.Identity.Invitation
             catch (UsernameAlreadyExistsException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.UsernameAlreadyTaken);
-                var viewRequest = new InvitationViewRequest(request.Code, request.ProviderId, errorMessage);
+                var viewRequest = new InvitationViewRequest(request.Code, request.HeaderOnly, request.ProviderId, errorMessage);
                 var response = await ShowAsync(viewRequest).ConfigureAwait(false);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
@@ -127,7 +127,7 @@ namespace Codeworx.Identity.Invitation
             catch (PasswordChangeException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.PasswordChangeSamePasswordError);
-                var response = await ShowAsync(new InvitationViewRequest(request.Code, request.ProviderId, errorMessage));
+                var response = await ShowAsync(new InvitationViewRequest(request.Code, request.HeaderOnly, request.ProviderId, errorMessage));
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
         }
@@ -140,7 +140,7 @@ namespace Codeworx.Identity.Invitation
                 var invitation = await _service.GetInvitationAsync(request.Code);
 
                 var user = await _userService.GetUserByIdAsync(invitation.UserId);
-                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, invitation.RedirectUri, null, user.Name, invitationCode: request.Code, invitation: invitation);
+                var providerRequest = new ProviderRequest(ProviderRequestType.Invitation, request.HeaderOnly, invitation.RedirectUri, null, user.Name, invitationCode: request.Code, invitation: invitation);
 
                 if (!string.IsNullOrWhiteSpace(request.Provider))
                 {

@@ -7,6 +7,8 @@ using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Login.Windows;
+using Codeworx.Identity.Mfa;
+using Codeworx.Identity.Mfa.Mail;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Notification;
 using Codeworx.Identity.OAuth;
@@ -74,9 +76,11 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<FormsLoginProcessor, FormsLoginProcessor>(ServiceLifetime.Scoped);
+            this.ReplaceService<MailMfaLoginProcessor, MailMfaLoginProcessor>(ServiceLifetime.Scoped);
             this.PasswordValidator<PasswordValidator>();
 
             this.ReplaceService<IOAuthLoginService, OAuthLoginService>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IProcessorTypeLookup, MailMfaLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, WindowsLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, ExternalOAuthLoginProcessorLookup>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IProcessorTypeLookup, FormsLoginProcessorLookup>(ServiceLifetime.Singleton);
@@ -106,14 +110,18 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IRequestValidator<LogoutRequest>, LogoutRequestValidator>(ServiceLifetime.Transient);
             this.ReplaceService<IRequestValidator<LoginRequest>, LoginRequestValidator>(ServiceLifetime.Transient);
 
-            this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, FormsProfileTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, ConfirmAccountNotificationTemplate>(ServiceLifetime.Transient);
-            this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Transient);
+            this.RegisterMultiple<IPartialTemplate, FormsLoginTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, FormsProfileTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, RedirectLinkTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, RedirectLinkProfileTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, FormsInvitationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, ForgotPasswordNotificationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, ConfirmAccountNotificationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, NewInvitationNotificationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, MailMfaLoginTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, MailMfaRegistrationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, MfaProviderListTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, MfaMailNotificationTemplate>(ServiceLifetime.Singleton);
 
             this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
             this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);

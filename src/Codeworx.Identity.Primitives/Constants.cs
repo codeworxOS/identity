@@ -60,6 +60,7 @@
             public const string Css = "/identity/css";
             public const string Images = "/identity/images";
             public const string Js = "/identity/js";
+            public const string WebFonts = "/identity/webfonts";
         }
 
         public static class Claims
@@ -82,6 +83,12 @@
             public const string Tenant = "tenant";
             public const string Upn = "upn";
             public const string Amr = "amr";
+            public const string Session = "session";
+        }
+
+        public static class Cache
+        {
+            public const string MailMfaPrefix = "mail_mfa_code";
         }
 
         public static class Forms
@@ -248,6 +255,7 @@
             {
                 public const string Mfa = "mfa";
                 public const string Otp = "otp";
+                public const string Mail = "mail";
             }
 
             public static class ResponseType
@@ -261,6 +269,19 @@
                 public const string OpenId = "openid";
                 public const string Profile = "profile";
             }
+        }
+
+        public static class Processors
+        {
+            public const string Totp = "totp";
+
+            public const string Mail = "mail";
+
+            public const string Windows = "windows";
+
+            public const string Forms = "forms";
+
+            public const string OAuth = "oauth";
         }
 
         public static class Scopes
@@ -283,11 +304,15 @@
             public const string ConfirmAccountNotification = "confirm_account_notification";
             public const string NewInvitationNotification = "new_invitation_notification";
             public const string ForgotPasswordNotification = "forgot_password_notification";
+            public const string MfaMailNotification = "mfa_mail_notification";
             public const string FormsInvitation = "formsinvitation";
             public const string FormsLogin = "formslogin";
             public const string FormsProfile = "formsprofile";
             public const string Redirect = "redirect";
             public const string RedirectProfile = "redirectprofile";
+            public const string RegisterMfaMail = "register_mfa_mail";
+            public const string LoginMfaMail = "login_mfa_mail";
+            public const string MfaList = "mfa_list";
         }
 
         public static class Token
@@ -297,7 +322,7 @@
 
         public class Icons
         {
-            public const string Windows = "icon-windows";
+            public const string Windows = "fa-activedirectory";
         }
 
         public class TokenExchange

@@ -122,6 +122,36 @@
                     return Translation.SendCode;
                 case StringResource.InvalidOneTimeCode:
                     return Translation.InvalidOneTimeCode;
+                case StringResource.OneTimeCodeMailSent:
+                    return Translation.OneTimeCodeMailSent;
+                case StringResource.RegisterMfaEmail:
+                    return Translation.RegisterMfaEmail;
+                case StringResource.MfaProviderListPageTitle:
+                    return Translation.MfaProviderListPageTitle;
+                case StringResource.MfaProviderPageTitle:
+                    return Translation.MfaProviderPageTitle;
+                case StringResource.ConnectAuthenticatorApp:
+                    return Translation.ConnectAuthenticatorApp;
+                case StringResource.ReceiveCodeFromApp:
+                    return Translation.ReceiveCodeFromApp;
+                case StringResource.UnlinkProvider:
+                    return Translation.UnlinkProvider;
+                case StringResource.TotpRegistrationUrl:
+                    return Translation.TotpRegistrationUrl;
+                case StringResource.DidNotReceiveCode:
+                    return Translation.DidNotReceiveCode;
+                case StringResource.MfaProviderSelectLink:
+                    return Translation.MfaProviderSelectLink;
+                case StringResource.OneTimeCodeViaApp:
+                    return Translation.OneTimeCodeViaApp;
+                case StringResource.OneTimeCodeViaEmail:
+                    return Translation.OneTimeCodeViaEmail;
+                case StringResource.MfaListRegisterMail:
+                    return Translation.MfaListRegisterMail;
+                case StringResource.MfaListRegisterTotp:
+                    return Translation.MfaListRegisterTotp;
+                case StringResource.EmailAddress:
+                    return Translation.EmailAddress;
                 default:
                     throw new MissingResourceException(resource);
             }

@@ -37,7 +37,7 @@ namespace Codeworx.Identity.AspNetCore.Account
                     }
                     catch (AuthenticationException ex)
                     {
-                        var showResponse = await service.ShowLoginAsync(request, processLoginRequest.ProviderId, ex.Message).ConfigureAwait(false);
+                        var showResponse = await service.ShowLoginAsync(request, ex.Message).ConfigureAwait(false);
                         await mfaLoginResponseBinder.BindAsync(showResponse, context.Response).ConfigureAwait(false);
                     }
                 }

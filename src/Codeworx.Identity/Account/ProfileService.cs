@@ -44,7 +44,7 @@ namespace Codeworx.Identity.Account
         {
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
-            var providerRequest = new ProviderRequest(ProviderRequestType.Profile, request.ReturnUrl, user: user);
+            var providerRequest = new ProviderRequest(ProviderRequestType.Profile, request.HeaderOnly, request.ReturnUrl, user: user);
 
             if (request.LoginProviderId != null)
             {
@@ -98,7 +98,7 @@ namespace Codeworx.Identity.Account
                         if (configuration.Id == request.ProviderId)
                         {
                             var processor = (ILoginProcessor)_serviceProvider.GetService(configuration.ProcessorType);
-                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, invitationCode: invitationCode, invitation: invatation), configuration);
+                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, request.HeaderOnly, invitationCode: invitationCode, invitation: invatation), configuration);
                             if (info.HasRedirectUri(out var redirectUri))
                             {
                                 return new ProfileLinkResponse(redirectUri);

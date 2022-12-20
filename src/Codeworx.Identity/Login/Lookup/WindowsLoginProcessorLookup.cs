@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Login
 {
     public class WindowsLoginProcessorLookup : IProcessorTypeLookup
     {
-        public string Key => "windows";
+        public string Key => Constants.Processors.Windows;
 
         public Type Type => typeof(WindowsLoginProcessor);
 

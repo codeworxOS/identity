@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Login
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
             string error = null;
-            var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+            var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
             if (request.LoginProviderId != null)
             {
                 providerRequest.ProviderErrors.Add(request.LoginProviderId, request.LoginProviderError ?? _stringResources.GetResource(StringResource.GenericLoginError));
@@ -91,17 +91,17 @@ namespace Codeworx.Identity.Login
             }
             catch (AuthenticationException ex)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 providerRequest.ProviderErrors.Add(request.ProviderId, ex.Message);
             }
             catch (LoginProviderNotFoundException)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 errorMessage = _stringResources.GetResource(StringResource.UnknownLoginProviderError);
             }
             catch (Exception)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 var message = _stringResources.GetResource(StringResource.GenericLoginError);
                 providerRequest.ProviderErrors.Add(request.ProviderId, message);
             }

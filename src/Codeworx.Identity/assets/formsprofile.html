@@ -1,14 +1,29 @@
-﻿{{#Registrations}}
-<div class="forms-profile">
-    <input type="text" id="username" name="username" readonly="readonly" placeholder="{{Translate 'Username'}}" value="{{UserName}}" />
-    {{#CanChangePassword}}
-    <div class="change-password-box">
-        <a class="change-password-link" href="{{PasswordChangeUrl}}">
-            {{#HasCurrentPassword}}{{Translate 'ChangePassword'}}{{/HasCurrentPassword}}
-            {{^HasCurrentPassword}}{{Translate 'SetPassword'}}{{/HasCurrentPassword}}
-        </a>
-    </div>
-    {{/CanChangePassword}}
-    <div class="error">{{Error}}</div>
+{{#each Registrations }}
+<div class="separator form-separator">
+    <span class="separator-text">{{Translate 'OrConnectWith'}}</span>
 </div>
-{{/Registrations}}
+<div class="forms-login-box">
+
+    <div class="txt_field">
+        <input type="text" autofocus required readonly="readonly" id="username" name="username" value="{{UserName}}" />
+        <span></span>
+        <label for="username">{{Translate 'Username'}}</label>
+        <div class="i">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
+    {{#CanChangePassword}}
+    <a class="change-password-link" href="{{PasswordChangeUrl}}">
+        {{#HasCurrentPassword}}{{Translate 'ChangePassword'}}{{/HasCurrentPassword}}
+        {{^HasCurrentPassword}}{{Translate 'SetPassword'}}{{/HasCurrentPassword}}
+    </a>
+    {{/CanChangePassword}}
+
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+</div>
+{{/each}}

@@ -51,6 +51,7 @@ namespace Codeworx.Identity.Login.Windows
                     break;
                 case ProviderRequestType.MfaRegister:
                 case ProviderRequestType.MfaLogin:
+                case ProviderRequestType.MfaList:
                 default:
                     throw new NotSupportedException();
             }

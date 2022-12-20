@@ -1,0 +1,350 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background: #af110e url("../images/logo-white.svg") no-repeat 25% 20%;
+    background-size: 120%;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-label {
+    font-family: Arial;
+    font-size: 14px;
+    color: #999999;
+}
+
+#loginContainer {
+    background: white;
+    padding: 70px 50px 40px 50px;
+    width: 450px;
+}
+
+    #loginContainer h1.login-header {
+        font-family: "Arial Black";
+        font-size: 30px;
+        color: #333333;
+        text-transform: uppercase;
+        text-align: center;
+        padding-bottom: 50px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #loginContainer .registration-separator {
+        font-family: Arial;
+        font-size: 16px;
+        width: 100%;
+        color: #999999;
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    #loginContainer form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #loginContainer input {
+        color: #686868;
+        background: #e6e6e6;
+        font-size: 18px;
+        border: none;
+        border-radius: 3px;
+        padding: 0 30px 0 65px;
+        margin-bottom: 16px;
+        height: 60px
+    }
+
+    #loginContainer div.change-password-box,
+    #loginContainer div.forgot-password-box {
+        text-align: right;
+    }
+
+    #loginContainer div.forgot-password-box {
+        text-align: right;
+    }
+
+    #loginContainer div.forms-profile {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #loginContainer a.change-password-link,
+    #loginContainer a.forgot-password-link {
+        font-family: Arial;
+        color: #af110e;
+        text-decoration: none;
+        font-weight: bold;
+        line-height: 1.2em;
+        font-size: 16px;
+    }
+
+
+.forgot-password-complete {
+    font-family: Arial;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+#loginContainer input[type="checkbox"] {
+    display: none;
+}
+
+    #loginContainer input[type="checkbox"] + label {
+        font-family: Arial;
+        color: #999999;
+        line-height: 1.2em;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+    }
+
+        #loginContainer input[type="checkbox"] + label svg {
+            margin-right: 8px;
+        }
+
+            #loginContainer input[type="checkbox"] + label svg rect {
+                stroke: #af110e;
+            }
+
+            #loginContainer input[type="checkbox"] + label svg #checked {
+                stroke: none;
+            }
+
+    #loginContainer input[type="checkbox"]:checked + label svg #checked {
+        stroke: #af110e;
+    }
+
+.login-submit {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: white;
+    background: #af110e;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    height: 60px;
+    margin-top: 25px;
+}
+
+    .login-submit:hover {
+        background: red;
+    }
+
+#loginContainer .error {
+    font-family: Arial;
+    color: red;
+    margin-top: 15px;
+    width: 100%;
+}
+
+#loginContainer #external,
+#loginContainer #external-profile {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    list-style-type: none;
+    margin: -10px;
+}
+
+    #loginContainer #external > * {
+        flex: 1 1 160px;
+        margin: 10px;
+    }
+
+    #loginContainer #external-profile > * {
+        flex: 1 1 auto;
+        margin: 10px;
+    }
+
+.redirect-link {
+    font-family: Arial;
+    text-decoration: none;
+    font-size: 16px;
+    color: #333333;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    padding: 10px;
+    display: flex;
+}
+
+a.redirect-link:hover {
+    color: #af110e;
+    border-color: red;
+}
+
+.redirect-link.linked {
+    position: relative;
+}
+
+    .redirect-link.linked .linked-icon {
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        right: -8px;
+        top: 3px;
+    }
+
+        .redirect-link.linked .linked-icon .unlink-submit {
+            background-image: url(../images/tick-32.png);
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            border: none;
+        }
+
+            .redirect-link.linked .linked-icon .unlink-submit:hover {
+                background-image: url(../images/cancel-32.png);
+            }
+
+.provider-icon {
+    padding-left: 46px;
+    background-image: url('../images/identity-64.png');
+    background-size: 16px;
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-position: -26px center;
+}
+
+    .provider-icon.icon-windows {
+        background-image: url('../images/windows-64.png');
+    }
+
+    .provider-icon.icon-microsoft {
+        background-image: url('../images/microsoft-64.png');
+    }
+
+
+.ispinner {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-bottom: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+    .ispinner .ispinner-blade {
+        position: absolute;
+        top: 6.5px;
+        left: 8.5px;
+        width: 2.5px;
+        height: 6.5px;
+        background-color: #8e8e93;
+        border-radius: 1.25px;
+        animation: iSpinnerBlade 1s linear infinite;
+        will-change: opacity;
+    }
+
+        .ispinner .ispinner-blade:nth-child(1) {
+            transform: rotate(45deg) translateY(-6.5px);
+            animation-delay: -1.625s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(2) {
+            transform: rotate(90deg) translateY(-6.5px);
+            animation-delay: -1.5s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(3) {
+            transform: rotate(135deg) translateY(-6.5px);
+            animation-delay: -1.375s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(4) {
+            transform: rotate(180deg) translateY(-6.5px);
+            animation-delay: -1.25s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(5) {
+            transform: rotate(225deg) translateY(-6.5px);
+            animation-delay: -1.125s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(6) {
+            transform: rotate(270deg) translateY(-6.5px);
+            animation-delay: -1s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(7) {
+            transform: rotate(315deg) translateY(-6.5px);
+            animation-delay: -0.875s;
+        }
+
+        .ispinner .ispinner-blade:nth-child(8) {
+            transform: rotate(360deg) translateY(-6.5px);
+            animation-delay: -0.75s;
+        }
+
+    .ispinner.ispinner-large {
+        width: 35px;
+        height: 35px;
+    }
+
+        .ispinner.ispinner-large .ispinner-blade {
+            top: 11.5px;
+            left: 15px;
+            width: 5px;
+            height: 12px;
+            border-radius: 2.5px;
+        }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(1) {
+                transform: rotate(45deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(2) {
+                transform: rotate(90deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(3) {
+                transform: rotate(135deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(4) {
+                transform: rotate(180deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(5) {
+                transform: rotate(225deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(6) {
+                transform: rotate(270deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(7) {
+                transform: rotate(315deg) translateY(-11.5px);
+            }
+
+            .ispinner.ispinner-large .ispinner-blade:nth-child(8) {
+                transform: rotate(360deg) translateY(-11.5px);
+            }
+
+@keyframes iSpinnerBlade {
+    0% {
+        opacity: 0.85;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+
+    100% {
+        opacity: 0.25;
+    }
+}

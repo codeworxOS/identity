@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -205,6 +206,7 @@ namespace Codeworx.Identity
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
+            identity.AddClaim(new Claim(Constants.Claims.Session, Guid.NewGuid().ToString("N")));
 
             if (user.ForceChangePassword)
             {

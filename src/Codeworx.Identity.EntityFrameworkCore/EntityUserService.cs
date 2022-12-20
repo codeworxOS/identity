@@ -20,9 +20,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
-        public async Task<string> GetProviderValueAsync(ClaimsIdentity user, string provider)
+        public async Task<string> GetProviderValueAsync(string userId, string provider)
         {
-            var userId = Guid.Parse(user.GetUserId());
+            var user = Guid.Parse(userId);
 
             var authenticationProviderSet = _context.Set<AuthenticationProvider>();
             var authenticationProviderRightHolderSet = _context.Set<AuthenticationProviderRightHolder>();
@@ -32,7 +32,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
 
             var result = await authenticationProviderRightHolderSet
-                                .Where(p => p.RightHolderId == userId && p.ProviderId == authenticationProviderId)
+                                .Where(p => p.RightHolderId == user && p.ProviderId == authenticationProviderId)
                                 .Select(p => p.ExternalIdentifier)
                                 .FirstOrDefaultAsync()
                                 .ConfigureAwait(false);
@@ -186,6 +186,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         private async Task<bool> HasMfaRegistrationAsync(User user)
         {
+            if (user == null)
+            {
+                return false;
+            }
+
             return await _context.Set<AuthenticationProviderRightHolder>()
                                         .Where(p => p.RightHolderId == user.Id && p.Provider.Usage == LoginProviderType.MultiFactor)
                                         .AnyAsync();

@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServiceBuilder WithNotifications(this IIdentityServiceBuilder builder, Action<SmtpOptions> configuration = null)
         {
             builder.ReplaceService<INotificationQueue, NotificationMemoryQueue>(ServiceLifetime.Singleton);
-            builder.ReplaceService<INotificationProcessor, NotificationProcessor>(ServiceLifetime.Singleton);
+            builder.ReplaceService<INotificationProcessor, NotificationProcessor>(ServiceLifetime.Transient);
             builder.ServiceCollection.AddHostedService<NotificationJob>();
             return builder;
         }

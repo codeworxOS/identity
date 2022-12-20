@@ -9,7 +9,7 @@ namespace Codeworx.Identity
     {
         Task<Type> GetParameterTypeAsync(string providerId);
 
-        Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId);
+        Task<ILoginRegistration> GetLoginRegistrationInfoAsync(string providerId, LoginProviderType providerType);
 
         Task<RegistrationInfoResponse> GetRegistrationInfosAsync(ProviderRequest request);
 

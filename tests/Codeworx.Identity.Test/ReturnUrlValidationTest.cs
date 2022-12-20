@@ -69,7 +69,7 @@ namespace Codeworx.Identity.Test
         {
             await this.Authenticate();
 
-            var response = await this.TestClient.GetAsync($"https://localhost/account/login/mfa?returnUrl={Uri.EscapeDataString("https://other/redirect")}");
+            var response = await this.TestClient.GetAsync($"https://localhost/account/login/mfa/{TestConstants.LoginProviders.TotpProvider.Id}?returnUrl={Uri.EscapeDataString("https://other/redirect")}");
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
@@ -85,7 +85,7 @@ namespace Codeworx.Identity.Test
                     { "provider-id", TestConstants.LoginProviders.TotpProvider.Id }
                 });
 
-            var response = await this.TestClient.PostAsync($"https://localhost/account/login/mfa?returnUrl={Uri.EscapeDataString("https://other/redirect")}", content);
+            var response = await this.TestClient.PostAsync($"https://localhost/account/login/mfa/{TestConstants.LoginProviders.TotpProvider.Id}?returnUrl={Uri.EscapeDataString("https://other/redirect")}", content);
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }

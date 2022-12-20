@@ -1,10 +1,11 @@
 ﻿using System.Security.Claims;
+using Codeworx.Identity.Login.Mfa;
 
 namespace Codeworx.Identity.Mfa.Totp
 {
     public class TotpLoginRequest
     {
-        public TotpLoginRequest(string providerId, ClaimsIdentity identity, TotpAction action, string returnUrl, string oneTimeCode, string sharedSecret = null)
+        public TotpLoginRequest(string providerId, ClaimsIdentity identity, MfaAction action, string returnUrl, string oneTimeCode, string sharedSecret = null)
         {
             ProviderId = providerId;
             Identity = identity;
@@ -18,7 +19,7 @@ namespace Codeworx.Identity.Mfa.Totp
 
         public ClaimsIdentity Identity { get; }
 
-        public TotpAction Action { get; }
+        public MfaAction Action { get; }
 
         public string ReturnUrl { get; }
 

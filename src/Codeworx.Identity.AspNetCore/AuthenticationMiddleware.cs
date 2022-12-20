@@ -19,10 +19,20 @@ namespace Codeworx.Identity.AspNetCore
         {
             try
             {
-                var result = await handler.AuthenticateAsync(context);
+                var result = await handler.AuthenticateAsync(context).ConfigureAwait(false);
 
                 if (result.Succeeded)
                 {
+                    if (result.Principal.HasClaim(Constants.Claims.ForceMfaLogin, "true"))
+                    {
+                        var mfaResult = await handler.AuthenticateAsync(context, AuthenticationMode.Mfa);
+                        if (!mfaResult.Succeeded)
+                        {
+                            await handler.ChallengeAsync(context, AuthenticationMode.Mfa).ConfigureAwait(false);
+                            return;
+                        }
+                    }
+
                     await _next(context);
                     return;
                 }

@@ -1,13 +1,42 @@
-﻿{{#Registrations}}
-<form method="post" id="invitationFrom">
+{{#Registrations}}
+<div class="separator form-separator">
+    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+</div>
+<form method="post" class="forms-login-box">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
 
-    <input type="text" id="username" name="username" {{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}} placeholder="{{Translate 'Username'}}" value="{{Username}}" />
+    <div class="txt_field">
+        <input type="text" {{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}} autocapitalize="off" required id="username" name="username" value="{{Username}}" />
+        <span></span>
+        <label for="username">{{Translate 'Username'}}</label>
+        <div class="i">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
     {{#CanChangePassword}}
-    <input type="password" id="password" name="password" placeholder="{{Translate 'Password'}}" />
-    <input type="password" id="confirm-password" name="confirm-password" placeholder="{{Translate 'ConfirmPassword'}}" />
+    <div class="txt_field">
+        <input type="password" required id="password" name="password" />
+        <span></span>
+        <label for="password">{{Translate 'Password'}}</label>
+        <div class="i">
+            <i class="fas fa-lock"></i>
+        </div>
+    </div>
+    <div class="txt_field">
+        <input type="password" required id="confirm-password" name="confirm-password" />
+        <span></span>
+        <label for="confirm-password">{{Translate 'ConfirmPassword'}}</label>
+        <div class="i">
+            <i class="fas fa-lock"></i>
+        </div>
+    </div>
     {{/CanChangePassword}}
-    <div class="error">{{Error}}</div>
-    <button type="submit" class="login-submit" id="loginButton">{{Translate 'Save'}}</button>
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    <button type="submit" class="btn" id="submit">{{Translate 'Save'}}</button>
 </form>
 {{/Registrations}}

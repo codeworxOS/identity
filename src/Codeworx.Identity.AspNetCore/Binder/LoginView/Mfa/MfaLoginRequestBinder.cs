@@ -4,20 +4,24 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore.Binder.Login;
 using Codeworx.Identity.AspNetCore.Login;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 {
     public class MfaLoginRequestBinder : IRequestBinder<MfaLoginRequest>
     {
+        private readonly IdentityOptions _options;
         private readonly IIdentityAuthenticationHandler _handler;
         private readonly ILoginService _loginService;
         private readonly IServiceProvider _serviceProvider;
 
-        public MfaLoginRequestBinder(IIdentityAuthenticationHandler handler, ILoginService loginService, IServiceProvider serviceProvider)
+        public MfaLoginRequestBinder(IIdentityAuthenticationHandler handler, ILoginService loginService, IOptionsSnapshot<IdentityOptions> options, IServiceProvider serviceProvider)
         {
+            _options = options.Value;
             _handler = handler;
             _loginService = loginService;
             _serviceProvider = serviceProvider;
@@ -26,6 +30,14 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
         public async Task<MfaLoginRequest> BindAsync(HttpRequest request)
         {
             string returnUrl = null;
+            string providerId = null;
+
+            PathString basePath = $"{_options.AccountEndpoint}/login/mfa";
+
+            if (request.Path.StartsWithSegments(basePath, out var remaining))
+            {
+                providerId = remaining.Value.Trim('/');
+            }
 
             if (request.Query.TryGetValue(Constants.ReturnUrlParameter, out var returnUrlValues))
             {
@@ -43,15 +55,13 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 
             if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
-                return new MfaLoginRequest(identity, returnUrl);
+                return new MfaLoginRequest(identity, HttpMethods.IsHead(request.Method), providerId, returnUrl);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
                 if (request.HasFormContentType)
                 {
-                    string providerId = null;
-
-                    if (request.Form.TryGetValue("provider-id", out var providerIdValue))
+                    if (request.Form.TryGetValue("provider-id", out var providerIdValue) && providerId == providerIdValue)
                     {
                         providerId = providerIdValue;
                     }
@@ -64,7 +74,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
                     var factory = LoginParameterTypeFactory.GetFactory(parameterType);
 
                     var parameter = await factory(_serviceProvider, request).ConfigureAwait(false);
-                    return new MfaProcessLoginRequest(providerId, parameter, identity, returnUrl);
+                    return new MfaProcessLoginRequest(providerId, parameter, identity, false, returnUrl);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

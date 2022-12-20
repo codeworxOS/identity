@@ -1,0 +1,37 @@
+﻿<form method="post" id="loginForm">
+    <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
+    <div class="mfa-provider-content">
+        <label>{{Translate 'RegisterMfaEmail'}}</label>
+        <div class="txt_field">
+            <input {{#SessionId}}readonly="readonly" {{/SessionId}} type="text" {{^SessionId}} autofocus {{/SessionId}} autocapitalize="off" required id="email" name="email" value="{{EmailAddress}}" />
+            <span></span>
+            <label for="email">{{Translate 'EmailAddress'}}</label>
+            <div class="i">
+                <i class="fas fa-at"></i>
+            </div>
+        </div>
+    </div>
+
+    {{#SessionId}}
+    <input type="hidden" id="session-id" name="session-id" value="{{.}}" />
+    <label>{{Translate 'ProvideOneTimeCode'}}</label>
+    <div class="validation-digit-box">
+        <input class="validation-digit" inputmode="numeric" autofocus maxlength="1" required="required" type="text" name="code-1" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-2" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-3" />
+        -
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-4" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-5" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-6" />
+    </div>
+    {{/SessionId}}
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    {{#SessionId}}<input type="submit" class="btn" name="submit" value="{{Translate 'Save'}}" />{{/SessionId}}
+    {{^SessionId}}<input type="submit" class="btn" name="submit" value="{{Translate 'SendCode'}}" />{{/SessionId}}
+
+</form>

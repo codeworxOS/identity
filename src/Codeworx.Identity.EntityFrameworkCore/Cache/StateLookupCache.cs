@@ -20,7 +20,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         private static readonly Action<ILogger, string, Exception> _logKeyNotFound;
 
         private readonly TContext _context;
-        private readonly ILogger<AuthorizationCodeCache<TContext>> _logger;
+        private readonly ILogger<StateLookupCache<TContext>> _logger;
 
         static StateLookupCache()
         {
@@ -30,7 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(14104), "The State {Key} was not found!");
         }
 
-        public StateLookupCache(TContext context, ILogger<AuthorizationCodeCache<TContext>> logger)
+        public StateLookupCache(TContext context, ILogger<StateLookupCache<TContext>> logger)
         {
             _context = context;
             _logger = logger;

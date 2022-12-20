@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Login
 {
     public class ExternalOAuthLoginProcessorLookup : IProcessorTypeLookup
     {
-        public string Key => "oauth";
+        public string Key => Constants.Processors.OAuth;
 
         public Type Type => typeof(OAuthLoginProcessor);
 
