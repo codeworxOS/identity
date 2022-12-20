@@ -23,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
                 var code = remaining.Value.TrimStart('/');
                 if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
                 {
-                    return Task.FromResult(new InvitationViewRequest(code));
+                    return Task.FromResult(new InvitationViewRequest(code, HttpMethods.IsHead(request.Method)));
                 }
                 else if (HttpMethods.IsPost(request.Method))
                 {
@@ -32,7 +32,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Invitation
                     request.Form.TryGetValue(Constants.Forms.ConfirmPassword, out var confirmPasswordValue);
                     request.Form.TryGetValue(Constants.Forms.UserName, out var userNameValue);
 
-                    return Task.FromResult<InvitationViewRequest>(new ProcessInvitationViewRequest(code, passwordValue, confirmPasswordValue, providerIdValue, userNameValue));
+                    return Task.FromResult<InvitationViewRequest>(new ProcessInvitationViewRequest(code, passwordValue, confirmPasswordValue, providerIdValue, userNameValue, false));
                 }
             }
 

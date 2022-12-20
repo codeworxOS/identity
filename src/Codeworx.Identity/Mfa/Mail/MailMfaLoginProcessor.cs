@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Mfa;
@@ -16,8 +18,8 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class MailMfaLoginProcessor : ILoginProcessor
     {
-        private static Random _random;
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IMailMfaCodeCache _codeCache;
         private readonly ILinkUserService _linkUserService;
         private readonly IMailConnector _mailConnector;
         private readonly INotificationProcessor _notificationProcessor;
@@ -25,16 +27,12 @@ namespace Codeworx.Identity.Mfa.Mail
         private readonly IStringResources _stringResources;
         private readonly IUserService _userService;
 
-        static MailMfaLoginProcessor()
-        {
-            _random = new Random();
-        }
-
         public MailMfaLoginProcessor(
             IUserService userService,
             IStringResources stringResources,
             IBaseUriAccessor baseUriAccessor,
             IOptionsSnapshot<IdentityOptions> options,
+            IMailMfaCodeCache codeCache,
             ILinkUserService linkUserService = null,
             IMailConnector mailConnector = null,
             INotificationProcessor notificationProcessor = null)
@@ -43,6 +41,7 @@ namespace Codeworx.Identity.Mfa.Mail
             _userService = userService;
             _stringResources = stringResources;
             _baseUriAccessor = baseUriAccessor;
+            _codeCache = codeCache;
             _linkUserService = linkUserService;
             _mailConnector = mailConnector;
             _notificationProcessor = notificationProcessor;
@@ -64,9 +63,12 @@ namespace Codeworx.Identity.Mfa.Mail
                         return null;
                     }
 
-                    var sessionId = await SendCodeNotificationAsync(request.User, email).ConfigureAwait(false);
+                    if (!request.HeaderOnly)
+                    {
+                        await EnsureCodeNotificationAsync(request.User, request.UserSession, email).ConfigureAwait(false);
+                    }
 
-                    return new MailRegistrationInfo(registration.Id, email, sessionId, error);
+                    return new MailRegistrationInfo(registration.Id, email, request.UserSession, error);
                 case ProviderRequestType.MfaRegister:
                     return new RegisterMailRegistrationInfo(registration.Id, error);
                 case ProviderRequestType.MfaList:
@@ -103,20 +105,13 @@ namespace Codeworx.Identity.Mfa.Mail
                 {
                     var user = await _userService.GetUserByIdentityAsync(registration.Identity).ConfigureAwait(false);
 
-                    var sessionId = await SendCodeNotificationAsync(user, registration.EmailAddress).ConfigureAwait(false);
+                    var sessionId = Guid.NewGuid().ToString("N");
 
-                    var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId);
+                    await EnsureCodeNotificationAsync(user, sessionId, registration.EmailAddress).ConfigureAwait(false);
 
-                    var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-                    uriBuilder.AppendPath(_options.AccountEndpoint);
-                    uriBuilder.AppendPath("login/mfa");
+                    MfaLoginResponse registerResponse = CreateRegisterMailResponse(registration, sessionId);
 
-                    if (!string.IsNullOrWhiteSpace(registration.ReturnUrl))
-                    {
-                        uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, registration.ReturnUrl);
-                    }
-
-                    throw new ErrorResponseException<MfaLoginResponse>(new MfaLoginResponse(response, uriBuilder.ToString(), registration.ReturnUrl));
+                    throw new ErrorResponseException<MfaLoginResponse>(registerResponse);
                 }
                 else
                 {
@@ -127,6 +122,18 @@ namespace Codeworx.Identity.Mfa.Mail
 
                     var user = await _userService.GetUserByIdentityAsync(registration.Identity).ConfigureAwait(false);
 
+                    var cachedCode = await _codeCache.GetAsync(registration.SessionId).ConfigureAwait(false);
+                    if (cachedCode == null)
+                    {
+                        await EnsureCodeNotificationAsync(user, registration.SessionId, registration.EmailAddress).ConfigureAwait(false);
+                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode)));
+                    }
+
+                    if (cachedCode != registration.Code)
+                    {
+                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode)));
+                    }
+
                     await _linkUserService.LinkUserAsync(user, new MailLoginData(configuration, registration.EmailAddress));
                     var mfaIdentity = GenerateMfaIdentity();
 
@@ -135,11 +142,62 @@ namespace Codeworx.Identity.Mfa.Mail
             }
             else if (request is ProcessMailLoginRequest process)
             {
+                var cachedCode = await _codeCache.GetAsync(process.SessionId).ConfigureAwait(false);
+
+                if (cachedCode != process.OneTimeCode)
+                {
+                    var response = await CreateProcessMailResponseAsync(process, configuration, _stringResources.GetResource(StringResource.InvalidOneTimeCode)).ConfigureAwait(false);
+
+                    throw new ErrorResponseException<MfaLoginResponse>(response);
+                }
+
                 var mfaIdentity = GenerateMfaIdentity();
                 return new SignInResponse(mfaIdentity, process.ReturnUrl, AuthenticationMode.Mfa);
             }
 
             throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("unknown"));
+        }
+
+        private async Task<MfaLoginResponse> CreateProcessMailResponseAsync(ProcessMailLoginRequest process, ILoginRegistration registration, string error = null)
+        {
+            var user = await _userService.GetUserByIdentityAsync(process.Identity).ConfigureAwait(false);
+            var providerRequest = new ProviderRequest(ProviderRequestType.MfaLogin, false, process.ReturnUrl, user: user, userSession: process.SessionId);
+
+            if (error != null)
+            {
+                providerRequest.ProviderErrors.Add(registration.Id, error);
+            }
+
+            var info = await GetRegistrationInfoAsync(providerRequest, registration).ConfigureAwait(false);
+
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath("login/mfa");
+
+            if (!string.IsNullOrWhiteSpace(process.ReturnUrl))
+            {
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, process.ReturnUrl);
+            }
+
+            var registerResponse = new MfaLoginResponse(info, uriBuilder.ToString(), process.ReturnUrl);
+            return registerResponse;
+        }
+
+        private MfaLoginResponse CreateRegisterMailResponse(RegisterMailLoginRequest registration, string error = null)
+        {
+            var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, registration.SessionId, error);
+
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath("login/mfa");
+
+            if (!string.IsNullOrWhiteSpace(registration.ReturnUrl))
+            {
+                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, registration.ReturnUrl);
+            }
+
+            var registerResponse = new MfaLoginResponse(response, uriBuilder.ToString(), registration.ReturnUrl);
+            return registerResponse;
         }
 
         private ClaimsIdentity GenerateMfaIdentity()
@@ -182,21 +240,24 @@ namespace Codeworx.Identity.Mfa.Mail
             return GetMfaListRegistrationInfoWithDescription(request, registration, description);
         }
 
-        private async Task<string> SendCodeNotificationAsync(IUser user, string email)
+        private async Task EnsureCodeNotificationAsync(IUser user, string sessionId, string email, CancellationToken token = default)
         {
-            var sessionId = Guid.NewGuid().ToString("N");
             if (_mailConnector == null || _notificationProcessor == null)
             {
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("no notification service."));
             }
 
-            var code = _random.Next(1000, 1000000).ToString().PadLeft(6, '0');
-            var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
-            var content = await _notificationProcessor.GetNotificationContentAsync(notification).ConfigureAwait(false);
+            var code = await _codeCache.GetAsync(sessionId, token).ConfigureAwait(false);
 
-            await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content).ConfigureAwait(false);
+            if (code == null)
+            {
+                code = await _codeCache.CreateAsync(sessionId, TimeSpan.FromMinutes(15), token).ConfigureAwait(false);
 
-            return sessionId;
+                var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
+                var content = await _notificationProcessor.GetNotificationContentAsync(notification).ConfigureAwait(false);
+
+                await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content).ConfigureAwait(false);
+            }
         }
     }
 }

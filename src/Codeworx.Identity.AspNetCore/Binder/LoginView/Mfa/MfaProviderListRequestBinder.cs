@@ -46,7 +46,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 
             if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
-                return new MfaProviderListRequest(identity, returnUrl);
+                return new MfaProviderListRequest(identity, returnUrl, HttpMethods.IsHead(request.Method));
             }
             else
             {

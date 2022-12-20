@@ -49,12 +49,12 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             if (authenticateResult.Succeeded && prompt?.Contains(Constants.OAuth.Prompt.Login) != true)
             {
-                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, providerId, providerError);
+                return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, false, providerId, providerError);
             }
 
             if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
-                return new LoginRequest(returnUrl, prompt, providerId, providerError);
+                return new LoginRequest(returnUrl, prompt, false, providerId, providerError);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
@@ -65,7 +65,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                     providerId = request.Form["provider-id"].FirstOrDefault();
                     var remember = request.Form["remember"].FirstOrDefault() == "on";
 
-                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt, remember);
+                    return new LoginFormRequest(providerId, returnUrl, username, password, prompt, remember, false);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

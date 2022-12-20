@@ -49,7 +49,9 @@ namespace Codeworx.Identity.Login.Mfa
 
             var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
-            var providerRequest = new ProviderRequest(requestType, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim);
+            var userSession = request.Identity.FindFirst(Constants.Claims.Session)?.Value ?? user.Identity;
+
+            var providerRequest = new ProviderRequest(requestType, request.HeaderOnly, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim, userSession: userSession);
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 providerRequest.ProviderErrors.Add(request.ProviderId, errorMessage);
@@ -84,7 +86,9 @@ namespace Codeworx.Identity.Login.Mfa
 
             var hasMfaClaim = request.Identity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
 
-            var providerRequest = new ProviderRequest(ProviderRequestType.MfaList, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim);
+            var userSession = request.Identity.FindFirst(Constants.Claims.Session)?.Value ?? user.Identity;
+
+            var providerRequest = new ProviderRequest(ProviderRequestType.MfaList, request.HeaderOnly, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim, userSession: userSession);
 
             var response = await _loginService.GetRegistrationInfosAsync(providerRequest).ConfigureAwait(false);
             return new MfaProviderListResponse(user, response.Groups);

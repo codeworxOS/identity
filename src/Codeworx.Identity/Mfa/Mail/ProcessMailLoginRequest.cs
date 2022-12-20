@@ -4,11 +4,11 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class ProcessMailLoginRequest : MailLoginRequest
     {
-        public ProcessMailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl, string oneTimeCode, string sessionId)
+        public ProcessMailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl, string oneTimeCode)
             : base(providerId, identity, returnUrl)
         {
             OneTimeCode = oneTimeCode;
-            SessionId = sessionId;
+            SessionId = identity.FindFirst(Constants.Claims.Session)?.Value ?? identity.FindFirst(Constants.Claims.Subject).Value;
         }
 
         public string OneTimeCode { get; }

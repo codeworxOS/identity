@@ -403,6 +403,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IRefreshTokenCache, DistributedRefreshTokenCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
+            collection.AddSingleton<IMailMfaCodeCache, DistributedMailMfaCodeCache>();
             collection.AddSingleton<ITemplateCompiler, MustacheTemplateCompiler>();
 
             collection.AddSingleton<IIdentityAuthenticationHandler, DefaultIdentityAuthenticationHandler>();

@@ -39,14 +39,14 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
                     providerId = providerIdValues;
                 }
 
-                if (request.Form.TryGetValue("session-id", out var sessionIdValues))
-                {
-                    sessionId = sessionIdValues;
-                }
-
                 if (request.Form.TryGetValue("email", out var emailValues))
                 {
                     email = emailValues;
+                }
+
+                if (request.Form.TryGetValue("session-id", out var sessionIdValues))
+                {
+                    sessionId = sessionIdValues;
                 }
 
                 foreach (var item in request.Form.Where(p => p.Key.StartsWith("code-")).OrderBy(p => p.Key))
@@ -59,12 +59,12 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
                     returnUrl = returnUrlValues;
                 }
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (!string.IsNullOrWhiteSpace(sessionId))
                 {
                     return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode);
                 }
 
-                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, sessionId);
+                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode);
             }
 
             throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

@@ -24,7 +24,7 @@ namespace Codeworx.Identity.Test.MFA
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(Constants.Claims.Id, TestConstants.Users.MfaTestUserWithMfaRequired.UserId));
-            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, TestConstants.LoginProviders.TotpProvider.Id);
+            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, false, TestConstants.LoginProviders.TotpProvider.Id);
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaViewResponse = await mfaViewService.ShowLoginAsync(mfaLoginRequest);
@@ -44,7 +44,7 @@ namespace Codeworx.Identity.Test.MFA
 
             var claimsIdentity = new ClaimsIdentity();
             claimsIdentity.AddClaim(new Claim(Constants.Claims.Id, TestConstants.Users.MfaTestUserWithMfaRequired.UserId));
-            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, TestConstants.LoginProviders.TotpProvider.Id);
+            var mfaLoginRequest = new MfaLoginRequest(claimsIdentity, false, TestConstants.LoginProviders.TotpProvider.Id);
 
             var mfaViewService = sp.GetRequiredService<IMfaViewService>();
             var mfaViewResponse = await mfaViewService.ShowLoginAsync(mfaLoginRequest);
@@ -173,7 +173,7 @@ namespace Codeworx.Identity.Test.MFA
                 null,
                 oneTimeCode,
                 sharedSecret);
-            var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity);
+            var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity, false);
             return mfaLoginRequest;
         }
 
@@ -196,7 +196,7 @@ namespace Codeworx.Identity.Test.MFA
                 MfaAction.Login,
                 null,
                 oneTimeCode);
-            var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity);
+            var mfaLoginRequest = new MfaProcessLoginRequest(TestConstants.LoginProviders.TotpProvider.Id, parameters, claimsIdentity, false);
             return mfaLoginRequest;
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.Mfa.Mail
 {
-    public class MailLoginRequest
+    public abstract class MailLoginRequest
     {
         public MailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl)
         {

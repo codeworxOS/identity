@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
             }
 
-            return new ProfileRequest(identity, loginProviderId, loginProviderError);
+            return new ProfileRequest(identity, HttpMethods.IsHead(request.Method), loginProviderId, loginProviderError);
         }
     }
 }

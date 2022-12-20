@@ -83,6 +83,12 @@
             public const string Tenant = "tenant";
             public const string Upn = "upn";
             public const string Amr = "amr";
+            public const string Session = "session";
+        }
+
+        public static class Cache
+        {
+            public const string MailMfaPrefix = "mail_mfa_code";
         }
 
         public static class Forms

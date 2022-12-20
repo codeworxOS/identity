@@ -55,7 +55,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 
             if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
-                return new MfaLoginRequest(identity, providerId, returnUrl);
+                return new MfaLoginRequest(identity, HttpMethods.IsHead(request.Method), providerId, returnUrl);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
@@ -74,7 +74,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
                     var factory = LoginParameterTypeFactory.GetFactory(parameterType);
 
                     var parameter = await factory(_serviceProvider, request).ConfigureAwait(false);
-                    return new MfaProcessLoginRequest(providerId, parameter, identity, returnUrl);
+                    return new MfaProcessLoginRequest(providerId, parameter, identity, false, returnUrl);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());
