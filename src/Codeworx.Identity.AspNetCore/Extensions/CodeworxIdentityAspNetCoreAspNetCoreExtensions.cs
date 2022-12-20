@@ -178,12 +178,12 @@ namespace Codeworx.Identity.AspNetCore
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/login/mfa"),
                        p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<MfaAuthenticationMiddleware>()
                             .UseMiddleware<MfaProviderListMiddleware>())
                     .MapWhen(
                        p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/login/mfa"),
                        p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
+                            .UseMiddleware<MfaAuthenticationMiddleware>()
                             .UseMiddleware<MfaLoginMiddleware>())
                    .MapWhen(
                        p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
@@ -300,6 +300,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
             collection.AddTransient<IResponseBinder<NotAcceptableResponse>, NotAcceptableResponseBinder>();
             collection.AddTransient<IResponseBinder<UnauthorizedResponse>, UnauthorizedResponseBinder>();
+            collection.AddTransient<IResponseBinder<ForbiddenResponse>, ForbiddenResponseBinider>();
             collection.AddTransient<IResponseBinder<AuthorizationErrorResponse>, AuthorizationErrorResponseBinder>();
             collection.AddTransient<IResponseBinder<AuthorizationSuccessResponse>, AuthorizationSuccessResponseBinder>();
             collection.AddTransient<IResponseBinder<ErrorResponse>, ErrorResponseBinder>();

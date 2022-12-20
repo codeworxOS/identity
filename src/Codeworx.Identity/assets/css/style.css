@@ -50,8 +50,6 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
     background-image: url(../images/logo.png);
     background-size: 50px 14px;
     background-position: right 15px bottom 10px;
@@ -60,6 +58,7 @@ body {
 }
 
 .login-box {
+    margin: auto;
     width: 400px;
     text-align: center;
     background: var(--box-background);
@@ -99,7 +98,8 @@ body {
     padding-left: 30px;
 }
 
-    .txt_field input {
+    .txt_field input,
+    .txt_field select {
         width: 100%;
         padding: 0 5px;
         height: 40px;
@@ -144,27 +144,51 @@ body {
 
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
-    .txt_field input:read-only ~ label {
+    .txt_field input:read-only ~ label,
+    .txt_field select:focus ~ label,
+    .txt_field select:valid ~ label,
+    .txt_field select:read-only ~ label {
         top: -5px;
         font-size: 0.7rem;
     }
 
     .txt_field input:focus ~ .i,
     .txt_field input:valid ~ .i,
-    .txt_field input:read-only ~ .i {
+    .txt_field select:focus ~ .i,
+    .txt_field select:valid ~ .i {
         color: var(--accent);
+    }
+
+    .txt_field input:read-only ~ .i,
+    .txt_field select:read-only ~ .i {
+        color: var(--default-light);
     }
 
     .txt_field input:focus ~ span::before,
     .txt_field input:valid ~ span::before,
-    .txt_field input:read-only ~ span::before {
+    .txt_field select:focus ~ span::before,
+    .txt_field select:valid ~ span::before {
         width: 100%;
     }
 
-a.forgot-password {
+    .txt_field input:read-only ~ span::before,
+    .txt_field select:read-only ~ span::before {
+        width: 0;
+    }
+
+a.forgot-password,
+a.change-password-link {
     font-size: 0.8rem;
     padding-top: 10px;
 }
+
+    a.forgot-password:hover,
+    a.change-password-link:hover,
+    a.forgot-password:focus,
+    a.change-password-link:focus {
+        outline: 0;
+        font-weight: 700;
+    }
 
 a {
     display: block;
@@ -240,26 +264,26 @@ a {
     display: flex;
 }
 
-.remember-me-box {
+.checkbox-field {
     display: flex;
     justify-content: left;
     font-size: 0.9rem;
     color: var(--default-light);
 }
 
-    .remember-me-box label {
+    .checkbox-field label {
         padding-left: 0.5rem;
     }
 
-    .remember-me-box input[type=checkbox]:hover,
-    .remember-me-box input[type=checkbox]:focus {
+    .checkbox-field input[type=checkbox]:hover,
+    .checkbox-field input[type=checkbox]:focus {
         color: var(--accent-hover);
         accent: var(--accent-hover);
         outline: 0;
     }
 
-        .remember-me-box input[type=checkbox]:hover ~ label,
-        .remember-me-box input[type=checkbox]:focus ~ label {
+        .checkbox-field input[type=checkbox]:hover ~ label,
+        .checkbox-field input[type=checkbox]:focus ~ label {
             color: var(--accent-hover);
         }
 
@@ -446,6 +470,7 @@ a {
 .error {
     color: var(--error);
     font-size: 0.8rem;
+    margin-top: 1rem;
 }
 
 

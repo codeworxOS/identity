@@ -1,6 +1,6 @@
 {{#each Registrations }}
 <div class="separator form-separator">
-    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+    <span class="separator-text">{{Translate 'OrConnectWith'}}</span>
 </div>
 <div class="forms-login-box">
 
@@ -13,12 +13,10 @@
         </div>
     </div>
     {{#CanChangePassword}}
-    <div class="change-password-box">
-        <a class="change-password-link" href="{{PasswordChangeUrl}}">
-            {{#HasCurrentPassword}}{{Translate 'ChangePassword'}}{{/HasCurrentPassword}}
-            {{^HasCurrentPassword}}{{Translate 'SetPassword'}}{{/HasCurrentPassword}}
-        </a>
-    </div>
+    <a class="change-password-link" href="{{PasswordChangeUrl}}">
+        {{#HasCurrentPassword}}{{Translate 'ChangePassword'}}{{/HasCurrentPassword}}
+        {{^HasCurrentPassword}}{{Translate 'SetPassword'}}{{/HasCurrentPassword}}
+    </a>
     {{/CanChangePassword}}
 
     {{#Error}}

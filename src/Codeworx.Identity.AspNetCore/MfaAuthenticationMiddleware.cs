@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class AuthenticationMiddleware
+    public class MfaAuthenticationMiddleware
     {
         private readonly RequestDelegate _next;
 
-        public AuthenticationMiddleware(RequestDelegate next)
+        public MfaAuthenticationMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -19,20 +19,10 @@ namespace Codeworx.Identity.AspNetCore
         {
             try
             {
-                var result = await handler.AuthenticateAsync(context).ConfigureAwait(false);
+                var result = await handler.AuthenticateAsync(context);
 
                 if (result.Succeeded)
                 {
-                    if (result.Principal.HasClaim(Constants.Claims.ForceMfaLogin, "true"))
-                    {
-                        var mfaResult = await handler.AuthenticateAsync(context, AuthenticationMode.Mfa);
-                        if (!mfaResult.Succeeded)
-                        {
-                            await handler.ChallengeAsync(context, AuthenticationMode.Mfa).ConfigureAwait(false);
-                            return;
-                        }
-                    }
-
                     await _next(context);
                     return;
                 }

@@ -49,6 +49,11 @@ namespace Codeworx.Identity.Login.Mfa
 
             var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
+            if (requestType == ProviderRequestType.MfaRegister && !hasMfaClaim)
+            {
+                throw new ErrorResponseException<ForbiddenResponse>(new ForbiddenResponse());
+            }
+
             var userSession = request.Identity.FindFirst(Constants.Claims.Session)?.Value ?? user.Identity;
 
             var providerRequest = new ProviderRequest(requestType, request.HeaderOnly, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim, userSession: userSession);
