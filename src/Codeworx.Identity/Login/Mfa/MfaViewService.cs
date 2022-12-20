@@ -49,7 +49,7 @@ namespace Codeworx.Identity.Login.Mfa
 
             var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
-            if (requestType == ProviderRequestType.MfaRegister && !hasMfaClaim)
+            if (requestType == ProviderRequestType.MfaRegister && !hasMfaClaim && user.HasMfaRegistration)
             {
                 throw new ErrorResponseException<ForbiddenResponse>(new ForbiddenResponse());
             }
