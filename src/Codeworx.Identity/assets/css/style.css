@@ -17,7 +17,17 @@
     url('../webfonts/poppins-v20-latin-700.ttf') format('truetype') /* Safari, Android, iOS */
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
+:root {
+    --default-text: #333333;
+    --default-light: #A1A5B7;
+    --box-background: #ffffff;
+    --shadow: #CCCCCC;
+    --accent: #1A77B9;
+    --accent-hover: #16487E;
+    --accent-background-text: #ffffff;
+    --error: #f5414f;
+}
+
 
 * {
     padding: 0;
@@ -33,6 +43,7 @@ body {
     background-position-y: center;
     background-size: cover;
     background-repeat: no-repeat;
+    color: var(--default-text);
 }
 
 .container {
@@ -51,8 +62,8 @@ body {
 .login-box {
     width: 400px;
     text-align: center;
-    background-color: #ffffff;
-    box-shadow: 0 0 5px #CCCCCC;
+    background: var(--box-background);
+    box-shadow: 0 0 5px var(--shadow);
     padding-top: 3rem;
     padding-bottom: 3rem;
 }
@@ -62,9 +73,9 @@ body {
 }
 
     .login-headline h2 {
-        color: #333;
+        color: var(--default-text);
         font-size: 2rem;
-        border-left: #1A77B9 3px solid;
+        border-left: var(--accent) 3px solid;
     }
 
 .login-content {
@@ -83,7 +94,7 @@ body {
 
 .txt_field {
     position: relative;
-    border-bottom: 2px solid #A1A5B7;
+    border-bottom: 2px solid var(--default-light);
     margin: 30px 0 0 0;
     padding-left: 30px;
 }
@@ -102,7 +113,7 @@ body {
         position: absolute;
         top: 50%;
         left: 35px;
-        color: #A1A5B7;
+        color: var(--default-light);
         transform: translateY(-50%);
         font-size: 1rem;
         pointer-events: none;
@@ -116,7 +127,7 @@ body {
         left: 0;
         width: 0%;
         height: 2px;
-        background: #1A77B9;
+        background: var(--accent);
         transition: .5s;
     }
 
@@ -124,7 +135,7 @@ body {
         position: absolute;
         top: 50%;
         left: 5px;
-        color: #A1A5B7;
+        color: var(--default-light);
         transform: translateY(-50%);
         font-size: 14px;
         pointer-events: none;
@@ -141,7 +152,7 @@ body {
     .txt_field input:focus ~ .i,
     .txt_field input:valid ~ .i,
     .txt_field input:read-only ~ .i {
-        color: #1A77B9;
+        color: var(--accent);
     }
 
     .txt_field input:focus ~ span::before,
@@ -159,12 +170,12 @@ a {
     display: block;
     text-align: right;
     text-decoration: none;
-    color: #A1A5B7;
+    color: var(--default-light);
     transition: 0.3s;
 }
 
 a {
-    color: #1A77B9;
+    color: var(--accent);
 }
 
 .btn {
@@ -176,9 +187,9 @@ a {
     outline: none;
     border: none;
     border-radius: 3px;
-    background-color: #1A77B9;
+    background: var(--accent);
     font-size: 1.2rem;
-    color: #fff;
+    color: var(--accent-background-text);
     font-family: "Poppins", sans-serif;
     font-weight: bold;
     margin: 2rem 0 1rem 0;
@@ -187,8 +198,8 @@ a {
 }
 
     .btn:hover, .btn:focus {
-        background-color: #16487E;
-        box-shadow: 0 0 5px #CCCCCC;
+        background: var(--accent-hover);
+        box-shadow: 0 0 5px var(--shadow);
     }
 
 .separator {
@@ -200,7 +211,7 @@ a {
     margin-bottom: 3rem;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-    color: #A1A5B7;
+    color: var(--default-light);
 }
 
     .separator .separator-text {
@@ -213,7 +224,7 @@ a {
     .separator:after {
         content: " ";
         width: 50%;
-        border-bottom: 1px solid #A1A5B7;
+        border-bottom: 1px solid var(--default-light);
         box-sizing: border-box;
     }
 
@@ -233,7 +244,7 @@ a {
     display: flex;
     justify-content: left;
     font-size: 0.9rem;
-    color: #A1A5B7;
+    color: var(--default-light);
 }
 
     .remember-me-box label {
@@ -242,14 +253,14 @@ a {
 
     .remember-me-box input[type=checkbox]:hover,
     .remember-me-box input[type=checkbox]:focus {
-        color: #16487E;
-        accent-color: #16487E;
+        color: var(--accent-hover);
+        accent: var(--accent-hover);
         outline: 0;
     }
 
         .remember-me-box input[type=checkbox]:hover ~ label,
         .remember-me-box input[type=checkbox]:focus ~ label {
-            color: #16487E;
+            color: var(--accent-hover);
         }
 
 
@@ -277,17 +288,17 @@ a {
 
         .external-button .unlink:hover,
         .external-button .unlink:focus {
-            color: #16487E;
+            color: var(--accent-hover);
             outline: 0;
         }
 
     .external-button a.icon-button:focus,
     .external-button a.icon-button:hover {
-        color: #16487E;
-        border-color: #16487E;
+        color: var(--accent-hover);
+        border: var(--accent-hover);
         border-width: 1px;
         outline: 0;
-        box-shadow: 0 0 5px #CCCCCC;
+        box-shadow: 0 0 5px var(--shadow);
     }
 
     .external-button a.icon-button {
@@ -298,7 +309,7 @@ a {
         display: flex;
         align-items: center;
         white-space: nowrap;
-        border: 1px solid #A1A5B7;
+        border: 1px solid var(--default-light);
         border-radius: 3px;
         height: 40px;
         padding: 0 0.5rem;
@@ -312,14 +323,14 @@ a {
 .mfa-provider-select {
     display: flex;
     font-family: "Poppins", sans-serif;
-    color: #666;
+    color: var(--default-text);
     padding: 1rem 0;
     text-align: start;
 }
 
     .mfa-provider-select .i {
         font-size: 2rem;
-        color: #333;
+        color: var(--default-text);
         margin-right: 1rem;
     }
 
@@ -328,7 +339,7 @@ a {
     .mfa-provider-select:hover i,
     .mfa-provider-select:focus i {
         outline: 0;
-        color: #1A77B9;
+        color: var(--accent);
     }
 
     .mfa-provider-select:hover,
@@ -340,7 +351,7 @@ a {
 .mfa-target,
 .verification-description
 .different-provider-box {
-    color: #A1A5B7;
+    color: var(--default-light);
     display: inline-block;
     margin-bottom: 1rem;
 }
@@ -371,15 +382,15 @@ a {
     height: 57px;
     text-align: center;
     font-family: "Poppins", sans-serif;
-    color: #1A77B9;
+    color: var(--accent);
     font-size: 2rem;
     border-radius: 3px;
-    border: 1px solid #666
+    border: 1px solid var(--default-text)
 }
 
     .validation-digit:focus,
     .validation-digit:valid {
-        border: 2px solid #1A77B9;
+        border: 2px solid var(--accent);
         outline: 0;
     }
 
@@ -390,7 +401,7 @@ a {
     .different-provider-box a:hover,
     .different-provider-box a:focus {
         outline: 0;
-        color: #16487E;
+        color: var(--accent-hover);
         font-weight: 700;
     }
 
@@ -428,12 +439,12 @@ a {
         .mfa-provider-content .registration-url a:hover,
         .mfa-provider-content .registration-url a:focus {
             outline: 0;
-            color: #16487E;
+            color: var(--accent-hover);
             font-weight: 700;
         }
 
 .error {
-    color: #f5414f;
+    color: var(--error);
     font-size: 0.8rem;
 }
 
