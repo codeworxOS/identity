@@ -61,10 +61,10 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
 
                 if (!string.IsNullOrWhiteSpace(sessionId))
                 {
-                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode);
+                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode, auth.Properties.IsPersistent);
                 }
 
-                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode);
+                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, auth.Properties.IsPersistent);
             }
 
             throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

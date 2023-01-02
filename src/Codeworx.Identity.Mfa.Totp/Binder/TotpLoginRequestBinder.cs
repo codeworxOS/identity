@@ -54,7 +54,7 @@ namespace Codeworx.Identity.Mfa.Totp.Binder
                     returnUrl = returnUrlValues;
                 }
 
-                var result = new TotpLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, string.IsNullOrWhiteSpace(sharedSecret) ? MfaAction.Login : MfaAction.Register, returnUrl, oneTimeCode, sharedSecret);
+                var result = new TotpLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, string.IsNullOrWhiteSpace(sharedSecret) ? MfaAction.Login : MfaAction.Register, returnUrl, oneTimeCode, sharedSecret, auth.Properties.IsPersistent);
                 return result;
             }
 
