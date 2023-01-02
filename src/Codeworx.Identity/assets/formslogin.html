@@ -30,9 +30,11 @@
     </div>
     {{/Error}}
     <input type="submit" class="btn" value="{{Translate 'Login'}}" />
+    {{#ShowRememberMe}}
     <div class="checkbox-field">
         <input type="checkbox" id="remember" name="remember" />
         <label for="remember">{{Translate 'RememberMe'}}</label>
     </div>
+    {{/ShowRememberMe}}
 </form>
 {{/each}}

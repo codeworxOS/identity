@@ -40,12 +40,13 @@ namespace Codeworx.Identity.Login
             switch (request.Type)
             {
                 case ProviderRequestType.Login:
-                    return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error, await GetForgotPasswordUrl(request));
+                    return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error, await GetForgotPasswordUrl(request), _options.FormsPersistenceMode == FormsPersistenceMode.SessionWithPersistOption);
                 case ProviderRequestType.Invitation:
                     return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, request.Invitation.Action.HasFlag(InvitationAction.ChangeLogin), request.Invitation.Action.HasFlag(InvitationAction.ChangePassword), error);
                 case ProviderRequestType.Profile:
                     var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
                     return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);
+                case ProviderRequestType.MfaList:
                 case ProviderRequestType.MfaRegister:
                 case ProviderRequestType.MfaLogin:
                 default:
@@ -75,7 +76,23 @@ namespace Codeworx.Identity.Login
 
             var identity = await _identityService.LoginAsync(loginRequest.UserName, loginRequest.Password).ConfigureAwait(false);
 
-            return new SignInResponse(identity, returnUrl, AuthenticationMode.Login, loginRequest.Remember);
+            bool persist = false;
+            switch (_options.FormsPersistenceMode)
+            {
+                case FormsPersistenceMode.SessionWithPersistOption:
+                    persist = loginRequest.Remember;
+                    break;
+                case FormsPersistenceMode.SessionOnly:
+                    persist = false;
+                    break;
+                case FormsPersistenceMode.Persistent:
+                    persist = true;
+                    break;
+                default:
+                    throw new InvalidOperationException("This should not happen!");
+            }
+
+            return new SignInResponse(identity, returnUrl, AuthenticationMode.Login, persist);
         }
 
         private string GetDefaultRedirectUrl()

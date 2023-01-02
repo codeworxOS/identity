@@ -137,7 +137,7 @@ namespace Codeworx.Identity.Mfa.Mail
                     await _linkUserService.LinkUserAsync(user, new MailLoginData(configuration, registration.EmailAddress));
                     var mfaIdentity = GenerateMfaIdentity();
 
-                    return new SignInResponse(mfaIdentity, registration.ReturnUrl, AuthenticationMode.Mfa);
+                    return new SignInResponse(mfaIdentity, registration.ReturnUrl, AuthenticationMode.Mfa, registration.RememberMe);
                 }
             }
             else if (request is ProcessMailLoginRequest process)
@@ -152,7 +152,7 @@ namespace Codeworx.Identity.Mfa.Mail
                 }
 
                 var mfaIdentity = GenerateMfaIdentity();
-                return new SignInResponse(mfaIdentity, process.ReturnUrl, AuthenticationMode.Mfa);
+                return new SignInResponse(mfaIdentity, process.ReturnUrl, AuthenticationMode.Mfa, process.RememberMe);
             }
 
             throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("unknown"));

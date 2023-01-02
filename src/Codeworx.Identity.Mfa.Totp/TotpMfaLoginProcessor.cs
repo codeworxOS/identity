@@ -111,7 +111,7 @@ namespace Codeworx.Identity.Mfa.Totp
                     {
                         var identity = GenerateMfaIdentity();
 
-                        return new SignInResponse(identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa);
+                        return new SignInResponse(identity, loginRequest.ReturnUrl, AuthenticationMode.Mfa, loginRequest.RememberMe);
                     }
                     else
                     {

@@ -5,7 +5,7 @@ namespace Codeworx.Identity.Mfa.Totp
 {
     public class TotpLoginRequest
     {
-        public TotpLoginRequest(string providerId, ClaimsIdentity identity, MfaAction action, string returnUrl, string oneTimeCode, string sharedSecret = null)
+        public TotpLoginRequest(string providerId, ClaimsIdentity identity, MfaAction action, string returnUrl, string oneTimeCode, string sharedSecret = null, bool rememberMe = false)
         {
             ProviderId = providerId;
             Identity = identity;
@@ -13,6 +13,7 @@ namespace Codeworx.Identity.Mfa.Totp
             ReturnUrl = returnUrl;
             OneTimeCode = oneTimeCode;
             SharedSecret = sharedSecret;
+            RememberMe = rememberMe;
         }
 
         public string ProviderId { get; }
@@ -26,5 +27,7 @@ namespace Codeworx.Identity.Mfa.Totp
         public string OneTimeCode { get; }
 
         public string SharedSecret { get; }
+
+        public bool RememberMe { get; }
     }
 }

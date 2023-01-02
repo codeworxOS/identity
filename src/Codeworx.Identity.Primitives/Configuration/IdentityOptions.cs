@@ -50,6 +50,7 @@ namespace Codeworx.Identity.Configuration
             MaxFailedLogins = null;
             PasswordHistoryLength = 0;
             EnableAccountConfirmation = false;
+            FormsPersistenceMode = FormsPersistenceMode.SessionWithPersistOption;
         }
 
         public int? MaxFailedLogins { get; set; }
@@ -106,6 +107,8 @@ namespace Codeworx.Identity.Configuration
 
         public bool EnableAccountConfirmation { get; set; }
 
+        public FormsPersistenceMode FormsPersistenceMode { get; set; }
+
         public int PasswordHistoryLength { get; set; }
 
         public void CopyTo(IdentityOptions target)
@@ -114,6 +117,7 @@ namespace Codeworx.Identity.Configuration
             target.AuthenticationCookie = this.AuthenticationCookie;
             target.AuthenticationScheme = this.AuthenticationScheme;
             target.CookieExpiration = this.CookieExpiration;
+            target.FormsPersistenceMode = this.FormsPersistenceMode;
             target.Favicon = this.Favicon;
             target.InvitationValidity = this.InvitationValidity;
             target.OauthAuthorizationEndpoint = this.OauthAuthorizationEndpoint;

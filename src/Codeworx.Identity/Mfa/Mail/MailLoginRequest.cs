@@ -4,11 +4,12 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public abstract class MailLoginRequest
     {
-        public MailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl)
+        public MailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl, bool rememberMe)
         {
             ProviderId = providerId;
             Identity = identity;
             ReturnUrl = returnUrl;
+            RememberMe = rememberMe;
         }
 
         public string ProviderId { get; }
@@ -16,5 +17,7 @@ namespace Codeworx.Identity.Mfa.Mail
         public ClaimsIdentity Identity { get; }
 
         public string ReturnUrl { get; }
+
+        public bool RememberMe { get; }
     }
 }
