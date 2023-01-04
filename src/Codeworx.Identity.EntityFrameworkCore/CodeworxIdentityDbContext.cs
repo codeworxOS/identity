@@ -69,7 +69,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserInvitationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserPasswordHistoryEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new UserRefreshTokenEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
 
             modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Property);
