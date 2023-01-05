@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
+using Codeworx.Identity.Test.Provider;
 using Codeworx.Identity.Web.Test.Tenant;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -101,8 +104,10 @@ namespace Codeworx.Identity.Web.Test
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddAuthentication()
-                //.AddNegotiate("Windows", p => { })
-                .AddJwtBearer("JWT", ConfigureJwt);
+                .AddOAuth2Introspection("JWT", ConfigureIntrospection);
+            //.AddNegotiate("Windows", p => { })
+            //.AddJwtBearer("JWT", ConfigureJwt);
+
 
             services.AddAuthorization();
 
@@ -111,6 +116,15 @@ namespace Codeworx.Identity.Web.Test
                 {
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
+        }
+
+        private void ConfigureIntrospection(OAuth2IntrospectionOptions options)
+        {
+            options.Authority = "https://localhost:44319/";
+            options.ClientCredentialStyle = IdentityModel.Client.ClientCredentialStyle.AuthorizationHeader;
+
+            options.ClientId = TestConstants.Clients.DefaultBackendClientId;
+            options.ClientSecret = TestConstants.Clients.DefaultBackendClientSecret;
         }
 
         private void ConfigureJwt(JwtBearerOptions options)

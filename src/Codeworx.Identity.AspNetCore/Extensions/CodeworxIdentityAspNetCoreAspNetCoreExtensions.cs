@@ -166,6 +166,10 @@ namespace Codeworx.Identity.AspNetCore
                        p => p
                             .UseMiddleware<OAuth.AuthorizationMiddleware>())
                    .MapWhen(
+                       p => p.Request.Path.Equals(options.OauthInstrospectionEndpoint),
+                       p => p
+                            .UseMiddleware<OAuth.IntrospectMiddleware>())
+                   .MapWhen(
                        p => p.Request.Path.Equals(options.OpenIdTokenEndpoint),
                        p => p.UseMiddleware<TokenMiddleware>())
                    .MapWhen(
@@ -295,6 +299,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IRequestBinder<ForgotPasswordRequest>, ForgotPasswordRequestBinder>();
             collection.AddTransient<IRequestBinder<ConfirmationRequest>, ConfirmationRequestBinder>();
             collection.AddTransient<IRequestBinder<MailLoginRequest>, MailLoginRequestBinder>();
+            collection.AddTransient<IRequestBinder<IntrospectRequest>, IntrospectRequestBinder>();
 
             // Response binder
             collection.AddTransient<IResponseBinder<WindowsChallengeResponse>, WindowsChallengeResponseBinder>();
@@ -336,6 +341,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddTransient<IResponseBinder<ForgotPasswordViewResponse>, ForgotPasswordViewResponseBinder>();
             collection.AddTransient<IResponseBinder<ForgotPasswordResponse>, ForgotPasswordResponseBinder>();
             collection.AddTransient<IResponseBinder<ConfirmationResponse>, ConfirmationResponseBinder>();
+            collection.AddTransient<IResponseBinder<IIntrospectResponse>, IntrospectResponseBinder>();
 
             collection.AddScoped<ITokenRequestBindingSelector, AuthorizationCodeBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, ClientCredentialsBindingSelector>();
@@ -396,12 +402,14 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ISystemClaimsProvider, ExternalTokenClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
+            collection.AddTransient<IIntrospectionService, IntrospectionService>();
+
             collection.AddSingleton<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
             collection.AddSingleton<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
-            collection.AddSingleton<IRefreshTokenCache, DistributedRefreshTokenCache>();
+            collection.AddSingleton<ITokenCache, DistributedTokenCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
             collection.AddSingleton<IMailMfaCodeCache, DistributedMailMfaCodeCache>();

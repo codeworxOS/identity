@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,20 +6,19 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Internal;
 using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.Token;
-using static Codeworx.Identity.Constants;
 
 namespace Codeworx.Identity.OpenId.Authorization
 {
     public class IdTokenResponseProcessor : IAuthorizationResponseProcessor
     {
         private readonly IClientService _clientService;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
         private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
 
-        public IdTokenResponseProcessor(IClientService clientService, IEnumerable<ITokenProvider> tokenProviders, IDefaultSigningKeyProvider defaultSigningKeyProvider)
+        public IdTokenResponseProcessor(IClientService clientService, ITokenProviderService tokenProviderService, IDefaultSigningKeyProvider defaultSigningKeyProvider)
         {
             _clientService = clientService;
-            _tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
             _defaultSigningKeyProvider = defaultSigningKeyProvider;
         }
 
@@ -35,26 +33,24 @@ namespace Codeworx.Identity.OpenId.Authorization
                 return responseBuilder;
             }
 
-            var provider = _tokenProviders.First(p => p.TokenType == "jwt");
-            var token = await provider.CreateAsync(null);
+            var token = await _tokenProviderService.CreateIdentityTokenAsync(parameters.Client).ConfigureAwait(false);
 
-            var payload = data.GetTokenClaims(ClaimTarget.IdToken);
+            var claims = data.Claims.ToList();
+            claims.Add(AssignedClaim.Create(Constants.Claims.AtHash, GetAtHashClaim(responseBuilder.Response.Token)));
 
-            this.AddAtHashClaim(responseBuilder.Response.Token, payload);
-
-            await token.SetPayloadAsync(payload, parameters.Client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(new IdentityData(data.ClientId, data.Identifier, data.Login, claims, data.ExternalTokenKey), parameters.Client.TokenExpiration).ConfigureAwait(false);
             var identityToken = await token.SerializeAsync().ConfigureAwait(false);
 
             return responseBuilder.WithIdToken(identityToken);
         }
 
-        private void AddAtHashClaim(string accessTokenValue, IDictionary<string, object> identityClaims)
+        private string GetAtHashClaim(string accessTokenValue)
         {
             var hashAlgorithm = _defaultSigningKeyProvider.GetHashAlgorithm();
             var accessTokenHash = hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(accessTokenValue));
             var atHash = accessTokenHash.Take(accessTokenHash.Length / 2).ToArray();
 
-            identityClaims.Add(Claims.AtHash, Base64UrlEncoding.Encode(atHash));
+            return Base64UrlEncoding.Encode(atHash);
         }
     }
 }

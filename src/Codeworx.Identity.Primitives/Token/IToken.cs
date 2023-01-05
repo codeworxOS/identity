@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.Token
 {
     public interface IToken
     {
-        Task<IDictionary<string, object>> GetPayloadAsync();
+        TokenType TokenType { get; }
 
-        Task ParseAsync(string value);
+        IdentityData IdentityData { get; }
 
-        Task<string> SerializeAsync();
+        DateTime ValidUntil { get; }
 
-        Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration);
+        Task ParseAsync(string value, CancellationToken token = default);
 
-        Task<bool> ValidateAsync();
+        Task<string> SerializeAsync(CancellationToken token = default);
+
+        Task SetPayloadAsync(IdentityData identityData, TimeSpan expiration, CancellationToken token = default);
     }
 }

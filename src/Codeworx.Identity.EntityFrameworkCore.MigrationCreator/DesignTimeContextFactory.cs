@@ -10,7 +10,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.MigrationCreator
             var builder = new DbContextOptionsBuilder<CodeworxIdentityDbContext>();
 
 #if MSSQL
-            builder.UseSqlServer("Data Source=.;Integrated Security=True; Initial Catalog=IdentityMaster", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")); 
+            builder.UseSqlServer("Data Source=.;Integrated Security=True; Initial Catalog=IdentityMaster", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer"));
 #endif
 #if SQLITE
             builder.UseSqlite("filename=IdentityMaster.sqlite", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite"));

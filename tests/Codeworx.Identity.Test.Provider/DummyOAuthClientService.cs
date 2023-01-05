@@ -67,6 +67,10 @@ namespace Codeworx.Identity.Test
             public IUser User => null;
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
 
 
@@ -98,6 +102,10 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
 
 
@@ -131,6 +139,11 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
+
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
@@ -140,6 +153,7 @@ namespace Codeworx.Identity.Test
                 this.ClientType = ClientType.UserAgent;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
+                this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
                 this.AuthenticationMode = AuthenticationMode.Login;
@@ -162,6 +176,10 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
@@ -172,6 +190,7 @@ namespace Codeworx.Identity.Test
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultServiceAccountClientSecret);
+                this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
                 this.AuthenticationMode = AuthenticationMode.Login;
@@ -194,6 +213,10 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
 
         private class MfaRequiredClientRegistration : IDummyClientRegistration
@@ -205,6 +228,7 @@ namespace Codeworx.Identity.Test
                 this.ClientType = ClientType.Native;
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.AuthenticationMode = AuthenticationMode.Mfa;
@@ -225,6 +249,10 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
 
         public class MfaTestServiceAccountClientRegistration : IDummyClientRegistration
@@ -235,6 +263,7 @@ namespace Codeworx.Identity.Test
                 this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
                 this.DefaultRedirectUri = this.ValidRedirectUrls.First();
                 this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.MfaTestServiceAccountClientSecret);
+                this.TokenExpiration = TimeSpan.FromHours(1);
 
                 this.AllowedScopes = ImmutableList<IScope>.Empty;
                 this.AuthenticationMode = AuthenticationMode.Mfa;
@@ -255,6 +284,10 @@ namespace Codeworx.Identity.Test
             public IReadOnlyList<IScope> AllowedScopes { get; }
 
             public AuthenticationMode AuthenticationMode { get; private set; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
 
             public void SetMfaRequired(bool isMfaRequired)
             {

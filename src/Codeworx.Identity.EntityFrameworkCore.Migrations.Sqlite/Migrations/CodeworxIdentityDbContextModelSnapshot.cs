@@ -3,6 +3,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
+#nullable disable
+
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
@@ -11,9 +13,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
-                .HasAnnotation("PropertyAccessMode", PropertyAccessMode.Property);
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.0");
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
                 {
@@ -26,8 +26,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("EndpointType")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(100);
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid?>("FilterId")
                         .HasColumnType("TEXT");
@@ -37,8 +37,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
@@ -46,13 +46,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<int>("Usage")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
-                        .HasDefaultValue(1);
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
                     b.HasIndex("FilterId");
 
-                    b.ToTable("AuthenticationProvider");
+                    b.ToTable("AuthenticationProvider", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderRightHolder", b =>
@@ -65,18 +65,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("ExternalIdentifier")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(4000);
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("RightHolderId", "ProviderId");
 
                     b.HasIndex("ExternalIdentifier")
                         .IsUnique()
-                        .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique");
+                        .HasDatabaseName("IX_AuthenticationProviderRightHolder_ExternalId_Unique");
 
                     b.HasIndex("ProviderId");
 
-                    b.ToTable("AuthenticationProviderRightHolder");
+                    b.ToTable("AuthenticationProviderRightHolder", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AvailableLicense", b =>
@@ -103,7 +103,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("AvailableLicense");
+                    b.ToTable("AvailableLicense", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", b =>
@@ -117,12 +117,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("TypeKey")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ClaimType");
+                    b.ToTable("ClaimType", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimValue", b =>
@@ -141,8 +141,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(500);
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -152,7 +152,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ClaimValue");
+                    b.ToTable("ClaimValue", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
@@ -161,14 +161,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AccessTokenType")
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AccessTokenTypeConfiguration")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("AuthenticationMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
                         .HasDefaultValue(0);
 
                     b.Property<string>("ClientSecretHash")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("ClientType")
                         .HasColumnType("INTEGER");
@@ -183,7 +190,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ClientConfiguration");
+                    b.ToTable("ClientConfiguration", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientLicense", b =>
@@ -198,20 +205,23 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("LicenseId");
 
-                    b.ToTable("ClientLicense");
+                    b.ToTable("ClientLicense", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IdentityCache", b =>
                 {
                     b.Property<string>("Key")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("CacheType")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("Disabled")
                         .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ValidUntil")
                         .HasColumnType("TEXT");
@@ -222,7 +232,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("IdentityCache");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("IdentityCache", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.License", b =>
@@ -233,12 +245,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("License");
+                    b.ToTable("License", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.LicenseAssignment", b =>
@@ -253,7 +265,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("LicenseAssignment");
+                    b.ToTable("LicenseAssignment", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ProviderFilter", b =>
@@ -264,15 +276,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProviderFilter");
+                    b.ToTable("ProviderFilter", (string)null);
 
                     b.HasDiscriminator<byte>("Type");
                 });
@@ -285,8 +297,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(500);
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
 
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");
@@ -295,9 +307,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique()
-                        .HasName("IX_RightHolder_Name_Unique");
+                        .HasDatabaseName("IX_RightHolder_Name_Unique");
 
-                    b.ToTable("RightHolder");
+                    b.ToTable("RightHolder", (string)null);
 
                     b.HasDiscriminator<byte>("Type");
                 });
@@ -314,7 +326,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("RightHolderGroup");
+                    b.ToTable("RightHolderGroup", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Scope", b =>
@@ -325,15 +337,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("ScopeKey")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(50);
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
 
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Scope");
+                    b.ToTable("Scope", (string)null);
 
                     b.HasDiscriminator<byte>("Type").HasValue((byte)1);
                 });
@@ -350,7 +362,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("ScopeId");
 
-                    b.ToTable("ScopeAssignment");
+                    b.ToTable("ScopeAssignment", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
@@ -365,7 +377,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("ClaimTypeId");
 
-                    b.ToTable("ScopeClaim");
+                    b.ToTable("ScopeClaim", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeHierarchy", b =>
@@ -380,7 +392,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("ScopeHierarchy");
+                    b.ToTable("ScopeHierarchy", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
@@ -396,12 +408,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(200);
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tenant");
+                    b.ToTable("Tenant", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
@@ -416,14 +428,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TenantUser");
+                    b.ToTable("TenantUser", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
                 {
                     b.Property<string>("InvitationCode")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(4000);
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Action")
                         .HasColumnType("INTEGER");
@@ -432,8 +444,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("RedirectUri")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("TEXT");
@@ -445,7 +457,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserInvitation");
+                    b.ToTable("UserInvitation", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
@@ -454,46 +466,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("ChangedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("UserId", "PasswordHash");
 
-                    b.ToTable("UserPasswordHistory");
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
-                {
-                    b.Property<string>("Token")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(4000);
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IdentityData")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("ValidUntil")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRefreshToken");
+                    b.ToTable("UserPasswordHistory", (string)null);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
@@ -512,7 +493,19 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ValidRedirectUrl");
+                    b.ToTable("ValidRedirectUrl", (string)null);
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientScope", b =>
+                {
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.Scope");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("TEXT");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasDiscriminator().HasValue((byte)2);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.DomainNameProviderFilter", b =>
@@ -521,8 +514,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.Property<string>("DomainName")
                         .HasColumnType("TEXT");
+                });
 
-                    b.HasDiscriminator().HasValue((byte)1);
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
+                {
+                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IPv4ProviderFilter", b =>
@@ -540,13 +536,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.HasDiscriminator().HasValue((byte)2);
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
-                {
-                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
-
-                    b.HasDiscriminator().HasValue((byte)2);
-                });
-
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder");
@@ -557,8 +546,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasDefaultValue(0);
 
                     b.Property<string>("ConfirmationCode")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("ConfirmationPending")
                         .HasColumnType("INTEGER");
@@ -585,24 +574,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("TEXT")
-                        .HasMaxLength(512);
+                        .HasMaxLength(512)
+                        .HasColumnType("TEXT");
 
                     b.HasIndex("DefaultTenantId");
 
                     b.HasDiscriminator().HasValue((byte)1);
-                });
-
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientScope", b =>
-                {
-                    b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.Scope");
-
-                    b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasDiscriminator().HasValue((byte)2);
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
@@ -611,6 +588,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .WithMany()
                         .HasForeignKey("FilterId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Filter");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProviderRightHolder", b =>
@@ -626,6 +605,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("RightHolder");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AvailableLicense", b =>
@@ -640,6 +623,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("License");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimValue", b =>
@@ -659,6 +646,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ClaimType");
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
@@ -667,6 +660,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .WithMany("Clients")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientLicense", b =>
@@ -682,6 +677,19 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("LicenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("License");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.IdentityCache", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                        .WithMany("IdentityCaches")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.LicenseAssignment", b =>
@@ -697,6 +705,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("License");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolderGroup", b =>
@@ -712,6 +724,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("RightHolder");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeAssignment", b =>
@@ -727,6 +743,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Scope");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
@@ -742,6 +762,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ClaimType");
+
+                    b.Navigation("Scope");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeHierarchy", b =>
@@ -757,6 +781,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Child");
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
@@ -772,6 +800,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Tenant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
@@ -781,6 +813,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserPasswordHistory", b =>
@@ -790,21 +824,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserRefreshToken", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
-                        .WithMany("RefreshTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ValidRedirectUrl", b =>
@@ -814,13 +835,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
-                {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "DefaultTenant")
-                        .WithMany()
-                        .HasForeignKey("DefaultTenantId");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientScope", b =>
@@ -830,6 +846,75 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
+                {
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "DefaultTenant")
+                        .WithMany()
+                        .HasForeignKey("DefaultTenantId");
+
+                    b.Navigation("DefaultTenant");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
+                {
+                    b.Navigation("RightHolders");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
+                {
+                    b.Navigation("ScopeAssignments");
+
+                    b.Navigation("ValidRedirectUrls");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.License", b =>
+                {
+                    b.Navigation("Clients");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", b =>
+                {
+                    b.Navigation("MemberOf");
+
+                    b.Navigation("Providers");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Scope", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("Claims");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("ScopeAssignments");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
+                {
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.User", b =>
+                {
+                    b.Navigation("Clients");
+
+                    b.Navigation("IdentityCaches");
+
+                    b.Navigation("Invitations");
+
+                    b.Navigation("PasswordHistory");
+
+                    b.Navigation("Tenants");
                 });
 #pragma warning restore 612, 618
         }

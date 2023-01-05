@@ -38,10 +38,6 @@ namespace Codeworx.Identity.Test.Cryptography.Json
             _ecd.HashAlgorithm = CngAlgorithm.Sha256;
             var _key = new ECDsaSecurityKey(_ecd);
 
-            var _token = test.CreateToken("{ sub: 'abc' }", new SigningCredentials(_key, "ES384"));
-
-            var provider = new JwtProvider(null);
-
             //var pk = "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgevZzL1gdAFr88hb2OF/2NxApJCzGCEDdfSp6VQO30hyhRANCAAQRWz+jn65BtOMvdyHKcvjBeBSDZH2r1RTwjmYSi9R/zpBnuQ4EiMnCqfMPWiZqB4QdbAd0E7oH50VpuZ1P087G";
 
             //var test2 = new X509Certificate2(Convert.FromBase64String(pk));

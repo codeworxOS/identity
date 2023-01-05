@@ -1,25 +1,41 @@
 ﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.Cryptography.Json
 {
     public class JwtProvider : ITokenProvider
     {
+        private static readonly JwtSecurityTokenHandler _handler;
         private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
+        private readonly ITokenCache _tokenCache;
 
-        public JwtProvider(IDefaultSigningKeyProvider defaultSigningKeyProvider)
+        static JwtProvider()
+        {
+            _handler = new JwtSecurityTokenHandler();
+        }
+
+        public JwtProvider(IDefaultSigningKeyProvider defaultSigningKeyProvider, ITokenCache tokenCache)
         {
             _defaultSigningKeyProvider = defaultSigningKeyProvider;
+            _tokenCache = tokenCache;
         }
 
         public Type ConfigurationType { get; } = typeof(JwtConfiguration);
 
-        public string TokenType => Constants.Token.Jwt;
+        public string TokenFormat => Constants.Token.Jwt;
 
-        public Task<IToken> CreateAsync(object configuration)
+        public bool CanHandle(string tokenValue)
         {
-            return Task.FromResult<IToken>(new Jwt(_defaultSigningKeyProvider, configuration as JwtConfiguration));
+            return _handler.CanReadToken(tokenValue);
+        }
+
+        public Task<IToken> CreateAsync(TokenType tokenType, object configuration, CancellationToken token = default)
+        {
+            return Task.FromResult<IToken>(new Jwt(tokenType, _tokenCache, _defaultSigningKeyProvider, configuration as JwtConfiguration));
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity
 {
@@ -43,10 +43,10 @@ namespace Codeworx.Identity
             return builder;
         }
 
-        public static TBuilder WithCacheItem<TBuilder>(this TBuilder builder, IRefreshTokenCacheItem cacheItem)
+        public static TBuilder WithParsedRefreshToken<TBuilder>(this TBuilder builder, IToken parsedRefreshToken)
           where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
         {
-            builder.SetValue(p => p.CacheItem, cacheItem);
+            builder.SetValue(p => p.ParsedRefreshToken, parsedRefreshToken);
             return builder;
         }
 

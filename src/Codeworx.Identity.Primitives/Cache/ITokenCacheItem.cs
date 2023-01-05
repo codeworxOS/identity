@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.Cache
 {
-    public interface IRefreshTokenCacheItem
+    public interface ITokenCacheItem
     {
         IdentityData IdentityData { get; }
 

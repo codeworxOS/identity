@@ -9,20 +9,20 @@ namespace Codeworx.Identity.OAuth.Token
 {
     public class RefreshTokenService : ITokenService<RefreshTokenRequest>
     {
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
         private readonly IEnumerable<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> _processors;
         private readonly IUserService _userService;
         private readonly IClientService _clientService;
         private readonly IIdentityService _identityService;
 
         public RefreshTokenService(
-            IEnumerable<ITokenProvider> tokenProviders,
+            ITokenProviderService tokenProviderService,
             IEnumerable<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>> processors,
             IUserService userService,
             IClientService clientService,
             IIdentityService identityService)
         {
-            _tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
             _processors = processors;
             _userService = userService;
             _clientService = clientService;
@@ -47,14 +47,12 @@ namespace Codeworx.Identity.OAuth.Token
 
             var identityData = await _identityService.GetIdentityAsync(parameters).ConfigureAwait(false);
 
-            var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
+            var accessToken = await _tokenProviderService.CreateAccessTokenAsync(parameters.Client, token).ConfigureAwait(false);
+            var identityToken = await _tokenProviderService.CreateIdentityTokenAsync(parameters.Client, token).ConfigureAwait(false);
 
-            var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
-            var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
-
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), parameters.Client.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData, parameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), parameters.Client.TokenExpiration)
+            await identityToken.SetPayloadAsync(identityData, parameters.Client.TokenExpiration)
                     .ConfigureAwait(false);
 
             string refreshToken = null;

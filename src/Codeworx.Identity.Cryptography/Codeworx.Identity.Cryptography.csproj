@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>net6;net7;</TargetFrameworks>
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="libsodium" Version="1.0.18.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="3.1.0" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7'">
+		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6'">
+		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

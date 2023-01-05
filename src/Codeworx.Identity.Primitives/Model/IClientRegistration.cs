@@ -10,6 +10,10 @@ namespace Codeworx.Identity.Model
 
         string ClientSecretHash { get; }
 
+        string AccessTokenType { get; }
+
+        string AccessTokenTypeConfiguration { get; }
+
         ClientType ClientType { get; }
 
         TimeSpan TokenExpiration { get; }

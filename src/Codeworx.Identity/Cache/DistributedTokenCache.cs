@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Token;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -9,7 +10,7 @@ using Newtonsoft.Json;
 namespace Codeworx.Identity.Cache
 {
     // EventIds 150xx
-    public class DistributedRefreshTokenCache : IRefreshTokenCache
+    public class DistributedTokenCache : ITokenCache
     {
         private static readonly Action<ILogger, Exception> _logInvalidKeyFormat;
 
@@ -19,9 +20,9 @@ namespace Codeworx.Identity.Cache
 
         private readonly ISymmetricDataEncryption _dataEncryption;
 
-        private readonly ILogger<DistributedRefreshTokenCache> _logger;
+        private readonly ILogger<DistributedTokenCache> _logger;
 
-        static DistributedRefreshTokenCache()
+        static DistributedTokenCache()
         {
             _logInvalidKeyFormat = LoggerMessage.Define(LogLevel.Error, new EventId(15003), "The format of cache key is invalid!");
             _logInvalidKeyFormatTrace = LoggerMessage.Define<string>(
@@ -30,25 +31,25 @@ namespace Codeworx.Identity.Cache
                 "The format of cache key {Key} is invalid!");
         }
 
-        public DistributedRefreshTokenCache(
+        public DistributedTokenCache(
             IDistributedCache cache,
             ISymmetricDataEncryption dataEncryption,
-            ILogger<DistributedRefreshTokenCache> logger)
+            ILogger<DistributedTokenCache> logger)
         {
             _cache = cache;
             _dataEncryption = dataEncryption;
             _logger = logger;
         }
 
-        public Task ExtendLifetimeAsync(string key, TimeSpan extendBy, CancellationToken token = default)
+        public Task ExtendLifetimeAsync(TokenType tokenType, string key, TimeSpan extendBy, CancellationToken token = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IRefreshTokenCacheItem> GetAsync(string key, CancellationToken token = default)
+        public async Task<ITokenCacheItem> GetAsync(TokenType tokenType, string key, CancellationToken token = default)
         {
             GetKeys(key, out var cacheKey, out var encryptionKey);
-            var cachedGrantInformation = await _cache.GetStringAsync(cacheKey, token).ConfigureAwait(false);
+            var cachedGrantInformation = await _cache.GetStringAsync($"identity_token_{tokenType}_{cacheKey}", token).ConfigureAwait(false);
             if (cachedGrantInformation == null)
             {
                 throw new CacheEntryNotFoundException();
@@ -58,19 +59,19 @@ namespace Codeworx.Identity.Cache
 
             var identityData = JsonConvert.DeserializeObject<IdentityData>(data);
 
-            return new RefreshTokenCacheItem(identityData);
+            return new TokenCacheItem(identityData, DateTime.UtcNow.Add(TimeSpan.FromHours(1)));
         }
 
-        public async Task<string> SetAsync(IdentityData data, TimeSpan validFor, CancellationToken token = default)
+        public async Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTime validUntil, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
 
             var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
             await _cache.SetStringAsync(
-                cacheKey,
+                $"identity_token_{tokenType}_{cacheKey}",
                 encrypted.Data,
-                new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = validFor, },
+                new DistributedCacheEntryOptions() { AbsoluteExpiration = validUntil, },
                 token);
 
             return $"{cacheKey}.{encrypted.Key}";
@@ -92,16 +93,17 @@ namespace Codeworx.Identity.Cache
             encryptionKey = splitKey[1];
         }
 
-        private class RefreshTokenCacheItem : IRefreshTokenCacheItem
+        private class TokenCacheItem : ITokenCacheItem
         {
-            public RefreshTokenCacheItem(IdentityData identityData)
+            public TokenCacheItem(IdentityData identityData, DateTime validUntil)
             {
                 IdentityData = identityData;
+                ValidUntil = validUntil;
             }
 
             public IdentityData IdentityData { get; }
 
-            public DateTime ValidUntil => throw new NotImplementedException();
+            public DateTime ValidUntil { get; }
         }
     }
 }

@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
-using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     internal class RefreshTokenParameters : IRefreshTokenParameters
     {
-        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem)
+        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IToken parsedRefreshToken)
         {
             Client = client;
             Scopes = scopes.ToImmutableList();
             User = user;
             RefreshToken = refreshToken;
-            CacheItem = cacheItem;
+            ParsedRefreshToken = parsedRefreshToken;
         }
 
         public IClientRegistration Client { get; }
@@ -25,7 +25,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public string RefreshToken { get; }
 
-        public IRefreshTokenCacheItem CacheItem { get; }
+        public IToken ParsedRefreshToken { get; }
 
         public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
 
