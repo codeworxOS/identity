@@ -23,6 +23,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public TimeSpan TokenExpiration { get; set; }
 
+        [StringLength(50)]
+        public string AccessTokenType { get; set; }
+
+        public string AccessTokenTypeConfiguration { get; set; }
+
         public AuthenticationMode AuthenticationMode { get; set; }
 
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }

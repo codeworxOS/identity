@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
-using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
@@ -11,13 +11,13 @@ namespace Codeworx.Identity.OAuth.Token
         private string _refreshToken;
         private ClaimsIdentity _user;
         private string[] _scopes;
-        private IRefreshTokenCacheItem _cacheItem;
+        private IToken _parsedRefreshToken;
 
         public RefreshTokenParametersBuilder()
         {
         }
 
-        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_client, _refreshToken, _scopes, _user, _cacheItem);
+        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_client, _refreshToken, _scopes, _user, _parsedRefreshToken);
 
         public void SetValue(string property, object value)
         {
@@ -35,8 +35,8 @@ namespace Codeworx.Identity.OAuth.Token
                 case nameof(IRefreshTokenParameters.Scopes):
                     _scopes = (string[])value;
                     break;
-                case nameof(IRefreshTokenParameters.CacheItem):
-                    _cacheItem = (IRefreshTokenCacheItem)value;
+                case nameof(IRefreshTokenParameters.ParsedRefreshToken):
+                    _parsedRefreshToken = (IToken)value;
                     break;
                 default:
                     throw new NotSupportedException($"Property {property} not supported!");

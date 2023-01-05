@@ -13,6 +13,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [Required]
         public string Value { get; set; }
 
+        public Guid? UserId { get; set; }
+
+        public User User { get; set; }
+
         public DateTime ValidUntil { get; set; }
 
         public CacheType CacheType { get; set; }

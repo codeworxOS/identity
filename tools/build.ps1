@@ -22,23 +22,6 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj"
 
-New-NugetPackages `
-    -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
-    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
-    -VersionFilePath "..\version_ef3.json" `
-    -DoNotCleanOutput `
-    -OutputPath "..\dist\nuget" `
-    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=3;IdentityCoreVersion=$($coreVersion.NugetVersion)"
-
-New-NugetPackages `
-    -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
-    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
-    -VersionFilePath "..\version_ef5.json" `
-    -DoNotCleanOutput `
-    -OutputPath "..\dist\nuget" `
-    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=5;IdentityCoreVersion=$($coreVersion.NugetVersion)"
 
     New-NugetPackages `
     -Projects $projects `
@@ -48,6 +31,16 @@ New-NugetPackages `
     -DoNotCleanOutput `
     -OutputPath "..\dist\nuget" `
     -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=6;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
+    New-NugetPackages `
+    -Projects $projects `
+    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
+    -VersionFilePath "..\version_ef7.json" `
+    -DoNotCleanOutput `
+    -OutputPath "..\dist\nuget" `
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=7;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
 
 
 Write-Host "##vso[build.updatebuildnumber]$($coreVersion.NugetVersion)"

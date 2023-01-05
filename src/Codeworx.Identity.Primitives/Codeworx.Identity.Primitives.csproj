@@ -1,28 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Codeworx.Identity</RootNamespace>
-    <PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Configurations>Debug;Release;MsSql</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>Codeworx.Identity</RootNamespace>
+		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Configurations>Debug;Release;MsSql</Configurations>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Converter\**" />
-    <EmbeddedResource Remove="Converter\**" />
-    <None Remove="Converter\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.10.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.10.0" />
+		<PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
+		<PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
 
 </Project>

@@ -12,18 +12,18 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly IReadOnlyList<IIdentityRequestProcessor<IClientCredentialsParameters, ClientCredentialsTokenRequest>> _processors;
         private readonly IClientAuthenticationService _clientAuthenticationService;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
         private readonly IIdentityService _identityService;
 
         public ClientCredentialsTokenService(
             IEnumerable<IIdentityRequestProcessor<IClientCredentialsParameters, ClientCredentialsTokenRequest>> processors,
             IClientAuthenticationService clientAuthenticationService,
-            IEnumerable<ITokenProvider> tokenProviders,
+            ITokenProviderService tokenProviderService,
             IIdentityService identityService)
         {
             _processors = processors.OrderBy(p => p.SortOrder).ToImmutableList();
             _clientAuthenticationService = clientAuthenticationService;
-            _tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
             _identityService = identityService;
         }
 
@@ -47,12 +47,13 @@ namespace Codeworx.Identity.OAuth.Token
             ////    ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
             ////}
 
-            var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
-            var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
             var identityParameters = builder.Parameters;
+
+            var accessToken = await _tokenProviderService.CreateAccessTokenAsync(identityParameters.Client, token).ConfigureAwait(false);
+
             var identityData = await _identityService.GetIdentityAsync(identityParameters).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), identityParameters.Client.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData, identityParameters.Client.TokenExpiration, token)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
@@ -64,7 +65,7 @@ namespace Codeworx.Identity.OAuth.Token
                 scope = string.Join(" ", scopeClaim.Values);
             }
 
-            var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
+            var accessTokenValue = await accessToken.SerializeAsync(token).ConfigureAwait(false);
 
             return new TokenResponse(accessTokenValue, null, Constants.OAuth.TokenType.Bearer, (int)identityParameters.Client.TokenExpiration.TotalSeconds, scope);
         }

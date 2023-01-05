@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Codeworx.Identity.Token
@@ -7,8 +8,10 @@ namespace Codeworx.Identity.Token
     {
         Type ConfigurationType { get; }
 
-        string TokenType { get; }
+        string TokenFormat { get; }
 
-        Task<IToken> CreateAsync(object configuration);
+        bool CanHandle(string tokenValue);
+
+        Task<IToken> CreateAsync(TokenType tokenType, object configuration, CancellationToken token = default);
     }
 }

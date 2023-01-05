@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Cache
 {
-    // EventIds 151xx
+    // EventIds 152xx
     public class MailMfaCodeCache<TContext> : IMailMfaCodeCache
         where TContext : DbContext
     {
@@ -24,10 +24,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         static MailMfaCodeCache()
         {
             _random = new Random();
-            _logKeyExists = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15104), "The mail mfa session {Key} already exists");
-            _logKeyExpired = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15101), "The mail mfa session {Key} is expired");
-            _logKeyAlreadyUsed = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15102), "The mail mfa session {Key} has already been used");
-            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15103), "The mail mfa session {Key} was not found!");
+            _logKeyExists = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15204), "The mail mfa session {Key} already exists");
+            _logKeyExpired = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15201), "The mail mfa session {Key} is expired");
+            _logKeyAlreadyUsed = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15202), "The mail mfa session {Key} has already been used");
+            _logKeyNotFound = LoggerMessage.Define<string>(LogLevel.Warning, new EventId(15203), "The mail mfa session {Key} was not found!");
         }
 
         public MailMfaCodeCache(TContext context, ILogger<MailMfaCodeCache<TContext>> logger)

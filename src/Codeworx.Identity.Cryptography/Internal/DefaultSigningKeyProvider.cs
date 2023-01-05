@@ -65,6 +65,8 @@ namespace Codeworx.Identity.Cryptography.Internal
                 if (disposing)
                 {
                     _subscription.Dispose();
+                    _keyAlgorithm.Dispose();
+                    _hashAlgorithm.Dispose();
                 }
 
                 _disposedValue = true;

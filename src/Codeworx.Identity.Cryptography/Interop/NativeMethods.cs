@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace Codeworx.Identity.Cryptography.Interop
 {
-    internal static class Libsodium
+    internal static class NativeMethods
     {
         internal const uint ARGON_HASH_STR_SIZE = 128U;
 

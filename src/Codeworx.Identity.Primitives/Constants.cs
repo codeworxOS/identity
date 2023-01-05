@@ -5,8 +5,6 @@
         public const string AuthenticationExceptionMessage = "Username or password incorrect.";
 
         public const string BasicHeader = "Basic";
-        public const string ClaimSourceUrl = "http://schemas.codeworx.org/claims/source"; // TODO unused?
-        public const string ClaimTargetUrl = "http://schemas.codeworx.org/claims/target"; // TODO unused?
         public const string DefaultAuthenticationCookieName = "identity";
         public const string DefaultMfaAuthenticationCookieName = DefaultAuthenticationCookieName + ".mfa";
         public const string DefaultAuthenticationScheme = "Codeworx.Identity";
@@ -18,13 +16,7 @@
         public const string DefaultLoginDescriptionDe = "Der Benutzername muss mindestens 4, maximal 20 Zeichen lang sein und kann Groß- und Kleinbuchstaben sowie . und _ enthalten.";
         public const string DefaultLoginDescriptionEn = "The login must be at least 4 but no more than 20 characters long and may contain . and _ as well as uppercase and one lowercase characters.";
         public const string DefaultLoginRegex = "^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$";
-        public const string DefaultScopeKey = "all"; // TODO unused?
         public const string EmailRegex = "^(?(\")(\".+?(?<!\\\\)\"@)|(([0-9a-z]((\\.(?!\\.))|[-!#\\$%&'\\*\\+/=\\?\\^`\\{\\}\\|~\\w])*)(?<=[0-9a-z])@))(?(\\[)(\\[(\\d{1,3}\\.){3}\\d{1,3}\\])|(([0-9a-z][-\\w]*[0-9a-z]*\\.)+[a-z0-9][\\-a-z0-9]{0,22}[a-z0-9]))$";
-        public const string ExternalAccountAlreadyLinkedError = "The external account is already linked to a different user."; // TODO unused?
-        public const string ExternalAccountNotLinked = "Your Account is not yet linked."; // TODO unused?
-        public const string GenericLoginError = "There was an unexpected login error!"; // TODO unused?
-        public const string InvalidCredentialsError = "Username or password is not valid!"; // TODO unused?
-        public const string InvitationNotSupported = "Invitation feature is not supported!"; // TODO unused?
         public const string InvitationParameter = "invitation";
         public const string JsonExtension = ".json";
         public const string Localhost = "localhost";
@@ -32,11 +24,7 @@
         public const string LoginProviderIdParameter = "login_provider_id";
         public const string InvalidReturnUrlError = "invalid_return_url";
 
-        public const string ProductName = "CodeworxIdentity"; // TODO unused?
         public const string ReturnUrlParameter = "returnurl";
-        public const string TenantNameProperty = "tenantName"; // TODO unused?
-        public const string UnknownLoginProviderError = "Invalid provider!"; // TODO unused?
-        public const string UserNameParameterName = "username"; // TODO unused?
         public const string WindowsAuthenticationSchema = "Windows";
         private const string NameChar = @"[a-zA-Z0-9_]";
         private const string NqChar = @"[\u0021\u0023-\u005b\u005d-\u007e]";
@@ -83,6 +71,7 @@
             public const string Tenant = "tenant";
             public const string Upn = "upn";
             public const string Amr = "amr";
+            public const string Trk = "trk";
             public const string Session = "session";
         }
 
@@ -167,6 +156,7 @@
             public const string SubjectTokenValidation = VsChars;
             public const string TokenTypeName = "token_type";
             public const string TokenTypeValidation = GrantTypeValidation;
+            public const string TokenName = "token";
 
             public const string UserNameValidation = UnicodeCharsNoCrlf;
 
@@ -318,6 +308,8 @@
         public static class Token
         {
             public const string Jwt = "jwt";
+
+            public const string Reference = "ref";
         }
 
         public class Icons

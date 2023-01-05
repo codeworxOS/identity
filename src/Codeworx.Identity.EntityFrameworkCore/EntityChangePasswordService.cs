@@ -72,16 +72,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 userEntity.FailedLoginCount = 0;
                 userEntity.ForceChangePassword = false;
 
-                var refreshToken = await _context.Set<UserRefreshToken>()
+                var refreshToken = await _context.Set<IdentityCache>()
                                                 .Where(p => p.UserId == userEntity.Id)
-                                                .Where(p => !p.IsDisabled && p.ValidUntil >= DateTime.UtcNow)
-                                                .Select(p => new UserRefreshToken { Token = p.Token, IsDisabled = p.IsDisabled })
+                                                .Where(p => !p.Disabled && p.ValidUntil >= DateTime.UtcNow)
+                                                .Select(p => new IdentityCache { Value = p.Value, Disabled = p.Disabled })
                                                 .ToListAsync();
 
                 foreach (var item in refreshToken)
                 {
                     _context.Entry(item).State = EntityState.Unchanged;
-                    item.IsDisabled = true;
+                    item.Disabled = true;
                 }
 
                 await _context.SaveChangesAsync();

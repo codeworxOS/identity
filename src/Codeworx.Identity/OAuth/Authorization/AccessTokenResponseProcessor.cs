@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
@@ -9,13 +8,13 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class AccessTokenResponseProcessor : IAuthorizationResponseProcessor
     {
         private readonly IClientService _clientService;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
         private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public AccessTokenResponseProcessor(IClientService clientService, IEnumerable<ITokenProvider> tokenProviders, IBaseUriAccessor baseUriAccessor = null)
+        public AccessTokenResponseProcessor(IClientService clientService, ITokenProviderService tokenProviderService, IBaseUriAccessor baseUriAccessor = null)
         {
             _clientService = clientService;
-            _tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
             _baseUriAccessor = baseUriAccessor;
         }
 
@@ -30,13 +29,8 @@ namespace Codeworx.Identity.OAuth.Authorization
                 return responseBuilder;
             }
 
-            var provider = _tokenProviders.First(p => p.TokenType == "jwt");
-            var token = await provider.CreateAsync(null);
-
-            var payload = data.GetTokenClaims(ClaimTarget.AccessToken);
-            var issuer = _baseUriAccessor?.BaseUri.OriginalString;
-
-            await token.SetPayloadAsync(payload, parameters.Client.TokenExpiration).ConfigureAwait(false);
+            var token = await _tokenProviderService.CreateAccessTokenAsync(parameters.Client);
+            await token.SetPayloadAsync(data, parameters.Client.TokenExpiration).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 

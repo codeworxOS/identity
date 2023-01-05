@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Token;
 
@@ -11,20 +10,20 @@ namespace Codeworx.Identity.OAuth.Token
         private readonly IClientService _clientService;
         private readonly IIdentityService _identityService;
         private readonly IUserService _userService;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
 
         public TokenExchangeRequestUserLookupProcessor(
             IClientAuthenticationService clientAuthenticationService,
             IClientService clientService,
             IIdentityService identityService,
             IUserService userService,
-            IEnumerable<ITokenProvider> tokenProviders)
+            ITokenProviderService tokenProviderService)
         {
             _clientAuthenticationService = clientAuthenticationService;
             _clientService = clientService;
             _identityService = identityService;
             _userService = userService;
-            _tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
         }
 
         public int SortOrder => 250;
@@ -56,15 +55,11 @@ namespace Codeworx.Identity.OAuth.Token
                 builder.Throw(Constants.OAuth.Error.InvalidRequest, Constants.OAuth.SubjectTokenTypeName);
             }
 
-            var tokenProvider = _tokenProviders.First(p => p.TokenType == Constants.Token.Jwt);
-            var token = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
+            var token = await _tokenProviderService.CreateAccessTokenAsync(client).ConfigureAwait(false);
             await token.ParseAsync(parameters.SubjectToken).ConfigureAwait(false);
 
-            // TODO token.ValidateAsync();
-            var payload = await token.GetPayloadAsync().ConfigureAwait(false);
-
-            var userId = (string)payload[Constants.Claims.Subject];
-            var tokenAudience = (string)payload[Constants.Claims.Audience];
+            var userId = token.IdentityData.Identifier;
+            var tokenAudience = token.IdentityData.ClientId;
 
             if (tokenAudience != client.ClientId)
             {
@@ -80,11 +75,13 @@ namespace Codeworx.Identity.OAuth.Token
 
             var claimsIdentity = await _identityService.GetClaimsIdentityFromUserAsync(user);
 
-            if (payload.TryGetValue(Constants.Claims.Amr, out var armClaims) && armClaims is IEnumerable<object> typedClaims)
+            var amrClaims = token.IdentityData.Claims.Where(p => p.Type.Count() == 1 && p.Type.First() == Constants.Claims.Amr).SelectMany(p => p.Values).ToList();
+
+            if (amrClaims.Any())
             {
-                foreach (var item in typedClaims)
+                foreach (var item in amrClaims)
                 {
-                    claimsIdentity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.Amr, $"{item}"));
+                    claimsIdentity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.Amr, item));
                 }
             }
 

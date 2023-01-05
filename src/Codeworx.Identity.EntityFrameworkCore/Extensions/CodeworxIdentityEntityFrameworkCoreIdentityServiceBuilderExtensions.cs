@@ -41,7 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                          .ReplaceService<IFailedLoginService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<ILinkUserService, EntityUserService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IAuthorizationCodeCache, AuthorizationCodeCache<TContext>>(ServiceLifetime.Scoped)
-                         .ReplaceService<IRefreshTokenCache, RefreshTokenCache<TContext>>(ServiceLifetime.Scoped)
+                         .ReplaceService<ITokenCache, TokenCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IStateLookupCache, StateLookupCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IMailMfaCodeCache, MailMfaCodeCache<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IInvitationCache, InvitationCache<TContext>>(ServiceLifetime.Scoped)

@@ -16,6 +16,8 @@ using Codeworx.Identity.OAuth.Authorization;
 using Codeworx.Identity.OAuth.Token;
 using Codeworx.Identity.OpenId.Authorization;
 using Codeworx.Identity.Resources;
+using Codeworx.Identity.Token;
+using Codeworx.Identity.Token.Reference;
 using Codeworx.Identity.View;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -72,6 +74,8 @@ namespace Codeworx.Identity.Configuration
             this.ReplaceService<IForgotPasswordService, ForgotPasswordService>(ServiceLifetime.Scoped);
             this.ReplaceService<IConfirmationViewService, ConfirmationViewService>(ServiceLifetime.Scoped);
             this.ReplaceService<INotificationService, NotificationService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenProviderService, TokenProviderService>(ServiceLifetime.Scoped);
+            this.ReplaceService<ITokenProvider, ReferenceTokenProvider>(ServiceLifetime.Scoped);
 
             this.ReplaceService<WindowsLoginProcessor, WindowsLoginProcessor>(ServiceLifetime.Scoped);
             this.ReplaceService<OAuthLoginProcessor, OAuthLoginProcessor>(ServiceLifetime.Scoped);

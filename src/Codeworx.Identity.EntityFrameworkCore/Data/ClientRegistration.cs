@@ -20,5 +20,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
         public IUser User { get; set; }
 
         public AuthenticationMode AuthenticationMode { get; set; }
+
+        public string AccessTokenType { get; set; }
+
+        public string AccessTokenTypeConfiguration { get; set; }
     }
 }

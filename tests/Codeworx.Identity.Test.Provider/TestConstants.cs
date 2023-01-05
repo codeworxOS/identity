@@ -36,6 +36,8 @@
 
         public static class Clients
         {
+            public const string DefaultBackendClientId = "8246e779043f459c898d55bed7a55ebc";
+            public const string DefaultBackendClientSecret = "clientSecret";
             public const string DefaultCodeFlowClientId = "eadb80364aa64468934943ff541ebf5e";
             public const string DefaultCodeFlowClientSecret = "clientSecret";
             public const string DefaultCodeFlowPublicClientId = "809b3854c35449b990dc83f80ac5f4c2";

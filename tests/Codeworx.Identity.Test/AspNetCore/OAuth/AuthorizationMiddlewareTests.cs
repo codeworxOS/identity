@@ -306,7 +306,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.AreEqual(1, queryParts.Count());
 
-            var grantInformation = await cache.GetStringAsync(WebUtility.UrlDecode(queryParts[0].Split("=")[1].Split('.')[0]));
+            var grantInformation = await cache.GetStringAsync("Identity_AuthorizationCode_" + WebUtility.UrlDecode(queryParts[0].Split("=")[1].Split('.')[0]));
             Assert.False(string.IsNullOrWhiteSpace(grantInformation));
         }
 

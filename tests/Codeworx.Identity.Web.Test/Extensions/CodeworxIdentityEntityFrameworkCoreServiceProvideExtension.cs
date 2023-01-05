@@ -133,6 +133,19 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
+                    var backendClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultBackendClientId));
+
+                    if (backendClient == null)
+                    {
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(TestConstants.Clients.DefaultBackendClientId),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultBackendClientSecret),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            ClientType = Identity.Model.ClientType.Backend,                            
+                        });
+                    }
+
                     var serviceAccountClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultServiceAccountClientId));
 
                     if (serviceAccountClient == null)

@@ -143,6 +143,10 @@ namespace Codeworx.Identity.Test.AspNetCore
             public IReadOnlyList<IScope> AllowedScopes => ImmutableList<IScope>.Empty;
 
             public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
         }
     }
 }

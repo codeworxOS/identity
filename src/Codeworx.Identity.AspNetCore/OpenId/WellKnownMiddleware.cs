@@ -51,6 +51,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             {
                 Issuer = host,
                 AuthorizationEndpoint = host + options.OpenIdAuthorizationEndpoint,
+                IntrospectionEndpoint = host + options.OauthInstrospectionEndpoint,
                 TokenEndpoint = host + options.OpenIdTokenEndpoint,
                 JsonWebKeyEndpoint = host + options.OpenIdJsonWebKeyEndpoint,
                 UserInfoEndpoint = host + options.UserInfoEndpoint,

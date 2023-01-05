@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -14,13 +16,17 @@ namespace Codeworx.Identity.Cryptography.Json
     {
         private readonly JwtConfiguration _configuration;
         private readonly JsonWebTokenHandler _handler;
-        private readonly SecurityKey _signingKey;
         private readonly HashAlgorithm _hashAlgorithm;
-        private TimeSpan _expiration;
-        private IDictionary<string, object> _payload;
+        private readonly SecurityKey _signingKey;
+        private readonly ITokenCache _tokenCache;
+        private string _key;
 
-        public Jwt(IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
+        private DateTime _validFrom;
+
+        public Jwt(TokenType tokenType, ITokenCache tokenCache, IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
+            TokenType = tokenType;
+            _tokenCache = tokenCache;
             _configuration = configuration;
             _signingKey = defaultSigningKeyProvider.GetKey();
             _hashAlgorithm = defaultSigningKeyProvider.GetHashAlgorithm();
@@ -28,56 +34,70 @@ namespace Codeworx.Identity.Cryptography.Json
             _handler = new JsonWebTokenHandler();
         }
 
-        public Task<IDictionary<string, object>> GetPayloadAsync()
-        {
-            return Task.FromResult(_payload);
-        }
+        public IdentityData IdentityData { get; private set; }
 
-        public async Task ParseAsync(string value)
+        public TokenType TokenType { get; }
+
+        public DateTime ValidUntil { get; private set; }
+
+        public async Task ParseAsync(string value, CancellationToken token = default)
         {
             if (!_handler.CanReadToken(value))
             {
                 throw new SecurityTokenException($"Parameter {nameof(value)} is not a valid token.");
             }
 
-            var token = _handler.ReadJsonWebToken(value);
-            var decode = Base64UrlEncoder.Decode(token.EncodedPayload);
+            var jwtToken = _handler.ReadJsonWebToken(value);
 
-            _payload = JsonConvert.DeserializeObject<Dictionary<string, object>>(decode, new ArraySubObjectConverter());
-
-            await Task.CompletedTask;
+            if (TokenType != TokenType.IdToken)
+            {
+                if (jwtToken.TryGetClaim(Constants.Claims.Trk, out var claim))
+                {
+                    _key = claim.Value;
+                    var entry = await _tokenCache.GetAsync(TokenType, _key, token).ConfigureAwait(false);
+                    IdentityData = entry.IdentityData;
+                    ValidUntil = entry.ValidUntil;
+                }
+            }
         }
 
-        public Task<string> SerializeAsync()
+        public async Task<string> SerializeAsync(CancellationToken token = default)
         {
-            _payload.TryGetValue(Constants.Claims.Issuer, out var issuer);
-            _payload.TryGetValue(Constants.Claims.Audience, out var audience);
+            var data = IdentityData ?? throw new ArgumentNullException(nameof(IdentityData));
+            var payload = IdentityData.GetTokenClaims(GetClaimTarget());
+
+            if (TokenType != TokenType.IdToken)
+            {
+                if (_key == null)
+                {
+                    _key = await _tokenCache.SetAsync(TokenType, data, ValidUntil, token).ConfigureAwait(false);
+                }
+
+                payload.Add(Constants.Claims.Trk, _key);
+            }
+
+            payload.TryGetValue(Constants.Claims.Issuer, out var issuer);
 
             var descriptor = new SecurityTokenDescriptor
             {
                 Issuer = issuer?.ToString(),
-                Audience = audience?.ToString(),
-                Claims = _payload,
-                Expires = DateTime.UtcNow + _expiration,
-                IssuedAt = DateTime.UtcNow,
-                NotBefore = DateTime.UtcNow,
+                Audience = data.ClientId,
+                Claims = payload,
+                Expires = ValidUntil,
+                IssuedAt = _validFrom,
+                NotBefore = _validFrom,
                 SigningCredentials = GetSigningCredentials(),
             };
 
-            return Task.FromResult(_handler.CreateToken(descriptor));
+            return _handler.CreateToken(descriptor);
         }
 
-        public Task SetPayloadAsync(IDictionary<string, object> data, TimeSpan expiration)
+        public Task SetPayloadAsync(IdentityData identityData, TimeSpan expiration, CancellationToken token = default)
         {
-            _payload = data;
-            _expiration = expiration;
-
+            IdentityData = identityData;
+            _validFrom = DateTime.UtcNow;
+            ValidUntil = _validFrom.Add(expiration);
             return Task.CompletedTask;
-        }
-
-        public Task<bool> ValidateAsync()
-        {
-            throw new NotImplementedException();
         }
 
         private static async Task WriterObjectAsync(IDictionary<string, object> data, JsonTextWriter writer)
@@ -126,6 +146,20 @@ namespace Codeworx.Identity.Cryptography.Json
 
                 default:
                     throw new NotSupportedException($"Type {item.Value?.GetType()} not supported as Payload Value. Allowed Value Types are (string, string[], IDictionary<string,object>).");
+            }
+        }
+
+        private ClaimTarget GetClaimTarget()
+        {
+            switch (TokenType)
+            {
+                case TokenType.AccessToken:
+                    return ClaimTarget.AccessToken;
+                case TokenType.IdToken:
+                    return ClaimTarget.IdToken;
+                case TokenType.RefreshToken:
+                default:
+                    throw new NotSupportedException();
             }
         }
 

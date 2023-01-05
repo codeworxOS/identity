@@ -17,6 +17,7 @@ namespace Codeworx.Identity.Configuration
             StateLookupCacheExpiration = TimeSpan.FromMinutes(5);
             OauthAuthorizationEndpoint = "/oauth20";
             OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
+            OauthInstrospectionEndpoint = OauthAuthorizationEndpoint + "/introspect";
             OpenIdAuthorizationEndpoint = "/openid10";
             OpenIdJsonWebKeyEndpoint = OpenIdAuthorizationEndpoint + "/certs";
             OpenIdTokenEndpoint = OpenIdAuthorizationEndpoint + "/token";
@@ -76,6 +77,8 @@ namespace Codeworx.Identity.Configuration
         public string OauthAuthorizationEndpoint { get; set; }
 
         public string OauthTokenEndpoint { get; set; }
+
+        public string OauthInstrospectionEndpoint { get; set; }
 
         public string OpenIdAuthorizationEndpoint { get; set; }
 

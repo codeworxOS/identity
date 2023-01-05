@@ -22,5 +22,9 @@ namespace Codeworx.Identity.Configuration.Infrastructure
         public ClientType Type { get; set; }
 
         public string User { get; set; }
+
+        public string AccessTokenType { get; set; }
+
+        public string AccessTokenTypeConfiguration { get; set; }
     }
 }
