@@ -10,6 +10,11 @@ namespace Codeworx.Identity.Web.Test
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration(p => p.AddUserSecrets<Program>())
+                .UseDefaultServiceProvider(options =>
+                {
+                    options.ValidateScopes = true;
+                    options.ValidateOnBuild = true;
+                })
                 .Build();
 
         public static void Main(string[] args)

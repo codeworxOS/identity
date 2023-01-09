@@ -407,7 +407,7 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddSingleton<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
-            collection.AddSingleton<ITokenProvider, JwtProvider>();
+            collection.AddTransient<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
             collection.AddSingleton<ITokenCache, DistributedTokenCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
