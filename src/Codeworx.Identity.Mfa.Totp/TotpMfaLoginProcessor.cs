@@ -76,7 +76,7 @@ namespace Codeworx.Identity.Mfa.Totp
                         }
 
                         var user = await _userService.GetUserByIdentityAsync(loginRequest.Identity).ConfigureAwait(false);
-                        if (user.LinkedProviders.Contains(configuration.Id))
+                        if (user.LinkedMfaProviders.Contains(configuration.Id))
                         {
                             var message = _stringResources.GetResource(StringResource.GenericLoginError);
                             throw new AuthenticationException(message);
@@ -136,7 +136,7 @@ namespace Codeworx.Identity.Mfa.Totp
         {
             string description = _stringResources.GetResource(StringResource.MfaListRegisterTotp);
 
-            if (request.User.LinkedProviders.Contains(registration.Id))
+            if (request.User.LinkedMfaProviders.Contains(registration.Id))
             {
                 description = _stringResources.GetResource(StringResource.OneTimeCodeViaApp);
             }

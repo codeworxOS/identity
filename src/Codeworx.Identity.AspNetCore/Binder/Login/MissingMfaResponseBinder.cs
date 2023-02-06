@@ -17,7 +17,6 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
         public MissingMfaResponseBinder(
             IBaseUriAccessor accessor,
             IOptionsSnapshot<IdentityOptions> options,
-            ILoginService loginService,
             IUserService userService)
         {
             _accessor = accessor;
@@ -33,7 +32,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
 
             var user = await _userService.GetUserByIdentityAsync(responseData.Identity);
 
-            var defaultProviderId = user.LinkedProviders?.FirstOrDefault();
+            var defaultProviderId = user.LinkedMfaProviders.FirstOrDefault();
 
             if (defaultProviderId != null)
             {

@@ -56,7 +56,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
                     var builder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
                     builder.AppendPath($"{_options.AccountEndpoint}/login/mfa");
 
-                    var defaultProviderId = user.LinkedProviders?.FirstOrDefault();
+                    var defaultProviderId = user.LinkedMfaProviders?.FirstOrDefault();
 
                     if (defaultProviderId != null)
                     {

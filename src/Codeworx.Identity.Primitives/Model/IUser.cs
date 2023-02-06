@@ -21,7 +21,9 @@ namespace Codeworx.Identity.Model
 
         AuthenticationMode AuthenticationMode { get; }
 
-        IReadOnlyList<string> LinkedProviders { get; }
+        IReadOnlyList<string> LinkedMfaProviders { get; }
+
+        IReadOnlyList<string> LinkedLoginProviders { get; }
 
         int FailedLoginCount { get; }
     }

@@ -127,7 +127,9 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
 
@@ -165,7 +167,9 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
 
@@ -197,7 +201,9 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
 
@@ -234,8 +240,9 @@ namespace Codeworx.Identity.Test
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
             public int FailedLoginCount { get; set; }
 
             public bool ForceChangePassword => _forceChangePassword;
@@ -261,6 +268,7 @@ namespace Codeworx.Identity.Test
                 FailedLoginCount = 0;
             }
             public bool ConfirmationPending => false;
+
             public string DefaultTenantKey => null;
 
             public string Identity => TestConstants.Users.ForceChangePassword.UserId;
@@ -271,9 +279,11 @@ namespace Codeworx.Identity.Test
 
             public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
 
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders { get; } = ImmutableList<string>.Empty;
+            public IReadOnlyList<string> LinkedMfaProviders { get; } = ImmutableList<string>.Empty;
 
             public int FailedLoginCount { get; set; }
 
@@ -317,7 +327,9 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
 
@@ -365,7 +377,9 @@ namespace Codeworx.Identity.Test
 
             public bool ForceChangePassword => _forceChangePassword;
 
-            public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+            public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+            public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
             public int FailedLoginCount { get; set; }
 

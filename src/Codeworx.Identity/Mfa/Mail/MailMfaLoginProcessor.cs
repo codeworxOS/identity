@@ -72,7 +72,7 @@ namespace Codeworx.Identity.Mfa.Mail
                 case ProviderRequestType.MfaRegister:
                     return new RegisterMailRegistrationInfo(registration.Id, error);
                 case ProviderRequestType.MfaList:
-                    if (request.User.LinkedProviders.Contains(registration.Id))
+                    if (request.User.LinkedMfaProviders.Contains(registration.Id))
                     {
                         var address = await _userService.GetProviderValueAsync(request.User.Identity, registration.Id).ConfigureAwait(false);
                         if (address == null)

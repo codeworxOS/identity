@@ -87,6 +87,7 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendPath("me");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     break;
+                case ProviderRequestType.MfaList:
                 case ProviderRequestType.MfaRegister:
                 case ProviderRequestType.MfaLogin:
                 default:
@@ -123,7 +124,7 @@ namespace Codeworx.Identity.Login.OAuth
 
             if (request.Type == ProviderRequestType.Profile)
             {
-                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                var isLinked = request.User.LinkedLoginProviders.Contains(configuration.Id);
                 redirectUriBuilder.AppendPath(isLinked ? "unlink" : "link");
 
                 result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, redirectUriBuilder.ToString(), isLinked, error);

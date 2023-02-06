@@ -16,7 +16,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
 
         public bool ForceChangePassword { get; set; }
 
-        public IReadOnlyList<string> LinkedProviders { get; set; }
+        public IReadOnlyList<string> LinkedMfaProviders { get; set; }
+
+        public IReadOnlyList<string> LinkedLoginProviders { get; set; }
 
         public int FailedLoginCount { get; set; }
 

@@ -15,6 +15,7 @@ namespace Codeworx.Identity
     public class LoginService : ILoginService
     {
         private static readonly Action<ILogger, string, Exception> _getLoginRegistrationInfo;
+        private static readonly Action<ILogger, LoginProviderType, Exception> _getLoginRegistrationInfos;
         private static readonly Action<ILogger, string, Exception> _getParameterType;
         private static readonly Action<ILogger, ProviderRequestType, string, string, string, Exception> _getRegistrationInfos;
         private static readonly Action<ILogger, string, Exception> _loginFailed;
@@ -39,6 +40,10 @@ namespace Codeworx.Identity
                 LogLevel.Information,
                 new EventId(14304),
                 "GetLoginRegistrationInfoAsync: {providerId}");
+            _getLoginRegistrationInfos = LoggerMessage.Define<LoginProviderType>(
+                LogLevel.Information,
+                new EventId(14308),
+                "GetLoginRegistrationInfoAsync: {providerType}");
             _getParameterType = LoggerMessage.Define<string>(
                 LogLevel.Information,
                 new EventId(14305),
@@ -78,6 +83,23 @@ namespace Codeworx.Identity
             }
 
             return null;
+        }
+
+        public async Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationInfosAsync(LoginProviderType providerType)
+        {
+            _getLoginRegistrationInfos(_logger, providerType, null);
+
+            var result = new List<ILoginRegistration>();
+
+            foreach (var item in _providers)
+            {
+                foreach (var externalLogin in await item.GetLoginRegistrationsAsync(providerType))
+                {
+                    result.Add(externalLogin);
+                }
+            }
+
+            return result;
         }
 
         public async Task<Type> GetParameterTypeAsync(string providerId)

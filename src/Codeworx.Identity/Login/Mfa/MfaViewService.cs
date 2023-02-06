@@ -47,7 +47,7 @@ namespace Codeworx.Identity.Login.Mfa
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse("user missing!"));
             }
 
-            var requestType = user.LinkedProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
+            var requestType = user.LinkedMfaProviders.Contains(request.ProviderId) ? ProviderRequestType.MfaLogin : ProviderRequestType.MfaRegister;
 
             if (requestType == ProviderRequestType.MfaRegister && !hasMfaClaim && user.HasMfaRegistration)
             {

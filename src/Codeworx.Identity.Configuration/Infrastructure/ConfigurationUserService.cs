@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
 
             if (_options.TryGetValue(userId, out var userConfig))
             {
-                result = new User(userId, userId, userConfig.Password, new string[] { });
+                result = new User(userId, userId, userConfig.Password, new string[] { }, new string[] { });
             }
 
             return Task.FromResult<IUser>(result);
@@ -60,7 +60,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
 
             if (_options.TryGetValue(userName, out var userConfig))
             {
-                result = new User(userName, userName, userConfig.Password, new string[] { });
+                result = new User(userName, userName, userConfig.Password, new string[] { }, new string[] { });
             }
 
             return Task.FromResult<IUser>(result);

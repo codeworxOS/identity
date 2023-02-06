@@ -5,7 +5,6 @@ using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.OAuth

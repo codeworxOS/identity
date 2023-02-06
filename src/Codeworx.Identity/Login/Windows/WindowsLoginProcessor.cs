@@ -63,7 +63,7 @@ namespace Codeworx.Identity.Login.Windows
 
             if (request.Type == ProviderRequestType.Profile)
             {
-                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                var isLinked = request.User.LinkedLoginProviders.Contains(configuration.Id);
                 uriBuilder.AppendPath(isLinked ? "unlink" : "link");
                 result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, uriBuilder.ToString(), isLinked, error);
             }

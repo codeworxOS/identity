@@ -7,32 +7,35 @@ namespace Codeworx.Identity.Configuration.Model
 {
     public class User : IUser
     {
-        public User(string id, string name, string password, IEnumerable<string> linkedProviders)
+        public User(string id, string name, string password, IEnumerable<string> linkedMfaProviders, IEnumerable<string> linkedLoginProviders)
         {
             Identity = id;
             Name = name;
             PasswordHash = password;
-            LinkedProviders = linkedProviders.ToImmutableList();
+            LinkedMfaProviders = linkedMfaProviders.ToImmutableList();
+            LinkedLoginProviders = linkedLoginProviders.ToImmutableList();
         }
+
+        public AuthenticationMode AuthenticationMode { get; }
+
+        public bool ConfirmationPending => false;
 
         public string DefaultTenantKey => null;
 
+        public int FailedLoginCount => 0;
+
+        public bool ForceChangePassword => false;
+
+        public bool HasMfaRegistration => false;
+
         public string Identity { get; }
+
+        public IReadOnlyList<string> LinkedLoginProviders { get; }
+
+        public IReadOnlyList<string> LinkedMfaProviders { get; }
 
         public string Name { get; }
 
         public string PasswordHash { get; }
-
-        public bool ForceChangePassword => false;
-
-        public bool ConfirmationPending => false;
-
-        public IReadOnlyList<string> LinkedProviders { get; }
-
-        public int FailedLoginCount => 0;
-
-        public bool HasMfaRegistration => false;
-
-        public AuthenticationMode AuthenticationMode { get; }
     }
 }

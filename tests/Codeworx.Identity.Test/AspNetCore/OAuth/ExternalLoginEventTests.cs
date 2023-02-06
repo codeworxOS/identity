@@ -127,7 +127,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
                 public bool ConfirmationPending => false;
 
-                public IReadOnlyList<string> LinkedProviders => ExternalIdentifiers.Keys.ToImmutableList();
+                public IReadOnlyList<string> LinkedMfaProviders => ExternalIdentifiers.Keys.ToImmutableList();
+
+                public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 
                 public int FailedLoginCount { get; set; }
 

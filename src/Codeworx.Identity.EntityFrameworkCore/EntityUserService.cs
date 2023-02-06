@@ -198,7 +198,10 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         private async Task<Data.User> ToUserAsync(User user, bool hasMfaRegistration)
         {
-            var providers = await _context.Set<Model.AuthenticationProviderRightHolder>().Where(p => p.RightHolderId == user.Id).Select(p => p.ProviderId).ToListAsync();
+            var providers = await _context.Set<Model.AuthenticationProviderRightHolder>()
+                .Where(p => p.RightHolderId == user.Id)
+                .OrderBy(p => p.Provider.SortOrder)
+                .Select(p => new { p.Provider.Usage, p.ProviderId }).ToListAsync();
 
             return new Data.User
             {
@@ -208,7 +211,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 ConfirmationPending = user.ConfirmationPending,
                 Name = user.Name,
                 PasswordHash = user.PasswordHash,
-                LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),
+                LinkedMfaProviders = providers.Where(p => p.Usage == LoginProviderType.MultiFactor).Select(p => p.ProviderId.ToString("N")).ToImmutableList(),
+                LinkedLoginProviders = providers.Where(p => p.Usage == LoginProviderType.Login).Select(p => p.ProviderId.ToString("N")).ToImmutableList(),
                 FailedLoginCount = user.FailedLoginCount,
                 HasMfaRegistration = hasMfaRegistration,
                 AuthenticationMode = user.AuthenticationMode,
