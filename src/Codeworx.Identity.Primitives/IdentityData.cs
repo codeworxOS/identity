@@ -35,7 +35,7 @@ namespace Codeworx.Identity
         public IDictionary<string, object> GetTokenClaims(ClaimTarget target)
         {
             var run = 0;
-            var claims = this.Claims.ToList();
+            var claims = this.Claims.Where(claim => claim.Target.HasFlag(target)).ToList();
 
             Dictionary<string, object> result = GetClaimsStructure(run, claims);
 
