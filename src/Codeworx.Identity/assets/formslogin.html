@@ -5,7 +5,7 @@
 <form method="post" class="forms-login-box">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
     <div class="txt_field">
-        <input type="text" autofocus autocapitalize="off" required id="username" name="username" value="{{Username}}" />
+        <input type="text" autofocus autocapitalize="off" required id="username" name="username" maxlength="{{MaxLength.Login}}" value="{{Username}}" />
         <span></span>
         <label for="username">{{Translate 'Username'}}</label>
         <div class="i">
@@ -13,11 +13,14 @@
         </div>
     </div>
     <div class="txt_field">
-        <input type="password" required id="password" name="password" />
+        <input type="password" required id="password" name="password" maxlength="{{MaxLength.Password}}" />
         <span></span>
         <label for="password">{{Translate 'Password'}}</label>
         <div class="i">
             <i class="fas fa-lock"></i>
+        </div>
+        <div class="toggle-pw" >
+            <i class="fas fa-eye-slash"></i>
         </div>
     </div>
     {{#ForgotPasswordUrl}}

@@ -1,4 +1,34 @@
 var inputs = document.querySelectorAll(".validation-digit");
+var toggles = document.querySelectorAll(".toggle-pw");
+function onToggle(sender, event) {
+    var children = sender.parentElement.getElementsByTagName("input");
+    var toggleOn = false;
+    var icon = sender.getElementsByTagName('i').item(0);
+    if (icon instanceof HTMLElement) {
+        if (icon.classList.contains('fa-eye-slash')) {
+            toggleOn = true;
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+        else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    }
+    if (children.length > 0) {
+        var input = children.item(0);
+        if (toggleOn) {
+            if (input.type == 'password') {
+                input.type = 'text';
+            }
+        }
+        else {
+            if (input.type == 'text') {
+                input.type = 'password';
+            }
+        }
+    }
+}
 function onPaste(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -63,4 +93,7 @@ function onKeyUp(event) {
 inputs.forEach(function (input) {
     input.addEventListener('keyup', onKeyUp);
     input.addEventListener('paste', onPaste);
+});
+toggles.forEach(function (input) {
+    input.addEventListener('click', function (p) { return onToggle(input, p); });
 });

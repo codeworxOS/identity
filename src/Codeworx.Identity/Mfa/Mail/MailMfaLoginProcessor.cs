@@ -108,8 +108,7 @@ namespace Codeworx.Identity.Mfa.Mail
                     var sessionId = Guid.NewGuid().ToString("N");
 
                     await EnsureCodeNotificationAsync(user, sessionId, registration.EmailAddress).ConfigureAwait(false);
-
-                    MfaLoginResponse registerResponse = CreateRegisterMailResponse(registration, sessionId);
+                    MfaLoginResponse registerResponse = CreateRegisterMailResponse(registration, null, sessionId);
 
                     throw new ErrorResponseException<MfaLoginResponse>(registerResponse);
                 }
@@ -126,12 +125,12 @@ namespace Codeworx.Identity.Mfa.Mail
                     if (cachedCode == null)
                     {
                         await EnsureCodeNotificationAsync(user, registration.SessionId, registration.EmailAddress).ConfigureAwait(false);
-                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode)));
+                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode), null));
                     }
 
                     if (cachedCode != registration.Code)
                     {
-                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode)));
+                        throw new ErrorResponseException<MfaLoginResponse>(CreateRegisterMailResponse(registration, _stringResources.GetResource(StringResource.InvalidOneTimeCode), null));
                     }
 
                     await _linkUserService.LinkUserAsync(user, new MailLoginData(configuration, registration.EmailAddress));
@@ -183,9 +182,9 @@ namespace Codeworx.Identity.Mfa.Mail
             return registerResponse;
         }
 
-        private MfaLoginResponse CreateRegisterMailResponse(RegisterMailLoginRequest registration, string error = null)
+        private MfaLoginResponse CreateRegisterMailResponse(RegisterMailLoginRequest registration, string error, string sessionId)
         {
-            var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, registration.SessionId, error);
+            var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId ?? registration.SessionId, error);
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             uriBuilder.AppendPath(_options.AccountEndpoint);

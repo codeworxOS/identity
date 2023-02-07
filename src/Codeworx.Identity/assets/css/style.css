@@ -81,7 +81,8 @@ body {
     margin: 0 3rem;
 }
 
-.i {
+.i,
+.toggle-pw {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -89,6 +90,10 @@ body {
 
     .i i {
         transition: 0.3s;
+    }
+
+    .toggle-pw i {
+        transition: 0.03s;
     }
 
 .txt_field {
@@ -108,6 +113,10 @@ body {
         background: none;
         outline: none;
     }
+
+        .txt_field input::-ms-reveal {
+            display: none;
+        }
 
     .txt_field label {
         position: absolute;
@@ -131,16 +140,29 @@ body {
         transition: .5s;
     }
 
-    .txt_field .i {
+    .txt_field .i,
+    .txt_field .toggle-pw {
         position: absolute;
         top: 50%;
-        left: 5px;
         color: var(--default-light);
         transform: translateY(-50%);
         font-size: 14px;
-        pointer-events: none;
         transition: .5s;
     }
+
+    .txt_field .i {
+        left: 5px;
+        pointer-events: none;
+    }
+
+    .txt_field .toggle-pw {
+        right: 5px;
+        cursor: pointer;
+    }
+
+        .txt_field .toggle-pw:hover {
+            color: var(--accent);
+        }
 
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,

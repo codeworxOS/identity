@@ -40,6 +40,11 @@ namespace Codeworx.Identity.Configuration
                     { "de", Constants.DefaultLoginDescriptionDe },
                 },
             };
+            MaxLength = new MaxLengthOption
+            {
+                Login = 500,
+                Password = 100,
+            };
             Signing = new SigningOptions();
             SelectTenantEndpoint = AccountEndpoint + "/tenant";
             Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css", Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css" };
@@ -92,6 +97,8 @@ namespace Codeworx.Identity.Configuration
 
         public RegexPolicyOption Login { get; set; }
 
+        public MaxLengthOption MaxLength { get; set; }
+
         public SigningOptions Signing { get; set; }
 
         public string SelectTenantEndpoint { get; set; }
@@ -131,6 +138,7 @@ namespace Codeworx.Identity.Configuration
             target.OpenIdWellKnownPrefix = this.OpenIdWellKnownPrefix;
             target.Password = this.Password != null ? new RegexPolicyOption(this.Password) : null;
             target.Login = this.Login != null ? new RegexPolicyOption(this.Login) : null;
+            target.MaxLength = this.MaxLength != null ? new MaxLengthOption(this.MaxLength) : null;
             target.SelectTenantEndpoint = this.SelectTenantEndpoint;
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;

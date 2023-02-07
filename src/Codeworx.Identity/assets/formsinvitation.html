@@ -6,7 +6,7 @@
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
 
     <div class="txt_field">
-        <input type="text" {{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}} autocapitalize="off" required id="username" name="username" value="{{Username}}" />
+        <input type="text" {{#if CanChangeLogin}} {{else}} readonly="readonly" {{/if}} autocapitalize="off" required id="username" name="username" maxlength="{{MaxLength.Login}}" value="{{Username}}" />
         <span></span>
         <label for="username">{{Translate 'Username'}}</label>
         <div class="i">
@@ -15,7 +15,7 @@
     </div>
     {{#CanChangePassword}}
     <div class="txt_field">
-        <input type="password" required id="password" name="password" />
+        <input type="password" required id="password" name="password" maxlength="{{MaxLength.Password}}" />
         <span></span>
         <label for="password">{{Translate 'Password'}}</label>
         <div class="i">
@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="txt_field">
-        <input type="password" required id="confirm-password" name="confirm-password" />
+        <input type="password" required id="confirm-password" name="confirm-password" maxlength="{{MaxLength.Password}}" />
         <span></span>
         <label for="confirm-password">{{Translate 'ConfirmPassword'}}</label>
         <div class="i">

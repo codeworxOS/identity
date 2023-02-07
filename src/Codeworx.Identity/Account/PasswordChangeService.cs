@@ -1,8 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Account
 {
@@ -13,12 +15,14 @@ namespace Codeworx.Identity.Account
         private readonly IPasswordValidator _passwordValidator;
         private readonly IPasswordPolicyProvider _policyProvider;
         private readonly IStringResources _stringResources;
+        private readonly IdentityOptions _options;
 
         public PasswordChangeService(
             IUserService userService,
             IPasswordValidator passwordValidator,
             IPasswordPolicyProvider policyProvider,
             IStringResources stringResources,
+            IOptionsSnapshot<IdentityOptions> options,
             IChangePasswordService passwordService = null)
         {
             _passwordService = passwordService;
@@ -26,6 +30,7 @@ namespace Codeworx.Identity.Account
             _passwordValidator = passwordValidator;
             _policyProvider = policyProvider;
             _stringResources = stringResources;
+            _options = options.Value;
         }
 
         public virtual async Task<PasswordChangeResponse> ProcessChangePasswordAsync(ProcessPasswordChangeRequest request)
@@ -80,7 +85,7 @@ namespace Codeworx.Identity.Account
 
             if (hasError)
             {
-                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, error);
+                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, _options.MaxLength, error);
                 throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
             }
 
@@ -90,7 +95,7 @@ namespace Codeworx.Identity.Account
             }
             catch (PasswordChangeException e)
             {
-                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, e.Message);
+                var errorResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, _options.MaxLength, e.Message);
                 throw new ErrorResponseException<PasswordChangeViewResponse>(errorResponse);
             }
 
@@ -107,7 +112,7 @@ namespace Codeworx.Identity.Account
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
             var hasCurrentPassword = !string.IsNullOrEmpty(user.PasswordHash);
-            var viewResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword);
+            var viewResponse = new PasswordChangeViewResponse(user.Name, hasCurrentPassword, _options.MaxLength);
 
             return viewResponse;
         }

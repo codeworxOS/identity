@@ -40,9 +40,9 @@ namespace Codeworx.Identity.Login
             switch (request.Type)
             {
                 case ProviderRequestType.Login:
-                    return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, error, await GetForgotPasswordUrl(request), _options.FormsPersistenceMode == FormsPersistenceMode.SessionWithPersistOption);
+                    return new FormsLoginRegistrationInfo(configuration.Id, request.UserName, _options.MaxLength, error, await GetForgotPasswordUrl(request), _options.FormsPersistenceMode == FormsPersistenceMode.SessionWithPersistOption);
                 case ProviderRequestType.Invitation:
-                    return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, request.Invitation.Action.HasFlag(InvitationAction.ChangeLogin), request.Invitation.Action.HasFlag(InvitationAction.ChangePassword), error);
+                    return new FormsInvitationRegistrationInfo(configuration.Id, request.UserName, _options.MaxLength, request.Invitation.Action.HasFlag(InvitationAction.ChangeLogin), request.Invitation.Action.HasFlag(InvitationAction.ChangePassword), error);
                 case ProviderRequestType.Profile:
                     var hasCurrentPassword = !string.IsNullOrEmpty(request.User.PasswordHash);
                     return new FormsProfileRegistrationInfo(configuration.Id, request.User.Name, _hasChangePasswordService, hasCurrentPassword, GetPasswodChangeUrl(request), error);

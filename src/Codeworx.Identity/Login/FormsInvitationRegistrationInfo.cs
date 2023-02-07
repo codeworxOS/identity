@@ -1,14 +1,17 @@
-﻿namespace Codeworx.Identity.Login
+﻿using Codeworx.Identity.Configuration;
+
+namespace Codeworx.Identity.Login
 {
     internal class FormsInvitationRegistrationInfo : ILoginRegistrationInfo
     {
-        public FormsInvitationRegistrationInfo(string providerId, string userName, bool canChangeLogin, bool canChangePassword, string error = null)
+        public FormsInvitationRegistrationInfo(string providerId, string userName, MaxLengthOption maxLength, bool canChangeLogin, bool canChangePassword, string error = null)
         {
             UserName = userName;
             ProviderId = providerId;
             CanChangeLogin = canChangeLogin;
             CanChangePassword = canChangePassword;
             Error = error;
+            MaxLength = maxLength;
         }
 
         public bool CanChangeLogin { get; }
@@ -18,6 +21,8 @@
         public bool CanChangeLoginOrPassword => CanChangeLogin || CanChangePassword;
 
         public string Error { get; }
+
+        public MaxLengthOption MaxLength { get; }
 
         public string ProviderId { get; }
 
