@@ -90,6 +90,11 @@ function onKeyUp(event) {
         }
     }
 }
+function showBusyIndicator() {
+    var indicators = document.querySelectorAll(".busy-indicator");
+    indicators.forEach(function (p) { return p.classList.add('active'); });
+}
+window.addEventListener('beforeunload', function (p) { return showBusyIndicator(); });
 inputs.forEach(function (input) {
     input.addEventListener('keyup', onKeyUp);
     input.addEventListener('paste', onPaste);

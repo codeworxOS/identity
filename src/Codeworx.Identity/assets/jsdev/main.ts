@@ -96,6 +96,13 @@ function onKeyUp(event: KeyboardEvent): void {
     }
 }
 
+function showBusyIndicator() {
+    const indicators = document.querySelectorAll<HTMLInputElement>(".busy-indicator");
+    indicators.forEach(p => p.classList.add('active'));
+}
+
+window.addEventListener('beforeunload', p => showBusyIndicator());
+
 inputs.forEach((input) => {
     input.addEventListener('keyup', onKeyUp);
     input.addEventListener('paste', onPaste);

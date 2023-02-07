@@ -126,6 +126,7 @@ namespace Codeworx.Identity.Configuration
             this.RegisterMultiple<IPartialTemplate, MailMfaRegistrationTemplate>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IPartialTemplate, MfaProviderListTemplate>(ServiceLifetime.Singleton);
             this.RegisterMultiple<IPartialTemplate, MfaMailNotificationTemplate>(ServiceLifetime.Singleton);
+            this.RegisterMultiple<IPartialTemplate, ProgressSpinnerTemplate>(ServiceLifetime.Singleton);
 
             this.RegisterMultiple<ITemplateHelper, RegistrationTemplateHelper>(ServiceLifetime.Singleton);
             this.RegisterMultiple<ITemplateHelper, TranslateTemplateHelper>(ServiceLifetime.Singleton);
