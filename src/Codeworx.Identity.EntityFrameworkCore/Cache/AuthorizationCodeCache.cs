@@ -34,7 +34,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         public virtual async Task<string> SetAsync(IdentityData payload, TimeSpan validFor, CancellationToken token = default)
         {
             var cacheKey = await _codeGenerator.GenerateCode();
-            var validUntil = DateTime.UtcNow.Add(validFor);
+            var validUntil = DateTimeOffset.UtcNow.Add(validFor);
             return await AddEntryAsync(CacheType.AuthorizationCode, cacheKey, payload, validUntil, token);
         }
 

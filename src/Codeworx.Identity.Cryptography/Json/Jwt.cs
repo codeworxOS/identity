@@ -21,7 +21,7 @@ namespace Codeworx.Identity.Cryptography.Json
         private readonly ITokenCache _tokenCache;
         private string _key;
 
-        private DateTime _validFrom;
+        private DateTimeOffset _validFrom;
 
         public Jwt(TokenType tokenType, ITokenCache tokenCache, IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
         {
@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public TokenType TokenType { get; }
 
-        public DateTime ValidUntil { get; private set; }
+        public DateTimeOffset ValidUntil { get; private set; }
 
         public async Task ParseAsync(string value, CancellationToken token = default)
         {
@@ -83,20 +83,20 @@ namespace Codeworx.Identity.Cryptography.Json
                 Issuer = issuer?.ToString(),
                 Audience = data.ClientId,
                 Claims = payload,
-                Expires = ValidUntil,
-                IssuedAt = _validFrom,
-                NotBefore = _validFrom,
+                Expires = ValidUntil.UtcDateTime,
+                IssuedAt = _validFrom.UtcDateTime,
+                NotBefore = _validFrom.UtcDateTime,
                 SigningCredentials = GetSigningCredentials(),
             };
 
             return _handler.CreateToken(descriptor);
         }
 
-        public Task SetPayloadAsync(IdentityData identityData, TimeSpan expiration, CancellationToken token = default)
+        public Task SetPayloadAsync(IdentityData identityData, DateTimeOffset validUntil, CancellationToken token = default)
         {
             IdentityData = identityData;
-            _validFrom = DateTime.UtcNow;
-            ValidUntil = _validFrom.Add(expiration);
+            _validFrom = DateTimeOffset.UtcNow;
+            ValidUntil = validUntil;
             return Task.CompletedTask;
         }
 

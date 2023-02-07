@@ -18,33 +18,6 @@ namespace Codeworx.Identity.Test.MFA
 {
     public class MfaIntegrationTestBase : IntegrationTestBase
     {
-        protected async Task<HttpResponseMessage> Authenticate(string userName, string password)
-        {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-
-            var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
-            loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
-            loginRequestBuilder.AppendPath("login");
-            ////loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, this.GetRedirectUrl().ToString());
-
-            var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
-                               new FormUrlEncodedContent(new Dictionary<string, string>
-                               {
-                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
-                                   {"username", userName},
-                                   {"password", password}
-                               }));
-
-            response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
-            var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
-            if (!string.IsNullOrEmpty(authenticationCookie))
-            {
-                this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
-            }
-
-            return response;
-        }
-
         protected async Task<HttpResponseMessage> GetAuthorizationResponse(string clientId, string defaultTenant)
         {
             var authorizationRequestBuilder = new OpenIdAuthorizationRequestBuilder()

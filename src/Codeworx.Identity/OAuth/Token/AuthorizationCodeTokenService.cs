@@ -63,9 +63,11 @@ namespace Codeworx.Identity.OAuth.Token
             var accessToken = await _tokenProviderService.CreateAccessTokenAsync(client).ConfigureAwait(false);
             var identityToken = await _tokenProviderService.CreateIdentityTokenAsync(client).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData, client.TokenExpiration)
+            var validUntil = DateTimeOffset.UtcNow.Add(client.TokenExpiration);
+
+            await accessToken.SetPayloadAsync(identityData, validUntil)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData, client.TokenExpiration)
+            await identityToken.SetPayloadAsync(identityData, validUntil)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
@@ -81,10 +83,11 @@ namespace Codeworx.Identity.OAuth.Token
                 if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
                     var validFor = TimeSpan.FromDays(30 * 6);
+                    var refreshValidUntil = DateTimeOffset.UtcNow.Add(validFor);
 
                     var refreshToken = await _tokenProviderService.CreateRefreshTokenAsync(token).ConfigureAwait(false);
 
-                    await refreshToken.SetPayloadAsync(identityData, validFor, token).ConfigureAwait(false);
+                    await refreshToken.SetPayloadAsync(identityData, refreshValidUntil, token).ConfigureAwait(false);
                     refreshTokenValue = await refreshToken.SerializeAsync(token);
 
                     if (!string.IsNullOrWhiteSpace(identityData.ExternalTokenKey) && _externalTokenCache != null)

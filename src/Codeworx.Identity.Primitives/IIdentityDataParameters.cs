@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Codeworx.Identity.Model;
 
@@ -9,6 +10,8 @@ namespace Codeworx.Identity
         MfaFlowMode MfaFlowModel { get; }
 
         IClientRegistration Client { get; }
+
+        DateTimeOffset TokenValidUntil { get; }
 
         IReadOnlyCollection<string> Scopes { get; }
 

@@ -50,9 +50,9 @@ namespace Codeworx.Identity.OAuth.Token
             var accessToken = await _tokenProviderService.CreateAccessTokenAsync(parameters.Client, token).ConfigureAwait(false);
             var identityToken = await _tokenProviderService.CreateIdentityTokenAsync(parameters.Client, token).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData, parameters.Client.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData, parameters.TokenValidUntil)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData, parameters.Client.TokenExpiration)
+            await identityToken.SetPayloadAsync(identityData, parameters.TokenValidUntil)
                     .ConfigureAwait(false);
 
             string refreshToken = null;

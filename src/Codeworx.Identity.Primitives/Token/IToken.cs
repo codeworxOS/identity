@@ -10,12 +10,12 @@ namespace Codeworx.Identity.Token
 
         IdentityData IdentityData { get; }
 
-        DateTime ValidUntil { get; }
+        DateTimeOffset ValidUntil { get; }
 
         Task ParseAsync(string value, CancellationToken token = default);
 
         Task<string> SerializeAsync(CancellationToken token = default);
 
-        Task SetPayloadAsync(IdentityData identityData, TimeSpan expiration, CancellationToken token = default);
+        Task SetPayloadAsync(IdentityData identityData, DateTimeOffset expiration, CancellationToken token = default);
     }
 }

@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Token.Reference
 
         public IdentityData IdentityData { get; private set; }
 
-        public DateTime ValidUntil { get; private set; }
+        public DateTimeOffset ValidUntil { get; private set; }
 
         public async Task ParseAsync(string value, CancellationToken token = default)
         {
@@ -48,10 +48,10 @@ namespace Codeworx.Identity.Token.Reference
             return result;
         }
 
-        public Task SetPayloadAsync(IdentityData identityData, TimeSpan expiration, CancellationToken token = default)
+        public Task SetPayloadAsync(IdentityData identityData, DateTimeOffset expiration, CancellationToken token = default)
         {
             IdentityData = identityData;
-            ValidUntil = DateTime.UtcNow.Add(expiration);
+            ValidUntil = expiration;
             return Task.CompletedTask;
         }
     }

@@ -58,7 +58,8 @@ namespace Codeworx.Identity.OAuth
             var accessToken = await _tokenProviderService.CreateTokenAsync(tokenFormat, TokenType.AccessToken, null, token).ConfigureAwait(false);
             await accessToken.ParseAsync(request.Token, token).ConfigureAwait(false);
 
-            return new IntrospectResponse(accessToken.ValidUntil, accessToken.IdentityData.GetTokenClaims(ClaimTarget.ProfileEndpoint));
+            var validUntil = accessToken.ValidUntil;
+            return new IntrospectResponse(validUntil, accessToken.IdentityData.GetTokenClaims(ClaimTarget.ProfileEndpoint));
         }
     }
 }

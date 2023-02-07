@@ -34,7 +34,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             return new TokenCacheItem(entry.Data, entry.ValidUntil);
         }
 
-        public async Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTime validUntil, CancellationToken token = default)
+        public async Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTimeOffset validUntil, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
             return await AddEntryAsync(GetCacheType(tokenType), cacheKey, data, validUntil, token);
@@ -61,7 +61,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
         private class TokenCacheItem : ITokenCacheItem
         {
-            public TokenCacheItem(IdentityData identityData, DateTime validUntil)
+            public TokenCacheItem(IdentityData identityData, DateTimeOffset validUntil)
             {
                 IdentityData = identityData;
                 ValidUntil = validUntil;
@@ -69,7 +69,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
             public IdentityData IdentityData { get; }
 
-            public DateTime ValidUntil { get; }
+            public DateTimeOffset ValidUntil { get; }
         }
     }
 }

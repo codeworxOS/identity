@@ -15,11 +15,11 @@ namespace Codeworx.Identity.OAuth
             AdditionalProperties = new Dictionary<string, object>();
         }
 
-        public IntrospectResponse(DateTime validUntil, System.Collections.Generic.IDictionary<string, object> dictionary)
+        public IntrospectResponse(DateTimeOffset validUntil, System.Collections.Generic.IDictionary<string, object> dictionary)
             : this(true)
         {
             AdditionalProperties = dictionary;
-            Expiration = ((DateTimeOffset)validUntil).ToUnixTimeSeconds();
+            Expiration = validUntil.ToUnixTimeSeconds();
         }
 
         [JsonProperty(PropertyName = "active")]

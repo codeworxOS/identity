@@ -31,10 +31,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             return entry.Data;
         }
 
-        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor, CancellationToken token = default)
+        public virtual async Task<string> SetAsync(ExternalTokenData value, DateTimeOffset validUntil, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
-            var validUntil = DateTime.UtcNow.Add(validFor);
             return await AddEntryAsync(CacheType.ExternalTokenData, cacheKey, value, validUntil, token).ConfigureAwait(false);
         }
 

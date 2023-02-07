@@ -5,7 +5,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
     public class CacheEntry<TData>
         where TData : class
     {
-        public CacheEntry(TData data, DateTime validUntil)
+        public CacheEntry(TData data, DateTimeOffset validUntil)
         {
             Data = data;
             ValidUntil = validUntil;
@@ -13,6 +13,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
         public TData Data { get; }
 
-        public DateTime ValidUntil { get; }
+        public DateTimeOffset ValidUntil { get; }
     }
 }

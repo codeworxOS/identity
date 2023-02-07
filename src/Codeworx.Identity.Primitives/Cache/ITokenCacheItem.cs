@@ -6,6 +6,6 @@ namespace Codeworx.Identity.Cache
     {
         IdentityData IdentityData { get; }
 
-        DateTime ValidUntil { get; }
+        DateTimeOffset ValidUntil { get; }
     }
 }

@@ -53,7 +53,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var identityData = await _identityService.GetIdentityAsync(identityParameters).ConfigureAwait(false);
 
-            await accessToken.SetPayloadAsync(identityData, identityParameters.Client.TokenExpiration, token)
+            await accessToken.SetPayloadAsync(identityData, identityParameters.TokenValidUntil, token)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);

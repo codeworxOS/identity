@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Codeworx.Identity.Model;
@@ -7,6 +8,8 @@ namespace Codeworx.Identity.OAuth.Token
 {
     internal class TokenExchangeParameters : ITokenExchangeParameters
     {
+        private readonly DateTimeOffset _validFrom;
+
         public TokenExchangeParameters(
             IClientRegistration client,
             string[] scopes,
@@ -27,29 +30,32 @@ namespace Codeworx.Identity.OAuth.Token
             ActorToken = actorToken;
             ActorTokenType = actorTokenType;
             RequestedTokenTypes = requestedTokenTypes?.ToImmutableList() ?? ImmutableList<string>.Empty;
+            _validFrom = DateTimeOffset.UtcNow;
         }
-
-        public IClientRegistration Client { get; }
-
-        public IReadOnlyCollection<string> Scopes { get; }
-
-        public ClaimsIdentity User { get; }
-
-        public string ClientSecret { get; }
-
-        public string SubjectToken { get; }
-
-        public string SubjectTokenType { get; }
 
         public string ActorToken { get; }
 
         public string ActorTokenType { get; }
 
-        public IReadOnlyCollection<string> RequestedTokenTypes { get; }
-
         public string Audience { get; }
 
+        public IClientRegistration Client { get; }
+
+        public string ClientSecret { get; }
+
         public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
+
+        public IReadOnlyCollection<string> RequestedTokenTypes { get; }
+
+        public IReadOnlyCollection<string> Scopes { get; }
+
+        public string SubjectToken { get; }
+
+        public string SubjectTokenType { get; }
+
+        public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
+
+        public ClaimsIdentity User { get; }
 
         public void Throw(string error, string errorDescription)
         {

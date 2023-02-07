@@ -77,7 +77,7 @@ namespace Codeworx.Identity.Cache
             return JsonConvert.DeserializeObject<ExternalTokenData>(decoded);
         }
 
-        public virtual async Task<string> SetAsync(ExternalTokenData value, TimeSpan validFor, CancellationToken token = default)
+        public virtual async Task<string> SetAsync(ExternalTokenData value, DateTimeOffset validUntil, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
 
@@ -87,7 +87,7 @@ namespace Codeworx.Identity.Cache
             await _cache.SetStringAsync(
                 cacheKey,
                 encryped.Data,
-                new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = validFor },
+                new DistributedCacheEntryOptions { AbsoluteExpiration = validUntil },
                 token)
             .ConfigureAwait(false);
 

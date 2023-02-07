@@ -211,7 +211,9 @@ namespace Codeworx.Identity.Login.OAuth
                         throw ex;
                     }
 
-                    var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
+                    var validUntil = DateTimeOffset.UtcNow.Add(_identityOptions.CookieExpiration);
+
+                    var code = await _externalTokenCache.SetAsync(data, validUntil).ConfigureAwait(false);
 
                     identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
                 }

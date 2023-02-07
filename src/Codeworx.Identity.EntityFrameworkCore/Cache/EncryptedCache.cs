@@ -72,7 +72,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             GetKeys(key, out cacheKey, out encryptedKey);
 
             string data = null;
-            DateTime validUntil;
+            DateTimeOffset validUntil;
 
             await using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -104,7 +104,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                 }
 
                 data = entry.Value;
-                validUntil = entry.ValidUntil;
+                validUntil = new DateTimeOffset(entry.ValidUntil, TimeSpan.Zero);
 
                 if (disableOnReceive)
                 {
@@ -176,7 +176,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        protected virtual async Task<string> AddEntryAsync(CacheType cacheType, string cacheKey, TData payload, DateTime validUntil, CancellationToken token = default)
+        protected virtual async Task<string> AddEntryAsync(CacheType cacheType, string cacheKey, TData payload, DateTimeOffset validUntil, CancellationToken token = default)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -196,7 +196,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     Key = cacheKey,
                     CacheType = cacheType,
                     UserId = GetUserId(payload),
-                    ValidUntil = validUntil,
+                    ValidUntil = validUntil.UtcDateTime,
                     Value = encrypted.Data,
                 };
 

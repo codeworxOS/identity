@@ -55,22 +55,26 @@ namespace Codeworx.Identity.Cache
                 throw new CacheEntryNotFoundException();
             }
 
-            var data = await _dataEncryption.DecryptAsync(cachedGrantInformation, encryptionKey);
+            var entry = JsonConvert.DeserializeObject<TokenCacheEntry>(cachedGrantInformation);
+
+            var data = await _dataEncryption.DecryptAsync(entry.Data, encryptionKey);
 
             var identityData = JsonConvert.DeserializeObject<IdentityData>(data);
 
-            return new TokenCacheItem(identityData, DateTime.UtcNow.Add(TimeSpan.FromHours(1)));
+            return new TokenCacheItem(identityData, entry.ValidUntil);
         }
 
-        public async Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTime validUntil, CancellationToken token = default)
+        public async Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTimeOffset validUntil, CancellationToken token = default)
         {
             var cacheKey = Guid.NewGuid().ToString("N");
 
             var encrypted = await _dataEncryption.EncryptAsync(JsonConvert.SerializeObject(data)).ConfigureAwait(false);
 
+            var entry = new TokenCacheEntry { Data = encrypted.Data, ValidUntil = validUntil };
+
             await _cache.SetStringAsync(
                 $"identity_token_{tokenType}_{cacheKey}",
-                encrypted.Data,
+                JsonConvert.SerializeObject(entry),
                 new DistributedCacheEntryOptions() { AbsoluteExpiration = validUntil, },
                 token);
 
@@ -95,7 +99,7 @@ namespace Codeworx.Identity.Cache
 
         private class TokenCacheItem : ITokenCacheItem
         {
-            public TokenCacheItem(IdentityData identityData, DateTime validUntil)
+            public TokenCacheItem(IdentityData identityData, DateTimeOffset validUntil)
             {
                 IdentityData = identityData;
                 ValidUntil = validUntil;
@@ -103,7 +107,18 @@ namespace Codeworx.Identity.Cache
 
             public IdentityData IdentityData { get; }
 
-            public DateTime ValidUntil { get; }
+            public DateTimeOffset ValidUntil { get; }
+        }
+
+        private class TokenCacheEntry
+        {
+            public TokenCacheEntry()
+            {
+            }
+
+            public string Data { get; set; }
+
+            public DateTimeOffset ValidUntil { get; set; }
         }
     }
 }

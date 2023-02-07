@@ -22,6 +22,7 @@ namespace Codeworx.Identity.Test
                                                 new DummyOAuthAuthorizationCodeClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationCodePublicClientRegistration(),
                                                 new ServiceAccountClientRegistration(hashingProvider),
+                                                new BackendClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
                                                 new MfaRequiredClientRegistration(),
                                                 new MfaTestServiceAccountClientRegistration(hashingProvider)
@@ -298,6 +299,38 @@ namespace Codeworx.Identity.Test
             {
                 this.User = user;
             }
+        }
+
+        private class BackendClientRegistration : IDummyClientRegistration
+        {
+            public BackendClientRegistration(IHashingProvider hashingProvider)
+            {
+                this.ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultCodeFlowClientSecret);
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+            }
+
+            public string ClientId => TestConstants.Clients.DefaultBackendClientId;
+
+            public string ClientSecretHash { get; }
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
+
+            public ClientType ClientType => ClientType.Backend;
+
+            public TimeSpan TokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
         }
     }
 }

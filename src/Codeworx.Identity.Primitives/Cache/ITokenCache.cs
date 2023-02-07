@@ -11,6 +11,6 @@ namespace Codeworx.Identity.Cache
 
         Task ExtendLifetimeAsync(TokenType tokenType, string key, TimeSpan validFor, CancellationToken token = default);
 
-        Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTime validUntil, CancellationToken token = default);
+        Task<string> SetAsync(TokenType tokenType, IdentityData data, DateTimeOffset validUntil, CancellationToken token = default);
     }
 }

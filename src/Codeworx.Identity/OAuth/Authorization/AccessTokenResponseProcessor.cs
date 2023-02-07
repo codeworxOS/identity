@@ -30,7 +30,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             }
 
             var token = await _tokenProviderService.CreateAccessTokenAsync(parameters.Client);
-            await token.SetPayloadAsync(data, parameters.Client.TokenExpiration).ConfigureAwait(false);
+            await token.SetPayloadAsync(data, parameters.TokenValidUntil).ConfigureAwait(false);
 
             var accessToken = await token.SerializeAsync().ConfigureAwait(false);
 

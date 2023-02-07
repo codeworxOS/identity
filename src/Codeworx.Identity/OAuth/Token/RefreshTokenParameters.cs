@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using Codeworx.Identity.Model;
@@ -8,6 +9,8 @@ namespace Codeworx.Identity.OAuth.Token
 {
     internal class RefreshTokenParameters : IRefreshTokenParameters
     {
+        private readonly DateTimeOffset _validFrom;
+
         public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IToken parsedRefreshToken)
         {
             Client = client;
@@ -15,19 +18,22 @@ namespace Codeworx.Identity.OAuth.Token
             User = user;
             RefreshToken = refreshToken;
             ParsedRefreshToken = parsedRefreshToken;
+            _validFrom = DateTimeOffset.UtcNow;
         }
 
         public IClientRegistration Client { get; }
 
-        public IReadOnlyCollection<string> Scopes { get; }
-
-        public ClaimsIdentity User { get; }
-
-        public string RefreshToken { get; }
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
 
         public IToken ParsedRefreshToken { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
+        public string RefreshToken { get; }
+
+        public IReadOnlyCollection<string> Scopes { get; }
+
+        public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
+
+        public ClaimsIdentity User { get; }
 
         public void Throw(string error, string errorDescription)
         {
