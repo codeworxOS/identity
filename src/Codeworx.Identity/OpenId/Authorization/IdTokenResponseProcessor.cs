@@ -36,7 +36,7 @@ namespace Codeworx.Identity.OpenId.Authorization
             var token = await _tokenProviderService.CreateIdentityTokenAsync(parameters.Client).ConfigureAwait(false);
 
             var claims = data.Claims.ToList();
-            claims.Add(AssignedClaim.Create(Constants.Claims.AtHash, GetAtHashClaim(responseBuilder.Response.Token)));
+            claims.Add(AssignedClaim.Create(Constants.Claims.AtHash, GetAtHashClaim(responseBuilder.Response.Token), ClaimTarget.IdToken));
 
             await token.SetPayloadAsync(new IdentityData(data.ClientId, data.Identifier, data.Login, claims, data.ExternalTokenKey), parameters.Client.TokenExpiration).ConfigureAwait(false);
             var identityToken = await token.SerializeAsync().ConfigureAwait(false);

@@ -34,7 +34,7 @@ namespace Codeworx.Identity
 
                     if (tenant.Count == 1)
                     {
-                        result.Add(AssignedClaim.Create(Constants.Claims.CurrentTenant, tenant[0].Key, ClaimTarget.AllTokens | ClaimTarget.ProfileEndpoint));
+                        result.Add(AssignedClaim.Create(Constants.Claims.CurrentTenant, tenant[0].Key));
                     }
                 }
             }

@@ -35,12 +35,12 @@ namespace Codeworx.Identity
         [DataMember(Order = 4, Name = "values")]
         public IEnumerable<string> Values { get; }
 
-        public static AssignedClaim Create(string type, string value, ClaimTarget target = ClaimTarget.AllTokens)
+        public static AssignedClaim Create(string type, string value, ClaimTarget target = ClaimTarget.All)
         {
             return new AssignedClaim(new[] { type }, new[] { value }, target);
         }
 
-        public static AssignedClaim Create(string type, IEnumerable<string> value, ClaimTarget target = ClaimTarget.AllTokens)
+        public static AssignedClaim Create(string type, IEnumerable<string> value, ClaimTarget target = ClaimTarget.All)
         {
             return new AssignedClaim(new[] { type }, value, target);
         }

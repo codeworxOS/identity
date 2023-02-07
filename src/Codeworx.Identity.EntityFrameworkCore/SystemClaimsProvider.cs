@@ -57,7 +57,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                 if (parameters.Scopes.Contains(Constants.Scopes.Groups))
                 {
-                    result.Add(AssignedClaim.Create(Constants.Claims.Group, found.Select(p => p.ToString("N")), ClaimTarget.AccessToken));
+                    result.Add(AssignedClaim.Create(Constants.Claims.Group, found.Select(p => p.ToString("N")), ClaimTarget.AccessToken | ClaimTarget.ProfileEndpoint));
                 }
             }
 
