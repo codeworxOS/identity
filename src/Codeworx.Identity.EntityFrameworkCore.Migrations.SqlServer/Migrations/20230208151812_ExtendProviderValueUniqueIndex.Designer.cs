@@ -4,6 +4,7 @@ using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    partial class CodeworxIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230208151812_ExtendProviderValueUniqueIndex")]
+    partial class ExtendProviderValueUniqueIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
