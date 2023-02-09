@@ -22,7 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.ClaimType)
-                .WithMany()
+                .WithMany(p => p.ScopeClaims)
                 .HasForeignKey(p => p.ClaimTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
