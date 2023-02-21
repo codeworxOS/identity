@@ -1,19 +1,32 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
+#nullable disable
+
+namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class IdentityIntialCreate100 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "__DataMigrationHistory",
+                columns: table => new
+                {
+                    MigrationId = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK___DataMigrationHistory", x => x.MigrationId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClaimType",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Target = table.Column<int>(nullable: false),
-                    TypeKey = table.Column<string>(maxLength: 50, nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Target = table.Column<int>(type: "int", nullable: false),
+                    TypeKey = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -21,26 +34,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "IdentityCache",
-                columns: table => new
-                {
-                    Key = table.Column<string>(maxLength: 2000, nullable: false),
-                    Value = table.Column<string>(nullable: false),
-                    ValidUntil = table.Column<DateTime>(nullable: false),
-                    CacheType = table.Column<int>(nullable: false),
-                    Disabled = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_IdentityCache", x => x.Key);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "License",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 200, nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,12 +49,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "ProviderFilter",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 200, nullable: false),
-                    Type = table.Column<byte>(nullable: false),
-                    DomainName = table.Column<string>(nullable: true),
-                    RangeEnd = table.Column<byte[]>(nullable: true),
-                    RangeStart = table.Column<byte[]>(nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Type = table.Column<byte>(type: "tinyint", nullable: false),
+                    DomainName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RangeEnd = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    RangeStart = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -67,8 +65,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "Tenant",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 200, nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    AuthenticationMode = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -79,13 +78,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "AuthenticationProvider",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    EndpointConfiguration = table.Column<string>(nullable: true),
-                    EndpointType = table.Column<string>(maxLength: 100, nullable: false),
-                    FilterId = table.Column<Guid>(nullable: true),
-                    Name = table.Column<string>(maxLength: 200, nullable: false),
-                    SortOrder = table.Column<int>(nullable: false),
-                    IsDisabled = table.Column<bool>(nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EndpointConfiguration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EndpointType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Usage = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    FilterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,11 +102,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "AvailableLicense",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    LicenseId = table.Column<Guid>(nullable: false),
-                    Quantity = table.Column<int>(nullable: false),
-                    ValidUntil = table.Column<DateTime>(nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LicenseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    ValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,17 +129,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "RightHolder",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 500, nullable: false),
-                    Type = table.Column<byte>(nullable: false),
-                    DefaultTenantId = table.Column<Guid>(nullable: true),
-                    IsDisabled = table.Column<bool>(nullable: true),
-                    ForceChangePassword = table.Column<bool>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: true),
-                    PasswordChanged = table.Column<DateTime>(nullable: true),
-                    LastFailedLoginAttempt = table.Column<DateTime>(nullable: true),
-                    FailedLoginCount = table.Column<int>(nullable: true),
-                    PasswordHash = table.Column<string>(maxLength: 512, nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Type = table.Column<byte>(type: "tinyint", nullable: false),
+                    DefaultTenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDisabled = table.Column<bool>(type: "bit", nullable: true),
+                    ConfirmationPending = table.Column<bool>(type: "bit", nullable: true),
+                    ConfirmationCode = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    ForceChangePassword = table.Column<bool>(type: "bit", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PasswordChanged = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastFailedLoginAttempt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FailedLoginCount = table.Column<int>(type: "int", nullable: true),
+                    PasswordHash = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    AuthenticationMode = table.Column<int>(type: "int", nullable: true, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -148,17 +151,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         name: "FK_RightHolder_Tenant_DefaultTenantId",
                         column: x => x.DefaultTenantId,
                         principalTable: "Tenant",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "AuthenticationProviderRightHolder",
                 columns: table => new
                 {
-                    RightHolderId = table.Column<Guid>(nullable: false),
-                    ProviderId = table.Column<Guid>(nullable: false),
-                    ExternalIdentifier = table.Column<string>(maxLength: 4000, nullable: false)
+                    RightHolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExternalIdentifier = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -181,11 +183,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "ClaimValue",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ClaimTypeId = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: true),
-                    TenantId = table.Column<Guid>(nullable: true),
-                    Value = table.Column<string>(maxLength: 500, nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Value = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -197,28 +199,31 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ClaimValue_Tenant_TenantId",
-                        column: x => x.TenantId,
-                        principalTable: "Tenant",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_ClaimValue_RightHolder_UserId",
                         column: x => x.UserId,
                         principalTable: "RightHolder",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClaimValue_Tenant_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenant",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ClientConfiguration",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ClientSecretHash = table.Column<string>(maxLength: 512, nullable: true),
-                    TokenExpiration = table.Column<TimeSpan>(nullable: false),
-                    ClientType = table.Column<int>(nullable: false),
-                    UserId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClientSecretHash = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: true),
+                    TokenExpiration = table.Column<TimeSpan>(type: "time", nullable: false),
+                    AccessTokenType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    AccessTokenTypeConfiguration = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AuthenticationMode = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    ClientType = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -232,11 +237,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentityCache",
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CacheType = table.Column<int>(type: "int", nullable: false),
+                    Disabled = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityCache", x => x.Key);
+                    table.ForeignKey(
+                        name: "FK_IdentityCache_RightHolder_UserId",
+                        column: x => x.UserId,
+                        principalTable: "RightHolder",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LicenseAssignment",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(nullable: false),
-                    LicenseId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LicenseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -259,8 +285,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "RightHolderGroup",
                 columns: table => new
                 {
-                    GroupId = table.Column<Guid>(nullable: false),
-                    RightHolderId = table.Column<Guid>(nullable: false)
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RightHolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -283,8 +309,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "TenantUser",
                 columns: table => new
                 {
-                    RightHolderId = table.Column<Guid>(nullable: false),
-                    TenantId = table.Column<Guid>(nullable: false)
+                    RightHolderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,12 +333,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "UserInvitation",
                 columns: table => new
                 {
-                    InvitationCode = table.Column<string>(maxLength: 4000, nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    CanChangeLogin = table.Column<bool>(nullable: false),
-                    RedirectUri = table.Column<string>(maxLength: 2000, nullable: true),
-                    ValidUntil = table.Column<DateTime>(nullable: false),
-                    IsDisabled = table.Column<bool>(nullable: false)
+                    InvitationCode = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Action = table.Column<int>(type: "int", nullable: false),
+                    RedirectUri = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    ValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDisabled = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -326,11 +352,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserPasswordHistory",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPasswordHistory", x => new { x.UserId, x.PasswordHash });
+                    table.ForeignKey(
+                        name: "FK_UserPasswordHistory_RightHolder_UserId",
+                        column: x => x.UserId,
+                        principalTable: "RightHolder",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClientLicense",
                 columns: table => new
                 {
-                    ClientId = table.Column<Guid>(nullable: false),
-                    LicenseId = table.Column<Guid>(nullable: false)
+                    ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LicenseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -353,10 +398,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "Scope",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ScopeKey = table.Column<string>(maxLength: 50, nullable: false),
-                    Type = table.Column<byte>(nullable: false),
-                    ClientId = table.Column<Guid>(nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ScopeKey = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Type = table.Column<byte>(type: "tinyint", nullable: false),
+                    ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -370,40 +415,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRefreshToken",
-                columns: table => new
-                {
-                    Token = table.Column<string>(maxLength: 4000, nullable: false),
-                    UserId = table.Column<Guid>(nullable: false),
-                    IdentityData = table.Column<string>(nullable: false),
-                    ClientId = table.Column<Guid>(nullable: false),
-                    ValidUntil = table.Column<DateTime>(nullable: false),
-                    IsDisabled = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserRefreshToken", x => x.Token);
-                    table.ForeignKey(
-                        name: "FK_UserRefreshToken_ClientConfiguration_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "ClientConfiguration",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRefreshToken_RightHolder_UserId",
-                        column: x => x.UserId,
-                        principalTable: "RightHolder",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ValidRedirectUrl",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    ClientId = table.Column<Guid>(nullable: false),
-                    Url = table.Column<string>(nullable: true)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -420,8 +437,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "ScopeAssignment",
                 columns: table => new
                 {
-                    ScopeId = table.Column<Guid>(nullable: false),
-                    ClientId = table.Column<Guid>(nullable: false)
+                    ScopeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClientId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -444,8 +461,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "ScopeClaim",
                 columns: table => new
                 {
-                    ScopeId = table.Column<Guid>(nullable: false),
-                    ClaimTypeId = table.Column<Guid>(nullable: false)
+                    ScopeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -468,8 +485,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "ScopeHierarchy",
                 columns: table => new
                 {
-                    ChildId = table.Column<Guid>(nullable: false),
-                    ParentId = table.Column<Guid>(nullable: false)
+                    ChildId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -496,7 +513,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AuthenticationProviderRightHolder_ExternalId_Unique",
                 table: "AuthenticationProviderRightHolder",
-                column: "ExternalIdentifier",
+                columns: new[] { "ExternalIdentifier", "ProviderId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -540,6 +557,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 column: "LicenseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_IdentityCache_UserId",
+                table: "IdentityCache",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LicenseAssignment_UserId",
                 table: "LicenseAssignment",
                 column: "UserId");
@@ -548,6 +570,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "IX_RightHolder_DefaultTenantId",
                 table: "RightHolder",
                 column: "DefaultTenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RightHolder_Name_Unique",
+                table: "RightHolder",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RightHolderGroup_GroupId",
@@ -585,16 +613,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRefreshToken_ClientId",
-                table: "UserRefreshToken",
-                column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRefreshToken_UserId",
-                table: "UserRefreshToken",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ValidRedirectUrl_ClientId",
                 table: "ValidRedirectUrl",
                 column: "ClientId");
@@ -602,6 +620,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "__DataMigrationHistory");
+
             migrationBuilder.DropTable(
                 name: "AuthenticationProviderRightHolder");
 
@@ -639,7 +660,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 name: "UserInvitation");
 
             migrationBuilder.DropTable(
-                name: "UserRefreshToken");
+                name: "UserPasswordHistory");
 
             migrationBuilder.DropTable(
                 name: "ValidRedirectUrl");

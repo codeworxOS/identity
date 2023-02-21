@@ -20,5 +20,8 @@
 	<ItemGroup>
 		<PackageReference Remove="StyleCop.Analyzers" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
 
 </Project>

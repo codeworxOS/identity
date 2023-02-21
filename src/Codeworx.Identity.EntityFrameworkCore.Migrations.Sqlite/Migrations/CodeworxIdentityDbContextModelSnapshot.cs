@@ -498,6 +498,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.ToTable("ValidRedirectUrl", (string)null);
                 });
 
+            modelBuilder.Entity("Extensions.EntityFrameworkCore.DataMigration.DataMigrationHistoryRow", b =>
+                {
+                    b.Property<string>("MigrationId")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MigrationId");
+
+                    b.ToTable("__DataMigrationHistory");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientScope", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.Scope");
@@ -758,7 +769,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
                 {
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", "ClaimType")
-                        .WithMany()
+                        .WithMany("ScopeClaims")
                         .HasForeignKey("ClaimTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -868,6 +879,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
                 {
                     b.Navigation("RightHolders");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", b =>
+                {
+                    b.Navigation("ScopeClaims");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>

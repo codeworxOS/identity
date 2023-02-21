@@ -17,7 +17,7 @@ namespace Microsoft.AspNetCore.Builder
 
             if (options == null)
             {
-                throw new InvalidOperationException("Missing identity options. Try calling AddCodeworxIdentity() on the service provider.");
+                throw new InvalidOperationException("Identity services missing. Register via the AddCodeworxIdentity() method to the service provider.");
             }
 
             return app

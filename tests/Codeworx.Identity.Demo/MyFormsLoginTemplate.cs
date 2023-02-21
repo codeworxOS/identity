@@ -1,0 +1,58 @@
+﻿using Codeworx.Identity;
+
+public class MyFormsLoginTemplate : IPartialTemplate
+{
+    public MyFormsLoginTemplate()
+    {
+        Template = @"
+{{#each Registrations }}
+<div class=""separator form-separator"">
+    <span class=""separator-text"">{{Translate 'OrLoginWith'}}</span>
+</div>
+<form method=""post"" class=""forms-login-box"">
+    <input type=""hidden"" id=""provider-id"" name=""provider-id"" value=""{{ProviderId}}"" />
+    <div class=""txt_field"">
+        <input type=""text"" autofocus autocapitalize=""off"" required id=""username"" name=""username"" maxlength=""{{MaxLength.Login}}"" value=""{{Username}}"" />
+        <span></span>
+        <label for=""username"">{{Translate 'Username'}}</label>
+        <div class=""i"">
+            <i class=""fas fa-user-md""></i>
+        </div>
+    </div>
+    <div class=""txt_field"">
+        <input type=""password"" required id=""password"" name=""password"" maxlength=""{{MaxLength.Password}}"" />
+        <span></span>
+        <label for=""password"">{{Translate 'Password'}}</label>
+        <div class=""i"">
+            <i class=""fas fa-lock""></i>
+        </div>
+        <div class=""toggle-pw"" >
+            <i class=""fas fa-eye-slash""></i>
+        </div>
+    </div>
+    {{#ForgotPasswordUrl}}
+    <a class=""forgot-password"" href=""{{.}}"" tabindex=""-1"">{{Translate 'ForgotPassword'}}</a>
+    {{/ForgotPasswordUrl}}
+    {{#Error}}
+    <div class=""error"">
+        <i class=""fa-solid fa-circle-exclamation""></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    <input type=""submit"" class=""btn"" value=""{{Translate 'Login'}}"" />
+    {{#ShowRememberMe}}
+    <div class=""checkbox-field"">
+        <input type=""checkbox"" id=""remember"" name=""remember"" />
+        <label for=""remember"">{{Translate 'RememberMe'}}</label>
+    </div>
+    {{/ShowRememberMe}}
+</form>
+{{/each}}
+
+";
+    }
+
+    public string Name => Constants.Templates.FormsLogin;
+
+    public string Template { get; }
+}

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    [Migration("20230103163923_RemoveUserRefreshTokenEntity")]
-    partial class RemoveUserRefreshTokenEntity
+    [Migration("20230221131408_IdentityIntialCreate-1-0-0")]
+    partial class IdentityIntialCreate100
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -74,11 +74,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 
                     b.HasKey("RightHolderId", "ProviderId");
 
-                    b.HasIndex("ExternalIdentifier")
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("ExternalIdentifier", "ProviderId")
                         .IsUnique()
                         .HasDatabaseName("IX_AuthenticationProviderRightHolder_ExternalId_Unique");
-
-                    b.HasIndex("ProviderId");
 
                     b.ToTable("AuthenticationProviderRightHolder", (string)null);
                 });
@@ -500,6 +500,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.ToTable("ValidRedirectUrl", (string)null);
                 });
 
+            modelBuilder.Entity("Extensions.EntityFrameworkCore.DataMigration.DataMigrationHistoryRow", b =>
+                {
+                    b.Property<string>("MigrationId")
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("MigrationId");
+
+                    b.ToTable("__DataMigrationHistory");
+                });
+
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientScope", b =>
                 {
                     b.HasBaseType("Codeworx.Identity.EntityFrameworkCore.Model.Scope");
@@ -760,7 +771,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ScopeClaim", b =>
                 {
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", "ClaimType")
-                        .WithMany()
+                        .WithMany("ScopeClaims")
                         .HasForeignKey("ClaimTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -870,6 +881,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.AuthenticationProvider", b =>
                 {
                     b.Navigation("RightHolders");
+                });
+
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClaimType", b =>
+                {
+                    b.Navigation("ScopeClaims");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.ClientConfiguration", b =>
