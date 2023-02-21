@@ -10,7 +10,7 @@ $projects = "..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.cs
 
 $coreVersion = New-NugetPackages `
     -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -NugetServerUrl "http://www.nuget.org/api/v2" `
     -VersionPackage "Codeworx.Identity" `
     -VersionFilePath "..\version.json" `
     -OutputPath "..\dist\nuget\" `
@@ -25,7 +25,7 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 
     New-NugetPackages `
     -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -NugetServerUrl "http://www.nuget.org/api/v2" `
     -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
     -VersionFilePath "..\version_ef6.json" `
     -DoNotCleanOutput `
@@ -34,7 +34,7 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 
     New-NugetPackages `
     -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -NugetServerUrl "http://www.nuget.org/api/v2" `
     -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
     -VersionFilePath "..\version_ef7.json" `
     -DoNotCleanOutput `
