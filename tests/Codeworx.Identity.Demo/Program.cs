@@ -26,7 +26,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseRequestLocalization("de", "en");
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -35,6 +34,6 @@ app.UseCodeworxIdentity();
 
 app.UseRouting();
 
-await app.Services.MigrateDatabaseAsync<CodeworxIdentityDbContext>();
 
+await app.Services.MigrateDatabaseAsync<CodeworxIdentityDbContext>();
 await app.RunAsync();

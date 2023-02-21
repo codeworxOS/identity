@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Mfa.Totp"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{3AD43A8F-179D-42F9-A90F-FF03E762C376}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codeworx.Identity.Demo", "tests\Codeworx.Identity.Demo\Codeworx.Identity.Demo.csproj", "{A51507DD-C7C8-4861-83D6-F9A475B37F63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codeworx.Identity.Demo", "tests\Codeworx.Identity.Demo\Codeworx.Identity.Demo.csproj", "{A51507DD-C7C8-4861-83D6-F9A475B37F63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
