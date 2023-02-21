@@ -1,38 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
-using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     internal class RefreshTokenParameters : IRefreshTokenParameters
     {
-        public RefreshTokenParameters(IClientRegistration client, string clientSecret, string refreshToken, string[] scopes, ClaimsIdentity user, IRefreshTokenCacheItem cacheItem)
+        private readonly DateTimeOffset _validFrom;
+
+        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IToken parsedRefreshToken)
         {
             Client = client;
             Scopes = scopes.ToImmutableList();
             User = user;
-            ClientSecret = clientSecret;
             RefreshToken = refreshToken;
-            CacheItem = cacheItem;
+            ParsedRefreshToken = parsedRefreshToken;
+            _validFrom = DateTimeOffset.UtcNow;
         }
 
         public IClientRegistration Client { get; }
 
-        public string Nonce { get; }
+        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
 
-        public IReadOnlyCollection<string> Scopes { get; }
-
-        public string State { get; }
-
-        public ClaimsIdentity User { get; }
+        public IToken ParsedRefreshToken { get; }
 
         public string RefreshToken { get; }
 
-        public string ClientSecret { get; }
+        public IReadOnlyCollection<string> Scopes { get; }
 
-        public IRefreshTokenCacheItem CacheItem { get; }
+        public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
+
+        public ClaimsIdentity User { get; }
 
         public void Throw(string error, string errorDescription)
         {

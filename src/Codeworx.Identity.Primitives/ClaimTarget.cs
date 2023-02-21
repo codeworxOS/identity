@@ -10,5 +10,6 @@ namespace Codeworx.Identity
         AccessToken = 0x02,
         ProfileEndpoint = 0x04,
         AllTokens = IdToken | AccessToken,
+        All = IdToken | AccessToken | ProfileEndpoint,
     }
 }

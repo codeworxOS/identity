@@ -485,7 +485,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       oidc: true,
       responseType: 'code',
       requireHttps: true,
-      scope: 'openid profile tenant offline_access external_token:access_token'
+      scope: 'openid profile tenant offline_access group_names external_token:access_token'
     };
 
     var AppModule = function AppModule(oauthService) {
@@ -1594,7 +1594,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         key: "selectedTenant",
         set: function set(value) {
           this._selectedTenant = value;
-          this.oauthService.scope = 'openid profile tenant ' + this._selectedTenant.key;
+          this.oauthService.scope = 'openid profile group_names tenant ' + this._selectedTenant.key;
           this.oauthService.logOut(true);
           this.oauthService.initLoginFlow();
         },

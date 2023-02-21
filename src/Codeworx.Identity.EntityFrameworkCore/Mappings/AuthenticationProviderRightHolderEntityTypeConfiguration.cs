@@ -17,11 +17,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                    .HasForeignKey(p => p.RightHolderId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasIndex(p => p.ExternalIdentifier)
-#if NETSTANDARD2_1
-                .HasDatabaseName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")
-#else
+            builder.HasIndex(p => new { p.ExternalIdentifier, p.ProviderId })
+#if NETSTANDARD2_0 || NETCOREAPP3_1
                 .HasName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")
+#else
+                .HasDatabaseName("IX_AuthenticationProviderRightHolder_ExternalId_Unique")
 #endif
                 .IsUnique(true);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -10,8 +11,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         {
             this.Tenants = new HashSet<TenantUser>();
             this.Clients = new HashSet<ClientConfiguration>();
-            this.RefreshTokens = new HashSet<UserRefreshToken>();
+            this.IdentityCaches = new HashSet<IdentityCache>();
             this.Invitations = new HashSet<UserInvitation>();
+            this.PasswordHistory = new HashSet<UserPasswordHistory>();
         }
 
         public Tenant DefaultTenant { get; set; }
@@ -19,6 +21,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public Guid? DefaultTenantId { get; set; }
 
         public bool IsDisabled { get; set; }
+
+        public bool ConfirmationPending { get; set; }
+
+        [StringLength(512)]
+        public string ConfirmationCode { get; set; }
 
         public bool ForceChangePassword { get; set; }
 
@@ -33,12 +40,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [StringLength(512)]
         public string PasswordHash { get; set; }
 
+        public AuthenticationMode AuthenticationMode { get; set; }
+
         public ICollection<TenantUser> Tenants { get; }
 
         public ICollection<ClientConfiguration> Clients { get; }
 
-        public ICollection<UserRefreshToken> RefreshTokens { get; }
+        public ICollection<IdentityCache> IdentityCaches { get; }
 
         public ICollection<UserInvitation> Invitations { get; set; }
+
+        public ICollection<UserPasswordHistory> PasswordHistory { get; set; }
     }
 }

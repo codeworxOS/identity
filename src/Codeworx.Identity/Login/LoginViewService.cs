@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
 {
@@ -12,18 +11,18 @@ namespace Codeworx.Identity.Login
         private readonly ILoginService _loginService;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IStringResources _stringResources;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
         public LoginViewService(
             ILoginService loginService,
             IBaseUriAccessor baseUriAccessor,
-            IOptions<IdentityOptions> options,
+            IdentityServerOptions options,
             IStringResources stringResources)
         {
             _loginService = loginService;
             _baseUriAccessor = baseUriAccessor;
             _stringResources = stringResources;
-            _options = options.Value;
+            _options = options;
         }
 
         public Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest loggedin)
@@ -64,7 +63,7 @@ namespace Codeworx.Identity.Login
         public async Task<LoginResponse> ProcessLoginAsync(LoginRequest request)
         {
             string error = null;
-            var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+            var providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
             if (request.LoginProviderId != null)
             {
                 providerRequest.ProviderErrors.Add(request.LoginProviderId, request.LoginProviderError ?? _stringResources.GetResource(StringResource.GenericLoginError));
@@ -91,17 +90,17 @@ namespace Codeworx.Identity.Login
             }
             catch (AuthenticationException ex)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 providerRequest.ProviderErrors.Add(request.ProviderId, ex.Message);
             }
             catch (LoginProviderNotFoundException)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 errorMessage = _stringResources.GetResource(StringResource.UnknownLoginProviderError);
             }
             catch (Exception)
             {
-                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.ReturnUrl, request.Prompt, null, null);
+                providerRequest = new ProviderRequest(ProviderRequestType.Login, request.HeaderOnly, request.ReturnUrl, request.Prompt, null, null);
                 var message = _stringResources.GetResource(StringResource.GenericLoginError);
                 providerRequest.ProviderErrors.Add(request.ProviderId, message);
             }

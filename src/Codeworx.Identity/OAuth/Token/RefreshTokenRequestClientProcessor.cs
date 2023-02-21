@@ -1,17 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     public class RefreshTokenRequestClientProcessor : IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>
     {
         private readonly IClientAuthenticationService _clientAuthenticationService;
-        private readonly IRefreshTokenCache _refreshTokenCache;
+        private readonly ITokenProviderService _tokenProviderService;
 
-        public RefreshTokenRequestClientProcessor(IClientAuthenticationService clientAuthenticationService, IRefreshTokenCache refreshTokenCache)
+        public RefreshTokenRequestClientProcessor(
+            IClientAuthenticationService clientAuthenticationService,
+            ITokenProviderService tokenProviderService)
         {
             _clientAuthenticationService = clientAuthenticationService;
-            _refreshTokenCache = refreshTokenCache;
+            _tokenProviderService = tokenProviderService;
         }
 
         public int SortOrder => 250;
@@ -21,11 +24,6 @@ namespace Codeworx.Identity.OAuth.Token
             var client = await _clientAuthenticationService.AuthenticateClient(request.ClientId, request.ClientSecret)
                                                                                   .ConfigureAwait(false);
 
-            if (client == null)
-            {
-                ErrorResponse.Throw(Constants.OAuth.Error.InvalidClient);
-            }
-
             builder.WithClient(client);
 
             // TODO implement ClientType
@@ -34,20 +32,24 @@ namespace Codeworx.Identity.OAuth.Token
             ////    ErrorResponse.Throw(Constants.OAuth.Error.UnauthorizedClient);
             ////}
 
-            var cacheEntry = await _refreshTokenCache.GetAsync(request.RefreshToken).ConfigureAwait(false);
+            try
+            {
+                var refreshToken = await _tokenProviderService.CreateRefreshTokenAsync().ConfigureAwait(false);
 
-            if (cacheEntry == null)
+                await refreshToken.ParseAsync(request.RefreshToken).ConfigureAwait(false);
+
+                if (refreshToken.IdentityData.ClientId != request.ClientId)
+                {
+                    ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
+                }
+
+                // TODO extend refresh_token lifetime or recreate;
+                builder.WithParsedRefreshToken(refreshToken);
+            }
+            catch (CacheEntryNotFoundException)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
-
-            if (cacheEntry.IdentityData.ClientId != request.ClientId)
-            {
-                ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
-            }
-
-            // TODO extend refresh_token lifetime or recreate;
-            builder.WithCacheItem(cacheEntry);
         }
     }
 }

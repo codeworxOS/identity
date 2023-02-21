@@ -145,7 +145,7 @@
     <value>Ihr Konto ist noch nicht verknüpft.</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Passwort vergessen</value>
+    <value>Passwort vergessen?</value>
   </data>
   <data name="ForgotPasswordCompletedMessage" xml:space="preserve">
     <value>Wenn ein Konto für die angegebenen Anmeldeinformationen vorhanden ist werden Ihnen Anweisungen zum Zurücksetzen des Passworts zugesandt.</value>
@@ -243,6 +243,9 @@
   <data name="SetPassword" xml:space="preserve">
     <value>Passwort vergeben</value>
   </data>
+  <data name="SetPasswordPageTitle" xml:space="preserve">
+    <value>Passwort vergeben</value>
+  </data>
   <data name="UnknownLoginProviderError" xml:space="preserve">
     <value>Ungültiger Anmeldungsmechanismus!</value>
   </data>
@@ -254,5 +257,83 @@
   </data>
   <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
     <value>Der Account ist gesperrt weil das Passwort zu oft falsch eingegeben wurde.</value>
+  </data>
+  <data name="PasswordChangePasswordReuseError" xml:space="preserve">
+    <value>Das neue Passwort darf nicht mit vorherigen Passwörtern übereinstimmen!</value>
+  </data>
+  <data name="UsernameAlreadyTaken" xml:space="preserve">
+    <value>Der Benutzername ist bereits vergeben.</value>
+  </data>
+  <data name="ConfirmationCodeInvalid" xml:space="preserve">
+    <value>Der angegebene Bestätigungscode ist ungültig.</value>
+  </data>
+  <data name="ConfirmationPageTitle" xml:space="preserve">
+    <value>Konto bestätigung</value>
+  </data>
+  <data name="ConfirmationMessage" xml:space="preserve">
+    <value>Wilkommen {0}. Ihr Account ist nun aktiviert.</value>
+  </data>
+  <data name="AccountConfirmationPending" xml:space="preserve">
+    <value>Ihr Konto wurde noch nicht bestätigt.</value>
+  </data>
+  <data name="EmailLoginDescription" xml:space="preserve">
+    <value>Der Benutzername muss eine gültige E-Mail Adresse sein.</value>
+  </data>
+  <data name="InvalidOneTimeCode" xml:space="preserve">
+    <value>Der Einmalcode ist ungültig!</value>
+  </data>
+  <data name="OneTimeCode" xml:space="preserve">
+    <value>Einmalcode</value>
+  </data>
+  <data name="ProvideOneTimeCode" xml:space="preserve">
+    <value>Einmalcode eingeben:</value>
+  </data>
+  <data name="SendCode" xml:space="preserve">
+    <value>Senden</value>
+  </data>
+  <data name="OneTimeCodeMailSent" xml:space="preserve">
+    <value>Ein Einmalcode wurde an die registrierte e-mail Adresse gesendet:</value>
+  </data>
+  <data name="RegisterMfaEmail" xml:space="preserve">
+    <value>Legen Sie die E-Mail Adresse fest mit der Sie ihre Einmalcodes empfangen möchten.</value>
+  </data>
+  <data name="ConnectAuthenticatorApp" xml:space="preserve">
+    <value>Verbinden Sie Ihren Account mit einer Authenticator App.</value>
+  </data>
+  <data name="MfaProviderListPageTitle" xml:space="preserve">
+    <value>Identitätsüberprüfung</value>
+  </data>
+  <data name="MfaProviderPageTitle" xml:space="preserve">
+    <value>Multi-Faktor-Authentifizierung</value>
+  </data>
+  <data name="ReceiveCodeFromApp" xml:space="preserve">
+    <value>Verwenden Sie die registrierte Authenticator app um einen Einmalcode zu generieren.</value>
+  </data>
+  <data name="UnlinkProvider" xml:space="preserve">
+    <value>Trennen</value>
+  </data>
+  <data name="TotpRegistrationUrl" xml:space="preserve">
+    <value>Ristrierungslink</value>
+  </data>
+  <data name="DidNotReceiveCode" xml:space="preserve">
+    <value>Sie haben keinen Code erhalten?</value>
+  </data>
+  <data name="MfaProviderSelectLink" xml:space="preserve">
+    <value>Andere Optionen</value>
+  </data>
+  <data name="OneTimeCodeViaApp" xml:space="preserve">
+    <value>Einmalcode mit Authenticator App</value>
+  </data>
+  <data name="OneTimeCodeViaEmail" xml:space="preserve">
+    <value>Code via e-mail an {0}</value>
+  </data>
+  <data name="MfaListRegisterMail" xml:space="preserve">
+    <value>Registrierung mittels E-Mail Adresse</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>E-Mail Adresse</value>
+  </data>
+  <data name="MfaListRegisterTotp" xml:space="preserve">
+    <value>Registrierung mittels Authenicator App.</value>
   </data>
 </root>

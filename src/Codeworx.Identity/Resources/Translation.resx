@@ -145,7 +145,7 @@
     <value>Your Account is not yet linked.</value>
   </data>
   <data name="ForgotPassword" xml:space="preserve">
-    <value>Forgot password</value>
+    <value>Forgot password?</value>
   </data>
   <data name="ForgotPasswordCompletedMessage" xml:space="preserve">
     <value>If an account exists that maches the given credentials, password reset instructions will be sent to you.</value>
@@ -157,7 +157,7 @@
     <value>There was an unexpected login error!</value>
   </data>
   <data name="Http401Description" xml:space="preserve">
-    <value>This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled.</value>
+    <value>This normally indicates that your browser does not support Windows authentication, wrong credentials were provided or Windows authentication support is disabled.</value>
   </data>
   <data name="Http401Header" xml:space="preserve">
     <value>Oops! You could not be authenticated</value>
@@ -243,6 +243,9 @@
   <data name="SetPassword" xml:space="preserve">
     <value>Set Password</value>
   </data>
+  <data name="SetPasswordPageTitle" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
   <data name="UnknownLoginProviderError" xml:space="preserve">
     <value>Invalid provider!</value>
   </data>
@@ -254,5 +257,83 @@
   </data>
   <data name="MaxFailedLoginAttemptsReached" xml:space="preserve">
     <value>The account is locked because a wrong password was entered too often.</value>
+  </data>
+  <data name="PasswordChangePasswordReuseError" xml:space="preserve">
+    <value>The new password cannot be equal to a previously used password!</value>
+  </data>
+  <data name="UsernameAlreadyTaken" xml:space="preserve">
+    <value>The provided username is already taken.</value>
+  </data>
+  <data name="ConfirmationCodeInvalid" xml:space="preserve">
+    <value>The provided confirmation code is invalid.</value>
+  </data>
+  <data name="ConfirmationPageTitle" xml:space="preserve">
+    <value>Account Confirmation</value>
+  </data>
+  <data name="ConfirmationMessage" xml:space="preserve">
+    <value>Welcome {0}. Your account is now confirmed.</value>
+  </data>
+  <data name="AccountConfirmationPending" xml:space="preserve">
+    <value>The account has not yet been confirmed.</value>
+  </data>
+  <data name="EmailLoginDescription" xml:space="preserve">
+    <value>The username must be a valid email address.</value>
+  </data>
+  <data name="InvalidOneTimeCode" xml:space="preserve">
+    <value>The One-Time code is invalid!</value>
+  </data>
+  <data name="OneTimeCode" xml:space="preserve">
+    <value>One-Time code</value>
+  </data>
+  <data name="ProvideOneTimeCode" xml:space="preserve">
+    <value>Enter your 6 digit code:</value>
+  </data>
+  <data name="SendCode" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="OneTimeCodeMailSent" xml:space="preserve">
+    <value>A one-time code has been sent to the registered email address:</value>
+  </data>
+  <data name="RegisterMfaEmail" xml:space="preserve">
+    <value>Please enter an e-mail address to receive the one-time code with.</value>
+  </data>
+  <data name="ConnectAuthenticatorApp" xml:space="preserve">
+    <value>Register your account with an authenticator app.</value>
+  </data>
+  <data name="MfaProviderListPageTitle" xml:space="preserve">
+    <value>Validate your identity</value>
+  </data>
+  <data name="MfaProviderPageTitle" xml:space="preserve">
+    <value>Multi Step Verification</value>
+  </data>
+  <data name="ReceiveCodeFromApp" xml:space="preserve">
+    <value>Use the connected authenticator app to get a one-time code.</value>
+  </data>
+  <data name="UnlinkProvider" xml:space="preserve">
+    <value>Unlink</value>
+  </data>
+  <data name="TotpRegistrationUrl" xml:space="preserve">
+    <value>Register via URL</value>
+  </data>
+  <data name="DidNotReceiveCode" xml:space="preserve">
+    <value>Did not receive a code?</value>
+  </data>
+  <data name="MfaProviderSelectLink" xml:space="preserve">
+    <value>Chose another option.</value>
+  </data>
+  <data name="OneTimeCodeViaApp" xml:space="preserve">
+    <value>One-time code via authenticator app</value>
+  </data>
+  <data name="OneTimeCodeViaEmail" xml:space="preserve">
+    <value>Code via e-mail sent to {0}</value>
+  </data>
+  <data name="MfaListRegisterMail" xml:space="preserve">
+    <value>Register with an e-mail address</value>
+  </data>
+  <data name="MfaListRegisterTotp" xml:space="preserve">
+    <value>Register with your authenticator app</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>e-mail address</value>
   </data>
 </root>

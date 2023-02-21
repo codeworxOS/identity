@@ -64,7 +64,7 @@ namespace Codeworx.Identity.Test.Cryptography.Internal
 
             var instance = new EcdJwkSerializer();
 
-            var actual = instance.GetAlgorithm(key);
+            var actual = instance.GetAlgorithm(key, SHA384.Create());
 
             Assert.AreEqual(expectedAlgorithm, actual);
         }

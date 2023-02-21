@@ -37,7 +37,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
 
                 return new ProcessForgotPasswordRequest(login, returnUrl, prompt);
             }
-            else if (HttpMethods.IsGet(request.Method))
+            else if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 return new ForgotPasswordRequest(returnUrl, prompt);
             }

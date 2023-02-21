@@ -17,17 +17,20 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(ForgotPasswordViewResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(ForgotPasswordViewResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (_lookup.TryGetContentType(".html", out var contentType))
             {
                 response.ContentType = contentType;
             }
 
-            var html = await _cache.GetForgotPasswordView(response.GetViewContextData(responseData));
-
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(html);
+
+            if (!headerOnly)
+            {
+                var html = await _cache.GetForgotPasswordView(response.GetViewContextData(responseData));
+                await response.WriteAsync(html);
+            }
         }
     }
 }

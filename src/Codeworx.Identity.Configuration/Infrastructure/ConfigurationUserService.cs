@@ -25,6 +25,11 @@ namespace Codeworx.Identity.Configuration.Infrastructure
             GC.SuppressFinalize(this);
         }
 
+        public Task<string> GetProviderValueAsync(string userId, string providerId)
+        {
+            return Task.FromResult<string>(null);
+        }
+
         public Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
             return Task.FromResult<IUser>(null);
@@ -36,13 +41,13 @@ namespace Codeworx.Identity.Configuration.Infrastructure
 
             if (_options.TryGetValue(userId, out var userConfig))
             {
-                result = new User(userId, userId, userConfig.Password, new string[] { });
+                result = new User(userId, userId, userConfig.Password, new string[] { }, new string[] { });
             }
 
             return Task.FromResult<IUser>(result);
         }
 
-        public async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity user)
+        public async Task<IUser> GetUserByIdentityAsync(ClaimsIdentity user)
         {
             var id = user.GetUserId();
 
@@ -55,7 +60,7 @@ namespace Codeworx.Identity.Configuration.Infrastructure
 
             if (_options.TryGetValue(userName, out var userConfig))
             {
-                result = new User(userName, userName, userConfig.Password, new string[] { });
+                result = new User(userName, userName, userConfig.Password, new string[] { }, new string[] { });
             }
 
             return Task.FromResult<IUser>(result);

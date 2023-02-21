@@ -9,7 +9,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 {
     public class UserInfoResponseBinder : ResponseBinder<UserInfoResponse>
     {
-        public override async Task BindAsync(UserInfoResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(UserInfoResponse responseData, HttpResponse response, bool headerOnly)
         {
             if (responseData == null)
             {
@@ -23,15 +23,22 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
             response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
 
-            var setting = new JsonSerializerSettings
+            if (headerOnly)
             {
-                NullValueHandling = NullValueHandling.Ignore,
-            };
+                response.StatusCode = StatusCodes.Status200OK;
+            }
+            else
+            {
+                var setting = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                };
 
-            var responseString = JsonConvert.SerializeObject(responseData, setting);
+                var responseString = JsonConvert.SerializeObject(responseData, setting);
 
-            await response.WriteAsync(responseString)
-                .ConfigureAwait(false);
+                await response.WriteAsync(responseString)
+                    .ConfigureAwait(false);
+            }
         }
     }
 }

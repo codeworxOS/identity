@@ -10,7 +10,6 @@ using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Model;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity
 {
@@ -27,7 +26,7 @@ namespace Codeworx.Identity
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILogger<ExternalTokenClaimsProvider> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
         static ExternalTokenClaimsProvider()
         {
@@ -43,13 +42,13 @@ namespace Codeworx.Identity
         public ExternalTokenClaimsProvider(
             IBaseUriAccessor baseUriAccessor,
             ILogger<ExternalTokenClaimsProvider> logger,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IServiceProvider serviceProvider)
         {
             _baseUriAccessor = baseUriAccessor;
             _logger = logger;
             _serviceProvider = serviceProvider;
-            _options = options.Value;
+            _options = options;
         }
 
         public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
@@ -93,7 +92,7 @@ namespace Codeworx.Identity
                 ExternalTokenData data = null;
                 try
                 {
-                    data = await externalTokenCache.GetAsync(claim.Value, _options.CookieExpiration).ConfigureAwait(false);
+                    data = await externalTokenCache.GetAsync(claim.Value).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -109,7 +108,7 @@ namespace Codeworx.Identity
 
                 var loginService = _serviceProvider.GetRequiredService<ILoginService>();
 
-                var registration = await loginService.GetLoginRegistrationInfoAsync(data.RegistrationId).ConfigureAwait(false);
+                var registration = await loginService.GetLoginRegistrationInfoAsync(data.RegistrationId, LoginProviderType.Login).ConfigureAwait(false);
 
                 if (registration == null)
                 {
@@ -159,7 +158,7 @@ namespace Codeworx.Identity
                         {
                             try
                             {
-                                await externalTokenCache.UpdateAsync(claim.Value, current, _options.CookieExpiration).ConfigureAwait(false);
+                                await externalTokenCache.UpdateAsync(claim.Value, current).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {

@@ -1,4 +1,3 @@
-Import-Module -Name "./Invoke-MsBuild.psm1"
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 Add-Type -AssemblyName System.Xml.Linq
 
@@ -127,18 +126,18 @@ function New-NugetPackages {
         }
       
         $projects | foreach { 
-            $buildresult = Invoke-MsBuild -Path $_ -MsBuildParameters "/t:restore /p:$params" -ShowBuildOutputInCurrentWindow 
-            
-            if ( -not $buildresult.BuildSucceeded) {
-                Write-Error -Message $buildresult.Message
+            dotnet msbuild $_ -property:"$params" -target:restore
+
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "restore failed with exit code $LASTEXITCODE" -ErrorAction 'Stop'
             }
         }
 
         $projects | foreach { 
-            $buildresult = Invoke-MsBuild -Path $_ -MsBuildParameters "/t:pack /p:$params" -ShowBuildOutputInCurrentWindow 
-            
-            if ( -not $buildresult.BuildSucceeded) {
-                Write-Error -Message $buildresult.Message
+            dotnet msbuild $_ -property:"$params" -target:pack
+
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "pack failed with exit code $LASTEXITCODE" -ErrorAction 'Stop'
             }
         }
 
@@ -229,18 +228,19 @@ function Get-NugetVersionInfo {
         $result.NugetVersion = "$Major.$Minor.0"
         
         $lower = ""
-        $upper = "$Major.$($Minor + 1).0"
+        $upper = "$Major.$($Minor).999999"
         if ($Minor -eq 0) {
             $lower = "$($Major - 1).999999.0"
         }
         else {
-            $lower = "$Major.$($Minor - 1).0"
+            $lower = "$Major.$($Minor - 1).999999"
         }
-        
 
-        $packageResponse = Find-Package $Package -source $NugetServerUrl -MinimumVersion $lower -MaximumVersion $upper -AllowPrereleaseVersion -ErrorAction Ignore
-
+        $packageSource = New-Guid;
+        Register-PackageSource -Name $packageSource -Location $NugetServerUrl -ProviderName NuGet
+        $packageResponse = Find-Package $Package -source $packageSource -MinimumVersion $lower -MaximumVersion $upper -AllVersions -AllowPrereleaseVersions -ErrorAction Ignore
         $versions = $packageResponse | Select-Object -Property Version
+        Unregister-PackageSource $packageSource
 
         if ( (-Not $versions.Count -And $versions) -Or ($versions.Count -gt 0) ) {
         

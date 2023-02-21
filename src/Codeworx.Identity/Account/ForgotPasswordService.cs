@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -12,23 +13,29 @@ namespace Codeworx.Identity.Account
     public class ForgotPasswordService : IForgotPasswordService
     {
         private readonly IBaseUriAccessor _accessor;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IInvitationCache _invitationCache;
-        private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
+        private readonly IForgotPasswordDelayService _forgotPasswordDelayService;
+        private readonly IdentityOptions _options;
+        private readonly IUserService _userService;
 
         public ForgotPasswordService(
             IBaseUriAccessor accessor,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IUserService userService,
             INotificationService notificationService,
+            IForgotPasswordDelayService forgotPasswordDelayService,
             IInvitationCache invitationCache = null)
         {
             _accessor = accessor;
+            _serverOptions = serverOptions;
             _options = options.Value;
             _invitationCache = invitationCache;
             _userService = userService;
             _notificationService = notificationService;
+            _forgotPasswordDelayService = forgotPasswordDelayService;
         }
 
         public async Task<bool> IsSupportedAsync()
@@ -38,7 +45,7 @@ namespace Codeworx.Identity.Account
             return _invitationCache != null && notificationSupported;
         }
 
-        public async Task<ForgotPasswordResponse> ProcessForgotPasswordAsync(ProcessForgotPasswordRequest request)
+        public virtual async Task<ForgotPasswordResponse> ProcessForgotPasswordAsync(ProcessForgotPasswordRequest request)
         {
             if (!await IsSupportedAsync().ConfigureAwait(false))
             {
@@ -46,7 +53,7 @@ namespace Codeworx.Identity.Account
             }
 
             var builder = new UriBuilder(_accessor.BaseUri);
-            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath(_serverOptions.AccountEndpoint);
             builder.AppendPath("login");
 
             if (request.ReturnUrl != null)
@@ -65,19 +72,20 @@ namespace Codeworx.Identity.Account
 
             if (user != null)
             {
+                var sw = new Stopwatch();
+                sw.Start();
+
                 var invitationCode = Guid.NewGuid().ToString("N");
+                var item = CreateInvitationItem(request, user);
+
                 await _invitationCache.AddAsync(
                                         invitationCode,
-                                        new Invitation.InvitationItem
-                                        {
-                                            RedirectUri = request.ReturnUrl,
-                                            UserId = user.Identity,
-                                        },
+                                        item,
                                         TimeSpan.FromHours(1))
                     .ConfigureAwait(false);
 
                 var invitationBuilder = new UriBuilder(_accessor.BaseUri);
-                invitationBuilder.AppendPath(_options.AccountEndpoint);
+                invitationBuilder.AppendPath(_serverOptions.AccountEndpoint);
                 invitationBuilder.AppendPath("invitation");
                 invitationBuilder.AppendPath(invitationCode);
 
@@ -86,12 +94,19 @@ namespace Codeworx.Identity.Account
                 var notification = new ForgotPasswordNotification(invitationUrl, user, _options.CompanyName, _options.SupportEmail);
 
                 await _notificationService.SendNotificationAsync(notification).ConfigureAwait(false);
+
+                sw.Stop();
+                _forgotPasswordDelayService.Record(sw.Elapsed);
+            }
+            else
+            {
+                await _forgotPasswordDelayService.DelayAsync();
             }
 
             return new ForgotPasswordResponse(loginUrl);
         }
 
-        public async Task<ForgotPasswordViewResponse> ShowForgotPasswordViewAsync(ForgotPasswordRequest request)
+        public virtual async Task<ForgotPasswordViewResponse> ShowForgotPasswordViewAsync(ForgotPasswordRequest request)
         {
             if (!await IsSupportedAsync().ConfigureAwait(false))
             {
@@ -99,6 +114,16 @@ namespace Codeworx.Identity.Account
             }
 
             return new ForgotPasswordViewResponse();
+        }
+
+        protected virtual Invitation.InvitationItem CreateInvitationItem(ProcessForgotPasswordRequest request, IUser user)
+        {
+            return new Invitation.InvitationItem
+            {
+                RedirectUri = request.ReturnUrl,
+                UserId = user.Identity,
+                Action = Invitation.InvitationAction.ChangePassword,
+            };
         }
     }
 }

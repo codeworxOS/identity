@@ -3,73 +3,97 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Model;
+using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Codeworx.Identity.AspNetCore.Login
 {
-    public class DefaultIdentityAuthenticationHandler : IIdentityAuthenticationHandler, IDisposable
+    public class DefaultIdentityAuthenticationHandler : IIdentityAuthenticationHandler
     {
-        private readonly IDisposable _subscription;
-        private bool _disposedValue;
-        private IdentityOptions _options;
+        private IdentityServerOptions _options;
 
-        public DefaultIdentityAuthenticationHandler(IOptionsMonitor<IdentityOptions> optionsMonitor)
+        public DefaultIdentityAuthenticationHandler(IdentityServerOptions options)
         {
-            _options = optionsMonitor.CurrentValue;
-            _subscription = optionsMonitor.OnChange(p => _options = p);
+            _options = options;
         }
 
-        public async Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> AuthenticateAsync(HttpContext context)
+        public async Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> AuthenticateAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
         {
-            var result = await context.AuthenticateAsync(_options.AuthenticationScheme);
+            var result = await context.AuthenticateAsync(GetAuthenticationSchema(mode));
 
-            if (result.Succeeded && result.Principal.HasClaim(Constants.Claims.ForceChangePassword, "true"))
+            if (result.Succeeded)
             {
-                if (context.Request.Path != _options.AccountEndpoint + "/change-password")
+                if (result.Principal.HasClaim(Constants.Claims.ForceChangePassword, "true"))
                 {
-                    var returnUrl = context.Request.GetDisplayUrl();
-                    throw new ErrorResponseException<ForceChangePasswordResponse>(new ForceChangePasswordResponse(returnUrl));
+                    if (context.Request.Path != _options.AccountEndpoint + "/change-password")
+                    {
+                        var returnUrl = context.Request.GetDisplayUrl();
+                        throw new ErrorResponseException<ForceChangePasswordResponse>(new ForceChangePasswordResponse(returnUrl));
+                    }
+                }
+
+                if (result.Principal.HasClaim(Constants.Claims.ConfirmationPending, "true"))
+                {
+                    if (!context.Request.Path.StartsWithSegments(_options.AccountEndpoint + "/confirm"))
+                    {
+                        var userService = context.RequestServices.GetService<IUserService>();
+                        var user = await userService.GetUserByIdentityAsync((ClaimsIdentity)result.Principal.Identity).ConfigureAwait(false);
+                        var stringResources = context.RequestServices.GetService<IStringResources>();
+
+                        throw new ErrorResponseException<ConfirmationResponse>(new ConfirmationResponse(user, error: stringResources.GetResource(StringResource.AccountConfirmationPending)));
+                    }
+                }
+
+                if (mode == AuthenticationMode.Login)
+                {
+                    var claimsIdentity = (ClaimsIdentity)result.Principal.Identity;
+                    var mfaResult = await context.AuthenticateAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+
+                    if (mfaResult.Succeeded)
+                    {
+                        claimsIdentity.AddClaims(mfaResult.Principal.Claims);
+                    }
                 }
             }
 
             return result;
         }
 
-        public async Task ChallengeAsync(HttpContext context)
+        public async Task ChallengeAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
         {
-            await context.ChallengeAsync(_options.AuthenticationScheme);
+            await context.ChallengeAsync(GetAuthenticationSchema(mode));
         }
 
-        public void Dispose()
+        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist, AuthenticationMode mode = AuthenticationMode.Login)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
+            var properties = new AuthenticationProperties();
+            if (persist)
+            {
+                properties.IsPersistent = true;
+                properties.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(90);
+            }
 
-        public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal)
-        {
-            await context.SignInAsync(_options.AuthenticationScheme, principal);
+            await context.SignInAsync(GetAuthenticationSchema(mode), principal, properties);
         }
 
         public async Task SignOutAsync(HttpContext context)
         {
-            await context.SignOutAsync(_options.AuthenticationScheme);
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
+            await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Login));
         }
 
-        protected virtual void Dispose(bool disposing)
+        private string GetAuthenticationSchema(AuthenticationMode mode)
         {
-            if (!_disposedValue)
+            if (mode == AuthenticationMode.Mfa)
             {
-                if (disposing)
-                {
-                    _subscription.Dispose();
-                }
-
-                _disposedValue = true;
+                return _options.MfaAuthenticationScheme;
             }
+
+            return _options.AuthenticationScheme;
         }
     }
 }

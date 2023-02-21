@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="{{Translate 'LanguageCode'}}">
+
+<head>
+    <meta charset="UTF-8">
+    <base href="{{base-href}}">
+    {{> Favicon}}
+    <title>{{Translate 'ConfirmationPageTitle'}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {{> Styles}}
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-box">
+            <div class="login-headline">
+                <h2 class="title">{{Translate 'ConfirmationPageTitle'}}</h2>
+            </div>
+            <div class="login-content">
+                <label>
+                    {{Message}}
+                </label>
+                {{#HasError}}
+                <div class="error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{Error}}</span>
+                </div>
+                {{/HasError}}
+
+                {{> progress}}
+            </div>
+        </div>
+    </div>
+    {{> Scripts}}
+</body>
+</html>

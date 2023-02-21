@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
@@ -11,7 +13,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
             this.AdditionalProperties = new Dictionary<string, object>();
         }
 
+        [Required]
         public string Login { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
 
         public Guid? DefaultTenantId { get; set; }
 

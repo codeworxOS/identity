@@ -23,7 +23,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.NSwag
 
         public void Process(SchemaProcessorContext context)
         {
-            if (_mapping.TryGetValue(context.Type, out var entity))
+            if (_mapping.TryGetValue(context.ContextualType.Type, out var entity))
             {
                 IEntityType entityType;
 
@@ -35,7 +35,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.NSwag
 
                 foreach (var property in entityType.GetProperties().Where(p => p.IsShadowProperty()))
                 {
+#if NET6_0_OR_GREATER
+                    if (property == entityType.FindDiscriminatorProperty())
+#else
                     if (property == entityType.GetDiscriminatorProperty())
+#endif
                     {
                         continue;
                     }

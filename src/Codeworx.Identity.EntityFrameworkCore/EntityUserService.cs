@@ -20,6 +20,26 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _context = context;
         }
 
+        public async Task<string> GetProviderValueAsync(string userId, string provider)
+        {
+            var user = Guid.Parse(userId);
+
+            var authenticationProviderSet = _context.Set<AuthenticationProvider>();
+            var authenticationProviderRightHolderSet = _context.Set<AuthenticationProviderRightHolder>();
+            var providerId = Guid.Parse(provider);
+
+            var authenticationProvider = await authenticationProviderSet.SingleOrDefaultAsync(p => p.Id == providerId);
+            var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
+
+            var result = await authenticationProviderRightHolderSet
+                                .Where(p => p.RightHolderId == user && p.ProviderId == authenticationProviderId)
+                                .Select(p => p.ExternalIdentifier)
+                                .FirstOrDefaultAsync()
+                                .ConfigureAwait(false);
+
+            return result;
+        }
+
         public virtual async Task<IUser> GetUserByExternalIdAsync(string provider, string nameIdentifier)
         {
             IQueryable<User> userQuery = GetUserQuery();
@@ -30,8 +50,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var authenticationProviderId = authenticationProvider?.Id ?? throw new AuthenticationProviderException(provider);
 
             var user = await userQuery.SingleOrDefaultAsync(p => p.Providers.Any(a => a.ProviderId == authenticationProviderId && a.ExternalIdentifier == nameIdentifier));
+            if (user == null)
+            {
+                return null;
+            }
 
-            return await ToUserAsync(user);
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            return await ToUserAsync(user, hasMfaRegistration);
         }
 
         public virtual async Task<IUser> GetUserByIdAsync(string userId)
@@ -40,11 +65,16 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var id = Guid.Parse(userId);
 
             var user = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync();
+            if (user == null)
+            {
+                return null;
+            }
 
-            return await ToUserAsync(user);
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            return await ToUserAsync(user, hasMfaRegistration);
         }
 
-        public virtual async Task<IUser> GetUserByIdentifierAsync(ClaimsIdentity identity)
+        public virtual async Task<IUser> GetUserByIdentityAsync(ClaimsIdentity identity)
         {
             var identifier = identity.GetUserId();
 
@@ -56,8 +86,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var userSet = GetUserQuery();
 
             var user = await userSet.Where(p => p.Name == username).SingleOrDefaultAsync();
+            if (user == null)
+            {
+                return null;
+            }
 
-            return await ToUserAsync(user);
+            bool hasMfaRegistration = await HasMfaRegistrationAsync(user);
+            return await ToUserAsync(user, hasMfaRegistration);
         }
 
         public async Task LinkUserAsync(IUser user, IExternalLoginData loginData)
@@ -79,6 +114,20 @@ namespace Codeworx.Identity.EntityFrameworkCore
             await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
+        public async Task<IUser> ResetFailedLoginsAsync(IUser user)
+        {
+            var userSet = GetUserQuery();
+            var id = Guid.Parse(user.Identity);
+
+            var databaseUser = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync().ConfigureAwait(false);
+
+            databaseUser.FailedLoginCount = 0;
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            return await ToUserAsync(databaseUser, user.HasMfaRegistration);
+        }
+
         public virtual async Task SetDefaultTenantAsync(string identifier, string tenantKey)
         {
             var userSet = GetUserQuery();
@@ -89,22 +138,6 @@ namespace Codeworx.Identity.EntityFrameworkCore
             if (Guid.TryParse(tenantKey, out var tenantGuid))
             {
                 user.DefaultTenantId = tenantGuid;
-
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task UnlinkUserAsync(IUser user, string providerId)
-        {
-            var userId = Guid.Parse(user.Identity);
-            var providerGuid = Guid.Parse(providerId);
-
-            var query = _context.Set<AuthenticationProviderRightHolder>();
-
-            var link = await query.Where(p => p.RightHolderId == userId && p.ProviderId == providerGuid).FirstOrDefaultAsync();
-            if (link != null)
-            {
-                _context.Remove(link);
 
                 await _context.SaveChangesAsync();
             }
@@ -128,43 +161,61 @@ namespace Codeworx.Identity.EntityFrameworkCore
             await _context.SaveChangesAsync().ConfigureAwait(false);
         }
 
-        public async Task<IUser> ResetFailedLoginsAsync(IUser user)
+        public async Task UnlinkUserAsync(IUser user, string providerId)
         {
-            var userSet = GetUserQuery();
-            var id = Guid.Parse(user.Identity);
+            var userId = Guid.Parse(user.Identity);
+            var providerGuid = Guid.Parse(providerId);
 
-            var databaseUser = await userSet.Where(p => p.Id == id).SingleOrDefaultAsync().ConfigureAwait(false);
+            var query = _context.Set<AuthenticationProviderRightHolder>();
 
-            databaseUser.FailedLoginCount = 0;
+            var link = await query.Where(p => p.RightHolderId == userId && p.ProviderId == providerGuid).FirstOrDefaultAsync();
+            if (link != null)
+            {
+                _context.Remove(link);
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
-
-            return await ToUserAsync(databaseUser);
+                await _context.SaveChangesAsync();
+            }
         }
 
         protected virtual IQueryable<User> GetUserQuery()
         {
-            return _context.Set<User>().Where(p => !p.IsDisabled);
+            IQueryable<User> query = _context.Set<User>().Where(p => !p.IsDisabled);
+
+            return query;
         }
 
-        private async Task<Data.User> ToUserAsync(User user)
+        private async Task<bool> HasMfaRegistrationAsync(User user)
         {
             if (user == null)
             {
-                return null;
+                return false;
             }
 
-            var providers = await _context.Set<Model.AuthenticationProviderRightHolder>().Where(p => p.RightHolderId == user.Id).Select(p => p.ProviderId).ToListAsync();
+            return await _context.Set<AuthenticationProviderRightHolder>()
+                                        .Where(p => p.RightHolderId == user.Id && p.Provider.Usage == LoginProviderType.MultiFactor)
+                                        .AnyAsync();
+        }
+
+        private async Task<Data.User> ToUserAsync(User user, bool hasMfaRegistration)
+        {
+            var providers = await _context.Set<Model.AuthenticationProviderRightHolder>()
+                .Where(p => p.RightHolderId == user.Id)
+                .OrderBy(p => p.Provider.SortOrder)
+                .Select(p => new { p.Provider.Usage, p.ProviderId }).ToListAsync();
 
             return new Data.User
             {
                 Identity = user.Id.ToString("N"),
                 DefaultTenantKey = user.DefaultTenantId?.ToString("N"),
                 ForceChangePassword = user.ForceChangePassword,
+                ConfirmationPending = user.ConfirmationPending,
                 Name = user.Name,
                 PasswordHash = user.PasswordHash,
-                LinkedProviders = providers.Select(p => p.ToString("N")).ToImmutableList(),
+                LinkedMfaProviders = providers.Where(p => p.Usage == LoginProviderType.MultiFactor).Select(p => p.ProviderId.ToString("N")).ToImmutableList(),
+                LinkedLoginProviders = providers.Where(p => p.Usage == LoginProviderType.Login).Select(p => p.ProviderId.ToString("N")).ToImmutableList(),
                 FailedLoginCount = user.FailedLoginCount,
+                HasMfaRegistration = hasMfaRegistration,
+                AuthenticationMode = user.AuthenticationMode,
             };
         }
     }

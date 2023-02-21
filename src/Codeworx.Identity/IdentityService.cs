@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,10 +17,12 @@ namespace Codeworx.Identity
     public class IdentityService : IIdentityService
     {
         private readonly IClaimsService _claimsService;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
         private readonly IdentityOptions _options;
         private readonly IInvitationService _invitationService;
         private readonly IStringResources _stringResources;
+        private readonly ILoginDelayService _loginDelayService;
         private readonly IFailedLoginService _failedLoginService;
         private readonly ILinkUserService _linkUserService;
         private readonly IPasswordValidator _passwordValidator;
@@ -30,18 +34,22 @@ namespace Codeworx.Identity
             IClaimsService claimsService,
             IEnumerable<IExternalLoginEvent> loginEvents,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IInvitationService invitationService,
             IStringResources stringResources,
+            ILoginDelayService loginDelayService,
             IFailedLoginService failedLoginService = null,
             ILinkUserService linkUserService = null)
         {
             _userService = userService;
             _passwordValidator = passwordValidator;
             _claimsService = claimsService;
+            _serverOptions = serverOptions;
             _loginEvents = loginEvents.ToImmutableList();
             _options = options.Value;
             _invitationService = invitationService;
             _stringResources = stringResources;
+            _loginDelayService = loginDelayService;
             _failedLoginService = failedLoginService;
             _linkUserService = linkUserService;
         }
@@ -53,12 +61,27 @@ namespace Codeworx.Identity
                 throw new System.ArgumentNullException(nameof(identityDataParameters));
             }
 
-            var currentUser = await _userService.GetUserByIdentifierAsync(identityDataParameters.User);
+            var currentUser = await _userService.GetUserByIdentityAsync(identityDataParameters.User);
 
             if (currentUser == null)
             {
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
+            }
+
+            var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
+
+            if (!hasMfa && identityDataParameters.MfaFlowModel == MfaFlowMode.Enabled)
+            {
+                if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.OAuth.ClientIdName);
+                }
+
+                if (currentUser.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
+                }
             }
 
             var claims = new List<AssignedClaim>();
@@ -78,6 +101,7 @@ namespace Codeworx.Identity
             var user = await _userService.GetUserByNameAsync(username);
             if (user == null)
             {
+                await _loginDelayService.DelayAsync();
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
             }
@@ -88,6 +112,8 @@ namespace Codeworx.Identity
                 throw new AuthenticationException(message);
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
             if (!await _passwordValidator.Validate(user, password))
             {
                 if (_failedLoginService != null)
@@ -95,8 +121,16 @@ namespace Codeworx.Identity
                     await _failedLoginService.SetFailedLoginAsync(user).ConfigureAwait(false);
                 }
 
+                sw.Stop();
+                _loginDelayService.Record(sw.Elapsed);
+
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
                 throw new AuthenticationException(message);
+            }
+            else
+            {
+                sw.Stop();
+                _loginDelayService.Record(sw.Elapsed);
             }
 
             if (_failedLoginService != null && user.FailedLoginCount > 0)
@@ -171,14 +205,25 @@ namespace Codeworx.Identity
 
         public virtual Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user)
         {
-            var identity = new ClaimsIdentity(_options.AuthenticationScheme);
+            var identity = new ClaimsIdentity(_serverOptions.AuthenticationScheme);
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
+            identity.AddClaim(new Claim(Constants.Claims.Session, Guid.NewGuid().ToString("N")));
 
             if (user.ForceChangePassword)
             {
                 identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
+            }
+
+            if (user.AuthenticationMode == AuthenticationMode.Mfa)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ForceMfaLogin, "true"));
+            }
+
+            if (user.ConfirmationPending)
+            {
+                identity.AddClaim(new Claim(Constants.Claims.ConfirmationPending, "true"));
             }
 
             if (!string.IsNullOrWhiteSpace(user.DefaultTenantKey))

@@ -11,6 +11,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             return Task.FromResult<IEnumerable<IScope>>(new[]
                 {
                     new DefaultScope(Constants.Scopes.Groups),
+                    new DefaultScope(Constants.Scopes.GroupNames),
                 });
         }
 

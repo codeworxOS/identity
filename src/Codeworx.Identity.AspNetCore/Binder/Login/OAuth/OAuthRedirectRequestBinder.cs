@@ -6,22 +6,21 @@ using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Resources;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 {
     public class OAuthRedirectRequestBinder : IRequestBinder<OAuthRedirectRequest>
     {
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityOptions;
         private readonly IInvitationService _invitationService;
         private readonly IStringResources _stringResources;
 
         public OAuthRedirectRequestBinder(
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IInvitationService invitationService,
             IStringResources stringResources)
         {
-            _identityOptions = options.Value;
+            _identityOptions = options;
             _invitationService = invitationService;
             _stringResources = stringResources;
         }

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.Windows
 {
@@ -11,11 +11,11 @@ namespace Codeworx.Identity.Login.Windows
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityService _identityService;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
-        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUri, IIdentityService identityService)
+        public WindowsLoginProcessor(IdentityServerOptions options, IBaseUriAccessor baseUri, IIdentityService identityService)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUri;
             _identityService = identityService;
         }
@@ -36,6 +36,11 @@ namespace Codeworx.Identity.Login.Windows
                     uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
                     break;
                 case ProviderRequestType.Invitation:
+                    if (!request.Invitation.Action.HasFlag(InvitationAction.LinkUnlink))
+                    {
+                        return Task.FromResult<ILoginRegistrationInfo>(null);
+                    }
+
                     uriBuilder.AppendPath($"{_options.AccountEndpoint}/winlogin/{configuration.Id}");
                     uriBuilder.AppendQueryParameter(Constants.InvitationParameter, request.InvitationCode);
                     uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
@@ -43,6 +48,11 @@ namespace Codeworx.Identity.Login.Windows
                 case ProviderRequestType.Profile:
                     uriBuilder.AppendPath($"{_options.AccountEndpoint}/me/{configuration.Id}");
                     break;
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
+                case ProviderRequestType.MfaList:
+                default:
+                    throw new NotSupportedException();
             }
 
             string error = null;
@@ -52,7 +62,7 @@ namespace Codeworx.Identity.Login.Windows
 
             if (request.Type == ProviderRequestType.Profile)
             {
-                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                var isLinked = request.User.LinkedLoginProviders.Contains(configuration.Id);
                 uriBuilder.AppendPath(isLinked ? "unlink" : "link");
                 result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, uriBuilder.ToString(), isLinked, error);
             }

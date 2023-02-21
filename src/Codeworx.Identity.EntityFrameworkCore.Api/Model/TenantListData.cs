@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
@@ -16,6 +17,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         [Required]
         public string Name { get; set; }
+
+        public AuthenticationMode AuthenticationMode { get; set; }
 
         [JsonExtensionData]
         [Newtonsoft.Json.JsonExtensionData]

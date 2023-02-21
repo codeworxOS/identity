@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,16 +29,43 @@ namespace Codeworx.Identity.Test
             this.TestClient = this.TestServer.CreateClient();
         }
 
-        protected async Task Authenticate()
+        protected virtual async Task<HttpResponseMessage> Authenticate(string userName, string password)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
-            var response = await this.TestClient.PostAsync(options.Value.AccountEndpoint + "/login",
+            var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
+            loginRequestBuilder.AppendPath("login");
+            ////loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, this.GetRedirectUrl().ToString());
+
+            var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
+                               new FormUrlEncodedContent(new Dictionary<string, string>
+                               {
+                                   {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                   {"username", userName},
+                                   {"password", password}
+                               }));
+
+            response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
+            var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
+            if (!string.IsNullOrEmpty(authenticationCookie))
+            {
+                this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+            }
+
+            return response;
+        }
+
+        protected virtual async Task Authenticate()
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+
+            var response = await this.TestClient.PostAsync(options.AccountEndpoint + "/login",
                                                            new FormUrlEncodedContent(new Dictionary<string, string>
                                                                                      {
-                                                                                         {"provider-id", Constants.FormsLoginProviderId},
-                                                                                         {"username", Constants.DefaultAdminUserName},
-                                                                                         {"password", "admin"}
+                                                                                         {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},
+                                                                                         {"username", TestConstants.Users.DefaultAdmin.UserName},
+                                                                                         {"password", TestConstants.Users.DefaultAdmin.Password}
                                                                                      }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Token;
@@ -11,25 +11,25 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly IRequestValidator<AuthorizationCodeTokenRequest> _validator;
         private readonly IClientAuthenticationService _clientAuthenticationService;
-        private readonly IRefreshTokenCache _refreshTokenCache;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly ITokenProviderService _tokenProviderService;
         private readonly IAuthorizationCodeCache _cache;
+        private readonly IExternalTokenCache _externalTokenCache;
 
         public AuthorizationCodeTokenService(
             IAuthorizationCodeCache cache,
             IRequestValidator<AuthorizationCodeTokenRequest> validator,
             IClientAuthenticationService clientAuthenticationService,
-            IRefreshTokenCache refreshTokenCache,
-            IEnumerable<ITokenProvider> tokenProviders)
+            ITokenProviderService tokenProviderService,
+            IExternalTokenCache externalTokenCache = null)
         {
             _validator = validator;
             _clientAuthenticationService = clientAuthenticationService;
-            _refreshTokenCache = refreshTokenCache;
-            this._tokenProviders = tokenProviders;
+            _tokenProviderService = tokenProviderService;
             _cache = cache;
+            _externalTokenCache = externalTokenCache;
         }
 
-        public async Task<TokenResponse> ProcessAsync(AuthorizationCodeTokenRequest request)
+        public async Task<TokenResponse> ProcessAsync(AuthorizationCodeTokenRequest request, CancellationToken token = default)
         {
             if (request == null)
             {
@@ -60,21 +60,21 @@ namespace Codeworx.Identity.OAuth.Token
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidGrant);
             }
 
-            var tokenProvider = _tokenProviders.FirstOrDefault(p => p.TokenType == Constants.Token.Jwt);
+            var accessToken = await _tokenProviderService.CreateAccessTokenAsync(client).ConfigureAwait(false);
+            var identityToken = await _tokenProviderService.CreateIdentityTokenAsync(client).ConfigureAwait(false);
 
-            var accessToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
-            var identityToken = await tokenProvider.CreateAsync(null).ConfigureAwait(false);
+            var validUntil = DateTimeOffset.UtcNow.Add(client.TokenExpiration);
 
-            await accessToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.AccessToken), client.TokenExpiration)
+            await accessToken.SetPayloadAsync(identityData, validUntil)
                     .ConfigureAwait(false);
-            await identityToken.SetPayloadAsync(identityData.GetTokenClaims(ClaimTarget.IdToken), client.TokenExpiration)
+            await identityToken.SetPayloadAsync(identityData, validUntil)
                     .ConfigureAwait(false);
 
             var scopeClaim = identityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
 
             var scope = string.Empty;
 
-            string refreshToken = null;
+            string refreshTokenValue = null;
 
             if (scopeClaim != null)
             {
@@ -82,14 +82,25 @@ namespace Codeworx.Identity.OAuth.Token
 
                 if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
-                    refreshToken = await _refreshTokenCache.SetAsync(identityData, TimeSpan.FromDays(30 * 6));
+                    var validFor = TimeSpan.FromDays(30 * 6);
+                    var refreshValidUntil = DateTimeOffset.UtcNow.Add(validFor);
+
+                    var refreshToken = await _tokenProviderService.CreateRefreshTokenAsync(token).ConfigureAwait(false);
+
+                    await refreshToken.SetPayloadAsync(identityData, refreshValidUntil, token).ConfigureAwait(false);
+                    refreshTokenValue = await refreshToken.SerializeAsync(token);
+
+                    if (!string.IsNullOrWhiteSpace(identityData.ExternalTokenKey) && _externalTokenCache != null)
+                    {
+                        await _externalTokenCache.ExtendAsync(identityData.ExternalTokenKey, validFor, token).ConfigureAwait(false);
+                    }
                 }
             }
 
             var accessTokenValue = await accessToken.SerializeAsync().ConfigureAwait(false);
             var identityTokenValue = await identityToken.SerializeAsync().ConfigureAwait(false);
 
-            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope, refreshToken);
+            return new TokenResponse(accessTokenValue, identityTokenValue, Constants.OAuth.TokenType.Bearer, (int)client.TokenExpiration.TotalSeconds, scope, refreshTokenValue);
         }
     }
 }

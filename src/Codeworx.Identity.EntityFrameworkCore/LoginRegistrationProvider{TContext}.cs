@@ -22,13 +22,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(string userName = null)
+        public async Task<IEnumerable<ILoginRegistration>> GetLoginRegistrationsAsync(LoginProviderType loginProviderType, string userName = null)
         {
             var authenticationProviderQuery = _context.Set<AuthenticationProvider>() as IQueryable<AuthenticationProvider>;
 
             authenticationProviderQuery = authenticationProviderQuery.Where(p => !p.IsDisabled);
 
             var loginRegistrations = await authenticationProviderQuery
+                                                .Where(p => p.Usage == loginProviderType)
                                                 .OrderBy(p => p.SortOrder)
                                                .ToListAsync();
 

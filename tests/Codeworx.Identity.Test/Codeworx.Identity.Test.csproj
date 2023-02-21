@@ -1,54 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0;</TargetFrameworks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6;net7;</TargetFrameworks>
+		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.1'">
-    <EfVersion>2</EfVersion>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Remove="StyleCop.Analyzers" />
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <EfVersion>3</EfVersion>
-  </PropertyGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6'">
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net7'">
+		<PackageReference Include="Microsoft.AspNetCore.TestHost" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+		<PackageReference Include="Moq" Version="4.18.1" />
+		<PackageReference Include="nunit" Version="3.13.3" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+		<PackageReference Include="Otp.NET" Version="1.2.2" />
+	</ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <EfVersion>5</EfVersion>
-  </PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj" />
+		<ProjectReference Include="..\..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
+		<ProjectReference Include="..\..\src\Codeworx.Identity\Codeworx.Identity.csproj" />
+		<ProjectReference Include="..\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Remove="StyleCop.Analyzers" />
-  </ItemGroup>
+	<ItemGroup>
+		<Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '2'">
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(EfVersion)' == '3'">
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(EfVersion)' == '5'">
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-    <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="nunit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
-    <ProjectReference Include="..\..\src\Codeworx.Identity\Codeworx.Identity.csproj" />
-    <ProjectReference Include="..\Codeworx.Identity.Test.Provider\Codeworx.Identity.Test.Provider.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Cryptography\Converter\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Cryptography\Converter\" />
+	</ItemGroup>
 </Project>

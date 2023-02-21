@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
     [Route("api/identity/tenants")]
+    [Authorize(Policy = Policies.Admin)]
     public class TenantController
     {
         private readonly IContextWrapper _db;
@@ -28,6 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             {
                 Id = Guid.NewGuid(),
                 Name = tenant.Name,
+                AuthenticationMode = tenant.AuthenticationMode,
             };
             _db.Context.Add(entity);
 
@@ -37,7 +40,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
             await _db.Context.SaveChangesAsync();
 
-            var result = new TenantListData { Id = entity.Id, Name = entity.Name };
+            var result = new TenantListData { Id = entity.Id, Name = entity.Name, AuthenticationMode = entity.AuthenticationMode };
             entry.MapAdditionalProperties(result);
 
             return result;
@@ -87,6 +90,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 {
                     Id = tenant.Id,
                     Name = tenant.Name,
+                    AuthenticationMode = tenant.AuthenticationMode,
                 };
 
                 _db.Context.Entry(tenant).MapAdditionalProperties(data);

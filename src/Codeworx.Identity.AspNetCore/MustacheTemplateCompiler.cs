@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.Login;
-using Codeworx.Identity.Resources;
 using HandlebarsDotNet;
+using HandlebarsDotNet.Helpers;
+using HandlebarsDotNet.PathStructure;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
@@ -13,36 +13,22 @@ namespace Codeworx.Identity.AspNetCore
     {
         private readonly IDisposable _subscription;
         private readonly IHandlebars _handlebars;
-        private readonly IStringResources _stringResources;
         private bool _disposedValue = false;
         private IdentityOptions _options;
 
-        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IStringResources stringResources)
+        public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IEnumerable<ITemplateHelper> helpers)
         {
-            _stringResources = stringResources;
             _options = optionsMonitor.CurrentValue;
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
             _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
             _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
-            _handlebars.RegisterHelper("RegistrationTemplate", (writer, context, parameters) =>
-            {
-                if (context is ILoginRegistrationGroup info)
-                {
-                    writer.WriteSafeString(info.Template);
-                }
-            });
+            _handlebars.RegisterTemplate("Scripts", GetScripts(_options.Scripts));
 
-            _handlebars.RegisterHelper("Translate", (writer, context, parameters) =>
+            foreach (var helper in helpers)
             {
-                if (parameters.Length == 1 && parameters[0] is string resource)
-                {
-                    if (Enum.TryParse<StringResource>(resource, out var stringResource))
-                    {
-                        writer.WriteSafeString(_stringResources.GetResource(stringResource));
-                    }
-                }
-            });
+                _handlebars.RegisterHelper(new HelperDescriptor(helper));
+            }
 
             foreach (var partial in partialTemplates)
             {
@@ -59,7 +45,7 @@ namespace Codeworx.Identity.AspNetCore
         {
             var compiledTemplate = _handlebars.Compile(template);
 
-            return compiledTemplate;
+            return p => compiledTemplate(p);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -77,12 +63,51 @@ namespace Codeworx.Identity.AspNetCore
 
         private static string GetStyles(IEnumerable<string> styles)
         {
+            if (styles == null)
+            {
+                return string.Empty;
+            }
+
             return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+        }
+
+        private static string GetScripts(IEnumerable<string> scripts)
+        {
+            if (scripts == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join("\r\n", scripts.Select(p => $"<script type=\"text/javascript\" src=\"{p}\" ></script>"));
         }
 
         private static string GetFavicon(string favicon)
         {
             return $"<link rel=\"icon\" href=\"{favicon}\">";
+        }
+
+        private class HelperDescriptor : IHelperDescriptor<HelperOptions>
+        {
+            private ITemplateHelper _helper;
+
+            public HelperDescriptor(ITemplateHelper helper)
+            {
+                _helper = helper;
+            }
+
+            public PathInfo Name => _helper.Name;
+
+            public object Invoke(in HelperOptions options, in Context context, in Arguments arguments)
+            {
+                return this.ReturnInvoke(options, context, arguments);
+            }
+
+            public void Invoke(in EncodedTextWriter output, in HelperOptions options, in Context context, in Arguments arguments)
+            {
+                var args = arguments.ToArray();
+
+                _helper.Process(output.CreateWrapper(), context, args);
+            }
         }
     }
 

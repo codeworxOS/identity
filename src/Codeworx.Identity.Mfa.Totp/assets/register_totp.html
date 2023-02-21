@@ -1,0 +1,32 @@
+﻿<span class="verification-description">{{Translate 'ConnectAuthenticatorApp'}}</span>
+<form method="post" autocomplete="off">
+    <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
+    <input type="hidden" id="shared-secret" name="shared-secret" value="{{SharedSecret}}" />
+
+    <div class="mfa-provider-content">
+        <div style="width: 200px; height: 200px; background-image: url('{{QrCode}}'); background-repeat: no-repeat; background-size: contain;">
+
+        </div>
+        <div class="registration-url">
+            <a href="{{RegistrationUri}}">{{Translate 'TotpRegistrationUrl'}}</a>
+        </div>
+    </div>
+
+    <label>{{Translate 'ProvideOneTimeCode'}}</label>
+    <div class="validation-digit-box">
+        <input class="validation-digit" inputmode="numeric" autofocus maxlength="1" required="required" type="text" name="code-1" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-2" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-3" />
+        -
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-4" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-5" />
+        <input class="validation-digit" inputmode="numeric" maxlength="1" required="required" type="text" name="code-6" />
+    </div>
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    <input type="submit" class="btn" name="submit" value="{{Translate 'SendCode'}}" />
+</form>

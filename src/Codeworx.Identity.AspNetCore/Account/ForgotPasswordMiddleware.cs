@@ -14,12 +14,19 @@ namespace Codeworx.Identity.AspNetCore.Account
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IForgotPasswordService service, IRequestBinder<ForgotPasswordRequest> requestBinder, IResponseBinder<ForgotPasswordViewResponse> viewResponseBinder, IResponseBinder<ForgotPasswordResponse> responseBinder)
+        public async Task Invoke(
+            HttpContext context,
+            IForgotPasswordService service,
+            IRequestBinder<ForgotPasswordRequest> requestBinder,
+            IRequestValidator<ForgotPasswordRequest> requestValidator,
+            IResponseBinder<ForgotPasswordViewResponse> viewResponseBinder,
+            IResponseBinder<ForgotPasswordResponse> responseBinder)
         {
             try
             {
                 object response = null;
-                var request = await requestBinder.BindAsync(context.Request);
+                var request = await requestBinder.BindAsync(context.Request).ConfigureAwait(false);
+                await requestValidator.ValidateAsync(request).ConfigureAwait(false);
                 IResponseBinder binder = null;
 
                 switch (request)
@@ -32,6 +39,8 @@ namespace Codeworx.Identity.AspNetCore.Account
                     case ForgotPasswordRequest forgotPasswordRequest:
                         response = await service.ShowForgotPasswordViewAsync(forgotPasswordRequest);
                         binder = viewResponseBinder;
+                        break;
+                    default:
                         break;
                 }
 

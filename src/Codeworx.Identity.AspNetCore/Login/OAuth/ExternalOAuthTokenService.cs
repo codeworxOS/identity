@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Token;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore
@@ -17,41 +17,35 @@ namespace Codeworx.Identity.AspNetCore
     {
         private readonly HttpClient _client;
         private readonly IEnumerable<ITokenProvider> _tokenProviders;
+        private readonly JsonWebTokenHandler _jwtHandler;
 
         public ExternalOAuthTokenService(HttpClient client, IEnumerable<ITokenProvider> tokenProviders)
         {
             _client = client;
             _tokenProviders = tokenProviders;
+            _jwtHandler = new JsonWebTokenHandler();
         }
 
-        public static async Task AppendClaimsAsync(IToken token, ClaimsIdentity identity, string source)
+        public static Task AppendClaimsAsync(JsonWebToken token, ClaimsIdentity identity, string source)
         {
-            var payload = await token.GetPayloadAsync();
-
-            foreach (var item in payload)
+            foreach (var item in token.Claims)
             {
-                if (item.Value is string stringValue)
-                {
-                    AddClaimIfNotExists(identity, item.Key, stringValue, source);
-                }
-                else if (item.Value is IEnumerable<object> enumerable)
-                {
-                    foreach (var value in enumerable)
-                    {
-                        AddClaimIfNotExists(identity, item.Key, value, source);
-                    }
-                }
-                else
-                {
-                    AddClaimIfNotExists(identity, item.Key, item.Value, source);
-                }
+                AddClaimIfNotExists(identity, item, source);
             }
+
+            return Task.CompletedTask;
         }
 
         public static HttpRequestMessage CreateTokenRequestMessage(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> content)
         {
             var tokenEndpointUri = oauthConfiguration.GetTokenEndpointUri();
             var message = new HttpRequestMessage(HttpMethod.Post, tokenEndpointUri);
+
+            var body = new Dictionary<string, string>(content);
+            foreach (var item in oauthConfiguration.TokenParameters)
+            {
+                body.Add(item.Key, $"{item.Value}");
+            }
 
             if (oauthConfiguration.ClientSecret != null)
             {
@@ -60,12 +54,10 @@ namespace Codeworx.Identity.AspNetCore
                     var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
                     message.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
 
-                    message.Content = new FormUrlEncodedContent(content);
+                    message.Content = new FormUrlEncodedContent(body);
                 }
                 else
                 {
-                    var body = new Dictionary<string, string>(content);
-
                     if (!body.ContainsKey(Constants.OAuth.ClientIdName))
                     {
                         body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
@@ -81,7 +73,7 @@ namespace Codeworx.Identity.AspNetCore
             }
             else
             {
-                message.Content = new FormUrlEncodedContent(content);
+                message.Content = new FormUrlEncodedContent(body);
             }
 
             return message;
@@ -121,19 +113,20 @@ namespace Codeworx.Identity.AspNetCore
             var responseString = await response.Content.ReadAsStringAsync();
             var responseValues = JsonConvert.DeserializeObject<ResponseType>(responseString);
 
-            var provider = _tokenProviders.First(p => p.TokenType == Constants.Token.Jwt);
-            var token = await provider.CreateAsync(null);
+            ////var provider = _tokenProviders.First(p => p.TokenType == Constants.Token.Jwt);
+            ////var token = await provider.CreateAsync(null);
             string tokenName = null;
+            JsonWebToken token = null;
 
             switch (oauthConfiguration.ClaimSource)
             {
                 case ClaimSource.AccessToken:
                     tokenName = Constants.OAuth.AccessTokenName;
-                    await token.ParseAsync(responseValues.AccessToken);
+                    token = _jwtHandler.ReadJsonWebToken(responseValues.AccessToken);
                     break;
                 case ClaimSource.IdToken:
                     tokenName = Constants.OpenId.IdTokenName;
-                    await token.ParseAsync(responseValues.IdToken);
+                    token = _jwtHandler.ReadJsonWebToken(responseValues.IdToken);
                     break;
                 default:
                     throw new NotSupportedException($"Claim source {oauthConfiguration.ClaimSource} not supported!");
@@ -150,9 +143,7 @@ namespace Codeworx.Identity.AspNetCore
 
                 if (oauthConfiguration.ClaimSource != ClaimSource.IdToken)
                 {
-                    var identityToken = await provider.CreateAsync(null);
-                    await identityToken.ParseAsync(responseValues.IdToken);
-                    var identityPayload = await identityToken.GetPayloadAsync();
+                    var identityToken = _jwtHandler.ReadJsonWebToken(responseValues.IdToken);
                     await AppendClaimsAsync(identityToken, identity, Constants.OpenId.IdTokenName);
                 }
             }
@@ -165,29 +156,10 @@ namespace Codeworx.Identity.AspNetCore
             return identity;
         }
 
-        private static void AddClaimIfNotExists(ClaimsIdentity identity, string key, object value, string source)
+        private static void AddClaimIfNotExists(ClaimsIdentity identity, Claim claim, string source)
         {
-            if (value == null)
-            {
-                return;
-            }
-
-            Claim claim = null;
-
-            if (value is string stringValue)
-            {
-                claim = new Claim(key, stringValue);
-            }
-            else if (value is IDictionary<string, object> dictionary)
-            {
-                claim = new Claim(key, JsonConvert.SerializeObject(dictionary), "json");
-            }
-            else
-            {
-                claim = new Claim(key, value?.ToString());
-            }
-
-            claim.Properties.Add(Constants.OAuth.TokenTypeName, source);
+            var newClaim = claim.Clone();
+            newClaim.Properties.Add(Constants.OAuth.TokenTypeName, source);
 
             if (!identity.HasClaim(claim.Type, claim.Value))
             {

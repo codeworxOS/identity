@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -32,8 +33,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
@@ -52,8 +53,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
@@ -73,8 +74,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -89,8 +90,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint);
 
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
@@ -109,8 +110,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -137,8 +138,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
@@ -157,8 +158,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             response.EnsureSuccessStatusCode();
             var responseHtml = await response.Content.ReadAsStringAsync();
@@ -176,8 +177,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = $"?{Constants.OAuth.ClientIdName}={request.ClientId}&{Constants.OAuth.RedirectUriName}={request.RedirectUri}";
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -198,14 +199,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .WithScope("unknown")
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -225,8 +226,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -267,14 +268,14 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder()
-                          .WithClientId(Constants.DefaultCodeFlowClientId)
+                          .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                           .WithResponseType("unsupported")
                           .Build();
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -289,13 +290,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         {
             await this.Authenticate();
 
-            var request = new OAuthAuthorizationRequestBuilder().WithClientId(Constants.DefaultCodeFlowClientId)
+            var request = new OAuthAuthorizationRequestBuilder().WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual(request.RedirectUri, $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");
@@ -305,7 +306,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var queryParts = response.Headers.Location.GetComponents(UriComponents.Query, UriFormat.SafeUnescaped).Split("&");
             Assert.AreEqual(1, queryParts.Count());
 
-            var grantInformation = await cache.GetStringAsync(WebUtility.UrlDecode(queryParts[0].Split("=")[1].Split('.')[0]));
+            var grantInformation = await cache.GetStringAsync("Identity_AuthorizationCode_" + WebUtility.UrlDecode(queryParts[0].Split("=")[1].Split('.')[0]));
             Assert.False(string.IsNullOrWhiteSpace(grantInformation));
         }
 
@@ -315,13 +316,13 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             await this.Authenticate();
 
             var request = new OAuthAuthorizationRequestBuilder().WithRedirectUri(string.Empty)
-                                                           .WithClientId(Constants.DefaultCodeFlowClientId)
+                                                           .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
                                                            .Build();
 
             var requestString = this.ToRequestString(request);
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
-            var response = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+            var response = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, response.StatusCode);
             Assert.AreEqual("https://example.org/redirect", $"{response.Headers.Location.Scheme}://{response.Headers.Location.Host}{response.Headers.Location.LocalPath}");

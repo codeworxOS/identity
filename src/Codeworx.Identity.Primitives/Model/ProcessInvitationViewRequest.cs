@@ -2,15 +2,18 @@
 {
     public class ProcessInvitationViewRequest : InvitationViewRequest
     {
-        public ProcessInvitationViewRequest(string code, string password, string confirmPassword, string providerId)
-            : base(code)
+        public ProcessInvitationViewRequest(string code, string password, string confirmPassword, string providerId, string userName, bool headerOnly)
+            : base(code, headerOnly)
         {
             Password = password;
             ConfirmPassword = confirmPassword;
             ProviderId = providerId;
+            UserName = userName;
         }
 
-        public string ProviderId { get; set; }
+        public string UserName { get; }
+
+        public string ProviderId { get; }
 
         public string Password { get; }
 

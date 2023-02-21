@@ -18,7 +18,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             ClaimsIdentity identity = null;
             string loginProviderId = null, loginProviderError = null;
 
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 var authenticationResult = await request.HttpContext.AuthenticateAsync();
 
@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
             }
 
-            return new ProfileRequest(identity, loginProviderId, loginProviderError);
+            return new ProfileRequest(identity, HttpMethods.IsHead(request.Method), loginProviderId, loginProviderError);
         }
     }
 }

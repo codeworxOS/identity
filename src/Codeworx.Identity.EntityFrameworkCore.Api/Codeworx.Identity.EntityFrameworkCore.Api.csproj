@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1;</TargetFrameworks>
+    <TargetFrameworks>net6;net7;</TargetFrameworks>
     <AddRazorSupportForMvc>false</AddRazorSupportForMvc>
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
   </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

@@ -2,22 +2,21 @@
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Login
 {
     public class LoginRedirectResponseBinder : ResponseBinder<LoginRedirectResponse>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public LoginRedirectResponseBinder(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor)
+        public LoginRedirectResponseBinder(IdentityServerOptions options, IBaseUriAccessor baseUriAccessor)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUriAccessor;
         }
 
-        public override Task BindAsync(LoginRedirectResponse responseData, HttpResponse response)
+        protected override Task BindAsync(LoginRedirectResponse responseData, HttpResponse response, bool headerOnly)
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
             uriBuilder.AppendPath(_options.AccountEndpoint);

@@ -7,7 +7,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
 {
     public class OAuthRedirectResponseBinder : ResponseBinder<OAuthRedirectResponse>
     {
-        public override Task BindAsync(OAuthRedirectResponse responseData, HttpResponse response)
+        protected override Task BindAsync(OAuthRedirectResponse responseData, HttpResponse response, bool headerOnly)
         {
             var uriBuilder = new UriBuilder(responseData.AuthorizationEndpoint);
             uriBuilder.AppendQueryParameter(Constants.OAuth.ResponseTypeName, Constants.OAuth.ResponseType.Code);
@@ -32,6 +32,11 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
             if (!string.IsNullOrEmpty(responseData.Prompt))
             {
                 uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, responseData.Prompt);
+            }
+
+            foreach (var item in responseData.AuthrizationParameters)
+            {
+                uriBuilder.AppendQueryParameter(item.Key, $"{item.Value}");
             }
 
             response.Redirect(uriBuilder.ToString());

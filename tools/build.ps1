@@ -2,10 +2,11 @@ Import-Module -Name "./Build-Versioning.psm1"
 
 
 $projects = "..\src\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj",
-            "..\src\Codeworx.Identity.AspNetcore\Codeworx.Identity.AspNetcore.csproj", 
+            "..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj", 
             "..\src\Codeworx.Identity.Cryptography\Codeworx.Identity.Cryptography.csproj", 
             "..\src\Codeworx.Identity.Configuration\Codeworx.Identity.Configuration.csproj",
-            "..\src\Codeworx.Identity\Codeworx.Identity.csproj"
+            "..\src\Codeworx.Identity\Codeworx.Identity.csproj",
+            "..\src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj"
 
 $coreVersion = New-NugetPackages `
     -Projects $projects `
@@ -21,22 +22,25 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj"
 
-New-NugetPackages `
-    -Projects $projects `
-    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
-    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
-    -VersionFilePath "..\version_ef3.json" `
-    -DoNotCleanOutput `
-    -OutputPath "..\dist\nuget" `
-    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=3;IdentityCoreVersion=$($coreVersion.NugetVersion)"
 
-New-NugetPackages `
+    New-NugetPackages `
     -Projects $projects `
     -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
     -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
-    -VersionFilePath "..\version_ef5.json" `
+    -VersionFilePath "..\version_ef6.json" `
     -DoNotCleanOutput `
     -OutputPath "..\dist\nuget" `
-    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=5;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=6;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
+    New-NugetPackages `
+    -Projects $projects `
+    -NugetServerUrl "https://www.myget.org/F/codeworx/api/v2" `
+    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
+    -VersionFilePath "..\version_ef7.json" `
+    -DoNotCleanOutput `
+    -OutputPath "..\dist\nuget" `
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=7;IdentityCoreVersion=$($coreVersion.NugetVersion)"
+
+
 
 Write-Host "##vso[build.updatebuildnumber]$($coreVersion.NugetVersion)"

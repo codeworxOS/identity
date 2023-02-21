@@ -1,65 +1,47 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Codeworx.Identity.Model;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Mail
 {
-    public class SmtpMailConnector : IMailConnector, IDisposable
+    public class SmtpMailConnector : IMailConnector
     {
-        private readonly IDisposable _subscription;
-        private bool _disposedValue;
-        private SmtpOptions _options;
+        private readonly SmtpOptions _options;
 
-        public SmtpMailConnector(IOptionsMonitor<SmtpOptions> options)
+        public SmtpMailConnector(IOptionsSnapshot<SmtpOptions> options)
         {
-            _subscription = options.OnChange(p => _options = p);
-            _options = options.CurrentValue;
+            _options = options.Value;
         }
 
-        public void Dispose()
+        public async Task SendAsync(MailAddress recipient, string subject, string content)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task SendAsync(IUser recipient, string subject, string content)
-        {
-            var client = new SmtpClient(_options.Host, _options.Port);
-
-            if (_options.UserName != null)
+            using (var client = new SmtpClient(_options.Host, _options.Port))
             {
-                client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential
+                if (_options.UserName != null)
                 {
-                    UserName = _options.UserName,
-                    Password = _options.Password,
-                };
-            }
-
-            client.TargetName = _options.TargetName;
-            client.EnableSsl = true;
-
-            var message = new MailMessage(_options.Sender, recipient.Name);
-            message.Body = content;
-            message.IsBodyHtml = true;
-            message.Subject = subject;
-
-            await client.SendMailAsync(message).ConfigureAwait(false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _subscription.Dispose();
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential
+                    {
+                        UserName = _options.UserName,
+                        Password = _options.Password,
+                    };
                 }
 
-                _disposedValue = true;
+                client.TargetName = _options.TargetName;
+                client.EnableSsl = _options.EnableSsl;
+
+                var to = recipient;
+                var from = new MailAddress(_options.Sender);
+
+                using (var message = new MailMessage(from, to))
+                {
+                    message.Body = content;
+                    message.IsBodyHtml = true;
+                    message.Subject = subject;
+
+                    await client.SendMailAsync(message).ConfigureAwait(false);
+                }
             }
         }
     }

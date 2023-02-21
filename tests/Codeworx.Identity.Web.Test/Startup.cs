@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using System.Reflection;
-using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
+using Codeworx.Identity.Test.Provider;
 using Codeworx.Identity.Web.Test.Tenant;
+using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,8 @@ namespace Codeworx.Identity.Web.Test
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IOptions<Configuration.IdentityOptions> identityOptions)
         {
+
+
             var supportedCultures = new[] { "en", "de" };
             var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
                 .AddSupportedCultures(supportedCultures)
@@ -44,7 +47,7 @@ namespace Codeworx.Identity.Web.Test
             app.UseCors();
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseCodeworxIdentity(identityOptions.Value);
+            app.UseCodeworxIdentity();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
@@ -82,12 +85,14 @@ namespace Codeworx.Identity.Web.Test
 
             services.Configure<SmtpOptions>(this._configuration.GetSection("Smtp"));
 
-            services.AddCodeworxIdentity(_configuration)
+            services.AddCodeworxIdentity()
                     //.Pbkdf2()
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)
                     .AddAssets(Assembly.Load("Codeworx.Identity.Test.Theme"))
                     .AddSmtpMailConnector()
+                    .AddMfaTotp()
+                    .WithLoginAsEmail()
                     .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
             //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
             //.UseConfiguration(_configuration);
@@ -95,8 +100,10 @@ namespace Codeworx.Identity.Web.Test
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();
 
             services.AddAuthentication()
-                //.AddNegotiate("Windows", p => { })
-                .AddJwtBearer("JWT", ConfigureJwt);
+                .AddOAuth2Introspection("JWT", ConfigureIntrospection);
+            //.AddNegotiate("Windows", p => { })
+            //.AddJwtBearer("JWT", ConfigureJwt);
+
 
             services.AddAuthorization();
 
@@ -105,6 +112,15 @@ namespace Codeworx.Identity.Web.Test
                 {
                     options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
                 });
+        }
+
+        private void ConfigureIntrospection(OAuth2IntrospectionOptions options)
+        {
+            options.Authority = "https://localhost:44319/";
+            options.ClientCredentialStyle = IdentityModel.Client.ClientCredentialStyle.AuthorizationHeader;
+
+            options.ClientId = TestConstants.Clients.DefaultBackendClientId;
+            options.ClientSecret = TestConstants.Clients.DefaultBackendClientSecret;
         }
 
         private void ConfigureJwt(JwtBearerOptions options)

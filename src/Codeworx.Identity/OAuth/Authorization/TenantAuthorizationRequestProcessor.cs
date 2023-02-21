@@ -34,19 +34,25 @@ namespace Codeworx.Identity.OAuth.Authorization
 
                 var defaultTenantKey = parameters.User.FindFirst(Constants.Claims.DefaultTenant)?.Value;
 
+                TenantInfo currentTenant = null;
+
                 if (tenants.Count == 0)
                 {
                     builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
                 }
                 else if (foundTenants.Count == 1)
                 {
+                    currentTenant = foundTenants[0];
                 }
                 else if (foundTenants.Count == 0 && tenants.Count == 1)
                 {
-                    scopes.Add(tenants[0].Key);
+                    currentTenant = tenants[0];
+                    scopes.Add(currentTenant.Key);
                 }
                 else if (foundTenants.Count == 0 && tenants.Any(p => p.Key == defaultTenantKey))
                 {
+                    currentTenant = tenants.First(p => p.Key == defaultTenantKey);
+
                     scopes.Add(defaultTenantKey);
                 }
                 else
@@ -57,6 +63,14 @@ namespace Codeworx.Identity.OAuth.Authorization
                     }
 
                     builder.Throw(Constants.OAuth.Error.InvalidScope, Constants.Scopes.Tenant);
+                }
+
+                if (currentTenant.AuthenticationMode == Login.AuthenticationMode.Mfa && !parameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa))
+                {
+                    if (parameters.MfaFlowModel == MfaFlowMode.Enabled)
+                    {
+                        parameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Scopes.Tenant);
+                    }
                 }
             }
 

@@ -18,10 +18,10 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
             _lookup = lookup;
         }
 
-        public override async Task BindAsync(LoginResponse responseData, HttpResponse response)
+        protected override async Task BindAsync(LoginResponse responseData, HttpResponse response, bool headerOnly)
         {
             var registrations = responseData.Groups.SelectMany(p => p.Registrations).ToList();
-            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri))
+            if (registrations.Count == 1 && registrations[0].HasRedirectUri(out var redirectUri) && !responseData.HasError && string.IsNullOrWhiteSpace(registrations[0].Error))
             {
                 response.Redirect(redirectUri);
                 return;
@@ -32,10 +32,14 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
                 response.ContentType = contentType;
             }
 
-            var responseBody = await _view.GetLoginView(response.GetViewContextData(responseData));
-
             response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(responseBody);
+
+            if (!headerOnly)
+            {
+                var responseBody = await _view.GetLoginView(response.GetViewContextData(responseData));
+
+                await response.WriteAsync(responseBody);
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
+using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore.OAuth.Binder
@@ -17,6 +18,11 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
         public async Task<TokenRequest> BindAsync(HttpRequest request)
         {
+            if (!HttpMethods.IsPost(request.Method))
+            {
+                throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
+            }
+
             if (!request.HasFormContentType)
             {
                 ErrorResponse.Throw(Constants.OAuth.Error.InvalidRequest);

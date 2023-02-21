@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.View;
@@ -18,6 +17,7 @@ namespace Codeworx.Identity
         IPasswordChangeViewTemplate,
         IProfileViewTemplate,
         IForgotPasswordViewTemplate,
+        IConfirmationViewTemplate,
         IDisposable
     {
         private readonly IDisposable _optionsMonitor;
@@ -38,6 +38,11 @@ namespace Codeworx.Identity
         public async Task<string> GetChallengeResponse()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.challenge_response.html");
+        }
+
+        public async Task<string> GetConfirmationViewTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.confirmation.html");
         }
 
         public async Task<string> GetForgotPasswordCompletedTemplate()
@@ -65,6 +70,16 @@ namespace Codeworx.Identity
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.login.html");
         }
 
+        public async Task<string> GetMfaOverviewTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.mfa_login.html");
+        }
+
+        public async Task<string> GetMfaProviderTemplate()
+        {
+            return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.mfa_provider.html");
+        }
+
         public async Task<string> GetPasswordChangeTemplate()
         {
             return await GetTemplateAsStringAsync("Codeworx.Identity.assets.account.password_change.html");
@@ -87,28 +102,12 @@ namespace Codeworx.Identity
 
         internal static string GetTemplateAsString(string resourceName)
         {
-            using (var stream = typeof(DefaultViewTemplate)
-                                .GetTypeInfo().Assembly
-                                .GetManifestResourceStream(resourceName))
-            {
-                byte[] buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, buffer.Length);
-
-                return Encoding.UTF8.GetString(buffer);
-            }
+            return typeof(DefaultViewTemplate).Assembly.GetResourceString(resourceName);
         }
 
         internal static async Task<string> GetTemplateAsStringAsync(string resourceName)
         {
-            using (var stream = typeof(DefaultViewTemplate)
-                                .GetTypeInfo().Assembly
-                                .GetManifestResourceStream(resourceName))
-            {
-                byte[] buffer = new byte[stream.Length];
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-
-                return Encoding.UTF8.GetString(buffer);
-            }
+            return await typeof(DefaultViewTemplate).Assembly.GetResourceStringAsync(resourceName);
         }
 
         protected virtual void Dispose(bool disposing)

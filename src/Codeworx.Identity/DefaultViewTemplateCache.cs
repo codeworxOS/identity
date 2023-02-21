@@ -13,27 +13,32 @@ namespace Codeworx.Identity
         IPasswordChangeViewTemplateCache,
         IForgotPasswordViewTemplateCache,
         IRedirectViewTemplateCache,
-        IProfileViewTemplateCache
+        IProfileViewTemplateCache,
+        IConfirmationViewTemplateCache
     {
         private readonly ITemplateCompiler _compiler;
-        private readonly ILoginViewTemplate _loginViewTemplate;
-        private readonly ITenantViewTemplate _tenantViewTemplate;
-        private readonly IRedirectViewTemplate _redirectViewTemplate;
+        private readonly IConfirmationViewTemplate _confirmationViewTemplate;
+        private readonly IForgotPasswordViewTemplate _forgotPasswordViewTemplate;
         private readonly IFormPostResponseTypeTemplate _formPostResponseTypeTemplate;
         private readonly IInvitationViewTemplate _invitationViewTemplate;
+        private readonly ILoginViewTemplate _loginViewTemplate;
         private readonly IPasswordChangeViewTemplate _passwordChangeViewTemplate;
         private readonly IProfileViewTemplate _profileViewTemplate;
-        private readonly IForgotPasswordViewTemplate _forgotPasswordViewTemplate;
-        private Func<object, string> _redirect;
-        private Func<object, string> _login;
-        private Func<object, string> _tenant;
-        private Func<object, string> _formPost;
+        private readonly IRedirectViewTemplate _redirectViewTemplate;
+        private readonly ITenantViewTemplate _tenantViewTemplate;
         private Func<object, string> _challengeResponse;
-        private Func<object, string> _invitation;
-        private Func<object, string> _passwordChange;
-        private Func<object, string> _profileView;
+        private Func<object, string> _confirmationView;
         private Func<object, string> _forgotPassword;
         private Func<object, string> _forgotPasswordComplete;
+        private Func<object, string> _formPost;
+        private Func<object, string> _invitation;
+        private Func<object, string> _login;
+        private Func<object, string> _mfaOverview;
+        private Func<object, string> _mfaProvider;
+        private Func<object, string> _passwordChange;
+        private Func<object, string> _profileView;
+        private Func<object, string> _redirect;
+        private Func<object, string> _tenant;
 
         public DefaultViewTemplateCache(
             ITemplateCompiler compiler,
@@ -44,7 +49,8 @@ namespace Codeworx.Identity
             IInvitationViewTemplate invitationViewTemplate,
             IPasswordChangeViewTemplate passwordChangeViewTemplate,
             IProfileViewTemplate profileViewTemplate,
-            IForgotPasswordViewTemplate forgotPasswordViewTemplate)
+            IForgotPasswordViewTemplate forgotPasswordViewTemplate,
+            IConfirmationViewTemplate confirmationViewTemplate)
         {
             _compiler = compiler;
             _loginViewTemplate = loginViewTemplate;
@@ -55,6 +61,7 @@ namespace Codeworx.Identity
             _passwordChangeViewTemplate = passwordChangeViewTemplate;
             _profileViewTemplate = profileViewTemplate;
             _forgotPasswordViewTemplate = forgotPasswordViewTemplate;
+            _confirmationViewTemplate = confirmationViewTemplate;
         }
 
         public async Task<string> GetChallengeResponse(IDictionary<string, object> data)
@@ -69,6 +76,20 @@ namespace Codeworx.Identity
             }
 
             return _challengeResponse(data);
+        }
+
+        public async Task<string> GetConfirmationView(IDictionary<string, object> data)
+        {
+            if (_confirmationView == null)
+            {
+                var template = await _confirmationViewTemplate.GetConfirmationViewTemplate();
+                if (_confirmationView == null)
+                {
+                    _confirmationView = _compiler.Compile(template);
+                }
+            }
+
+            return _confirmationView(data);
         }
 
         public async Task<string> GetForgotPasswordCompletedView(IDictionary<string, object> data)
@@ -139,6 +160,34 @@ namespace Codeworx.Identity
             }
 
             return _login(data);
+        }
+
+        public async Task<string> GetMfaOverview(IDictionary<string, object> data)
+        {
+            if (_mfaOverview == null)
+            {
+                var template = await _loginViewTemplate.GetMfaOverviewTemplate();
+                if (_mfaOverview == null)
+                {
+                    _mfaOverview = _compiler.Compile(template);
+                }
+            }
+
+            return _mfaOverview(data);
+        }
+
+        public async Task<string> GetMfaProvider(IDictionary<string, object> data)
+        {
+            if (_mfaProvider == null)
+            {
+                var template = await _loginViewTemplate.GetMfaProviderTemplate();
+                if (_mfaProvider == null)
+                {
+                    _mfaProvider = _compiler.Compile(template);
+                }
+            }
+
+            return _mfaProvider(data);
         }
 
         public async Task<string> GetPasswordChangeView(IDictionary<string, object> data)

@@ -6,6 +6,8 @@
         {
             switch (resource)
             {
+                case StringResource.UsernameAlreadyTaken:
+                    return Translation.UsernameAlreadyTaken;
                 case StringResource.Username:
                     return Translation.Username;
                 case StringResource.Password:
@@ -48,6 +50,8 @@
                     return Translation.LoginPageTitle;
                 case StringResource.ChangePasswordPageTitle:
                     return Translation.ChangePasswordPageTitle;
+                case StringResource.SetPasswordPageTitle:
+                    return Translation.SetPasswordPageTitle;
                 case StringResource.CurrentPassword:
                     return Translation.CurrentPassword;
                 case StringResource.NewPassword:
@@ -94,10 +98,60 @@
                     return Translation.PasswordChangeSamePasswordError;
                 case StringResource.PasswordChangeEqualToLoginError:
                     return Translation.PasswordChangeEqualToLoginError;
+                case StringResource.PasswordChangePasswordReuseError:
+                    return Translation.PasswordChangePasswordReuseError;
                 case StringResource.LanguageCode:
                     return Translation.LanguageCode;
                 case StringResource.MaxFailedLoginAttemptsReached:
                     return Translation.MaxFailedLoginAttemptsReached;
+                case StringResource.ConfirmationCodeInvalid:
+                    return Translation.ConfirmationCodeInvalid;
+                case StringResource.ConfirmationPageTitle:
+                    return Translation.ConfirmationPageTitle;
+                case StringResource.ConfirmationMessage:
+                    return Translation.ConfirmationMessage;
+                case StringResource.AccountConfirmationPending:
+                    return Translation.AccountConfirmationPending;
+                case StringResource.EmailLoginDescription:
+                    return Translation.EmailLoginDescription;
+                case StringResource.ProvideOneTimeCode:
+                    return Translation.ProvideOneTimeCode;
+                case StringResource.OneTimeCode:
+                    return Translation.OneTimeCode;
+                case StringResource.SendCode:
+                    return Translation.SendCode;
+                case StringResource.InvalidOneTimeCode:
+                    return Translation.InvalidOneTimeCode;
+                case StringResource.OneTimeCodeMailSent:
+                    return Translation.OneTimeCodeMailSent;
+                case StringResource.RegisterMfaEmail:
+                    return Translation.RegisterMfaEmail;
+                case StringResource.MfaProviderListPageTitle:
+                    return Translation.MfaProviderListPageTitle;
+                case StringResource.MfaProviderPageTitle:
+                    return Translation.MfaProviderPageTitle;
+                case StringResource.ConnectAuthenticatorApp:
+                    return Translation.ConnectAuthenticatorApp;
+                case StringResource.ReceiveCodeFromApp:
+                    return Translation.ReceiveCodeFromApp;
+                case StringResource.UnlinkProvider:
+                    return Translation.UnlinkProvider;
+                case StringResource.TotpRegistrationUrl:
+                    return Translation.TotpRegistrationUrl;
+                case StringResource.DidNotReceiveCode:
+                    return Translation.DidNotReceiveCode;
+                case StringResource.MfaProviderSelectLink:
+                    return Translation.MfaProviderSelectLink;
+                case StringResource.OneTimeCodeViaApp:
+                    return Translation.OneTimeCodeViaApp;
+                case StringResource.OneTimeCodeViaEmail:
+                    return Translation.OneTimeCodeViaEmail;
+                case StringResource.MfaListRegisterMail:
+                    return Translation.MfaListRegisterMail;
+                case StringResource.MfaListRegisterTotp:
+                    return Translation.MfaListRegisterTotp;
+                case StringResource.EmailAddress:
+                    return Translation.EmailAddress;
                 default:
                     throw new MissingResourceException(resource);
             }

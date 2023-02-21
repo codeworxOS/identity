@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Codeworx.Identity.Model;
 
@@ -6,13 +7,13 @@ namespace Codeworx.Identity
 {
     public interface IIdentityDataParameters
     {
+        MfaFlowMode MfaFlowModel { get; }
+
         IClientRegistration Client { get; }
 
-        string Nonce { get; }
+        DateTimeOffset TokenValidUntil { get; }
 
         IReadOnlyCollection<string> Scopes { get; }
-
-        string State { get; }
 
         ClaimsIdentity User { get; }
 

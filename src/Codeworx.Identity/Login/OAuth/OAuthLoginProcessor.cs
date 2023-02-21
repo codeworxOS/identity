@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.OAuth
 {
@@ -20,7 +21,7 @@ namespace Codeworx.Identity.Login.OAuth
         private readonly IIdentityService _identityService;
         private readonly ILogger<OAuthLoginProcessor> _logger;
         private readonly IExternalTokenCache _externalTokenCache;
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityOptions;
         private readonly IExternalOAuthTokenService _tokenService;
         private readonly IStateLookupCache _stateCache;
         private readonly string _baseUri;
@@ -36,7 +37,7 @@ namespace Codeworx.Identity.Login.OAuth
         public OAuthLoginProcessor(
             IBaseUriAccessor baseUriAccessor,
             IExternalOAuthTokenService tokenService,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IStateLookupCache stateCache,
             IIdentityService identityService,
             ILogger<OAuthLoginProcessor> logger,
@@ -47,7 +48,7 @@ namespace Codeworx.Identity.Login.OAuth
             _identityService = identityService;
             _logger = logger;
             _externalTokenCache = externalTokenCache;
-            _identityOptions = options.Value;
+            _identityOptions = options;
             _baseUri = baseUriAccessor.BaseUri.ToString();
         }
 
@@ -71,6 +72,11 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
                     break;
                 case ProviderRequestType.Invitation:
+                    if (!request.Invitation.Action.HasFlag(InvitationAction.LinkUnlink))
+                    {
+                        return Task.FromResult<ILoginRegistrationInfo>(null);
+                    }
+
                     redirectUriBuilder.AppendPath("oauth");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     redirectUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
@@ -80,21 +86,44 @@ namespace Codeworx.Identity.Login.OAuth
                     redirectUriBuilder.AppendPath("me");
                     redirectUriBuilder.AppendPath(configuration.Id);
                     break;
+                case ProviderRequestType.MfaList:
+                case ProviderRequestType.MfaRegister:
+                case ProviderRequestType.MfaLogin:
+                default:
+                    throw new NotSupportedException();
             }
 
-            if (!string.IsNullOrEmpty(request.Prompt))
-            {
-                redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, request.Prompt);
-            }
+            var prompt = request.Prompt;
 
             string error = null;
-            request.ProviderErrors.TryGetValue(configuration.Id, out error);
+            if (request.ProviderErrors.TryGetValue(configuration.Id, out error))
+            {
+                switch (oauthConfiguration.ProviderErrorStrategy)
+                {
+                    case ProviderErrorStrategy.AppendLoginPrompt:
+
+                        prompt = prompt ?? Constants.OAuth.Prompt.Login;
+                        break;
+                    case ProviderErrorStrategy.AppendSelectAccountPrompt:
+
+                        prompt = prompt ?? Constants.OAuth.Prompt.SelectAccount;
+                        break;
+                    case ProviderErrorStrategy.None:
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(prompt))
+            {
+                redirectUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, prompt);
+            }
 
             ILoginRegistrationInfo result = null;
 
             if (request.Type == ProviderRequestType.Profile)
             {
-                var isLinked = request.User.LinkedProviders.Contains(configuration.Id);
+                var isLinked = request.User.LinkedLoginProviders.Contains(configuration.Id);
                 redirectUriBuilder.AppendPath(isLinked ? "unlink" : "link");
 
                 result = new RedirectProfileRegistrationInfo(configuration.Id, configuration.Name, cssClass, redirectUriBuilder.ToString(), isLinked, error);
@@ -155,36 +184,67 @@ namespace Codeworx.Identity.Login.OAuth
                 throw ex;
             }
 
-            var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
-            var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
-
-            if (oauthConfiguration.TokenHandling != ExternalTokenHandling.None)
+            try
             {
-                var access_token = externalIdentity.FindFirst(Constants.OAuth.AccessTokenName)?.Value;
-                var id_token = externalIdentity.FindFirst(Constants.OpenId.IdTokenName)?.Value;
-                var refresh_token = externalIdentity.FindFirst(Constants.OAuth.RefreshTokenName)?.Value;
+                var loginData = new OAuthLoginData(registration, externalIdentity, oauthConfiguration, stateItem.InvitationCode);
+                var identity = await _identityService.LoginExternalAsync(loginData).ConfigureAwait(false);
 
-                var data = new ExternalTokenData
+                if (oauthConfiguration.TokenHandling != ExternalTokenHandling.None)
                 {
-                    AccessToken = access_token,
-                    IdToken = id_token,
-                    RefreshToken = refresh_token,
-                    RegistrationId = registration.Id,
-                };
+                    var access_token = externalIdentity.FindFirst(Constants.OAuth.AccessTokenName)?.Value;
+                    var id_token = externalIdentity.FindFirst(Constants.OpenId.IdTokenName)?.Value;
+                    var refresh_token = externalIdentity.FindFirst(Constants.OAuth.RefreshTokenName)?.Value;
 
-                if (_externalTokenCache == null)
-                {
-                    var ex = new MissingDependencyException(typeof(IExternalTokenCache));
-                    _externalTokenCacheMissingMessage(_logger, ex);
-                    throw ex;
+                    var data = new ExternalTokenData
+                    {
+                        AccessToken = access_token,
+                        IdToken = id_token,
+                        RefreshToken = refresh_token,
+                        RegistrationId = registration.Id,
+                    };
+
+                    if (_externalTokenCache == null)
+                    {
+                        var ex = new MissingDependencyException(typeof(IExternalTokenCache));
+                        _externalTokenCacheMissingMessage(_logger, ex);
+                        throw ex;
+                    }
+
+                    var validUntil = DateTimeOffset.UtcNow.Add(_identityOptions.CookieExpiration);
+
+                    var code = await _externalTokenCache.SetAsync(data, validUntil).ConfigureAwait(false);
+
+                    identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
                 }
 
-                var code = await _externalTokenCache.SetAsync(data, _identityOptions.CookieExpiration).ConfigureAwait(false);
+                if (oauthConfiguration.ForwardMfa)
+                {
+                    if (externalIdentity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa))
+                    {
+                        var externalAmrValues = externalIdentity.FindAll(Constants.Claims.Amr).Select(p => p.Value).ToList();
 
-                identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.ExternalTokenKey, code));
+                        var mfaIdentity = new ClaimsIdentity(_identityOptions.MfaAuthenticationScheme);
+                        mfaIdentity.AddClaims(externalAmrValues.Select(p => new Claim(Constants.Claims.Amr, p)));
+
+                        return new SignInResponse(identity, mfaIdentity, stateItem.ReturnUrl);
+                    }
+                }
+
+                return new SignInResponse(identity, stateItem.ReturnUrl);
             }
+            catch (ErrorResponseException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (ex is IErrorWithReturnUrl)
+                {
+                    throw;
+                }
 
-            return new SignInResponse(identity, stateItem.ReturnUrl);
+                throw new ReturnUrlException("OAuth login failed.", ex, stateItem.ReturnUrl);
+            }
         }
 
         private OAuthLoginConfiguration ToOAuthLoginConfiguration(object configuration)

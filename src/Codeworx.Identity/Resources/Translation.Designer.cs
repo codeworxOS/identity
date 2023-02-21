@@ -70,6 +70,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The account has not yet been confirmed..
+        /// </summary>
+        internal static string AccountConfirmationPending {
+            get {
+                return ResourceManager.GetString("AccountConfirmationPending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change password.
         /// </summary>
         internal static string ChangePassword {
@@ -88,11 +97,47 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided confirmation code is invalid..
+        /// </summary>
+        internal static string ConfirmationCodeInvalid {
+            get {
+                return ResourceManager.GetString("ConfirmationCodeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome {0}. Your account is now confirmed..
+        /// </summary>
+        internal static string ConfirmationMessage {
+            get {
+                return ResourceManager.GetString("ConfirmationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account Confirmation.
+        /// </summary>
+        internal static string ConfirmationPageTitle {
+            get {
+                return ResourceManager.GetString("ConfirmationPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm password.
         /// </summary>
         internal static string ConfirmPassword {
             get {
                 return ResourceManager.GetString("ConfirmPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register your account with an authenticator app..
+        /// </summary>
+        internal static string ConnectAuthenticatorApp {
+            get {
+                return ResourceManager.GetString("ConnectAuthenticatorApp", resourceCulture);
             }
         }
         
@@ -124,6 +169,33 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Did not receive a code?.
+        /// </summary>
+        internal static string DidNotReceiveCode {
+            get {
+                return ResourceManager.GetString("DidNotReceiveCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to e-mail address.
+        /// </summary>
+        internal static string EmailAddress {
+            get {
+                return ResourceManager.GetString("EmailAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The username must be a valid email address..
+        /// </summary>
+        internal static string EmailLoginDescription {
+            get {
+                return ResourceManager.GetString("EmailLoginDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The external account is already linked to a different user..
         /// </summary>
         internal static string ExternalAccountAlreadyLinkedError {
@@ -142,7 +214,7 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Forgot password.
+        ///   Looks up a localized string similar to Forgot password?.
         /// </summary>
         internal static string ForgotPassword {
             get {
@@ -178,7 +250,7 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wronge credentials were provided or Windows authentication support is disabled..
+        ///   Looks up a localized string similar to This normally indicates that your browser does not support Windows authentication, wrong credentials were provided or Windows authentication support is disabled..
         /// </summary>
         internal static string Http401Description {
             get {
@@ -201,6 +273,15 @@ namespace Codeworx.Identity.Resources {
         internal static string Http401PageTitle {
             get {
                 return ResourceManager.GetString("Http401PageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The One-Time code is invalid!.
+        /// </summary>
+        internal static string InvalidOneTimeCode {
+            get {
+                return ResourceManager.GetString("InvalidOneTimeCode", resourceCulture);
             }
         }
         
@@ -286,6 +367,51 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Register with an e-mail address.
+        /// </summary>
+        internal static string MfaListRegisterMail {
+            get {
+                return ResourceManager.GetString("MfaListRegisterMail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register with your authenticator app.
+        /// </summary>
+        internal static string MfaListRegisterTotp {
+            get {
+                return ResourceManager.GetString("MfaListRegisterTotp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate your identity.
+        /// </summary>
+        internal static string MfaProviderListPageTitle {
+            get {
+                return ResourceManager.GetString("MfaProviderListPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multi Step Verification.
+        /// </summary>
+        internal static string MfaProviderPageTitle {
+            get {
+                return ResourceManager.GetString("MfaProviderPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chose another option..
+        /// </summary>
+        internal static string MfaProviderSelectLink {
+            get {
+                return ResourceManager.GetString("MfaProviderSelectLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New password.
         /// </summary>
         internal static string NewPassword {
@@ -300,6 +426,42 @@ namespace Codeworx.Identity.Resources {
         internal static string OidcFormPostResponsePageTitle {
             get {
                 return ResourceManager.GetString("OidcFormPostResponsePageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One-Time code.
+        /// </summary>
+        internal static string OneTimeCode {
+            get {
+                return ResourceManager.GetString("OneTimeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A one-time code has been sent to the registered email address:.
+        /// </summary>
+        internal static string OneTimeCodeMailSent {
+            get {
+                return ResourceManager.GetString("OneTimeCodeMailSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One-time code via authenticator app.
+        /// </summary>
+        internal static string OneTimeCodeViaApp {
+            get {
+                return ResourceManager.GetString("OneTimeCodeViaApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Code via e-mail sent to {0}.
+        /// </summary>
+        internal static string OneTimeCodeViaEmail {
+            get {
+                return ResourceManager.GetString("OneTimeCodeViaEmail", resourceCulture);
             }
         }
         
@@ -349,6 +511,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The new password cannot be equal to a previously used password!.
+        /// </summary>
+        internal static string PasswordChangePasswordReuseError {
+            get {
+                return ResourceManager.GetString("PasswordChangePasswordReuseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The new password cannot be equal to the current password!.
         /// </summary>
         internal static string PasswordChangeSamePasswordError {
@@ -372,6 +543,33 @@ namespace Codeworx.Identity.Resources {
         internal static string ProfilePageTitle {
             get {
                 return ResourceManager.GetString("ProfilePageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter your 6 digit code:.
+        /// </summary>
+        internal static string ProvideOneTimeCode {
+            get {
+                return ResourceManager.GetString("ProvideOneTimeCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the connected authenticator app to get a one-time code..
+        /// </summary>
+        internal static string ReceiveCodeFromApp {
+            get {
+                return ResourceManager.GetString("ReceiveCodeFromApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please enter an e-mail address to receive the one-time code with..
+        /// </summary>
+        internal static string RegisterMfaEmail {
+            get {
+                return ResourceManager.GetString("RegisterMfaEmail", resourceCulture);
             }
         }
         
@@ -430,6 +628,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Send.
+        /// </summary>
+        internal static string SendCode {
+            get {
+                return ResourceManager.GetString("SendCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set as default.
         /// </summary>
         internal static string SetAsDefault {
@@ -448,11 +655,38 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Password.
+        /// </summary>
+        internal static string SetPasswordPageTitle {
+            get {
+                return ResourceManager.GetString("SetPasswordPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register via URL.
+        /// </summary>
+        internal static string TotpRegistrationUrl {
+            get {
+                return ResourceManager.GetString("TotpRegistrationUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid provider!.
         /// </summary>
         internal static string UnknownLoginProviderError {
             get {
                 return ResourceManager.GetString("UnknownLoginProviderError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlink.
+        /// </summary>
+        internal static string UnlinkProvider {
+            get {
+                return ResourceManager.GetString("UnlinkProvider", resourceCulture);
             }
         }
         
@@ -471,6 +705,15 @@ namespace Codeworx.Identity.Resources {
         internal static string Username {
             get {
                 return ResourceManager.GetString("Username", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided username is already taken..
+        /// </summary>
+        internal static string UsernameAlreadyTaken {
+            get {
+                return ResourceManager.GetString("UsernameAlreadyTaken", resourceCulture);
             }
         }
     }

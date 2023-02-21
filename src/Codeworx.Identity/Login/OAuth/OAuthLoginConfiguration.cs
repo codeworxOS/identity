@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Codeworx.Identity.Login.OAuth
 {
@@ -9,8 +10,11 @@ namespace Codeworx.Identity.Login.OAuth
             IdentifierClaim = Constants.Claims.Subject;
             RedirectCacheMethod = RedirectCacheMethod.UseState;
             TokenHandling = ExternalTokenHandling.None;
+            ProviderErrorStrategy = ProviderErrorStrategy.AppendLoginPrompt;
             ClaimSource = ClaimSource.AccessToken;
             ClientAuthenticationMode = ClientAuthenticationMode.Header;
+            AuthorizationParameters = new Dictionary<string, object>();
+            TokenParameters = new Dictionary<string, object>();
         }
 
         public ClientAuthenticationMode ClientAuthenticationMode { get; set; }
@@ -35,7 +39,15 @@ namespace Codeworx.Identity.Login.OAuth
 
         public string ClientSecret { get; set; }
 
+        public bool ForwardMfa { get; set; }
+
         public ExternalTokenHandling TokenHandling { get; set; }
+
+        public Dictionary<string, object> AuthorizationParameters { get; }
+
+        public Dictionary<string, object> TokenParameters { get; }
+
+        public ProviderErrorStrategy ProviderErrorStrategy { get; set; }
 
         public Uri GetTokenEndpointUri()
         {

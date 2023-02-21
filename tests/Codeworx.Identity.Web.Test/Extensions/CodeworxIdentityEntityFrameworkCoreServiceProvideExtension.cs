@@ -4,6 +4,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,132 +29,145 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                     context.Database.Migrate();
 
-                    var serviceAccount = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultServiceAccountId));
+                    var serviceAccount = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Users.DefaultServiceAccount.UserId));
 
                     if (serviceAccount == null)
                     {
                         context.Users.Add(new User
                         {
-                            Id = Guid.Parse(Constants.DefaultServiceAccountId),
-                            Name = Constants.DefaultServiceAccountName,
+                            Id = Guid.Parse(TestConstants.Users.DefaultServiceAccount.UserId),
+                            Name = TestConstants.Users.DefaultServiceAccount.UserName,
                         });
                     }
 
-                    var defaultUser = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminUserId));
+                    var defaultUser = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Users.DefaultAdmin.UserId));
 
                     if (defaultUser == null)
                     {
-                        var hash = hashingProvider.Create(Constants.DefaultAdminUserName);
+                        var hash = hashingProvider.Create(TestConstants.Users.DefaultAdmin.Password);
 
                         context.Users.Add(new User
                         {
-                            Id = Guid.Parse(Constants.DefaultAdminUserId),
-                            Name = Constants.DefaultAdminUserName,
+                            Id = Guid.Parse(TestConstants.Users.DefaultAdmin.UserId),
+                            Name = TestConstants.Users.DefaultAdmin.UserName,
                             PasswordHash = hash,
                             MemberOf =
                             {
                                new RightHolderGroup
                                {
-                                   GroupId = Guid.Parse(Constants.DefaultAdminGroupId),
+                                   GroupId = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
                                },
                             },
                         });
                     }
 
-                    var multiTenantUser = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(Constants.MultiTenantUserId));
+                    var multiTenantUser = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Users.MultiTenant.UserId));
 
                     if (multiTenantUser == null)
                     {
-                        var hash = hashingProvider.Create(Constants.MultiTenantUserName);
+                        var hash = hashingProvider.Create(TestConstants.Users.MultiTenant.Password);
 
                         context.Users.Add(new User
                         {
-                            Id = Guid.Parse(Constants.MultiTenantUserId),
-                            Name = Constants.MultiTenantUserName,
+                            Id = Guid.Parse(TestConstants.Users.MultiTenant.UserId),
+                            Name = TestConstants.Users.MultiTenant.UserName,
                             PasswordHash = hash,
                             MemberOf =
                             {
                                new RightHolderGroup
                                {
-                                   GroupId = Guid.Parse(Constants.DefaultAdminGroupId),
+                                   GroupId = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
                                },
                             },
                         });
                     }
 
-                    var defaultTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultTenantId));
+                    var defaultTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Tenants.DefaultTenant.Id));
 
                     if (defaultTenant == null)
                     {
                         context.Tenants.Add(new Tenant
                         {
-                            Id = Guid.Parse(Constants.DefaultTenantId),
-                            Name = Constants.DefaultTenantName,
+                            Id = Guid.Parse(TestConstants.Tenants.DefaultTenant.Id),
+                            Name = TestConstants.Tenants.DefaultTenant.Name,
                             Users =
                             {
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.DefaultAdminUserId),
+                                    RightHolderId = Guid.Parse(TestConstants.Users.DefaultAdmin.UserId),
                                 },
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    RightHolderId = Guid.Parse(TestConstants.Users.MultiTenant.UserId),
                                 },
                             },
                         });
                     }
 
-                    var secondTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultSecondTenantId));
+                    var secondTenant = context.Tenants.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id));
 
                     if (secondTenant == null)
                     {
                         context.Tenants.Add(new Tenant
                         {
-                            Id = Guid.Parse(Constants.DefaultSecondTenantId),
-                            Name = Constants.DefaultSecondTenantName,
+                            Id = Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id),
+                            Name = TestConstants.Tenants.DefaultSecondTenant.Name,
                             Users =
                             {
                                 new TenantUser
                                 {
-                                    RightHolderId = Guid.Parse(Constants.MultiTenantUserId),
+                                    RightHolderId = Guid.Parse(TestConstants.Users.MultiTenant.UserId),
                                 },
                             },
                         });
                     }
 
-                    var adminRole = context.Groups.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultAdminGroupId));
+                    var adminRole = context.Groups.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Groups.DefaultAdminGroupId));
 
                     if (adminRole == null)
                     {
                         context.Groups.Add(new Group
                         {
-                            Id = Guid.Parse(Constants.DefaultAdminGroupId),
+                            Id = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
                             Name = "Admin",
                         });
                     }
 
-                    var serviceAccountClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultServiceAccountClientId));
+                    var backendClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultBackendClientId));
+
+                    if (backendClient == null)
+                    {
+                        context.ClientConfigurations.Add(new ClientConfiguration
+                        {
+                            Id = Guid.Parse(TestConstants.Clients.DefaultBackendClientId),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultBackendClientSecret),
+                            TokenExpiration = TimeSpan.FromHours(1),
+                            ClientType = Identity.Model.ClientType.Backend,                            
+                        });
+                    }
+
+                    var serviceAccountClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultServiceAccountClientId));
 
                     if (serviceAccountClient == null)
                     {
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
-                            Id = Guid.Parse(Constants.DefaultServiceAccountClientId),
-                            ClientSecretHash = hashingProvider.Create("clientSecret"),
+                            Id = Guid.Parse(TestConstants.Clients.DefaultServiceAccountClientId),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultServiceAccountClientSecret),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.ApiKey,
-                            UserId = Guid.Parse(Constants.DefaultServiceAccountId),
+                            UserId = Guid.Parse(TestConstants.Users.DefaultServiceAccount.UserId),
                         });
                     }
 
-                    var authCodeClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultCodeFlowClientId));
+                    var authCodeClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultCodeFlowClientId));
 
                     if (authCodeClient == null)
                     {
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
-                            Id = Guid.Parse(Constants.DefaultCodeFlowClientId),
-                            ClientSecretHash = hashingProvider.Create("clientSecret"),
+                            Id = Guid.Parse(TestConstants.Clients.DefaultCodeFlowClientId),
+                            ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultCodeFlowClientSecret),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.WebBackend,
                             ValidRedirectUrls =
@@ -166,13 +180,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    var authCodePublicClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultCodeFlowPublicClientId));
+                    var authCodePublicClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultCodeFlowPublicClientId));
 
                     if (authCodePublicClient == null)
                     {
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
-                            Id = Guid.Parse(Constants.DefaultCodeFlowPublicClientId),
+                            Id = Guid.Parse(TestConstants.Clients.DefaultCodeFlowPublicClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.Native,
                             ValidRedirectUrls =
@@ -193,13 +207,13 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    var authTokenClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(Constants.DefaultTokenFlowClientId));
+                    var authTokenClient = context.ClientConfigurations.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Clients.DefaultTokenFlowClientId));
 
                     if (authTokenClient == null)
                     {
                         context.ClientConfigurations.Add(new ClientConfiguration
                         {
-                            Id = Guid.Parse(Constants.DefaultTokenFlowClientId),
+                            Id = Guid.Parse(TestConstants.Clients.DefaultTokenFlowClientId),
                             TokenExpiration = TimeSpan.FromHours(1),
                             ClientType = Identity.Model.ClientType.UserAgent,
                             ValidRedirectUrls =
@@ -216,42 +230,42 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         });
                     }
 
-                    var formsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.FormsLoginProviderId));
+                    var formsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id));
 
                     if (formsLoginRegistration == null)
                     {
                         context.AuthenticationProviders.Add(new AuthenticationProvider
                         {
-                            Id = Guid.Parse(Constants.FormsLoginProviderId),
-                            Name = Constants.FormsLoginProviderName,
+                            Id = Guid.Parse(TestConstants.LoginProviders.FormsLoginProvider.Id),
+                            Name = TestConstants.LoginProviders.FormsLoginProvider.Name,
                             EndpointType = new FormsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
                             SortOrder = 1,
                         });
                     }
 
-                    var windowsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalWindowsProviderId));
+                    var windowsLoginRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.LoginProviders.ExternalWindowsProvider.Id));
 
                     if (windowsLoginRegistration == null)
                     {
                         context.AuthenticationProviders.Add(new AuthenticationProvider
                         {
-                            Id = Guid.Parse(Constants.ExternalWindowsProviderId),
-                            Name = Constants.ExternalWindowsProviderName,
+                            Id = Guid.Parse(TestConstants.LoginProviders.ExternalWindowsProvider.Id),
+                            Name = TestConstants.LoginProviders.ExternalWindowsProvider.Name,
                             EndpointType = new WindowsLoginProcessorLookup().Key,
                             EndpointConfiguration = null,
                             SortOrder = 2,
                         });
                     }
 
-                    AuthenticationProvider oauthRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(Constants.ExternalOAuthProviderId));
+                    AuthenticationProvider oauthRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.LoginProviders.ExternalOAuthProvider.Id));
 
                     if (oauthRegistration == null)
                     {
                         context.AuthenticationProviders.Add(new AuthenticationProvider
                         {
-                            Id = Guid.Parse(Constants.ExternalOAuthProviderId),
-                            Name = "Basic OAuth",
+                            Id = Guid.Parse(TestConstants.LoginProviders.ExternalOAuthProvider.Id),
+                            Name = TestConstants.LoginProviders.ExternalOAuthProvider.Name,
                             SortOrder = 3,
                             EndpointType = new ExternalOAuthLoginProcessorLookup().Key,
                             EndpointConfiguration = JsonConvert.SerializeObject(new OAuthLoginConfiguration
@@ -259,7 +273,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 BaseUri = new Uri($"https://login.microsoftonline.com/{configuration.GetValue<string>("TestSetup:ExternalTenantId")}/oauth2/v2.0/"),
                                 AuthorizationEndpoint = "authorize",
                                 TokenEndpoint = "token",
-                                CssClass = "icon-microsoft",
+                                CssClass = "fa-windows",
                                 Scope = configuration.GetValue<string>("TestSetup:ExternalScopes"),
                                 TokenHandling = ExternalTokenHandling.Refresh,
                                 IdentifierClaim = "oid",
@@ -268,6 +282,21 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             })
                         });
                     }
+
+                    AuthenticationProvider totpRegistration = context.AuthenticationProviders.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.LoginProviders.TotpProvider.Id));
+
+                    if (totpRegistration == null)
+                    {
+                        context.AuthenticationProviders.Add(new AuthenticationProvider
+                        {
+                            Id = Guid.Parse(TestConstants.LoginProviders.TotpProvider.Id),
+                            Name = TestConstants.LoginProviders.TotpProvider.Name,
+                            SortOrder = 50,
+                            EndpointType = new TotpMfaLoginProcessorLookup().Key,
+                            Usage = LoginProviderType.MultiFactor,
+                        });
+                    }
+
 
                     var invitationUser = context.Users.FirstOrDefault(p => p.Id == _invitationUserId);
 
@@ -278,8 +307,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.Users.Add(invitationUser);
 
                         context.TenantUsers.AddRange(
-                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultTenantId), RightHolderId = invitationUser.Id },
-                        new TenantUser { TenantId = Guid.Parse(Constants.DefaultSecondTenantId), RightHolderId = invitationUser.Id });
+                        new TenantUser { TenantId = Guid.Parse(TestConstants.Tenants.DefaultTenant.Id), RightHolderId = invitationUser.Id },
+                        new TenantUser { TenantId = Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id), RightHolderId = invitationUser.Id });
 
                         context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }

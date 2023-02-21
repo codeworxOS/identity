@@ -1,25 +1,43 @@
-﻿{{#Registrations}}
-<form method="post" id="loginForm">
+{{#each Registrations }}
+<div class="separator form-separator">
+    <span class="separator-text">{{Translate 'OrLoginWith'}}</span>
+</div>
+<form method="post" class="forms-login-box">
     <input type="hidden" id="provider-id" name="provider-id" value="{{ProviderId}}" />
-
-    <input type="text" id="username" name="username" placeholder="{{Translate 'Username'}}" value="{{Username}}" />
-    <input type="password" id="password" name="password" placeholder="{{Translate 'Password'}}" />
-    <input type="checkbox" id="remember" name="remember-me" />
-    <label for="remember">
-        <svg width="18" height="18">
-            <rect x="1" y="1" width="16" height="16" rx="3" stroke="black" stroke-width="2" fill="transparent" />
-            <path id="checked" d="M 4 8 L 8 12 L 14 6" fill="none" stroke="black" stroke-width="3" />
-        </svg>
-        {{Translate 'RememberMe'}}
-    </label>
-    {{#ForgotPasswordUrl}}
-    <div class="forgot-password-box">
-        <a class="forgot-password-link" href="{{.}}">
-            {{Translate 'ForgotPassword'}}
-        </a>
+    <div class="txt_field">
+        <input type="text" autofocus autocapitalize="off" required id="username" name="username" maxlength="{{MaxLength.Login}}" value="{{Username}}" />
+        <span></span>
+        <label for="username">{{Translate 'Username'}}</label>
+        <div class="i">
+            <i class="fas fa-user"></i>
+        </div>
     </div>
+    <div class="txt_field">
+        <input type="password" required id="password" name="password" maxlength="{{MaxLength.Password}}" />
+        <span></span>
+        <label for="password">{{Translate 'Password'}}</label>
+        <div class="i">
+            <i class="fas fa-lock"></i>
+        </div>
+        <div class="toggle-pw" >
+            <i class="fas fa-eye-slash"></i>
+        </div>
+    </div>
+    {{#ForgotPasswordUrl}}
+    <a class="forgot-password" href="{{.}}" tabindex="-1">{{Translate 'ForgotPassword'}}</a>
     {{/ForgotPasswordUrl}}
-    <div class="error">{{Error}}</div>
-    <button type="submit" class="login-submit" id="loginButton">{{Translate 'Login'}}</button>
+    {{#Error}}
+    <div class="error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{.}}</span>
+    </div>
+    {{/Error}}
+    <input type="submit" class="btn" value="{{Translate 'Login'}}" />
+    {{#ShowRememberMe}}
+    <div class="checkbox-field">
+        <input type="checkbox" id="remember" name="remember" />
+        <label for="remember">{{Translate 'RememberMe'}}</label>
+    </div>
+    {{/ShowRememberMe}}
 </form>
-{{/Registrations}}
+{{/each}}

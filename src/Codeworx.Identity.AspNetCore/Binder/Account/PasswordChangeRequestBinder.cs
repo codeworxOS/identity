@@ -60,7 +60,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
 
                 return new ProcessPasswordChangeRequest(identity, currentPassword, newPassword, confirmPassword, returnUrl, prompt);
             }
-            else if (HttpMethods.IsGet(request.Method))
+            else if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 return new PasswordChangeRequest(identity, returnUrl, prompt);
             }

@@ -26,6 +26,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                     {
                         Key = p.Id.ToString("N"),
                         Name = p.Name,
+                        AuthenticationMode = p.AuthenticationMode,
                     })
                     .ToListAsync();
 
@@ -47,6 +48,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                                 {
                                     Key = p.TenantId.ToString("N"),
                                     Name = p.Tenant.Name,
+                                    AuthenticationMode = p.Tenant.AuthenticationMode,
                                 })
                                 .ToListAsync();
 

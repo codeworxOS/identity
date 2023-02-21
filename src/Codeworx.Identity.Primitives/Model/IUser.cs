@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Codeworx.Identity.Login;
 
 namespace Codeworx.Identity.Model
 {
@@ -14,7 +15,15 @@ namespace Codeworx.Identity.Model
 
         bool ForceChangePassword { get; }
 
-        IReadOnlyList<string> LinkedProviders { get; }
+        bool ConfirmationPending { get; }
+
+        bool HasMfaRegistration { get; }
+
+        AuthenticationMode AuthenticationMode { get; }
+
+        IReadOnlyList<string> LinkedMfaProviders { get; }
+
+        IReadOnlyList<string> LinkedLoginProviders { get; }
 
         int FailedLoginCount { get; }
     }

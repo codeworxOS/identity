@@ -8,7 +8,6 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Account
 {
@@ -17,7 +16,7 @@ namespace Codeworx.Identity.Account
         private readonly ImmutableList<ILoginRegistrationProvider> _providers;
         private readonly IUserService _userService;
         private readonly ILinkUserService _linkUserService;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IInvitationCache _invitationCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IBaseUriAccessor _baseUriAccessor;
@@ -28,13 +27,13 @@ namespace Codeworx.Identity.Account
             IEnumerable<ILoginRegistrationProvider> providers,
             IInvitationCache invitationCache,
             IServiceProvider serviceProvider,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor)
         {
             _providers = providers.ToImmutableList();
             _userService = userService;
             _linkUserService = linkUserService;
-            _options = options.Value;
+            _options = options;
             _invitationCache = invitationCache;
             _serviceProvider = serviceProvider;
             _baseUriAccessor = baseUriAccessor;
@@ -44,7 +43,7 @@ namespace Codeworx.Identity.Account
         {
             var user = await _userService.GetUserByIdAsync(request.Identity.GetUserId());
 
-            var providerRequest = new ProviderRequest(ProviderRequestType.Profile, request.ReturnUrl, user: user);
+            var providerRequest = new ProviderRequest(ProviderRequestType.Profile, request.HeaderOnly, request.ReturnUrl, user: user);
 
             if (request.LoginProviderId != null)
             {
@@ -56,11 +55,14 @@ namespace Codeworx.Identity.Account
 
             foreach (var provider in _providers)
             {
-                foreach (var registration in await provider.GetLoginRegistrationsAsync())
+                foreach (var registration in await provider.GetLoginRegistrationsAsync(LoginProviderType.Login))
                 {
                     var processor = (ILoginProcessor)_serviceProvider.GetService(registration.ProcessorType);
                     var info = await processor.GetRegistrationInfoAsync(providerRequest, registration);
-                    infos.Add(info);
+                    if (info != null)
+                    {
+                        infos.Add(info);
+                    }
                 }
             }
 
@@ -81,20 +83,21 @@ namespace Codeworx.Identity.Account
             {
                 var invitationCode = Guid.NewGuid().ToString("N");
 
+                var invatation = new InvitationItem { RedirectUri = uriBuilder.ToString(), UserId = request.Identity.GetUserId(), Action = InvitationAction.LinkUnlink };
+
                 await _invitationCache.AddAsync(
                                     invitationCode,
-                                    new InvitationItem { RedirectUri = uriBuilder.ToString(), UserId = request.Identity.GetUserId() },
+                                    invatation,
                                     TimeSpan.FromMinutes(5));
 
                 foreach (var item in _providers)
                 {
-                    foreach (var configuration in await item.GetLoginRegistrationsAsync())
+                    foreach (var configuration in await item.GetLoginRegistrationsAsync(LoginProviderType.Login))
                     {
                         if (configuration.Id == request.ProviderId)
                         {
                             var processor = (ILoginProcessor)_serviceProvider.GetService(configuration.ProcessorType);
-                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, invitationCode: invitationCode), configuration);
-
+                            var info = await processor.GetRegistrationInfoAsync(new ProviderRequest(ProviderRequestType.Invitation, request.HeaderOnly, invitationCode: invitationCode, invitation: invatation), configuration);
                             if (info.HasRedirectUri(out var redirectUri))
                             {
                                 return new ProfileLinkResponse(redirectUri);

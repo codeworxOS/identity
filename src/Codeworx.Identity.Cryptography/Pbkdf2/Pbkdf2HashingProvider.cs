@@ -26,7 +26,7 @@ namespace Codeworx.Identity.Cryptography.Pbkdf2
 
             var hashValue = KeyDerivation.Pbkdf2(plaintext, salt, _options.HashAlgorithm, iterations, _options.OutputLength);
 
-            return $"{iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hashValue)}";
+            return $"$pbkdf2${iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hashValue)}";
         }
 
         public bool Validate(string plaintext, string hashValue)
@@ -36,15 +36,15 @@ namespace Codeworx.Identity.Cryptography.Pbkdf2
             byte[] hash;
 
             var input = hashValue.Split('$');
-            if (input.Length != 3 || !int.TryParse(input[0], out iterations))
+            if (input.Length != 5 || !int.TryParse(input[2], out iterations))
             {
                 throw new ArgumentException("Invalid hash value format.", nameof(hashValue));
             }
 
             try
             {
-                salt = Convert.FromBase64String(input[1]);
-                hash = Convert.FromBase64String(input[2]);
+                salt = Convert.FromBase64String(input[3]);
+                hash = Convert.FromBase64String(input[4]);
             }
             catch (FormatException)
             {

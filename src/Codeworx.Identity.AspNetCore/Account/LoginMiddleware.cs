@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
@@ -14,13 +15,15 @@ namespace Codeworx.Identity.AspNetCore
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, ILoginViewService service)
+        public async Task Invoke(HttpContext context, IRequestBinder<LoginRequest> loginRequestBinder, IRequestValidator<LoginRequest> loginRequestValidator, ILoginViewService service)
         {
             try
             {
                 object response = null;
-                var request = await loginRequestBinder.BindAsync(context.Request);
+                var request = await loginRequestBinder.BindAsync(context.Request).ConfigureAwait(false);
                 IResponseBinder responseBinder = null;
+
+                await loginRequestValidator.ValidateAsync(request).ConfigureAwait(false);
 
                 switch (request)
                 {
@@ -38,6 +41,8 @@ namespace Codeworx.Identity.AspNetCore
                         response = await service.ProcessLoginAsync(login);
                         responseBinder = context.GetResponseBinder<LoginResponse>();
                         break;
+                    default:
+                        throw new NotSupportedException();
                 }
 
                 await responseBinder.BindAsync(response, context.Response);

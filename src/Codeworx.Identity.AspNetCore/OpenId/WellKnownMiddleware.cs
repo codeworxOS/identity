@@ -5,7 +5,6 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
@@ -26,10 +25,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
             IDefaultSigningKeyProvider keyProvider,
-            IOptionsSnapshot<IdentityOptions> identityOptions,
+            IdentityServerOptions identityOptions,
             IScopeService scopeService)
         {
-            var options = identityOptions.Value;
+            var options = identityOptions;
             var host = baseUriAccessor.BaseUri.ToString().TrimEnd('/');
 
             var scopes = await scopeService.GetScopes().ConfigureAwait(false);
@@ -42,14 +41,16 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             };
 
             var defaultKey = keyProvider.GetKey();
+            var hashAlgorithm = keyProvider.GetHashAlgorithm();
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
-            var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey) };
+            var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey, hashAlgorithm) };
 
             var content = new WellKnownResponse
             {
                 Issuer = host,
                 AuthorizationEndpoint = host + options.OpenIdAuthorizationEndpoint,
+                IntrospectionEndpoint = host + options.OauthInstrospectionEndpoint,
                 TokenEndpoint = host + options.OpenIdTokenEndpoint,
                 JsonWebKeyEndpoint = host + options.OpenIdJsonWebKeyEndpoint,
                 UserInfoEndpoint = host + options.UserInfoEndpoint,

@@ -15,7 +15,7 @@ namespace Codeworx.Identity.OAuth.Token
         {
             var parameters = builder.Parameters;
 
-            var scopeClaim = parameters.CacheItem.IdentityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
+            var scopeClaim = parameters.ParsedRefreshToken.IdentityData.Claims.FirstOrDefault(p => p.Type.First() == Constants.OAuth.ScopeName);
             var scopes = scopeClaim?.Values?.ToArray() ?? new string[] { };
 
             if (parameters.Scopes.Any())

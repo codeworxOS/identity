@@ -1,4 +1,4 @@
-﻿using Codeworx.Identity.Cache;
+﻿using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.OAuth.Token
 {
@@ -6,8 +6,6 @@ namespace Codeworx.Identity.OAuth.Token
     {
         string RefreshToken { get; }
 
-        string ClientSecret { get; }
-
-        IRefreshTokenCacheItem CacheItem { get; }
+        IToken ParsedRefreshToken { get; }
     }
 }

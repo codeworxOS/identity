@@ -5,17 +5,16 @@ using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Account
 {
     public class ProfileLinkRequestBinder : IRequestBinder<ProfileLinkRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
-        public ProfileLinkRequestBinder(IOptionsSnapshot<IdentityOptions> options)
+        public ProfileLinkRequestBinder(IdentityServerOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         public async Task<ProfileLinkRequest> BindAsync(HttpRequest request)
@@ -24,7 +23,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
             string providerId = null;
             LinkDirection direction = LinkDirection.Link;
 
-            if (HttpMethods.IsGet(request.Method))
+            if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
                 var authenticationResult = await request.HttpContext.AuthenticateAsync();
 
@@ -63,7 +62,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Account
                 throw new ErrorResponseException<MethodNotSupportedResponse>(new MethodNotSupportedResponse());
             }
 
-            return new ProfileLinkRequest(identity, providerId, direction);
+            return new ProfileLinkRequest(identity, HttpMethods.IsHead(request.Method), providerId, direction);
         }
     }
 }
