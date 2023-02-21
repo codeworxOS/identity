@@ -16,5 +16,4 @@
 		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj" />
 	</ItemGroup>
-
 </Project>

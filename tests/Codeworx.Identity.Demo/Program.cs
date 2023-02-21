@@ -1,39 +1,44 @@
 using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 
-var builder = WebApplication.CreateBuilder(args);
-
-var connectionStringBuilder = new SqliteConnectionStringBuilder
+internal class Program
 {
-    DataSource = Path.Combine(Path.GetTempPath(), "IdentityDemo.db"),
-};
+    private static async Task Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication()
-   .AddNegotiate("Windows", p => { });
+        var connectionStringBuilder = new SqliteConnectionStringBuilder
+        {
+            DataSource = Path.Combine(Path.GetTempPath(), "IdentityDemo.db"),
+        };
 
-builder.Services.AddCodeworxIdentity()
-    ////.ReplaceService<IPasswordChangeViewTemplate, MyPasswordChangeViewTemplate>(ServiceLifetime.Singleton)
-    ////.RegisterMultiple<IPartialTemplate, MyFormsLoginTemplate>(ServiceLifetime.Singleton)
-    ////.ReplaceService<IStringResources, MyStringResources>(ServiceLifetime.Singleton)
-    .UseDbContextSqlite(connectionStringBuilder.ConnectionString);
+        builder.Services.AddAuthentication()
+           .AddNegotiate("Windows", p => { });
 
-var app = builder.Build();
+        builder.Services.AddCodeworxIdentity()
+            ////.ReplaceService<IPasswordChangeViewTemplate, MyPasswordChangeViewTemplate>(ServiceLifetime.Singleton)
+            ////.RegisterMultiple<IPartialTemplate, MyFormsLoginTemplate>(ServiceLifetime.Singleton)
+            ////.ReplaceService<IStringResources, MyStringResources>(ServiceLifetime.Singleton)
+            .UseDbContextSqlite(connectionStringBuilder.ConnectionString);
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+        var app = builder.Build();
+
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
+        }
+
+        app.UseRequestLocalization("de", "en");
+        app.UseHttpsRedirection();
+
+        app.UseStaticFiles();
+
+        app.UseCodeworxIdentity();
+
+        app.UseRouting();
+
+        await app.Services.MigrateDatabaseAsync<CodeworxIdentityDbContext>();
+        await app.RunAsync();
+    }
 }
-
-app.UseRequestLocalization("de", "en");
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseCodeworxIdentity();
-
-app.UseRouting();
-
-
-await app.Services.MigrateDatabaseAsync<CodeworxIdentityDbContext>();
-await app.RunAsync();
