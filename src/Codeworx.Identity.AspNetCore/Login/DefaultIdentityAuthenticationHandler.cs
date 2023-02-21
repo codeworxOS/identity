@@ -9,20 +9,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Login
 {
-    public class DefaultIdentityAuthenticationHandler : IIdentityAuthenticationHandler, IDisposable
+    public class DefaultIdentityAuthenticationHandler : IIdentityAuthenticationHandler
     {
-        private readonly IDisposable _subscription;
-        private bool _disposedValue;
-        private IdentityOptions _options;
+        private IdentityServerOptions _options;
 
-        public DefaultIdentityAuthenticationHandler(IOptionsMonitor<IdentityOptions> optionsMonitor)
+        public DefaultIdentityAuthenticationHandler(IdentityServerOptions options)
         {
-            _options = optionsMonitor.CurrentValue;
-            _subscription = optionsMonitor.OnChange(p => _options = p);
+            _options = options;
         }
 
         public async Task<Microsoft.AspNetCore.Authentication.AuthenticateResult> AuthenticateAsync(HttpContext context, AuthenticationMode mode = AuthenticationMode.Login)
@@ -72,12 +68,6 @@ namespace Codeworx.Identity.AspNetCore.Login
             await context.ChallengeAsync(GetAuthenticationSchema(mode));
         }
 
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
-
         public async Task SignInAsync(HttpContext context, ClaimsPrincipal principal, bool persist, AuthenticationMode mode = AuthenticationMode.Login)
         {
             var properties = new AuthenticationProperties();
@@ -94,19 +84,6 @@ namespace Codeworx.Identity.AspNetCore.Login
         {
             await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Mfa));
             await context.SignOutAsync(GetAuthenticationSchema(AuthenticationMode.Login));
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _subscription.Dispose();
-                }
-
-                _disposedValue = true;
-            }
         }
 
         private string GetAuthenticationSchema(AuthenticationMode mode)

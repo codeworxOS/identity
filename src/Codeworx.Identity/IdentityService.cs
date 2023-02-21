@@ -17,6 +17,7 @@ namespace Codeworx.Identity
     public class IdentityService : IIdentityService
     {
         private readonly IClaimsService _claimsService;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly ImmutableList<IExternalLoginEvent> _loginEvents;
         private readonly IdentityOptions _options;
         private readonly IInvitationService _invitationService;
@@ -33,6 +34,7 @@ namespace Codeworx.Identity
             IClaimsService claimsService,
             IEnumerable<IExternalLoginEvent> loginEvents,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IInvitationService invitationService,
             IStringResources stringResources,
             ILoginDelayService loginDelayService,
@@ -42,6 +44,7 @@ namespace Codeworx.Identity
             _userService = userService;
             _passwordValidator = passwordValidator;
             _claimsService = claimsService;
+            _serverOptions = serverOptions;
             _loginEvents = loginEvents.ToImmutableList();
             _options = options.Value;
             _invitationService = invitationService;
@@ -202,7 +205,7 @@ namespace Codeworx.Identity
 
         public virtual Task<ClaimsIdentity> GetClaimsIdentityFromUserAsync(IUser user)
         {
-            var identity = new ClaimsIdentity(_options.AuthenticationScheme);
+            var identity = new ClaimsIdentity(_serverOptions.AuthenticationScheme);
 
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));

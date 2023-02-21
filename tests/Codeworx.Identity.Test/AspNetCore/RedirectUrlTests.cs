@@ -94,7 +94,7 @@ namespace Codeworx.Identity.Test.AspNetCore
                 return Task.FromResult<IClientRegistration>(clientRegistration);
             });
 
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                .UseTestSetup()
                .Clients(ServiceLifetime.Singleton, sp => clientService.Object);
 

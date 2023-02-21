@@ -5,7 +5,6 @@ using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
@@ -14,15 +13,15 @@ namespace Codeworx.Identity.AspNetCore.Binder
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityAuthenticationHandler _handler;
         private readonly IUserService _userService;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
         public SignInResponseBinder(
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor,
             IIdentityAuthenticationHandler handler,
             IUserService userService)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUriAccessor;
             _handler = handler;
             _userService = userService;

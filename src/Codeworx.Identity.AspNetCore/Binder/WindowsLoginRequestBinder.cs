@@ -9,7 +9,6 @@ using Codeworx.Identity.Resources;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 
 namespace Codeworx.Identity.AspNetCore.Binder
@@ -19,18 +18,18 @@ namespace Codeworx.Identity.AspNetCore.Binder
         private readonly IAuthenticationSchemeProvider _schemaProvider;
         private readonly IInvitationService _invitationService;
         private readonly IStringResources _stringResources;
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityOptions;
 
         public WindowsLoginRequestBinder(
             IAuthenticationSchemeProvider schemeProvider,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IInvitationService invitationService,
             IStringResources stringResources)
         {
             _schemaProvider = schemeProvider;
             _invitationService = invitationService;
             _stringResources = stringResources;
-            _identityOptions = options.Value;
+            _identityOptions = options;
         }
 
         public async Task<WindowsLoginRequest> BindAsync(HttpRequest request)

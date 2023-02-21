@@ -11,6 +11,7 @@ namespace Codeworx.Identity.Login
     public class FormsLoginProcessor : ILoginProcessor
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IForgotPasswordService _forgotPasswordService;
         private readonly bool _hasChangePasswordService;
         private readonly IIdentityService _identityService;
@@ -20,11 +21,13 @@ namespace Codeworx.Identity.Login
             IIdentityService identityService,
             IBaseUriAccessor baseUriAccessor,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IForgotPasswordService forgotPasswordService,
             IChangePasswordService changePasswordService = null)
         {
             _identityService = identityService;
             _baseUriAccessor = baseUriAccessor;
+            _serverOptions = serverOptions;
             _forgotPasswordService = forgotPasswordService;
             _hasChangePasswordService = changePasswordService != null;
             _options = options.Value;
@@ -98,7 +101,7 @@ namespace Codeworx.Identity.Login
         private string GetDefaultRedirectUrl()
         {
             var builder = new UriBuilder(_baseUriAccessor.BaseUri);
-            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath(_serverOptions.AccountEndpoint);
             builder.AppendPath("me");
 
             return builder.ToString();
@@ -113,7 +116,7 @@ namespace Codeworx.Identity.Login
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
 
-            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("forgot-password");
 
             if (!string.IsNullOrWhiteSpace(request.Prompt))
@@ -133,7 +136,7 @@ namespace Codeworx.Identity.Login
         {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri.ToString());
 
-            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("change-password");
 
             if (!string.IsNullOrWhiteSpace(request.Prompt))

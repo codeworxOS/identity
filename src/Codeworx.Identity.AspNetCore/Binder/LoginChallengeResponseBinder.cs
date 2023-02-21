@@ -4,22 +4,21 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
     public class LoginChallengeResponseBinder : ResponseBinder<LoginChallengeResponse>
     {
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityOptions;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityAuthenticationHandler _handler;
 
         public LoginChallengeResponseBinder(
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor,
             IIdentityAuthenticationHandler handler)
         {
-            _identityOptions = options.Value;
+            _identityOptions = options;
             _baseUriAccessor = baseUriAccessor;
             _handler = handler;
         }

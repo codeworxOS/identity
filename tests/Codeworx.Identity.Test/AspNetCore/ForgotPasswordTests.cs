@@ -118,10 +118,10 @@ namespace Codeworx.Identity.Test.AspNetCore
 
         private string CreateForgotPasswordUrl(HttpClient testClient, TestServer testServer)
         {
-            var options = testServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = testServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var loginRequestBuilder = new UriBuilder(testClient.BaseAddress.ToString());
-            loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
             loginRequestBuilder.AppendPath("forgot-password");
 
             return loginRequestBuilder.ToString();

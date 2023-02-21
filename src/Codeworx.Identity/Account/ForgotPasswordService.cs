@@ -13,6 +13,7 @@ namespace Codeworx.Identity.Account
     public class ForgotPasswordService : IForgotPasswordService
     {
         private readonly IBaseUriAccessor _accessor;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IInvitationCache _invitationCache;
         private readonly INotificationService _notificationService;
         private readonly IForgotPasswordDelayService _forgotPasswordDelayService;
@@ -22,12 +23,14 @@ namespace Codeworx.Identity.Account
         public ForgotPasswordService(
             IBaseUriAccessor accessor,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IUserService userService,
             INotificationService notificationService,
             IForgotPasswordDelayService forgotPasswordDelayService,
             IInvitationCache invitationCache = null)
         {
             _accessor = accessor;
+            _serverOptions = serverOptions;
             _options = options.Value;
             _invitationCache = invitationCache;
             _userService = userService;
@@ -50,7 +53,7 @@ namespace Codeworx.Identity.Account
             }
 
             var builder = new UriBuilder(_accessor.BaseUri);
-            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath(_serverOptions.AccountEndpoint);
             builder.AppendPath("login");
 
             if (request.ReturnUrl != null)
@@ -82,7 +85,7 @@ namespace Codeworx.Identity.Account
                     .ConfigureAwait(false);
 
                 var invitationBuilder = new UriBuilder(_accessor.BaseUri);
-                invitationBuilder.AppendPath(_options.AccountEndpoint);
+                invitationBuilder.AppendPath(_serverOptions.AccountEndpoint);
                 invitationBuilder.AppendPath("invitation");
                 invitationBuilder.AppendPath(invitationCode);
 

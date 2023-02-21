@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.Mfa
 {
@@ -14,20 +13,20 @@ namespace Codeworx.Identity.Login.Mfa
         private readonly ILoginService _loginService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IBaseUriAccessor _baseUriAccessor;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
         public MfaViewService(
             IUserService userService,
             ILoginService loginService,
             IServiceProvider serviceProvider,
             IBaseUriAccessor baseUriAccessor,
-            IOptionsSnapshot<IdentityOptions> options)
+            IdentityServerOptions options)
         {
             _userService = userService;
             _loginService = loginService;
             _serviceProvider = serviceProvider;
             _baseUriAccessor = baseUriAccessor;
-            _options = options.Value;
+            _options = options;
         }
 
         public async Task<SignInResponse> ProcessLoginAsync(MfaProcessLoginRequest request)

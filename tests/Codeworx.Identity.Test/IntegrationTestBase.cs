@@ -31,10 +31,10 @@ namespace Codeworx.Identity.Test
 
         protected virtual async Task<HttpResponseMessage> Authenticate(string userName, string password)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
-            loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
             ////loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, this.GetRedirectUrl().ToString());
 
@@ -58,9 +58,9 @@ namespace Codeworx.Identity.Test
 
         protected virtual async Task Authenticate()
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
-            var response = await this.TestClient.PostAsync(options.Value.AccountEndpoint + "/login",
+            var response = await this.TestClient.PostAsync(options.AccountEndpoint + "/login",
                                                            new FormUrlEncodedContent(new Dictionary<string, string>
                                                                                      {
                                                                                          {"provider-id", TestConstants.LoginProviders.FormsLoginProvider.Id},

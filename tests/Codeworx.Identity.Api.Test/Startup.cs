@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
-using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.EntityFrameworkCore.Api;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Test.Provider;
@@ -80,7 +78,7 @@ namespace Codeworx.Identity.Api.Test
 
             services.AddTransient<IAuthorizationHandler, DebugAuthorizationHandler>();
 
-            services.AddCodeworxIdentity(this.Configuration)
+            services.AddCodeworxIdentity()
                 .UseDbContext<TestIdentityContext>()
                 .WithLoginAsEmail()
                 .AddSmtpMailConnector();
@@ -156,7 +154,7 @@ namespace Codeworx.Identity.Api.Test
 
             app.UseHttpsRedirection();
 
-            app.UseCodeworxIdentity(identityOptions.Value);
+            app.UseCodeworxIdentity();
 
             app.UseSwaggerUi3(settings =>
             {

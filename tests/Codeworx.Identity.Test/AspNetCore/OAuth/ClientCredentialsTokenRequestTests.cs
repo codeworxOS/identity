@@ -27,7 +27,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
                                                         .Build();
 
             services
-                .AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+                .AddCodeworxIdentity()
                 .UseTestSetup();
 
             using (var sp = services.BuildServiceProvider())

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading.Tasks;
+using Codeworx.Identity;
 using Codeworx.Identity.Account;
-using Codeworx.Identity.AspNetCore.Account;
+using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.AspNetCore.Binder;
 using Codeworx.Identity.AspNetCore.Binder.Account;
 using Codeworx.Identity.AspNetCore.Binder.Invitation;
@@ -18,12 +17,9 @@ using Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa;
 using Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail;
 using Codeworx.Identity.AspNetCore.Binder.Logout;
 using Codeworx.Identity.AspNetCore.Binder.SelectTenantView;
-using Codeworx.Identity.AspNetCore.Invitation;
 using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.AspNetCore.Login.Binder;
-using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.AspNetCore.OAuth.Binder;
-using Codeworx.Identity.AspNetCore.OpenId;
 using Codeworx.Identity.AspNetCore.OpenId.Binder;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
@@ -46,34 +42,44 @@ using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 
-namespace Codeworx.Identity.AspNetCore
+namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class CodeworxIdentityAspNetCoreAspNetCoreExtensions
+    public static class CodeworxIdentityAspNetCoreServiceCollectionExtensions
     {
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfiguration configuration, Action<CookieAuthenticationOptions> cookieOptions = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection)
         {
+            collection.PostConfigure<IdentityOptions>(p => { });
+            collection.PostConfigure<AuthorizationCodeOptions>(p => { });
+
             return AddCodeworxIdentity(
                 collection,
-                configuration.GetSection("Identity"),
-                configuration.GetSection("AuthorizationCode"),
-                cookieOptions);
+                p => { },
+                p => { });
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IConfigurationSection identitySection, IConfigurationSection authCodeSection, Action<CookieAuthenticationOptions> cookieOptions = null)
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, Action<IdentityServerOptions> identitySchemaOptions)
         {
-            collection.Configure<IdentityOptions>(identitySection);
-            collection.Configure<AuthorizationCodeOptions>(authCodeSection);
+            collection.PostConfigure<IdentityOptions>(p => { });
+            collection.PostConfigure<AuthorizationCodeOptions>(p => { });
 
-            var options = new IdentityOptions();
-            identitySection.Bind(options);
+            return AddCodeworxIdentity(
+                collection,
+                identitySchemaOptions,
+                p => { });
+        }
+
+        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, Action<IdentityServerOptions> identitySchemaOptions, Action<CookieAuthenticationOptions> cookieOptions)
+        {
+            collection.AddOptions();
+            collection.PostConfigure<IdentityOptions>(p => { });
+            collection.PostConfigure<AuthorizationCodeOptions>(p => { });
+            var options = new IdentityServerOptions();
+            identitySchemaOptions(options);
+            collection.AddSingleton(options);
 
             return AddCodeworxIdentity(
                 collection,
@@ -81,192 +87,33 @@ namespace Codeworx.Identity.AspNetCore
                 cookieOptions);
         }
 
-        public static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, AuthorizationCodeOptions authCodeOptions, Action<CookieAuthenticationOptions> cookieOptions = null)
-        {
-            collection.AddOptions();
-            collection.AddSingleton<IConfigureOptions<IdentityOptions>>(sp => new ConfigureOptions<IdentityOptions>(identityOptions.CopyTo));
-            collection.AddSingleton<IConfigureOptions<AuthorizationCodeOptions>>(sp => new ConfigureOptions<AuthorizationCodeOptions>(authCodeOptions.CopyTo));
-
-            return AddCodeworxIdentity(
-                collection,
-                identityOptions,
-                cookieOptions);
-        }
-
-        public static async Task<TModel> BindAsync<TModel>(this HttpRequest request, JsonSerializerSettings settings, bool useQueryStringOnPost = false)
-        {
-            Stream jsonStream = null;
-
-            try
-            {
-                if (useQueryStringOnPost || HttpMethods.IsGet(request.Method))
-                {
-                    jsonStream = new MemoryStream();
-                    using (var sw = new StreamWriter(jsonStream, Encoding.UTF8, 1024, true))
-                    {
-                        using (var writer = new JsonTextWriter(sw))
-                        {
-                            await WriteJsonObjectAsync(writer, request.Query);
-                        }
-                    }
-
-                    jsonStream.Seek(0, SeekOrigin.Begin);
-                }
-                else if (request.HasFormContentType)
-                {
-                    jsonStream = new MemoryStream();
-                    using (var sw = new StreamWriter(jsonStream, Encoding.UTF8, 1024, true))
-                    {
-                        using (var writer = new JsonTextWriter(sw))
-                        {
-                            await WriteJsonObjectAsync(writer, request.Form, request.Form.Keys);
-                        }
-                    }
-
-                    jsonStream.Seek(0, SeekOrigin.Begin);
-                }
-                else
-                {
-                    jsonStream = request.Body;
-                }
-
-                var ser = JsonSerializer.Create(settings);
-                using (var sr = new StreamReader(jsonStream))
-                {
-                    using (var jsonReader = new JsonTextReader(sr))
-                    {
-                        return ser.Deserialize<TModel>(jsonReader);
-                    }
-                }
-            }
-            finally
-            {
-                jsonStream?.Dispose();
-            }
-        }
-
-        public static IApplicationBuilder UseCodeworxIdentity(this IApplicationBuilder app, IdentityOptions options)
-        {
-            return app
-                   .UseAuthentication()
-                   .MapWhen(
-                       p => p.Request.Path.Equals($"{options.OpenIdWellKnownPrefix}/.well-known/openid-configuration"),
-                       p => p.UseMiddleware<WellKnownMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.UserInfoEndpoint),
-                       p => p.UseMiddleware<UserInfoMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdJsonWebKeyEndpoint),
-                       p => p.UseMiddleware<JsonWebKeyMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthTokenEndpoint),
-                       p => p.UseMiddleware<TokenMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthAuthorizationEndpoint),
-                       p => p
-                            .UseMiddleware<OAuth.AuthorizationMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OauthInstrospectionEndpoint),
-                       p => p
-                            .UseMiddleware<OAuth.IntrospectMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdTokenEndpoint),
-                       p => p.UseMiddleware<TokenMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.OpenIdAuthorizationEndpoint),
-                       p => p
-                           .UseMiddleware<OpenId.AuthorizationMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/login"),
-                       p => p.UseMiddleware<LoginMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/login/mfa"),
-                       p => p
-                            .UseMiddleware<MfaAuthenticationMiddleware>()
-                            .UseMiddleware<MfaProviderListMiddleware>())
-                    .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/login/mfa"),
-                       p => p
-                            .UseMiddleware<MfaAuthenticationMiddleware>()
-                            .UseMiddleware<MfaLoginMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/logout"),
-                       p => p.UseMiddleware<LogoutMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/oauth", out var remaining) && remaining.HasValue,
-                       p => p.UseMiddleware<OAuthLoginMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/callback", out var remaining) && remaining.HasValue,
-                       p => p.UseMiddleware<ExternalCallbackMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/invitation", out var remaining) && remaining.HasValue,
-                       p => p.UseMiddleware<InvitationMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/confirm", out var remaining) && remaining.HasValue,
-                       p => p.UseMiddleware<ConfirmationMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/redirect"),
-                       p => p.UseMiddleware<RedirectMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/me", out var remaining) && remaining.HasValue,
-                       p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
-                            .UseMiddleware<ProfileLinkMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/me"),
-                       p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
-                            .UseMiddleware<ProfileMiddleware>())
-                    .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/change-password"),
-                       p => p
-                            .UseMiddleware<AuthenticationMiddleware>()
-                            .UseMiddleware<PasswordChangeMiddleware>())
-                    .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/forgot-password"),
-                       p => p
-                            .UseMiddleware<ForgotPasswordMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.StartsWithSegments(options.AccountEndpoint + "/winlogin", out var remaining) && remaining.HasValue,
-                       p => p.UseMiddleware<WindowsLoginMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.AccountEndpoint + "/oauthlogin"),
-                       p => p.UseMiddleware<OAuthLoginMiddleware>())
-                   .MapWhen(
-                       p => p.Request.Path.Equals(options.SelectTenantEndpoint),
-                       p => p.UseMiddleware<TenantsMiddleware>())
-                   .MapWhen(
-                       EmbeddedResourceMiddleware.Condition,
-                       p => p.UseMiddleware<EmbeddedResourceMiddleware>());
-        }
-
-        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityOptions identityOptions, Action<CookieAuthenticationOptions> cookieOptions)
+        private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityServerOptions identityServerOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
             builder.Argon2()
                 .WithAesSymmetricEncryption();
 
-            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityOptions.AuthenticationScheme; })
+            collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityServerOptions.AuthenticationScheme; })
                       .AddCookie(
-                                 identityOptions.AuthenticationScheme,
+                                 identityServerOptions.AuthenticationScheme,
                                  p =>
                                  {
                                      p.Events.OnValidatePrincipal = OnValidatePrincipal;
                                      p.SlidingExpiration = true;
-                                     p.Cookie.Name = identityOptions.AuthenticationCookie;
-                                     p.LoginPath = identityOptions.AccountEndpoint + "/login";
-                                     p.ExpireTimeSpan = identityOptions.CookieExpiration;
+                                     p.Cookie.Name = identityServerOptions.AuthenticationCookie;
+                                     p.LoginPath = identityServerOptions.AccountEndpoint + "/login";
+                                     p.ExpireTimeSpan = identityServerOptions.CookieExpiration;
                                      cookieOptions?.Invoke(p);
                                  })
                     .AddCookie(
-                                 identityOptions.MfaAuthenticationScheme,
+                                 identityServerOptions.MfaAuthenticationScheme,
                                  p =>
                                  {
                                      p.Events.OnValidatePrincipal = OnValidatePrincipal;
                                      p.SlidingExpiration = true;
-                                     p.Cookie.Name = identityOptions.MfaAuthenticationCookie;
-                                     p.LoginPath = identityOptions.AccountEndpoint + "/login/mfa";
-                                     p.ExpireTimeSpan = identityOptions.CookieExpiration;
+                                     p.Cookie.Name = identityServerOptions.MfaAuthenticationCookie;
+                                     p.LoginPath = identityServerOptions.AccountEndpoint + "/login/mfa";
+                                     p.ExpireTimeSpan = identityServerOptions.CookieExpiration;
                                      cookieOptions?.Invoke(p);
                                  });
 
@@ -276,8 +123,8 @@ namespace Codeworx.Identity.AspNetCore
             // Request binder
             collection.AddTransient<IRequestBinder<WindowsLoginRequest>, WindowsLoginRequestBinder>();
             collection.AddTransient<IRequestBinder<OAuthLoginRequest>, OAuthLoginRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OAuth.AuthorizationRequest>, OAuth.Binder.AuthorizationRequestBinder>();
-            collection.AddTransient<IRequestBinder<Identity.OpenId.AuthorizationRequest>, OpenId.Binder.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Codeworx.Identity.OAuth.AuthorizationRequest>, Codeworx.Identity.AspNetCore.OAuth.Binder.AuthorizationRequestBinder>();
+            collection.AddTransient<IRequestBinder<Codeworx.Identity.OpenId.AuthorizationRequest>, Codeworx.Identity.AspNetCore.OpenId.Binder.AuthorizationRequestBinder>();
             collection.AddTransient<IRequestBinder<ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<AuthorizationCodeTokenRequest>, AuthorizationCodeTokenRequestBinder>();
             collection.AddTransient<IRequestBinder<TokenRequest>, TokenRequestBinder>();
@@ -348,40 +195,40 @@ namespace Codeworx.Identity.AspNetCore
             collection.AddScoped<ITokenRequestBindingSelector, RefreshTokenBindingSelector>();
             collection.AddScoped<ITokenRequestBindingSelector, TokenExchangeBindingSelector>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, StageOneAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, StageTwoAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, StageOneAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, StageTwoAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OAuth.AuthorizationRequest>, StageOneAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OAuth.AuthorizationRequest>, StageTwoAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, StageOneAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, StageTwoAuthorizationRequestProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, Identity.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, Identity.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, Identity.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, Identity.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, Identity.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>, Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OAuth.AuthorizationRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OAuth.Token.ClientCredentialsTokenRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>, Codeworx.Identity.ScopeIdentityDataRequestProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, Identity.OpenId.ScopeIdentityDataRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, Identity.OpenId.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, Codeworx.Identity.OpenId.ScopeIdentityDataRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, Codeworx.Identity.OpenId.ScopeIdentityDataRequestProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, TenantAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, TenantAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, TenantAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, TenantAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OAuth.AuthorizationRequest>, TenantAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, TenantAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OAuth.Token.ClientCredentialsTokenRequest>, TenantAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, TenantAuthorizationRequestProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, TenantAuthorizationRequestProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>, TenantAuthorizationRequestProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OAuth.AuthorizationRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Identity.OpenId.AuthorizationRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OAuth.AuthorizationRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IAuthorizationParameters, Codeworx.Identity.OpenId.AuthorizationRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OAuth.Token.ClientCredentialsTokenRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>, ExternalTokenScopeAuthorizationRequestProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidationProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidationProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OAuth.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidationProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestValidationProcessor>();
 
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OAuth.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
-            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Identity.OpenId.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OAuth.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
+            collection.AddTransient<IIdentityRequestProcessor<IClientCredentialsParameters, Codeworx.Identity.OpenId.Token.ClientCredentialsTokenRequest>, ClientCredentialsTokenRequestUserLookupProcessor>();
 
             collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestValidationProcessor>();
             collection.AddTransient<IIdentityRequestProcessor<IRefreshTokenParameters, RefreshTokenRequest>, RefreshTokenRequestClientProcessor>();
@@ -429,6 +276,12 @@ namespace Codeworx.Identity.AspNetCore
             return builder;
         }
 
+        private static string GetFormKeyName(PropertyInfo item)
+        {
+            var dataMember = item.GetCustomAttribute<DataMemberAttribute>();
+            return dataMember?.Name ?? item.Name;
+        }
+
         private static async Task OnValidatePrincipal(CookieValidatePrincipalContext context)
         {
             if (context.Properties.AllowRefresh ?? true)
@@ -456,12 +309,6 @@ namespace Codeworx.Identity.AspNetCore
                     }
                 }
             }
-        }
-
-        private static string GetFormKeyName(PropertyInfo item)
-        {
-            var dataMember = item.GetCustomAttribute<DataMemberAttribute>();
-            return dataMember?.Name ?? item.Name;
         }
 
         private static async Task WriteJsonObjectAsync(JsonTextWriter writer, IFormCollection form, IEnumerable<string> formKeys, string parentPath = null)

@@ -4,24 +4,23 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Login
 {
     public class MissingMfaResponseBinder : ResponseBinder<MissingMfaResponse>
     {
         private readonly IBaseUriAccessor _accessor;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IUserService _userService;
 
         public MissingMfaResponseBinder(
             IBaseUriAccessor accessor,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IUserService userService)
         {
             _accessor = accessor;
             _userService = userService;
-            _options = options.Value;
+            _options = options;
         }
 
         protected override async Task BindAsync(MissingMfaResponse responseData, HttpResponse response, bool headerOnly)

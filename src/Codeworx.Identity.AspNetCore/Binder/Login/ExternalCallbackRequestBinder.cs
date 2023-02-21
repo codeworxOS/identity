@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.OAuth;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Login
 {
@@ -11,18 +10,18 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILoginService _loginService;
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityServerOptions;
 
-        public ExternalCallbackRequestBinder(IServiceProvider serviceProvider, ILoginService loginService, IOptionsSnapshot<IdentityOptions> options)
+        public ExternalCallbackRequestBinder(IServiceProvider serviceProvider, ILoginService loginService, IdentityServerOptions options)
         {
             _serviceProvider = serviceProvider;
             _loginService = loginService;
-            _identityOptions = options.Value;
+            _identityServerOptions = options;
         }
 
         public async Task<ExternalCallbackRequest> BindAsync(HttpRequest request)
         {
-            if (request.Path.StartsWithSegments($"{_identityOptions.AccountEndpoint}/callback", out var remaining))
+            if (request.Path.StartsWithSegments($"{_identityServerOptions.AccountEndpoint}/callback", out var remaining))
             {
                 var providerId = remaining.Value.Trim('/');
 

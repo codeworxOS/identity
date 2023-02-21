@@ -5,21 +5,20 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Account
 {
     public class ConfirmationRequestBinder : IRequestBinder<ConfirmationRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IIdentityAuthenticationHandler _authenticationHandler;
 
         public ConfirmationRequestBinder(
             IIdentityAuthenticationHandler authenticationHandler,
-            IOptionsSnapshot<IdentityOptions> options)
+            IdentityServerOptions options)
         {
-            _options = options.Value;
             _authenticationHandler = authenticationHandler;
+            _options = options;
         }
 
         public async Task<ConfirmationRequest> BindAsync(HttpRequest request)

@@ -19,6 +19,7 @@ namespace Codeworx.Identity.Mfa.Mail
     public class MailMfaLoginProcessor : ILoginProcessor
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IMailMfaCodeCache _codeCache;
         private readonly ILinkUserService _linkUserService;
         private readonly IMailConnector _mailConnector;
@@ -32,6 +33,7 @@ namespace Codeworx.Identity.Mfa.Mail
             IStringResources stringResources,
             IBaseUriAccessor baseUriAccessor,
             IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions serverOptions,
             IMailMfaCodeCache codeCache,
             ILinkUserService linkUserService = null,
             IMailConnector mailConnector = null,
@@ -41,6 +43,7 @@ namespace Codeworx.Identity.Mfa.Mail
             _userService = userService;
             _stringResources = stringResources;
             _baseUriAccessor = baseUriAccessor;
+            _serverOptions = serverOptions;
             _codeCache = codeCache;
             _linkUserService = linkUserService;
             _mailConnector = mailConnector;
@@ -170,7 +173,7 @@ namespace Codeworx.Identity.Mfa.Mail
             var info = await GetRegistrationInfoAsync(providerRequest, registration).ConfigureAwait(false);
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("login/mfa");
 
             if (!string.IsNullOrWhiteSpace(process.ReturnUrl))
@@ -187,7 +190,7 @@ namespace Codeworx.Identity.Mfa.Mail
             var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId ?? registration.SessionId, error);
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("login/mfa");
 
             if (!string.IsNullOrWhiteSpace(registration.ReturnUrl))
@@ -201,7 +204,7 @@ namespace Codeworx.Identity.Mfa.Mail
 
         private ClaimsIdentity GenerateMfaIdentity()
         {
-            var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
+            var identity = new ClaimsIdentity(_serverOptions.MfaAuthenticationScheme);
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mail));
             return identity;
@@ -219,7 +222,7 @@ namespace Codeworx.Identity.Mfa.Mail
             request.ProviderErrors.TryGetValue(registration.Id, out var error);
 
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("login/mfa");
             uriBuilder.AppendPath(registration.Id);
 

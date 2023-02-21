@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Test.Provider;
@@ -51,7 +47,7 @@ namespace Codeworx.Identity.Web.Test
             app.UseCors();
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseCodeworxIdentity(identityOptions.Value);
+            app.UseCodeworxIdentity();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
@@ -89,7 +85,7 @@ namespace Codeworx.Identity.Web.Test
 
             services.Configure<SmtpOptions>(this._configuration.GetSection("Smtp"));
 
-            services.AddCodeworxIdentity(_configuration)
+            services.AddCodeworxIdentity()
                     //.Pbkdf2()
                     //.ReplaceService<IDefaultSigningKeyProvider, RsaDefaultSigningKeyProvider>(ServiceLifetime.Singleton)
                     //.ReplaceService<IScopeService, SampleScopeService>(ServiceLifetime.Singleton)

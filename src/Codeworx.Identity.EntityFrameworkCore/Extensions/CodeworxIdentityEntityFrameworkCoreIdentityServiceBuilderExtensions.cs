@@ -1,14 +1,15 @@
 ﻿using System;
+using Codeworx.Identity;
 using Codeworx.Identity.Account;
 using Codeworx.Identity.Cache;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Configuration.Internal;
+using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.EntityFrameworkCore.Account;
 using Codeworx.Identity.EntityFrameworkCore.Cache;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Codeworx.Identity.EntityFrameworkCore
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class CodeworxIdentityEntityFrameworkCoreIdentityServiceBuilderExtensions
     {

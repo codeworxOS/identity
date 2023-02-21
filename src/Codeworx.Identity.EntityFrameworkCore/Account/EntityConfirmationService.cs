@@ -16,17 +16,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Account
         where TContext : DbContext
     {
         private readonly TContext _db;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IdentityOptions _options;
         private readonly INotificationService _notificationService;
         private readonly IBaseUriAccessor _accessor;
 
         public EntityConfirmationService(
             TContext db,
+            IdentityServerOptions serverOptions,
             IOptionsSnapshot<IdentityOptions> options,
             INotificationService notificationService,
             IBaseUriAccessor accessor)
         {
             _db = db;
+            _serverOptions = serverOptions;
             _options = options.Value;
             _notificationService = notificationService;
             _accessor = accessor;
@@ -67,7 +70,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Account
             if (isSupported)
             {
                 var confirmationBuilder = new UriBuilder(_accessor.BaseUri);
-                confirmationBuilder.AppendPath(_options.AccountEndpoint);
+                confirmationBuilder.AppendPath(_serverOptions.AccountEndpoint);
                 confirmationBuilder.AppendPath("confirm");
                 confirmationBuilder.AppendPath(userData.ConfirmationCode);
 

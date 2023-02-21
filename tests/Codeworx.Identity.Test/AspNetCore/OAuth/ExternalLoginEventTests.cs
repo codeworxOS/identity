@@ -23,7 +23,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             var services = new ServiceCollection();
 
             services
-                .AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+                .AddCodeworxIdentity()
                 .UseTestSetup();
 
             using (var sp = services.BuildServiceProvider())
@@ -46,7 +46,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             services
                 .AddScoped<IExternalLoginEvent, CreateMissingUserEvent>()
-                .AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+                .AddCodeworxIdentity()
                 .UseTestSetup();
 
             using (var sp = services.BuildServiceProvider())

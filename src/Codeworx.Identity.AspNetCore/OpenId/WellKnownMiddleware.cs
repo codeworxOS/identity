@@ -5,7 +5,6 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.OpenId.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.OpenId
 {
@@ -26,10 +25,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
             IDefaultSigningKeyProvider keyProvider,
-            IOptionsSnapshot<IdentityOptions> identityOptions,
+            IdentityServerOptions identityOptions,
             IScopeService scopeService)
         {
-            var options = identityOptions.Value;
+            var options = identityOptions;
             var host = baseUriAccessor.BaseUri.ToString().TrimEnd('/');
 
             var scopes = await scopeService.GetScopes().ConfigureAwait(false);

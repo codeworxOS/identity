@@ -17,17 +17,20 @@ namespace Codeworx.Identity.Mfa.Totp
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly ILinkUserService _linkUserService;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IdentityOptions _options;
         private readonly IStringResources _stringResources;
         private readonly IUserService _userService;
 
         public TotpMfaLoginProcessor(
+            IdentityServerOptions serverOptions,
             IOptionsSnapshot<IdentityOptions> options,
             IUserService userService,
             IBaseUriAccessor baseUriAccessor,
             IStringResources stringResources,
             ILinkUserService linkUserService = null)
         {
+            _serverOptions = serverOptions;
             _options = options.Value;
             _userService = userService;
             _baseUriAccessor = baseUriAccessor;
@@ -126,7 +129,7 @@ namespace Codeworx.Identity.Mfa.Totp
 
         private ClaimsIdentity GenerateMfaIdentity()
         {
-            var identity = new ClaimsIdentity(_options.MfaAuthenticationScheme);
+            var identity = new ClaimsIdentity(_serverOptions.MfaAuthenticationScheme);
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa));
             identity.AddClaim(new Claim(Constants.Claims.Amr, Constants.OpenId.Amr.Otp));
             return identity;
@@ -148,7 +151,7 @@ namespace Codeworx.Identity.Mfa.Totp
             request.ProviderErrors.TryGetValue(registration.Id, out var error);
 
             var builder = new UriBuilder(_baseUriAccessor.BaseUri);
-            builder.AppendPath(_options.AccountEndpoint);
+            builder.AppendPath(_serverOptions.AccountEndpoint);
             builder.AppendPath("login/mfa");
             builder.AppendPath(registration.Id);
             if (!string.IsNullOrWhiteSpace(request.ReturnUrl))

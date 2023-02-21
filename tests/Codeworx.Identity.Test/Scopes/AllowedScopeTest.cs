@@ -86,7 +86,7 @@ namespace Codeworx.Identity.Test.Scopes
             where TParameter : IIdentityDataParameters
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                 .UseTestSetup();
 
             var sp = services.BuildServiceProvider();

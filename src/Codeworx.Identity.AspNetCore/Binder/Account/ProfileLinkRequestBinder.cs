@@ -5,17 +5,16 @@ using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Account
 {
     public class ProfileLinkRequestBinder : IRequestBinder<ProfileLinkRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
-        public ProfileLinkRequestBinder(IOptionsSnapshot<IdentityOptions> options)
+        public ProfileLinkRequestBinder(IdentityServerOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         public async Task<ProfileLinkRequest> BindAsync(HttpRequest request)

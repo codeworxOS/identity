@@ -3,22 +3,21 @@ using Codeworx.Identity.AspNetCore.Login;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Account
 {
     public class PasswordChangeResponseBinder : ResponseBinder<PasswordChangeResponse>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityAuthenticationHandler _handler;
 
         public PasswordChangeResponseBinder(
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor,
             IIdentityAuthenticationHandler handler)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUriAccessor;
             _handler = handler;
         }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.Windows
 {
@@ -12,11 +11,11 @@ namespace Codeworx.Identity.Login.Windows
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IIdentityService _identityService;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
-        public WindowsLoginProcessor(IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUri, IIdentityService identityService)
+        public WindowsLoginProcessor(IdentityServerOptions options, IBaseUriAccessor baseUri, IIdentityService identityService)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUri;
             _identityService = identityService;
         }

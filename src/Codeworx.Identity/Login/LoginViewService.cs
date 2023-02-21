@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login
 {
@@ -12,18 +11,18 @@ namespace Codeworx.Identity.Login
         private readonly ILoginService _loginService;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IStringResources _stringResources;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
         public LoginViewService(
             ILoginService loginService,
             IBaseUriAccessor baseUriAccessor,
-            IOptions<IdentityOptions> options,
+            IdentityServerOptions options,
             IStringResources stringResources)
         {
             _loginService = loginService;
             _baseUriAccessor = baseUriAccessor;
             _stringResources = stringResources;
-            _options = options.Value;
+            _options = options;
         }
 
         public Task<LoggedinResponse> ProcessLoggedinAsync(LoggedinRequest loggedin)

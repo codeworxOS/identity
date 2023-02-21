@@ -24,7 +24,7 @@
             const string returnUrl = "/openid10?query1=one";
             var dummyBaseUriAccessor = new DummyBaseUriAccessor();
 
-            var loginViewService = new LoginViewService(null, dummyBaseUriAccessor, new OptionsWrapper<IdentityOptions>(new IdentityOptions()), null);
+            var loginViewService = new LoginViewService(null, dummyBaseUriAccessor, new IdentityServerOptions(), null);
             var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
 
             Assert.AreEqual(
@@ -36,7 +36,7 @@
         public async Task LoginWithAbsoluteRedirectUrl()
         {
             const string returnUrl = "http://example.com/openid10?query1=one";
-            var loginViewService = new LoginViewService(null, new DummyBaseUriAccessor(), new OptionsWrapper<IdentityOptions>(new IdentityOptions()), null);
+            var loginViewService = new LoginViewService(null, new DummyBaseUriAccessor(), new IdentityServerOptions(), null);
             var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
 
             Assert.AreEqual(returnUrl, result.ReturnUrl);
@@ -46,7 +46,7 @@
         public async Task AutoRedirectWithOnlyOneRedirectableProvider_Expects302Found()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .UseTestSetup()
                     .LoginRegistrations<DummyOAuthLoginRegistrationProvider>();
 
@@ -73,7 +73,7 @@
         public async Task NoAutoRedirectWithOnlyOneRedirectableProviderAndErrorMessage_Expects_200OK()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .UseTestSetup()
                     .LoginRegistrations<DummyOAuthLoginRegistrationProvider>();
 
@@ -95,7 +95,7 @@
         public async Task NoAutoRedirectWithOnlyOneRedirectableProviderAndErrorMessage_Expects_LoginPrompt()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .UseTestSetup()
                     .LoginRegistrations<DummyOAuthLoginRegistrationProvider>();
 
@@ -116,7 +116,7 @@
         public async Task NoAutoRedirectWithOnlyOneRedirectableProviderAndErrorMessage_Expects_SelectAccountPrompt()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .UseTestSetup()
                     .LoginRegistrations<DummyOAuthLoginRegistrationProviderSelectAccount>();
 
@@ -137,7 +137,7 @@
         public async Task NoAutoRedirectWithOnlyOneRedirectableProviderAndErrorMessage_Expects_OriginalPrompt()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .UseTestSetup()
                     .LoginRegistrations<DummyOAuthLoginRegistrationProviderSelectAccount>();
 

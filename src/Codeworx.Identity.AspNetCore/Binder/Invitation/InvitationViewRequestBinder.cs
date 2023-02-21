@@ -3,17 +3,16 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.Invitation
 {
     public class InvitationViewRequestBinder : IRequestBinder<InvitationViewRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
 
-        public InvitationViewRequestBinder(IOptionsSnapshot<IdentityOptions> options)
+        public InvitationViewRequestBinder(IdentityServerOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         public Task<InvitationViewRequest> BindAsync(HttpRequest request)

@@ -43,9 +43,9 @@ namespace Codeworx.Identity.Test.MFA
 
         protected async Task<HttpResponseMessage> SelectTenant(HttpResponseMessage authorizationResponse, string tenant)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
             var isRedirectToTenantSelection = authorizationResponse.StatusCode == HttpStatusCode.Redirect
-                && authorizationResponse.Headers.Location.ToString().Contains(options.Value.SelectTenantEndpoint);
+                && authorizationResponse.Headers.Location.ToString().Contains(options.SelectTenantEndpoint);
             if (!isRedirectToTenantSelection)
             {
                 throw new ArgumentException("expected a redirect to tenant selection page");
@@ -109,7 +109,7 @@ namespace Codeworx.Identity.Test.MFA
 
         protected async Task<HttpResponseMessage> GetToken(HttpResponseMessage authorizationResponse)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var tokenRequestBuilder = new TokenRequestBuilder()
                 .WithGrantType(Constants.OAuth.GrantType.AuthorizationCode)
@@ -124,7 +124,7 @@ namespace Codeworx.Identity.Test.MFA
             tokenRequestBuilder.WithCode(code);
 
             var tokenRequest = tokenRequestBuilder.Build();
-            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+            var tokenResponse = await this.TestClient.PostAsync(options.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
 
             return tokenResponse;
         }
@@ -142,7 +142,7 @@ namespace Codeworx.Identity.Test.MFA
                 throw new ArgumentException("no refresh token available");
             }
 
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var tokenRequestBuilder = new TokenRequestBuilder()
                 .WithGrantType(Constants.OAuth.GrantType.RefreshToken)
@@ -154,14 +154,14 @@ namespace Codeworx.Identity.Test.MFA
 
             var tokenRequest = tokenRequestBuilder.Build();
 
-            var refreshTokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+            var refreshTokenResponse = await this.TestClient.PostAsync(options.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
 
             return refreshTokenResponse;
         }
 
         protected async Task<HttpResponseMessage> GetOnBehalfOfToken(string sourceClientId, string targetClientId, TokenResponse sourceToken)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var tokenRequest = new TokenRequestBuilder()
                 .WithGrantType(Constants.OAuth.GrantType.TokenExchange)
@@ -172,13 +172,13 @@ namespace Codeworx.Identity.Test.MFA
                 .WithScopes("openid")
                 .Build();
 
-            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+            var tokenResponse = await this.TestClient.PostAsync(options.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
             return tokenResponse;
         }
 
         protected async Task<HttpResponseMessage> GetTokenFromApiKey(string clientId, string clientSecret, string defaultTenant)
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var tokenRequest = new TokenRequestBuilder()
                 .WithGrantType(Constants.OAuth.GrantType.ClientCredentials)
@@ -187,7 +187,7 @@ namespace Codeworx.Identity.Test.MFA
                 .WithScopes($"openid tenant {defaultTenant}")
                 .Build();
 
-            var tokenResponse = await this.TestClient.PostAsync(options.Value.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
+            var tokenResponse = await this.TestClient.PostAsync(options.OpenIdTokenEndpoint, this.GetRequestBody(tokenRequest));
             return tokenResponse;
         }
 
@@ -235,11 +235,11 @@ namespace Codeworx.Identity.Test.MFA
 
         protected Uri GetMfaUrl()
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var mfaUrlBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
             mfaUrlBuilder.Schema = "https";
-            mfaUrlBuilder.AppendPath(options.Value.AccountEndpoint);
+            mfaUrlBuilder.AppendPath(options.AccountEndpoint);
             mfaUrlBuilder.AppendPath("login/mfa");
             mfaUrlBuilder.AppendPath(TestConstants.LoginProviders.TotpProvider.Id);
             var mfaUrl = mfaUrlBuilder.ToString();

@@ -2,7 +2,6 @@
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore
 {
@@ -18,7 +17,7 @@ namespace Codeworx.Identity.AspNetCore
         public async Task Invoke(
             HttpContext context,
             IBaseUriAccessor accessor,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IRequestBinder<LogoutRequest> requestBinder,
             IRequestValidator<LogoutRequest> requestValidator,
             IResponseBinder<LogoutResponse> responseBinder)
@@ -32,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore
                 if (returnUrl == null)
                 {
                     var builder = new UriBuilder(accessor.BaseUri.ToString());
-                    builder.AppendPath(options.Value.AccountEndpoint);
+                    builder.AppendPath(options.AccountEndpoint);
                     builder.AppendPath("login");
                     returnUrl = builder.ToString();
                 }

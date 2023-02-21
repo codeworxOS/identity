@@ -1,10 +1,10 @@
 ﻿using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Cryptography.Argon2;
 using Codeworx.Identity.Cryptography.Pbkdf2;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Codeworx.Identity.Cryptography
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class CodeworxIdentityCryptographyIdentityBuilderExtensions
     {

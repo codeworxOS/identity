@@ -8,20 +8,19 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Response;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 {
     public class MfaLoginRequestBinder : IRequestBinder<MfaLoginRequest>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IIdentityAuthenticationHandler _handler;
         private readonly ILoginService _loginService;
         private readonly IServiceProvider _serviceProvider;
 
-        public MfaLoginRequestBinder(IIdentityAuthenticationHandler handler, ILoginService loginService, IOptionsSnapshot<IdentityOptions> options, IServiceProvider serviceProvider)
+        public MfaLoginRequestBinder(IIdentityAuthenticationHandler handler, ILoginService loginService, IdentityServerOptions options, IServiceProvider serviceProvider)
         {
-            _options = options.Value;
+            _options = options;
             _handler = handler;
             _loginService = loginService;
             _serviceProvider = serviceProvider;

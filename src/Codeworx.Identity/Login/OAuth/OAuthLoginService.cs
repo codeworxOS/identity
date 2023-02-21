@@ -11,13 +11,15 @@ namespace Codeworx.Identity.Login.OAuth
     public class OAuthLoginService : IOAuthLoginService
     {
         private readonly IStateLookupCache _stateLookupCache;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly ILoginService _loginService;
         private readonly IdentityOptions _identityOptions;
         private readonly string _baseUri;
 
-        public OAuthLoginService(IStateLookupCache stateLookupCache, IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor, ILoginService loginService)
+        public OAuthLoginService(IStateLookupCache stateLookupCache, IdentityServerOptions serverOptions, IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor, ILoginService loginService)
         {
             _stateLookupCache = stateLookupCache;
+            _serverOptions = serverOptions;
             _loginService = loginService;
             _identityOptions = options.Value;
             _baseUri = baseUriAccessor.BaseUri.ToString();
@@ -30,7 +32,7 @@ namespace Codeworx.Identity.Login.OAuth
             await _stateLookupCache.SetAsync(state, new StateLookupItem { ReturnUrl = request.ReturnUrl, InvitationCode = request.InvitationCode }, _identityOptions.StateLookupCacheExpiration);
 
             var callbackUriBuilder = new UriBuilder(_baseUri);
-            callbackUriBuilder.AppendPath(_identityOptions.AccountEndpoint);
+            callbackUriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(request.ProviderId);
 

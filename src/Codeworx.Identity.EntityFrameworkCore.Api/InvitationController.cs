@@ -20,14 +20,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
     public class InvitationController
     {
         private readonly IContextWrapper _db;
+        private readonly IdentityServerOptions _serverOptions;
         private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
         private readonly IdentityOptions _options;
 
-        public InvitationController(IContextWrapper db, IOptionsSnapshot<IdentityOptions> options, IBaseUriAccessor baseUriAccessor, IUserService userService, INotificationService notificationService)
+        public InvitationController(IContextWrapper db, IOptionsSnapshot<IdentityOptions> options, IdentityServerOptions serverOptions, IBaseUriAccessor baseUriAccessor, IUserService userService, INotificationService notificationService)
         {
             _db = db;
+            _serverOptions = serverOptions;
             _baseUriAccessor = baseUriAccessor;
             _userService = userService;
             _notificationService = notificationService;
@@ -109,7 +111,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                     var user = await _userService.GetUserByIdAsync(id.ToString("N")).ConfigureAwait(false);
 
                     var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-                    uriBuilder.AppendPath(_options.AccountEndpoint);
+                    uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
                     uriBuilder.AppendPath("invitation");
                     uriBuilder.AppendPath(code);
 

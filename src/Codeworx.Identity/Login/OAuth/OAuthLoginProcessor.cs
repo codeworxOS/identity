@@ -8,7 +8,6 @@ using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Login.OAuth
 {
@@ -22,7 +21,7 @@ namespace Codeworx.Identity.Login.OAuth
         private readonly IIdentityService _identityService;
         private readonly ILogger<OAuthLoginProcessor> _logger;
         private readonly IExternalTokenCache _externalTokenCache;
-        private readonly IdentityOptions _identityOptions;
+        private readonly IdentityServerOptions _identityOptions;
         private readonly IExternalOAuthTokenService _tokenService;
         private readonly IStateLookupCache _stateCache;
         private readonly string _baseUri;
@@ -38,7 +37,7 @@ namespace Codeworx.Identity.Login.OAuth
         public OAuthLoginProcessor(
             IBaseUriAccessor baseUriAccessor,
             IExternalOAuthTokenService tokenService,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IStateLookupCache stateCache,
             IIdentityService identityService,
             ILogger<OAuthLoginProcessor> logger,
@@ -49,7 +48,7 @@ namespace Codeworx.Identity.Login.OAuth
             _identityService = identityService;
             _logger = logger;
             _externalTokenCache = externalTokenCache;
-            _identityOptions = options.Value;
+            _identityOptions = options;
             _baseUri = baseUriAccessor.BaseUri.ToString();
         }
 

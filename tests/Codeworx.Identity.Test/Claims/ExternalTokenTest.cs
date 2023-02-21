@@ -17,7 +17,7 @@ namespace Codeworx.Identity.Test.Claims
         {
             var services = new ServiceCollection();
 
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                .UseTestSetup();
 
             using (var provider = services.BuildServiceProvider())

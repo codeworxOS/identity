@@ -145,7 +145,7 @@ namespace Codeworx.Identity.Test.MFA
         private ServiceProvider CreateDefaultServiceProvider()
         {
             var services = new ServiceCollection();
-            services.AddCodeworxIdentity(new IdentityOptions(), new AuthorizationCodeOptions())
+            services.AddCodeworxIdentity()
                     .AddMfaTotp()
                     .UseTestSetup()
                     .LoginRegistrations<DummyLoginRegistrationProviderWithTotp>();

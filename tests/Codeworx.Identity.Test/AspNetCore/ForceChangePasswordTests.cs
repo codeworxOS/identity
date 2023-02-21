@@ -20,10 +20,10 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test]
         public async Task LoginWithForcePasswordChangeShouldRedirectToPasswordChange()
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
-            loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
@@ -41,7 +41,7 @@ namespace Codeworx.Identity.Test.AspNetCore
             Assert.AreEqual(HttpStatusCode.Found, response.StatusCode);
 
             var redirectLocation = response.Headers.Location;
-            var expectedRedirectTarget = options.Value.AccountEndpoint + "/change-password";
+            var expectedRedirectTarget = options.AccountEndpoint + "/change-password";
             Assert.True(redirectLocation.LocalPath.Contains(expectedRedirectTarget));
 
             var changePasswordContent = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -71,10 +71,10 @@ namespace Codeworx.Identity.Test.AspNetCore
         [Test]
         public async Task LoginWithForcePasswordChangeShouldNotReturnTokens()
         {
-            var options = this.TestServer.Host.Services.GetRequiredService<IOptions<IdentityOptions>>();
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
 
             var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
-            loginRequestBuilder.AppendPath(options.Value.AccountEndpoint);
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
             loginRequestBuilder.AppendPath("login");
 
             var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
@@ -95,10 +95,10 @@ namespace Codeworx.Identity.Test.AspNetCore
 
             var requestString = this.ToRequestString(request);
 
-            var authorizationResponse = await this.TestClient.GetAsync(options.Value.OauthAuthorizationEndpoint + requestString);
+            var authorizationResponse = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
 
             Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
-            Assert.AreEqual($"{options.Value.AccountEndpoint}/change-password", authorizationResponse.Headers.Location.AbsolutePath);
+            Assert.AreEqual($"{options.AccountEndpoint}/change-password", authorizationResponse.Headers.Location.AbsolutePath);
         }
 
         private string ToRequestString(AuthorizationRequest request)

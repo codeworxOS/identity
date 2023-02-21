@@ -2,20 +2,19 @@
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.AspNetCore.Login.Binder
 {
     public class ForceChangePasswordResponseBinder : ResponseBinder<ForceChangePasswordResponse>
     {
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IBaseUriAccessor _baseUriAccessor;
 
         public ForceChangePasswordResponseBinder(
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor)
         {
-            _options = options.Value;
+            _options = options;
             _baseUriAccessor = baseUriAccessor;
         }
 

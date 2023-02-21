@@ -8,7 +8,6 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Account
 {
@@ -17,7 +16,7 @@ namespace Codeworx.Identity.Account
         private readonly ImmutableList<ILoginRegistrationProvider> _providers;
         private readonly IUserService _userService;
         private readonly ILinkUserService _linkUserService;
-        private readonly IdentityOptions _options;
+        private readonly IdentityServerOptions _options;
         private readonly IInvitationCache _invitationCache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IBaseUriAccessor _baseUriAccessor;
@@ -28,13 +27,13 @@ namespace Codeworx.Identity.Account
             IEnumerable<ILoginRegistrationProvider> providers,
             IInvitationCache invitationCache,
             IServiceProvider serviceProvider,
-            IOptionsSnapshot<IdentityOptions> options,
+            IdentityServerOptions options,
             IBaseUriAccessor baseUriAccessor)
         {
             _providers = providers.ToImmutableList();
             _userService = userService;
             _linkUserService = linkUserService;
-            _options = options.Value;
+            _options = options;
             _invitationCache = invitationCache;
             _serviceProvider = serviceProvider;
             _baseUriAccessor = baseUriAccessor;
