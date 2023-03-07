@@ -27,7 +27,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _options = options.Value;
         }
 
-        public async Task SetPasswordAsync(IUser user, string password)
+        public virtual async Task SetPasswordAsync(IUser user, string password)
         {
             await using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -75,7 +75,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 var refreshToken = await _context.Set<IdentityCache>()
                                                 .Where(p => p.UserId == userEntity.Id)
                                                 .Where(p => !p.Disabled && p.ValidUntil >= DateTime.UtcNow)
-                                                .Select(p => new IdentityCache { Value = p.Value, Disabled = p.Disabled })
+                                                .Select(p => new IdentityCache { Key = p.Key, Value = p.Value, Disabled = p.Disabled })
                                                 .ToListAsync();
 
                 foreach (var item in refreshToken)

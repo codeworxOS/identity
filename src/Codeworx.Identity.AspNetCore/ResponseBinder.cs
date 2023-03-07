@@ -23,14 +23,14 @@ namespace Codeworx.Identity.AspNetCore
 
         async Task IResponseBinder.BindAsync(object responseData, HttpResponse response)
         {
-            await ((IResponseBinder<TResponse>)this).BindAsync((TResponse)responseData, response);
-
             var cacheControl = response.GetTypedHeaders().CacheControl;
-            if (cacheControl == null)
+            if (cacheControl == null && !response.HasStarted)
             {
                 cacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue { NoCache = true, NoStore = true };
                 response.GetTypedHeaders().CacheControl = cacheControl;
             }
+
+            await ((IResponseBinder<TResponse>)this).BindAsync((TResponse)responseData, response);
         }
 
         protected abstract Task BindAsync(TResponse responseData, HttpResponse response, bool headerOnly);

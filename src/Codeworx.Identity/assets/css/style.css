@@ -164,21 +164,29 @@ body {
         .txt_field .toggle-pw:hover {
             color: var(--accent);
         }
-
+        s
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,
+    .txt_field input:-webkit-autofill ~ label,
+    .txt_field input:autofill ~ label,
     .txt_field select:focus ~ label,
     .txt_field select:valid ~ label,
-    .txt_field select:read-only ~ label {
+    .txt_field select:read-only ~ label,
+    .txt_field select:-webkit-autofill ~ label,
+    .txt_field select:autofill ~ label {
         top: -5px;
         font-size: 0.7rem;
     }
 
     .txt_field input:focus ~ .i,
     .txt_field input:valid ~ .i,
+    .txt_field input:-webkit-autofill ~ .i,
+    .txt_field input:autofill ~ .i,
     .txt_field select:focus ~ .i,
-    .txt_field select:valid ~ .i {
+    .txt_field select:valid ~ .i,
+    .txt_field select:-webkit-autofill ~ .i,
+    .txt_field select:autofill ~ .i {
         color: var(--accent);
     }
 
@@ -189,8 +197,12 @@ body {
 
     .txt_field input:focus ~ span::before,
     .txt_field input:valid ~ span::before,
+    .txt_field input:autofill ~ span::before,
+    .txt_field input:-webkit-autofill ~ span::before,
     .txt_field select:focus ~ span::before,
-    .txt_field select:valid ~ span::before {
+    .txt_field select:valid ~ span::before,
+    .txt_field select:autofill ~ span::before,
+    .txt_field select:-webkit-autofill ~ span::before {
         width: 100%;
     }
 
