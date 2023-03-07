@@ -21,9 +21,16 @@ namespace Codeworx.Identity.AspNetCore
             return BindAsync(responseData, response, HttpMethods.IsHead(response.HttpContext.Request.Method));
         }
 
-        Task IResponseBinder.BindAsync(object responseData, HttpResponse response)
+        async Task IResponseBinder.BindAsync(object responseData, HttpResponse response)
         {
-            return ((IResponseBinder<TResponse>)this).BindAsync((TResponse)responseData, response);
+            await ((IResponseBinder<TResponse>)this).BindAsync((TResponse)responseData, response);
+
+            var cacheControl = response.GetTypedHeaders().CacheControl;
+            if (cacheControl == null)
+            {
+                cacheControl = new Microsoft.Net.Http.Headers.CacheControlHeaderValue { NoCache = true, NoStore = true };
+                response.GetTypedHeaders().CacheControl = cacheControl;
+            }
         }
 
         protected abstract Task BindAsync(TResponse responseData, HttpResponse response, bool headerOnly);

@@ -31,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore
             {
                 if (context.Request.Path.StartsWithSegments(item.Prefix, out var remaining))
                 {
-                    var assetResponse = await item.Provider.GetAssetAsync(item.Prefix, remaining);
+                    var assetResponse = await item.Provider.GetAssetAsync(item.Prefix, remaining.Value, context.Request.Headers.IfNoneMatch);
                     {
                         if (assetResponse.FoundAsset)
                         {

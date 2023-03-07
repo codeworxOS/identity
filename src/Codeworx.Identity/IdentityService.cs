@@ -99,7 +99,7 @@ namespace Codeworx.Identity
         public async Task<ClaimsIdentity> LoginAsync(string username, string password)
         {
             var user = await _userService.GetUserByNameAsync(username);
-            if (user == null)
+            if (user == null || user.PasswordHash == null)
             {
                 await _loginDelayService.DelayAsync();
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);
