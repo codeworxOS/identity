@@ -32,7 +32,6 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
             if (Equals(responseData.ResponseMode, Constants.OpenId.ResponseMode.FormPost))
             {
                 response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
-                response.Headers.Add(HeaderNames.CacheControl, "no-store, must-revalidate, max-age=0");
 
                 if (headerOnly)
                 {

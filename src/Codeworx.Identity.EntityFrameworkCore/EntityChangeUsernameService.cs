@@ -34,7 +34,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             _options = options.Value;
         }
 
-        public async Task<IUser> ChangeUsernameAsync(IUser user, string username, CancellationToken token = default)
+        public async virtual Task<IUser> ChangeUsernameAsync(IUser user, string username, CancellationToken token = default)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {

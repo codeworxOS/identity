@@ -34,8 +34,50 @@ namespace Codeworx.Identity.Configuration
                 Password = 100,
             };
             Signing = new SigningOptions();
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css", Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css" };
-            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.0" };
+            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.0" };
+            Preloads = new Dictionary<string, PreloadOption>
+            {
+                {
+                    "fa-regular",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-regular-400.woff2", "font/woff2" },
+                        },
+                    }
+                },
+                {
+                    "fa-brands",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-brands-400.woff2", "font/woff2" },
+                        },
+                    }
+                },
+                {
+                    "fa-solid",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-solid-900.woff2", "font/woff2" },
+                        },
+                    }
+                },
+            };
             CompanyName = "Identity";
             Favicon = Constants.DefaultFavicon;
             MaxFailedLogins = null;
@@ -63,6 +105,8 @@ namespace Codeworx.Identity.Configuration
         public List<string> Styles { get; }
 
         public List<string> Scripts { get; }
+
+        public Dictionary<string, PreloadOption> Preloads { get; }
 
         public string CompanyName { get; set; }
 
@@ -98,6 +142,13 @@ namespace Codeworx.Identity.Configuration
             foreach (var item in this.Scripts)
             {
                 target.Scripts.Add(item);
+            }
+
+            target.Preloads.Clear();
+
+            foreach (var item in this.Preloads)
+            {
+                target.Preloads.Add(item.Key, item.Value.Clone());
             }
 
             target.MaxFailedLogins = this.MaxFailedLogins;

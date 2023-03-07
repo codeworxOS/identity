@@ -50,7 +50,11 @@ namespace Codeworx.Identity.Web.Test
             app.UseCodeworxIdentity();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.Map("bla/background.jpg", null);
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

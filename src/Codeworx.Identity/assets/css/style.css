@@ -3,18 +3,18 @@
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 400;
-    src: local(''), url('../webfonts/poppins-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-    url('../webfonts/poppins-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
-    url('../webfonts/poppins-v20-latin-regular.ttf') format('truetype') /* Safari, Android, iOS */
+    src: local(''), url('../webfonts/poppins-v20-latin-regular.woff2?v=1.0.0') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.woff?v=1.0.0') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.ttf?v=1.0.0') format('truetype') /* Safari, Android, iOS */
 }
 /* poppins-700 - latin */
 @font-face {
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 700;
-    src: local(''), url('../webfonts/poppins-v20-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
-    url('../webfonts/poppins-v20-latin-700.woff') format('woff'), /* Modern Browsers */
-    url('../webfonts/poppins-v20-latin-700.ttf') format('truetype') /* Safari, Android, iOS */
+    src: local(''), url('../webfonts/poppins-v20-latin-700.woff2?v=1.0.0') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.woff?v=1.0.0') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.ttf?v=1.0.0') format('truetype') /* Safari, Android, iOS */
 }
 
 :root {
@@ -38,7 +38,7 @@
 body {
     font-family: "Poppins", sans-serif;
     overflow: hidden;
-    background-image: url(../images/background.jpg);
+    background-image: url(../images/background.jpg?v=1.0.0);
     background-position-x: center;
     background-position-y: center;
     background-size: cover;
@@ -50,7 +50,7 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
-    background-image: url(../images/logo.png);
+    background-image: url(../images/logo.png?v=1.0.0);
     background-size: 50px 14px;
     background-position: right 15px bottom 10px;
     background-repeat: no-repeat;
@@ -164,21 +164,29 @@ body {
         .txt_field .toggle-pw:hover {
             color: var(--accent);
         }
-
+        s
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,
+    .txt_field input:-webkit-autofill ~ label,
+    .txt_field input:autofill ~ label,
     .txt_field select:focus ~ label,
     .txt_field select:valid ~ label,
-    .txt_field select:read-only ~ label {
+    .txt_field select:read-only ~ label,
+    .txt_field select:-webkit-autofill ~ label,
+    .txt_field select:autofill ~ label {
         top: -5px;
         font-size: 0.7rem;
     }
 
     .txt_field input:focus ~ .i,
     .txt_field input:valid ~ .i,
+    .txt_field input:-webkit-autofill ~ .i,
+    .txt_field input:autofill ~ .i,
     .txt_field select:focus ~ .i,
-    .txt_field select:valid ~ .i {
+    .txt_field select:valid ~ .i,
+    .txt_field select:-webkit-autofill ~ .i,
+    .txt_field select:autofill ~ .i {
         color: var(--accent);
     }
 
@@ -189,8 +197,12 @@ body {
 
     .txt_field input:focus ~ span::before,
     .txt_field input:valid ~ span::before,
+    .txt_field input:autofill ~ span::before,
+    .txt_field input:-webkit-autofill ~ span::before,
     .txt_field select:focus ~ span::before,
-    .txt_field select:valid ~ span::before {
+    .txt_field select:valid ~ span::before,
+    .txt_field select:autofill ~ span::before,
+    .txt_field select:-webkit-autofill ~ span::before {
         width: 100%;
     }
 
@@ -454,7 +466,7 @@ a {
 
 
 .fa-identity {
-    background-image: url(../images/identity-64.png);
+    background-image: url(../images/identity-64.png?v=1.0.0);
     background-size: 16px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -463,7 +475,7 @@ a {
 }
 
 .fa-activedirectory {
-    background-image: url(../images/windows-64.png);
+    background-image: url(../images/windows-64.png?v=1.0.0);
     background-size: 16px;
     background-origin: content-box;
     background-repeat: no-repeat;

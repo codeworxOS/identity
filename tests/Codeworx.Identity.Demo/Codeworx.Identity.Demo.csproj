@@ -1,19 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>10</LangVersion>
+		<UserSecretsId>c385c8ba-eed2-46c4-8e37-4b4bcab2f112</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="6.0.14" />
+		<PackageReference Include="IdentityModel.AspNetCore.OAuth2Introspection" Version="6.1.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="6.0.14" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore.Api.Nswag\Codeworx.Identity.EntityFrameworkCore.Api.Nswag.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj" />
+		<ProjectReference Include="..\Codeworx.Identity.Demo.Database\Codeworx.Identity.Demo.Database.csproj" />
 	</ItemGroup>
 </Project>
