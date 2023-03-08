@@ -118,9 +118,11 @@ namespace Codeworx.Identity.Cryptography.Internal
             switch (options.Source)
             {
                 case KeySource.TemporaryInMemory:
-                    _keyAlgorithm = ECDsa.Create(ECCurve.NamedCurves.nistP384);
-                    _key = CreateKeyFromAlgorithm(_keyAlgorithm);
-                    _hashAlgorithm = CreateHashAlgorithmFromKey(_key);
+                    var ecd = ECDsa.Create(ECCurve.NamedCurves.nistP384);
+                    _keyAlgorithm = ecd;
+                    var ecdKey = new ECDsaSecurityKey(ecd);
+                    _key = ecdKey;
+                    _hashAlgorithm = CreateHashAlgorithmFromKey(ecdKey);
                     break;
                 case KeySource.Store:
                     var cert = LoadCert(options);
@@ -138,7 +140,7 @@ namespace Codeworx.Identity.Cryptography.Internal
                     }
 
                     _key = CreateKeyFromAlgorithm(_keyAlgorithm);
-                    _hashAlgorithm = CreateHashAlgorithmFromCert(cert);
+                    _hashAlgorithm = CreateHashAlgorithmFromCert(cert, _key);
 
                     break;
                 default:
@@ -146,7 +148,7 @@ namespace Codeworx.Identity.Cryptography.Internal
             }
         }
 
-        private HashAlgorithm CreateHashAlgorithmFromKey(AsymmetricSecurityKey key)
+        private HashAlgorithm CreateHashAlgorithmFromKey(ECDsaSecurityKey key)
         {
             switch (key.KeySize)
             {
@@ -154,7 +156,7 @@ namespace Codeworx.Identity.Cryptography.Internal
                     return SHA256.Create();
                 case 384:
                     return SHA384.Create();
-                case 512:
+                case 521:
                     return SHA512.Create();
                 default:
                     break;
@@ -163,8 +165,13 @@ namespace Codeworx.Identity.Cryptography.Internal
             throw new NotSupportedException("Unsupported signing key.");
         }
 
-        private HashAlgorithm CreateHashAlgorithmFromCert(X509Certificate2 cert)
+        private HashAlgorithm CreateHashAlgorithmFromCert(X509Certificate2 cert, AsymmetricSecurityKey key)
         {
+            if (key is ECDsaSecurityKey ecd)
+            {
+                return CreateHashAlgorithmFromKey(ecd);
+            }
+
             switch (cert.SignatureAlgorithm.FriendlyName)
             {
                 case "sha256RSA":

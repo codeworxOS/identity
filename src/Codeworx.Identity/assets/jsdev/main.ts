@@ -96,9 +96,31 @@ function onKeyUp(event: KeyboardEvent): void {
     }
 }
 
-function showBusyIndicator() {
+function showBusyIndicator() : void{
     const indicators = document.querySelectorAll<HTMLInputElement>(".busy-indicator");
     indicators.forEach(p => p.classList.add('active'));
+}
+
+function changeButtonsState(disable: boolean) : void{
+    let items = document.getElementsByTagName('button');
+    for (let i = 0; i < items.length; i++) {
+        items.item(i).disabled = disable;
+    }
+}
+
+function setButtonToggleBox(id: string) : void{
+    changeButtonsState(true);
+    let checkBox = document.getElementById(id);
+    checkBox.addEventListener('change', p => {
+        var box = document.getElementById(id);
+        if(box instanceof HTMLInputElement){
+            if(box.checked){
+                changeButtonsState(false);
+            } else {
+                changeButtonsState(true);
+            }
+        }
+    });
 }
 
 window.addEventListener('beforeunload', p => showBusyIndicator());

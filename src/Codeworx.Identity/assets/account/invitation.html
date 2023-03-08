@@ -17,6 +17,11 @@
                 <h2 class="title">{{Translate 'AcceptInvitationPageTitle'}}</h2>
             </div>
             <div class="login-content">
+                {{#Terms}}
+                <label for="acceptTerms">
+                    {{#ShowCheckbox}}<input type="checkbox" id="acceptTerms" /> {{/ShowCheckbox}}{{{Text}}}
+                </label>
+                {{/Terms}}
                 {{#each Groups}}
                 {{> (RegistrationTemplate)}}
                 {{/each}}
@@ -32,5 +37,12 @@
         </div>
     </div>
     {{> Scripts}}
+    {{#Terms}}
+    {{#ShowCheckbox}}
+    <script>
+        setButtonToggleBox('acceptTerms');
+    </script>
+    {{/ShowCheckbox}}
+    {{/Terms}}
 </body>
 </html>

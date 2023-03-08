@@ -21,6 +21,7 @@
     --default-text: #333333;
     --default-light: #A1A5B7;
     --box-background: #ffffff;
+    --button-background: #ffffff;
     --shadow: #CCCCCC;
     --accent: #1A77B9;
     --accent-hover: #16487E;
@@ -44,6 +45,14 @@ body {
     background-size: cover;
     background-repeat: no-repeat;
     color: var(--default-text);
+}
+
+.block {
+    display: block;
+}
+
+.ta-right{
+    text-align: right;
 }
 
 .container {
@@ -164,7 +173,8 @@ body {
         .txt_field .toggle-pw:hover {
             color: var(--accent);
         }
-        s
+
+    s
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,
@@ -213,6 +223,8 @@ body {
 
 a.forgot-password,
 a.change-password-link {
+    text-align: right;
+    display:block;
     font-size: 0.8rem;
     padding-top: 10px;
 }
@@ -226,8 +238,6 @@ a.change-password-link {
     }
 
 a {
-    display: block;
-    text-align: right;
     text-decoration: none;
     color: var(--default-light);
     transition: 0.3s;
@@ -259,6 +269,13 @@ a {
     .btn:hover, .btn:focus {
         background: var(--accent-hover);
         box-shadow: 0 0 5px var(--shadow);
+    }
+
+    .btn:disabled,
+    .btn:disabled:hover {
+        background: var(--default-light);
+        cursor: not-allowed;
+        box-shadow: unset;
     }
 
 .separator {
@@ -352,7 +369,9 @@ a {
         }
 
     .external-button a.icon-button:focus,
-    .external-button a.icon-button:hover {
+    .external-button a.icon-button:hover,
+    .external-button button.icon-button:focus,
+    .external-button button.icon-button:hover {
         color: var(--accent-hover);
         border: var(--accent-hover);
         border-width: 1px;
@@ -360,9 +379,27 @@ a {
         box-shadow: 0 0 5px var(--shadow);
     }
 
-    .external-button a.icon-button {
+    .external-button a.icon-button,
+    .external-button button.icon-button {
         cursor: pointer;
     }
+
+    .external-button button.icon-button {
+        color: var(--accent);
+        width: 100%;
+        background-color: var(--button-background);
+        font-size: 1rem;
+        transition: 0.3s;
+    }
+
+        .external-button button.icon-button:disabled,
+        .external-button button.icon-button:disabled:hover {
+            color: var(--default-light);
+            cursor: not-allowed;
+            border-width: 1px;
+            border: 1px solid var(--default-light);
+            box-shadow: unset;
+        }
 
     .external-button .icon-button {
         display: flex;
@@ -492,6 +529,7 @@ a {
 }
 
     .mfa-provider-content .registration-url a {
+        display:block;
         font-size: 0.8rem;
     }
 

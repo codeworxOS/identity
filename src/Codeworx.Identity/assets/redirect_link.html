@@ -3,16 +3,19 @@
 </div>
 <div class="external-login-box">
     {{#Registrations}}
-    <div class="external-button">
-        <a class="icon-button" href="{{RedirectUri}}">
+    <form class="external-button" method="get" action="{{RedirectPath}}">
+        {{#RedirectParams}}
+        <input type="hidden" name="{{Name}}" value="{{Value}}" />
+        {{/RedirectParams}}
+        <button class="icon-button" type="submit">
             {{#CssClass}}
             <div class="i">
                 <i class="fa-brands {{.}}"></i>
             </div>
             {{/CssClass}}
             {{Name}}
-        </a>
-    </div>
+        </button>
+    </form>
     {{/Registrations}}
     {{#Registrations}}
     {{#Error}}

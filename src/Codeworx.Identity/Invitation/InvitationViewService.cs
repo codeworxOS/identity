@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Invitation
 {
@@ -15,6 +18,7 @@ namespace Codeworx.Identity.Invitation
         private readonly IUserService _userService;
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
+        private readonly IdentityOptions _identityOptions;
         private readonly IPasswordPolicyProvider _passwordPolicyProvider;
         private readonly ILoginPolicyProvider _loginPolicyProvider;
         private readonly IChangePasswordService _changePasswordService;
@@ -25,6 +29,7 @@ namespace Codeworx.Identity.Invitation
             IUserService userService,
             ILoginService loginService,
             IIdentityService identityService,
+            IOptionsSnapshot<IdentityOptions> identityOptions,
             IPasswordPolicyProvider passwordPolicyProvider,
             ILoginPolicyProvider loginPolicyProvider,
             IChangePasswordService changePasswordService,
@@ -37,6 +42,7 @@ namespace Codeworx.Identity.Invitation
             _userService = userService;
             _loginService = loginService;
             _identityService = identityService;
+            _identityOptions = identityOptions.Value;
             _passwordPolicyProvider = passwordPolicyProvider;
             _loginPolicyProvider = loginPolicyProvider;
             _changePasswordService = changePasswordService;
@@ -109,19 +115,19 @@ namespace Codeworx.Identity.Invitation
             catch (InvitationNotFoundException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationExpiredException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationAlreadyRedeemedException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (PasswordChangeException)
@@ -149,25 +155,60 @@ namespace Codeworx.Identity.Invitation
 
                 var registrationInfoResponse = await _loginService.GetRegistrationInfosAsync(providerRequest);
 
-                response = new InvitationViewResponse(registrationInfoResponse.Groups);
+                response = new InvitationViewResponse(registrationInfoResponse.Groups, GetTerms());
             }
             catch (InvitationNotFoundException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
             }
             catch (InvitationExpiredException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
             }
             catch (InvitationAlreadyRedeemedException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
             }
 
             return response;
+        }
+
+        private Terms GetTerms()
+        {
+            if (this._identityOptions.Terms != null)
+            {
+                switch (this._identityOptions.Terms.Mode)
+                {
+                    case TermsOption.TermsMode.Show:
+                        return new Terms(false, GetTermsText(this._identityOptions.Terms.Text));
+                    case TermsOption.TermsMode.Confirm:
+                        return new Terms(true, GetTermsText(this._identityOptions.Terms.Text));
+                    case TermsOption.TermsMode.None:
+                    default:
+                        return null;
+                }
+            }
+
+            return null;
+        }
+
+        private string GetTermsText(Dictionary<string, string> text)
+        {
+            var languageCode = _stringResources.GetResource(StringResource.LanguageCode);
+
+            if (text.TryGetValue(languageCode, out var translation))
+            {
+                return translation;
+            }
+            else if (text.TryGetValue("en", out var translationEn))
+            {
+                return translationEn;
+            }
+
+            throw new ArgumentException($"No terms text found for language {languageCode} or fallback language en.");
         }
     }
 }

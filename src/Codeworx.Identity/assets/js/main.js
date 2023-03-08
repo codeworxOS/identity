@@ -94,6 +94,27 @@ function showBusyIndicator() {
     var indicators = document.querySelectorAll(".busy-indicator");
     indicators.forEach(function (p) { return p.classList.add('active'); });
 }
+function changeButtonsState(disable) {
+    var items = document.getElementsByTagName('button');
+    for (var i = 0; i < items.length; i++) {
+        items.item(i).disabled = disable;
+    }
+}
+function setButtonToggleBox(id) {
+    changeButtonsState(true);
+    var checkBox = document.getElementById(id);
+    checkBox.addEventListener('change', function (p) {
+        var box = document.getElementById(id);
+        if (box instanceof HTMLInputElement) {
+            if (box.checked) {
+                changeButtonsState(false);
+            }
+            else {
+                changeButtonsState(true);
+            }
+        }
+    });
+}
 window.addEventListener('beforeunload', function (p) { return showBusyIndicator(); });
 inputs.forEach(function (input) {
     input.addEventListener('keyup', onKeyUp);
