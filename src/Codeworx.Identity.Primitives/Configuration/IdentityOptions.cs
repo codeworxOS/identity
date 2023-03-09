@@ -33,9 +33,13 @@ namespace Codeworx.Identity.Configuration
                 Login = 500,
                 Password = 100,
             };
+            Terms = new TermsOption
+            {
+                Mode = TermsOption.TermsMode.None,
+            };
             Signing = new SigningOptions();
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.0" };
-            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.0" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.2" };
+            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.2" };
             Preloads = new Dictionary<string, PreloadOption>
             {
                 {
@@ -100,6 +104,8 @@ namespace Codeworx.Identity.Configuration
 
         public MaxLengthOption MaxLength { get; set; }
 
+        public TermsOption Terms { get; set; }
+
         public SigningOptions Signing { get; set; }
 
         public List<string> Styles { get; }
@@ -126,6 +132,7 @@ namespace Codeworx.Identity.Configuration
             target.Password = this.Password != null ? new RegexPolicyOption(this.Password) : null;
             target.Login = this.Login != null ? new RegexPolicyOption(this.Login) : null;
             target.MaxLength = this.MaxLength != null ? new MaxLengthOption(this.MaxLength) : null;
+            target.Terms = this.Terms != null ? new TermsOption(this.Terms) : null;
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;
             target.Signing = new SigningOptions(this.Signing);

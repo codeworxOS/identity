@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Test.Provider;
@@ -53,7 +54,6 @@ namespace Codeworx.Identity.Web.Test
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.Map("bla/background.jpg", null);
             });
         }
 
@@ -87,6 +87,7 @@ namespace Codeworx.Identity.Web.Test
             services.AddRouting();
             services.AddControllers();
 
+            services.Configure<IdentityOptions>(this._configuration.GetSection("Identity"));
             services.Configure<SmtpOptions>(this._configuration.GetSection("Smtp"));
 
             services.AddCodeworxIdentity()

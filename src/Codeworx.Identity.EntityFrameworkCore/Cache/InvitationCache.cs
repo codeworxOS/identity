@@ -88,7 +88,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        public async Task<InvitationItem> GetAsync(string code)
+        public virtual async Task<InvitationItem> GetAsync(string code)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
