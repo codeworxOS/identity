@@ -24,7 +24,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             if (parameters.Scopes.Contains(Constants.Scopes.Groups) || parameters.Scopes.Contains(Constants.Scopes.GroupNames))
             {
                 var search = new List<Guid>();
-                search.Add(Guid.Parse(parameters.User.GetUserId()));
+                search.Add(Guid.Parse(parameters.IdentityUser.Identity));
 
                 var found = new HashSet<Guid>();
 

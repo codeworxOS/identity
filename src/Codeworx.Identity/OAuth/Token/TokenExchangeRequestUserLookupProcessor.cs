@@ -85,7 +85,7 @@ namespace Codeworx.Identity.OAuth.Token
                 }
             }
 
-            builder.WithUser(claimsIdentity);
+            builder.WithUser(claimsIdentity, user);
         }
     }
 }

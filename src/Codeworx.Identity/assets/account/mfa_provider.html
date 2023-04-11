@@ -22,7 +22,10 @@
                 {{/Info }}
                 <div class="different-provider-box">
                     <span>{{Translate 'DidNotReceiveCode'}}</span>
-                    <a class="block ta-right" href="{{ProviderSelectUrl}}">{{Translate 'MfaProviderSelectLink'}}</a>
+                    <div class="change-or-cancel-box">
+                        <a href="{{ProviderSelectUrl}}">{{Translate 'MfaProviderSelectLink'}}</a>
+                        <a href="{{CancelUrl}}">{{Translate 'MfaProviderCancel'}}</a>
+                    </div>
                 </div>
 
                 {{> progress}}

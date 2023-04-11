@@ -17,6 +17,8 @@ namespace Codeworx.Identity
 
         ClaimsIdentity User { get; }
 
+        IUser IdentityUser { get; }
+
         void Throw(string error, string errorDescription);
     }
 }

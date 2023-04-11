@@ -172,16 +172,28 @@ namespace Codeworx.Identity.Mfa.Mail
 
             var info = await GetRegistrationInfoAsync(providerRequest, registration).ConfigureAwait(false);
 
+            MfaLoginResponse registerResponse = GetMfaLoginResponse(process, info);
+            return registerResponse;
+        }
+
+        private MfaLoginResponse GetMfaLoginResponse(MailLoginRequest process, ILoginRegistrationInfo info)
+        {
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             uriBuilder.AppendPath("login/mfa");
 
+            var cancelUriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            cancelUriBuilder.AppendPath(_serverOptions.AccountEndpoint);
+            cancelUriBuilder.AppendPath("login");
+            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+
             if (!string.IsNullOrWhiteSpace(process.ReturnUrl))
             {
                 uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, process.ReturnUrl);
+                cancelUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, process.ReturnUrl);
             }
 
-            var registerResponse = new MfaLoginResponse(info, uriBuilder.ToString(), process.ReturnUrl);
+            var registerResponse = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUriBuilder.ToString(), process.ReturnUrl);
             return registerResponse;
         }
 
@@ -189,17 +201,7 @@ namespace Codeworx.Identity.Mfa.Mail
         {
             var response = new RegisterMailRegistrationInfo(registration.ProviderId, registration.EmailAddress, sessionId ?? registration.SessionId, error);
 
-            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
-            uriBuilder.AppendPath(_serverOptions.AccountEndpoint);
-            uriBuilder.AppendPath("login/mfa");
-
-            if (!string.IsNullOrWhiteSpace(registration.ReturnUrl))
-            {
-                uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, registration.ReturnUrl);
-            }
-
-            var registerResponse = new MfaLoginResponse(response, uriBuilder.ToString(), registration.ReturnUrl);
-            return registerResponse;
+            return GetMfaLoginResponse(registration, response);
         }
 
         private ClaimsIdentity GenerateMfaIdentity()

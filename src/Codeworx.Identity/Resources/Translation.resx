@@ -336,4 +336,7 @@
   <data name="EmailAddress" xml:space="preserve">
     <value>e-mail address</value>
   </data>
+  <data name="MfaProviderCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
 </root>

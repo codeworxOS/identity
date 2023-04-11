@@ -85,6 +85,15 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
+where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
+            return builder;
+        }
+
+        [Obsolete("Use WithRefreshTokenUser(ClaimsIdentity, IUser) instead", true)]
         public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
     where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
         {
@@ -92,10 +101,19 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        [Obsolete("Use WithTokenExchangeUser(ClaimsIdentity, IUser) instead", true)]
         public static TBuilder WithTokenExchangeUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
     where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
             builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
+        public static TBuilder WithTokenExchangeUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
+    where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
             return builder;
         }
 
@@ -141,10 +159,19 @@ namespace Codeworx.Identity
             return builder;
         }
 
+        [Obsolete("Use WithUser(ClaimsIdentity, IUser) instead", true)]
         public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
             where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
             builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
+        public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
+            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
             return builder;
         }
     }

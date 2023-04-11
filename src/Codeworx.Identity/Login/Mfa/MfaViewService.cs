@@ -9,11 +9,11 @@ namespace Codeworx.Identity.Login.Mfa
 {
     public class MfaViewService : IMfaViewService
     {
-        private readonly IUserService _userService;
-        private readonly ILoginService _loginService;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly ILoginService _loginService;
         private readonly IdentityServerOptions _options;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IUserService _userService;
 
         public MfaViewService(
             IUserService userService,
@@ -74,7 +74,9 @@ namespace Codeworx.Identity.Login.Mfa
                 uriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, request.ReturnUrl);
             }
 
-            var result = new MfaLoginResponse(info, uriBuilder.ToString(), request.ReturnUrl);
+            var cancelUrl = GetCancelUrl(request.ReturnUrl);
+
+            var result = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUrl, request.ReturnUrl);
 
             return result;
         }
@@ -89,13 +91,28 @@ namespace Codeworx.Identity.Login.Mfa
             }
 
             var hasMfaClaim = request.Identity.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
-
             var userSession = request.Identity.FindFirst(Constants.Claims.Session)?.Value ?? user.Identity;
-
             var providerRequest = new ProviderRequest(ProviderRequestType.MfaList, request.HeaderOnly, request.ReturnUrl, user: user, isMfaAuthenticated: hasMfaClaim, userSession: userSession);
 
+            var cancelUrl = GetCancelUrl(request.ReturnUrl);
+
             var response = await _loginService.GetRegistrationInfosAsync(providerRequest).ConfigureAwait(false);
-            return new MfaProviderListResponse(user, response.Groups);
+            return new MfaProviderListResponse(user, response.Groups, cancelUrl);
+        }
+
+        private string GetCancelUrl(string returnUrl)
+        {
+            var cancelUriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            cancelUriBuilder.AppendPath(_options.AccountEndpoint);
+            cancelUriBuilder.AppendPath("login");
+            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+
+            if (!string.IsNullOrWhiteSpace(returnUrl))
+            {
+                cancelUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, returnUrl);
+            }
+
+            return cancelUriBuilder.ToString();
         }
     }
 }

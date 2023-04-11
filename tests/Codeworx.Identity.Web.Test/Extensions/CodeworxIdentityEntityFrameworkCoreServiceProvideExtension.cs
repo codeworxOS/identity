@@ -129,7 +129,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.Groups.Add(new Group
                         {
                             Id = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
-                            Name = "Admin",
+                            Name = "Admins",
                         });
                     }
 
@@ -313,6 +313,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }
 
+                    
                     context.SaveChanges();
                 }
             }

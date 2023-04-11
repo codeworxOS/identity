@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Configuration
                 Mode = TermsOption.TermsMode.None,
             };
             Signing = new SigningOptions();
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.2" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.3" };
             Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.2" };
             Preloads = new Dictionary<string, PreloadOption>
             {

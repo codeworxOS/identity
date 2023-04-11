@@ -336,4 +336,7 @@
   <data name="MfaListRegisterTotp" xml:space="preserve">
     <value>Registrierung mittels Authenicator App.</value>
   </data>
+  <data name="MfaProviderCancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
 </root>

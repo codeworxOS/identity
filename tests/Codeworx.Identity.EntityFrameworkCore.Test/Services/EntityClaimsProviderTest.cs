@@ -67,7 +67,7 @@ namespace Codeworx.Identity.Test.Services
                 var u = await userService.GetUserByIdAsync(user.Id.ToString("N"));
                 var identity = GetClaimsIdentityFromUser(u);
 
-                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity);
+                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity, u);
                 builder
                     .WithScopes("openid", "testscope");
 
@@ -114,7 +114,7 @@ namespace Codeworx.Identity.Test.Services
                 var u = await userService.GetUserByIdAsync(user.Id.ToString("N"));
                 var identity = GetClaimsIdentityFromUser(u);
 
-                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity);
+                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity, u);
                 builder
                     .WithScopes("openid", "testscope");
 
@@ -166,7 +166,7 @@ namespace Codeworx.Identity.Test.Services
                 var u = await userService.GetUserByIdAsync(user.Id.ToString("N"));
                 var identity = GetClaimsIdentityFromUser(u);
 
-                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity);
+                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity, u);
                 builder
                     .WithScopes("openid", "testscope", "tenant", tenant.Id.ToString("N"));
 
@@ -221,7 +221,7 @@ namespace Codeworx.Identity.Test.Services
                 var u = await userService.GetUserByIdAsync(user.Id.ToString("N"));
                 var identity = GetClaimsIdentityFromUser(u);
 
-                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity);
+                IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, identity, u);
                 builder
                     .WithScopes("openid", "testscope", "tenant", tenant.Id.ToString("N"));
 

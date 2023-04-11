@@ -385,6 +385,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string MfaProviderCancel {
+            get {
+                return ResourceManager.GetString("MfaProviderCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Validate your identity.
         /// </summary>
         internal static string MfaProviderListPageTitle {

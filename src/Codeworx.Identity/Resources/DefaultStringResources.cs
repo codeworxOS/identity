@@ -152,6 +152,8 @@
                     return Translation.MfaListRegisterTotp;
                 case StringResource.EmailAddress:
                     return Translation.EmailAddress;
+                case StringResource.MfaProviderCancel:
+                    return Translation.MfaProviderCancel;
                 default:
                     throw new MissingResourceException(resource);
             }

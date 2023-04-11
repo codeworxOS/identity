@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Test
 
         public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
         {
-            var tenants = GetTenants(request.User.GetUserId());
+            var tenants = GetTenants(request.IdentityUser.Identity);
             return Task.FromResult(tenants);
         }
 

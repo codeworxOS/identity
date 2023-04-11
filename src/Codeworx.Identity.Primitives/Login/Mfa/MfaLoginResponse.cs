@@ -8,16 +8,20 @@ namespace Codeworx.Identity.Login.Mfa
         public MfaLoginResponse(
             ILoginRegistrationInfo info,
             string providerSelectUrl,
-            string returnUrl = null)
+            string cancelUrl,
+            string returnUrl)
         {
             Info = info;
             ProviderSelectUrl = providerSelectUrl;
             ReturnUrl = returnUrl;
+            CancelUrl = cancelUrl;
         }
 
         public ILoginRegistrationInfo Info { get; }
 
         public string ProviderSelectUrl { get; }
+
+        public string CancelUrl { get; }
 
         public string ReturnUrl { get; }
 
@@ -26,6 +30,7 @@ namespace Codeworx.Identity.Login.Mfa
             target.Add(nameof(ReturnUrl), ReturnUrl);
             target.Add(nameof(Info), Info);
             target.Add(nameof(ProviderSelectUrl), ProviderSelectUrl);
+            target.Add(nameof(CancelUrl), CancelUrl);
         }
     }
 }

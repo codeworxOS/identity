@@ -33,6 +33,31 @@ namespace Codeworx.Identity.OAuth.Token
             _validFrom = DateTimeOffset.UtcNow;
         }
 
+        public TokenExchangeParameters(
+            IClientRegistration client,
+            string[] scopes,
+            ClaimsIdentity user,
+            IUser identityUser,
+            string audience,
+            string subjectToken,
+            string subjectTokenType,
+            string actorToken,
+            string actorTokenType,
+            string[] requestedTokenTypes)
+        {
+            Client = client;
+            Scopes = scopes?.ToImmutableList() ?? ImmutableList<string>.Empty;
+            User = user;
+            IdentityUser = identityUser;
+            Audience = audience;
+            SubjectToken = subjectToken;
+            SubjectTokenType = subjectTokenType;
+            ActorToken = actorToken;
+            ActorTokenType = actorTokenType;
+            RequestedTokenTypes = requestedTokenTypes?.ToImmutableList() ?? ImmutableList<string>.Empty;
+            _validFrom = DateTimeOffset.UtcNow;
+        }
+
         public string ActorToken { get; }
 
         public string ActorTokenType { get; }
@@ -56,6 +81,8 @@ namespace Codeworx.Identity.OAuth.Token
         public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
 
         public ClaimsIdentity User { get; }
+
+        public IUser IdentityUser { get; }
 
         public void Throw(string error, string errorDescription)
         {
