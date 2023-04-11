@@ -14,29 +14,6 @@ namespace Codeworx.Identity.OAuth.Token
             IClientRegistration client,
             string[] scopes,
             ClaimsIdentity user,
-            string audience,
-            string subjectToken,
-            string subjectTokenType,
-            string actorToken,
-            string actorTokenType,
-            string[] requestedTokenTypes)
-        {
-            Client = client;
-            Scopes = scopes?.ToImmutableList() ?? ImmutableList<string>.Empty;
-            User = user;
-            Audience = audience;
-            SubjectToken = subjectToken;
-            SubjectTokenType = subjectTokenType;
-            ActorToken = actorToken;
-            ActorTokenType = actorTokenType;
-            RequestedTokenTypes = requestedTokenTypes?.ToImmutableList() ?? ImmutableList<string>.Empty;
-            _validFrom = DateTimeOffset.UtcNow;
-        }
-
-        public TokenExchangeParameters(
-            IClientRegistration client,
-            string[] scopes,
-            ClaimsIdentity user,
             IUser identityUser,
             string audience,
             string subjectToken,

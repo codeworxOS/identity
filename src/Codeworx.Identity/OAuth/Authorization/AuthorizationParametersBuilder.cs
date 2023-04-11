@@ -18,16 +18,6 @@ namespace Codeworx.Identity.OAuth.Authorization
         private string _state;
         private string[] _prompts;
 
-        [Obsolete("Do not use!", false)]
-        public AuthorizationParametersBuilder(AuthorizationRequest request, ClaimsIdentity user)
-        {
-            _user = user;
-            _request = request ?? throw new System.ArgumentNullException(nameof(request));
-            _scopes = new string[] { };
-            _responseTypes = new string[] { };
-            _prompts = new string[] { };
-        }
-
         public AuthorizationParametersBuilder(AuthorizationRequest request, ClaimsIdentity user, IUser idenitityUser)
         {
             _user = user;

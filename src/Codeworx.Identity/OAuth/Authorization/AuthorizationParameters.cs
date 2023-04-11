@@ -11,32 +11,6 @@ namespace Codeworx.Identity.OAuth.Authorization
     {
         private readonly DateTimeOffset _validFrom;
 
-        [Obsolete("Do not use!", true)]
-        public AuthorizationParameters(
-                    IClientRegistration client,
-                    string nonce,
-                    string redirectUri,
-                    string responseMode,
-                    IReadOnlyCollection<string> responseTypes,
-                    IReadOnlyCollection<string> scopes,
-                    IReadOnlyCollection<string> prompts,
-                    string state,
-                    ClaimsIdentity user,
-                    AuthorizationRequest request)
-        {
-            Client = client;
-            Nonce = nonce;
-            RedirectUri = redirectUri;
-            ResponseMode = responseMode;
-            ResponseTypes = ImmutableArray.CreateRange(responseTypes);
-            Scopes = ImmutableArray.CreateRange(scopes);
-            Prompts = ImmutableArray.CreateRange(prompts);
-            State = state;
-            User = user;
-            Request = request;
-            _validFrom = DateTimeOffset.UtcNow;
-        }
-
         public AuthorizationParameters(
             IClientRegistration client,
             string nonce,

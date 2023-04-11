@@ -10,16 +10,6 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly DateTimeOffset _validFrom;
 
-        [Obsolete("Do not use!", true)]
-        public ClientCredentialsParameters(IClientRegistration client, string[] scopes, ClaimsIdentity user)
-        {
-            Client = client;
-            Scopes = scopes.ToImmutableList();
-            User = user;
-
-            _validFrom = DateTimeOffset.UtcNow;
-        }
-
         public ClientCredentialsParameters(IClientRegistration client, string[] scopes, ClaimsIdentity user, IUser identityUser)
         {
             Client = client;

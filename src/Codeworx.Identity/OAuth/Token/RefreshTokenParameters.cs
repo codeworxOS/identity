@@ -11,17 +11,6 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly DateTimeOffset _validFrom;
 
-        [Obsolete("Do not use!", true)]
-        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IToken parsedRefreshToken)
-        {
-            Client = client;
-            Scopes = scopes.ToImmutableList();
-            User = user;
-            RefreshToken = refreshToken;
-            ParsedRefreshToken = parsedRefreshToken;
-            _validFrom = DateTimeOffset.UtcNow;
-        }
-
         public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IUser identityUser, IToken parsedRefreshToken)
         {
             Client = client;

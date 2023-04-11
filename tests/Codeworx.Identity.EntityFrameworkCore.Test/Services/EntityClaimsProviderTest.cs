@@ -25,6 +25,7 @@ namespace Codeworx.Identity.Test.Services
 
             var databaseId = Guid.NewGuid().ToString("N");
 
+            service.AddRequestEntityCache();
             service.AddScoped<IClaimsProvider, EntityClaimsProvider<CodeworxIdentityDbContext>>();
             service.AddScoped<IUserService, EntityUserService<CodeworxIdentityDbContext>>();
             service.AddScoped<ITenantService, EntityTenantService<CodeworxIdentityDbContext>>();
