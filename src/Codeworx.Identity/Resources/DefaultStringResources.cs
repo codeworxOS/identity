@@ -154,6 +154,8 @@
                     return Translation.EmailAddress;
                 case StringResource.MfaProviderCancel:
                     return Translation.MfaProviderCancel;
+                case StringResource.ConfirmationBack:
+                    return Translation.ConfirmationBack;
                 default:
                     throw new MissingResourceException(resource);
             }

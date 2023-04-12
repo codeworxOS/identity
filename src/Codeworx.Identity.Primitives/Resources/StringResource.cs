@@ -76,5 +76,6 @@
         MfaListRegisterTotp,
         EmailAddress,
         MfaProviderCancel,
+        ConfirmationBack,
     }
 }

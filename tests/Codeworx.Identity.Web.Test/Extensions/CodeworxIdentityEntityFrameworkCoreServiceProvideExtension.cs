@@ -27,7 +27,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 {
                     var hashingProvider = services.GetRequiredService<IHashingProvider>();
 
-                    context.Database.Migrate();
+                    if (context.Database.ProviderName == "Microsoft.EntityFrameworkCore.Cosmos")
+                    {
+                        context.Database.EnsureCreated();
+                    }
+                    else
+                    {
+                        context.Database.Migrate();
+                    }
 
                     var serviceAccount = context.Users.FirstOrDefault(p => p.Id == Guid.Parse(TestConstants.Users.DefaultServiceAccount.UserId));
 
@@ -142,7 +149,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                             Id = Guid.Parse(TestConstants.Clients.DefaultBackendClientId),
                             ClientSecretHash = hashingProvider.Create(TestConstants.Clients.DefaultBackendClientSecret),
                             TokenExpiration = TimeSpan.FromHours(1),
-                            ClientType = Identity.Model.ClientType.Backend,                            
+                            ClientType = Identity.Model.ClientType.Backend,
                         });
                     }
 
@@ -313,7 +320,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }
 
-                    
+
                     context.SaveChanges();
                 }
             }

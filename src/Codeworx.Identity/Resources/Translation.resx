@@ -339,4 +339,7 @@
   <data name="MfaProviderCancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="ConfirmationBack" xml:space="preserve">
+    <value>Back</value>
+  </data>
 </root>

@@ -48,7 +48,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
                     returnUrl = builder.ToString();
                 }
-                else if (identity.HasClaim(Constants.Claims.ForceMfaLogin, "true") && responseData.Mfa == null)
+                else if (identity.HasClaim(Constants.Claims.ForceMfaLogin, "true") && responseData.Mfa == null && !identity.HasClaim(Constants.Claims.ConfirmationPending, "true"))
                 {
                     var user = await _userService.GetUserByIdentityAsync(identity).ConfigureAwait(false);
 

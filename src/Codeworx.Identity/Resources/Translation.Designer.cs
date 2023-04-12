@@ -97,6 +97,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        internal static string ConfirmationBack {
+            get {
+                return ResourceManager.GetString("ConfirmationBack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided confirmation code is invalid..
         /// </summary>
         internal static string ConfirmationCodeInvalid {
