@@ -30,6 +30,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
         {
             string returnUrl = null;
             string providerId = null;
+            bool noNav = false;
 
             PathString basePath = $"{_options.AccountEndpoint}/login/mfa";
 
@@ -43,6 +44,14 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
                 returnUrl = returnUrlValues.First();
             }
 
+            if (request.Query.TryGetValue(Constants.NoNavParameter, out var noNavValues))
+            {
+                if (bool.TryParse(noNavValues, out var noNavParsed))
+                {
+                    noNav = noNavParsed;
+                }
+            }
+
             var authenticateResult = await _handler.AuthenticateAsync(request.HttpContext);
 
             if (!authenticateResult.Succeeded)
@@ -54,7 +63,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
 
             if (HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
             {
-                return new MfaLoginRequest(identity, HttpMethods.IsHead(request.Method), providerId, returnUrl);
+                return new MfaLoginRequest(identity, HttpMethods.IsHead(request.Method), providerId, returnUrl, noNav);
             }
             else if (HttpMethods.IsPost(request.Method))
             {
@@ -73,7 +82,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa
                     var factory = LoginParameterTypeFactory.GetFactory(parameterType);
 
                     var parameter = await factory(_serviceProvider, request).ConfigureAwait(false);
-                    return new MfaProcessLoginRequest(providerId, parameter, identity, false, returnUrl);
+                    return new MfaProcessLoginRequest(providerId, parameter, identity, false, returnUrl, noNav);
                 }
 
                 throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

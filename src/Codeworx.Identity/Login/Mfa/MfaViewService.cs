@@ -76,7 +76,7 @@ namespace Codeworx.Identity.Login.Mfa
 
             var cancelUrl = GetCancelUrl(request.ReturnUrl);
 
-            var result = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUrl, request.ReturnUrl);
+            var result = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUrl, request.ReturnUrl, request.NoNav);
 
             return result;
         }
@@ -105,7 +105,7 @@ namespace Codeworx.Identity.Login.Mfa
             var cancelUriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             cancelUriBuilder.AppendPath(_options.AccountEndpoint);
             cancelUriBuilder.AppendPath("login");
-            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.SelectAccount);
 
             if (!string.IsNullOrWhiteSpace(returnUrl))
             {

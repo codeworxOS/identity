@@ -185,7 +185,7 @@ namespace Codeworx.Identity.Mfa.Mail
             var cancelUriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             cancelUriBuilder.AppendPath(_serverOptions.AccountEndpoint);
             cancelUriBuilder.AppendPath("login");
-            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+            cancelUriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.SelectAccount);
 
             if (!string.IsNullOrWhiteSpace(process.ReturnUrl))
             {
@@ -193,7 +193,7 @@ namespace Codeworx.Identity.Mfa.Mail
                 cancelUriBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, process.ReturnUrl);
             }
 
-            var registerResponse = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUriBuilder.ToString(), process.ReturnUrl);
+            var registerResponse = new MfaLoginResponse(info, uriBuilder.ToString(), cancelUriBuilder.ToString(), process.ReturnUrl, process.NoNav);
             return registerResponse;
         }
 

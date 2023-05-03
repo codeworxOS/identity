@@ -9,6 +9,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         public CodeworxIdentityDbContext(DbContextOptions<CodeworxIdentityDbContext> options)
             : base(options)
         {
+            this.Database.AutoSavepointsEnabled = true;
         }
 
         protected CodeworxIdentityDbContext(DbContextOptions options)

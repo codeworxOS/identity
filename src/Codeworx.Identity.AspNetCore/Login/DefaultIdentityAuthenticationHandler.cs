@@ -45,7 +45,7 @@ namespace Codeworx.Identity.AspNetCore.Login
                         var uriBuilder = new UriBuilder(baseAccessor.BaseUri);
                         uriBuilder.AppendPath(_options.AccountEndpoint);
                         uriBuilder.AppendPath("login");
-                        uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+                        uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.SelectAccount);
 
                         if (context.Request.Query.TryGetValue(Constants.ReturnUrlParameter, out var values))
                         {

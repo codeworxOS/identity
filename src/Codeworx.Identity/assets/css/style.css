@@ -174,7 +174,6 @@ body {
             color: var(--accent);
         }
 
-    s
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,

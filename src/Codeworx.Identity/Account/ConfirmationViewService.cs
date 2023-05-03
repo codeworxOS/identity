@@ -54,7 +54,7 @@ namespace Codeworx.Identity.Account
             var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
             uriBuilder.AppendPath(_options.AccountEndpoint);
             uriBuilder.AppendPath("login");
-            uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.Login);
+            uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.SelectAccount);
 
             var response = new ConfirmationResponse(user, identity, uriBuilder.ToString(), message, error, request.RememberMe);
 

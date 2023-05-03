@@ -20,6 +20,7 @@
                 {{#Info }}
                 {{> (RegistrationTemplate)}}
                 {{/Info }}
+                {{^NoNav}}
                 <div class="different-provider-box">
                     <span>{{Translate 'DidNotReceiveCode'}}</span>
                     <div class="change-or-cancel-box">
@@ -27,6 +28,7 @@
                         <a href="{{CancelUrl}}">{{Translate 'MfaProviderCancel'}}</a>
                     </div>
                 </div>
+                {{/NoNav}}
 
                 {{> progress}}
             </div>

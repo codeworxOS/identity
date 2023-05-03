@@ -4,8 +4,8 @@ namespace Codeworx.Identity.Mfa.Mail
 {
     public class RegisterMailLoginRequest : MailLoginRequest
     {
-        public RegisterMailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl, string emailAddress, string sessionId, string code, bool rememberMe)
-            : base(providerId, identity, returnUrl, rememberMe)
+        public RegisterMailLoginRequest(string providerId, ClaimsIdentity identity, string returnUrl, string emailAddress, string sessionId, string code, bool rememberMe, bool noNav)
+            : base(providerId, identity, returnUrl, rememberMe, noNav)
         {
             EmailAddress = emailAddress;
             SessionId = sessionId;
