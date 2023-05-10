@@ -6,6 +6,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 {
     public class RightHolderEntityTypeConfiguration : IEntityTypeConfiguration<RightHolder>
     {
+        public RightHolderEntityTypeConfiguration(string providerName)
+        {
+            ProviderName = providerName;
+        }
+
+        public string ProviderName { get; }
+
         public void Configure(EntityTypeBuilder<RightHolder> builder)
         {
             builder.ToTable("RightHolder");
@@ -21,9 +28,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
             builder.Property<byte>("Type")
                     .IsRequired(true);
 
-            builder.HasDiscriminator<byte>("Type")
-                   .HasValue<User>(1)
-                   .HasValue<Group>(2);
+            if (ProviderName != "Microsoft.EntityFrameworkCore.Cosmos")
+            {
+                builder.HasDiscriminator<byte>("Type")
+                       .HasValue<User>(1)
+                       .HasValue<Group>(2);
+            }
         }
     }
 }

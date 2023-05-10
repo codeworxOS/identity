@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using Codeworx.Identity.Configuration;
 using HandlebarsDotNet;
@@ -11,10 +13,19 @@ namespace Codeworx.Identity.AspNetCore
 {
     public class MustacheTemplateCompiler : ITemplateCompiler, IDisposable
     {
-        private readonly IDisposable _subscription;
+        private static readonly string _defaultVersion;
+
         private readonly IHandlebars _handlebars;
+        private readonly IDisposable _subscription;
         private bool _disposedValue = false;
         private IdentityOptions _options;
+
+        static MustacheTemplateCompiler()
+        {
+            var versionInfo = FileVersionInfo.GetVersionInfo(typeof(IdentityService).Assembly.Location).FileVersion;
+
+            _defaultVersion = versionInfo;
+        }
 
         public MustacheTemplateCompiler(IOptionsMonitor<IdentityOptions> optionsMonitor, IEnumerable<IPartialTemplate> partialTemplates, IEnumerable<ITemplateHelper> helpers)
         {
@@ -22,7 +33,7 @@ namespace Codeworx.Identity.AspNetCore
             _subscription = optionsMonitor.OnChange(p => _options = p);
             _handlebars = Handlebars.Create();
             _handlebars.RegisterTemplate("Favicon", GetFavicon(_options.Favicon));
-            _handlebars.RegisterTemplate("Styles", GetStyles(_options.Styles));
+            _handlebars.RegisterTemplate("Styles", GetStyles(_options.Preloads, _options.Styles));
             _handlebars.RegisterTemplate("Scripts", GetScripts(_options.Scripts));
 
             foreach (var helper in helpers)
@@ -36,16 +47,16 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
         public Func<object, string> Compile(string template)
         {
             var compiledTemplate = _handlebars.Compile(template);
 
             return p => compiledTemplate(p);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -61,14 +72,23 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        private static string GetStyles(IEnumerable<string> styles)
+        private static string ComposeUrl(string url, string version)
         {
-            if (styles == null)
+            if (version != null)
             {
-                return string.Empty;
+                version = version.Replace("{version}", _defaultVersion);
+
+                var appendChar = url.Contains("?") ? "&" : "?";
+
+                return $"{url}{appendChar}v={version}";
             }
 
-            return string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+            return url;
+        }
+
+        private static string GetFavicon(string favicon)
+        {
+            return $"<link rel=\"icon\" href=\"{favicon}\">";
         }
 
         private static string GetScripts(IEnumerable<string> scripts)
@@ -81,9 +101,26 @@ namespace Codeworx.Identity.AspNetCore
             return string.Join("\r\n", scripts.Select(p => $"<script type=\"text/javascript\" src=\"{p}\" ></script>"));
         }
 
-        private static string GetFavicon(string favicon)
+        private static string GetStyles(IDictionary<string, PreloadOption> preloads, IEnumerable<string> styles)
         {
-            return $"<link rel=\"icon\" href=\"{favicon}\">";
+            string result = string.Empty;
+
+            if (preloads != null && preloads.Where(p => p.Value.Enable).Any())
+            {
+                var preloadItems = from p in preloads
+                                   from f in p.Value.Files
+                                   where p.Value.Enable
+                                   select $"<link rel=\"preload\" href=\"{ComposeUrl(f.Key, p.Value.Version)}\" as=\"{p.Value.Type.ToString().ToLower()}\" type=\"{f.Value}\" crossorigin=\"anonymous\" fetchpriority=\"high\">";
+
+                result = string.Join("\r\n", preloadItems) + "\r\n";
+            }
+
+            if (styles != null && styles.Any())
+            {
+                result += string.Join("\r\n", styles.Select(p => $"<link type=\"text/css\" rel=\"stylesheet\" href=\"{p}\" >"));
+            }
+
+            return result;
         }
 
         private class HelperDescriptor : IHelperDescriptor<HelperOptions>
@@ -110,12 +147,4 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
     }
-
-    ////private void GetStyles(TextWriter writer, object data)
-    ////{
-    ////    foreach (var item in _options.Styles)
-    ////    {
-    ////        writer.WriteLine($"<link type=\"text/css\" rel=\"stylesheet\" href=\"{item}\" >");
-    ////    }
-    ////}
 }

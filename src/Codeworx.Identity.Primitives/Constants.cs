@@ -22,6 +22,7 @@
         public const string Localhost = "localhost";
         public const string LoginProviderErrorParameter = "login_provider_error";
         public const string LoginProviderIdParameter = "login_provider_id";
+        public const string NoNavParameter = "no_nav";
         public const string InvalidReturnUrlError = "invalid_return_url";
 
         public const string ReturnUrlParameter = "returnurl";

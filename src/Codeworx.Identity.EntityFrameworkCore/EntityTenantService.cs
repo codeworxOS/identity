@@ -11,31 +11,36 @@ namespace Codeworx.Identity.EntityFrameworkCore
         where TContext : DbContext
     {
         private readonly TContext _context;
+        private readonly IRequestEntityCache _cache;
 
-        public EntityTenantService(TContext context)
+        public EntityTenantService(TContext context, IRequestEntityCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         public async Task<IEnumerable<TenantInfo>> GetTenantsAsync()
         {
-            var tenantSet = _context.Set<Tenant>();
+            return await _cache.GetTenantInfos(async () =>
+            {
+                var tenantSet = _context.Set<Tenant>();
 
-            var tenants = await tenantSet
-                    .Select(p => new TenantInfo
-                    {
-                        Key = p.Id.ToString("N"),
-                        Name = p.Name,
-                        AuthenticationMode = p.AuthenticationMode,
-                    })
-                    .ToListAsync();
+                var tenants = await tenantSet
+                        .Select(p => new TenantInfo
+                        {
+                            Key = p.Id.ToString("N"),
+                            Name = p.Name,
+                            AuthenticationMode = p.AuthenticationMode,
+                        })
+                        .ToListAsync();
 
-            return tenants;
+                return tenants;
+            });
         }
 
-        public Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
+        public async Task<IEnumerable<TenantInfo>> GetTenantsByIdentityAsync(IIdentityDataParameters request)
         {
-            return this.GetTenantInfo(Guid.Parse(request.User.GetUserId()));
+            return await _cache.GetTenantInfos(Guid.Parse(request.IdentityUser.Identity), GetTenantInfo);
         }
 
         private async Task<IEnumerable<TenantInfo>> GetTenantInfo(Guid identifier)

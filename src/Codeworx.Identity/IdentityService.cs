@@ -61,7 +61,7 @@ namespace Codeworx.Identity
                 throw new System.ArgumentNullException(nameof(identityDataParameters));
             }
 
-            var currentUser = await _userService.GetUserByIdentityAsync(identityDataParameters.User);
+            var currentUser = identityDataParameters.IdentityUser;
 
             if (currentUser == null)
             {
@@ -99,7 +99,7 @@ namespace Codeworx.Identity
         public async Task<ClaimsIdentity> LoginAsync(string username, string password)
         {
             var user = await _userService.GetUserByNameAsync(username);
-            if (user == null)
+            if (user == null || user.PasswordHash == null)
             {
                 await _loginDelayService.DelayAsync();
                 var message = _stringResources.GetResource(StringResource.DefaultAuthenticationError);

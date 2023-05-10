@@ -8,6 +8,6 @@ namespace Codeworx.Identity
     {
         IEnumerable<string> Prefixes { get; }
 
-        Task<AssetResponse> GetAssetAsync(string prefix, string path);
+        Task<AssetResponse> GetAssetAsync(string prefix, string path, string matchHeader);
     }
 }

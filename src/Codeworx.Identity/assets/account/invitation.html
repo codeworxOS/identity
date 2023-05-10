@@ -27,10 +27,23 @@
                 </div>
                 {{/HasError}}
 
+                {{#Terms}}
+                <label for="acceptTerms">
+                    {{#ShowCheckbox}}<input type="checkbox" id="acceptTerms" /> {{/ShowCheckbox}}{{{Text}}}
+                </label>
+                {{/Terms}}
+
                 {{> progress}}
             </div>
         </div>
     </div>
     {{> Scripts}}
+    {{#Terms}}
+    {{#ShowCheckbox}}
+    <script>
+        setButtonToggleBox('acceptTerms');
+    </script>
+    {{/ShowCheckbox}}
+    {{/Terms}}
 </body>
 </html>

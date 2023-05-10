@@ -2,6 +2,7 @@
 using Codeworx.Identity.ContentType;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace Codeworx.Identity.AspNetCore.Binder
 {
@@ -19,6 +20,14 @@ namespace Codeworx.Identity.AspNetCore.Binder
             if (_contentTypeLookup.TryGetContentType(responseData.Path, out var contentType))
             {
                 response.ContentType = contentType;
+            }
+
+            if (response.HttpContext.Request.Query.ContainsKey("v"))
+            {
+                var cacheControl = new CacheControlHeaderValue();
+                cacheControl.MaxAge = System.TimeSpan.FromDays(365);
+                cacheControl.Extensions.Add(new NameValueHeaderValue("immutable"));
+                response.GetTypedHeaders().CacheControl = cacheControl;
             }
 
             response.StatusCode = StatusCodes.Status200OK;

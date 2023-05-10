@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.Test.Provider;
@@ -50,7 +51,10 @@ namespace Codeworx.Identity.Web.Test
             app.UseCodeworxIdentity();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -83,6 +87,7 @@ namespace Codeworx.Identity.Web.Test
             services.AddRouting();
             services.AddControllers();
 
+            services.Configure<IdentityOptions>(this._configuration.GetSection("Identity"));
             services.Configure<SmtpOptions>(this._configuration.GetSection("Smtp"));
 
             services.AddCodeworxIdentity()
@@ -93,8 +98,8 @@ namespace Codeworx.Identity.Web.Test
                     .AddSmtpMailConnector()
                     .AddMfaTotp()
                     .WithLoginAsEmail()
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
-            //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+                    //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
+                    .UseDbContext(options => options.UseSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
             //.UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();

@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Cryptography.Internal
         {
             if (key is ECDsaSecurityKey ecdKey)
             {
-                return $"ES{ecdKey.KeySize}";
+                return $"ES{hashAlgorithm.HashSize}";
             }
 
             throw new NotSupportedException("Key type not supported!");

@@ -35,7 +35,7 @@ namespace Codeworx.Identity.OAuth.Token
                 identity.AddClaim(new System.Security.Claims.Claim(Constants.Claims.Amr, item));
             }
 
-            builder.WithRefreshTokenUser(identity);
+            builder.WithRefreshTokenUser(identity, user);
         }
     }
 }

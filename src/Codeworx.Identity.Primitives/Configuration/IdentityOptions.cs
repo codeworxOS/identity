@@ -33,15 +33,62 @@ namespace Codeworx.Identity.Configuration
                 Login = 500,
                 Password = 100,
             };
+            Terms = new TermsOption
+            {
+                Mode = TermsOption.TermsMode.None,
+            };
             Signing = new SigningOptions();
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/style.css", Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css" };
-            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.4" };
+            Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.2" };
+            Preloads = new Dictionary<string, PreloadOption>
+            {
+                {
+                    "fa-regular",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-regular-400.woff2", "font/woff2" },
+                        },
+                    }
+                },
+                {
+                    "fa-brands",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-brands-400.woff2", "font/woff2" },
+                        },
+                    }
+                },
+                {
+                    "fa-solid",
+                    new PreloadOption
+                    {
+                        Enable = true,
+                        Type = PreloadType.Font,
+                        Version = "6.2.1",
+                        Files =
+                        {
+                            { Constants.Assets.WebFonts.TrimStart('/') + "/fa-solid-900.woff2", "font/woff2" },
+                        },
+                    }
+                },
+            };
             CompanyName = "Identity";
             Favicon = Constants.DefaultFavicon;
             MaxFailedLogins = null;
             PasswordHistoryLength = 0;
             EnableAccountConfirmation = false;
             FormsPersistenceMode = FormsPersistenceMode.SessionWithPersistOption;
+            Cache = new CacheOptions();
         }
 
         public int? MaxFailedLogins { get; set; }
@@ -58,11 +105,15 @@ namespace Codeworx.Identity.Configuration
 
         public MaxLengthOption MaxLength { get; set; }
 
+        public TermsOption Terms { get; set; }
+
         public SigningOptions Signing { get; set; }
 
         public List<string> Styles { get; }
 
         public List<string> Scripts { get; }
+
+        public Dictionary<string, PreloadOption> Preloads { get; }
 
         public string CompanyName { get; set; }
 
@@ -71,6 +122,8 @@ namespace Codeworx.Identity.Configuration
         public bool EnableAccountConfirmation { get; set; }
 
         public FormsPersistenceMode FormsPersistenceMode { get; set; }
+
+        public CacheOptions Cache { get; set; }
 
         public int PasswordHistoryLength { get; set; }
 
@@ -82,9 +135,11 @@ namespace Codeworx.Identity.Configuration
             target.Password = this.Password != null ? new RegexPolicyOption(this.Password) : null;
             target.Login = this.Login != null ? new RegexPolicyOption(this.Login) : null;
             target.MaxLength = this.MaxLength != null ? new MaxLengthOption(this.MaxLength) : null;
+            target.Terms = this.Terms != null ? new TermsOption(this.Terms) : null;
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;
             target.Signing = new SigningOptions(this.Signing);
+            target.Cache = new CacheOptions(this.Cache);
 
             target.Styles.Clear();
 
@@ -98,6 +153,13 @@ namespace Codeworx.Identity.Configuration
             foreach (var item in this.Scripts)
             {
                 target.Scripts.Add(item);
+            }
+
+            target.Preloads.Clear();
+
+            foreach (var item in this.Preloads)
+            {
+                target.Preloads.Add(item.Key, item.Value.Clone());
             }
 
             target.MaxFailedLogins = this.MaxFailedLogins;

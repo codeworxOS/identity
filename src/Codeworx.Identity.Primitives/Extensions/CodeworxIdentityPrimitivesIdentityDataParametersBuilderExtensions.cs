@@ -85,17 +85,19 @@ namespace Codeworx.Identity
             return builder;
         }
 
-        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
-    where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
+        public static TBuilder WithRefreshTokenUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
+where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
         {
             builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
             return builder;
         }
 
-        public static TBuilder WithTokenExchangeUser<TBuilder>(this TBuilder builder, ClaimsIdentity user)
+        public static TBuilder WithTokenExchangeUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
     where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {
             builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
             return builder;
         }
 
@@ -145,6 +147,14 @@ namespace Codeworx.Identity
             where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
         {
             builder.SetValue(p => p.User, user);
+            return builder;
+        }
+
+        public static TBuilder WithUser<TBuilder>(this TBuilder builder, ClaimsIdentity user, IUser identityUser)
+            where TBuilder : IIdentityDataParametersBuilder<IIdentityDataParameters>
+        {
+            builder.SetValue(p => p.User, user);
+            builder.SetValue(p => p.IdentityUser, identityUser);
             return builder;
         }
     }

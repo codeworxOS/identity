@@ -33,6 +33,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
                 string email = null;
                 string returnUrl = null;
                 string sessionId = null;
+                bool noNav = false;
 
                 if (request.Form.TryGetValue("provider-id", out var providerIdValues))
                 {
@@ -59,12 +60,20 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView.Mfa.Mail
                     returnUrl = returnUrlValues;
                 }
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (request.Query.TryGetValue(Constants.NoNavParameter, out var noNavValues))
                 {
-                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode, auth.Properties.IsPersistent);
+                    if (bool.TryParse(noNavValues, out var noNavParsed))
+                    {
+                        noNav = noNavParsed;
+                    }
                 }
 
-                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, auth.Properties.IsPersistent);
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    return new RegisterMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, email, sessionId, oneTimeCode, auth.Properties.IsPersistent, noNav);
+                }
+
+                return new ProcessMailLoginRequest(providerId, (ClaimsIdentity)auth.Principal.Identity, returnUrl, oneTimeCode, auth.Properties.IsPersistent, noNav);
             }
 
             throw new ErrorResponseException<UnsupportedMediaTypeResponse>(new UnsupportedMediaTypeResponse());

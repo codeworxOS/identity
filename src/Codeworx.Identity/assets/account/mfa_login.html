@@ -22,6 +22,10 @@
                 {{> (RegistrationTemplate)}}
                 {{/each}}
 
+                <div class="cancel-box">
+                    <a href="{{CancelUrl}}">{{Translate 'MfaProviderCancel'}}</a>
+                </div>
+
                 {{> progress}}
             </div>
         </div>

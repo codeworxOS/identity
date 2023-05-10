@@ -3,24 +3,25 @@
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 400;
-    src: local(''), url('../webfonts/poppins-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-    url('../webfonts/poppins-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
-    url('../webfonts/poppins-v20-latin-regular.ttf') format('truetype') /* Safari, Android, iOS */
+    src: local(''), url('../webfonts/poppins-v20-latin-regular.woff2?v=1.0.0') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.woff?v=1.0.0') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-regular.ttf?v=1.0.0') format('truetype') /* Safari, Android, iOS */
 }
 /* poppins-700 - latin */
 @font-face {
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 700;
-    src: local(''), url('../webfonts/poppins-v20-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
-    url('../webfonts/poppins-v20-latin-700.woff') format('woff'), /* Modern Browsers */
-    url('../webfonts/poppins-v20-latin-700.ttf') format('truetype') /* Safari, Android, iOS */
+    src: local(''), url('../webfonts/poppins-v20-latin-700.woff2?v=1.0.0') format('woff2'), /* Super Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.woff?v=1.0.0') format('woff'), /* Modern Browsers */
+    url('../webfonts/poppins-v20-latin-700.ttf?v=1.0.0') format('truetype') /* Safari, Android, iOS */
 }
 
 :root {
     --default-text: #333333;
     --default-light: #A1A5B7;
     --box-background: #ffffff;
+    --button-background: #ffffff;
     --shadow: #CCCCCC;
     --accent: #1A77B9;
     --accent-hover: #16487E;
@@ -38,7 +39,7 @@
 body {
     font-family: "Poppins", sans-serif;
     overflow: hidden;
-    background-image: url(../images/background.jpg);
+    background-image: url(../images/background.jpg?v=1.0.0);
     background-position-x: center;
     background-position-y: center;
     background-size: cover;
@@ -46,11 +47,19 @@ body {
     color: var(--default-text);
 }
 
+.block {
+    display: block;
+}
+
+.ta-right {
+    text-align: right;
+}
+
 .container {
     width: 100vw;
     height: 100vh;
     display: flex;
-    background-image: url(../images/logo.png);
+    background-image: url(../images/logo.png?v=1.0.0);
     background-size: 50px 14px;
     background-position: right 15px bottom 10px;
     background-repeat: no-repeat;
@@ -168,17 +177,25 @@ body {
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,
+    .txt_field input:-webkit-autofill ~ label,
+    .txt_field input:autofill ~ label,
     .txt_field select:focus ~ label,
     .txt_field select:valid ~ label,
-    .txt_field select:read-only ~ label {
+    .txt_field select:read-only ~ label,
+    .txt_field select:-webkit-autofill ~ label,
+    .txt_field select:autofill ~ label {
         top: -5px;
         font-size: 0.7rem;
     }
 
     .txt_field input:focus ~ .i,
     .txt_field input:valid ~ .i,
+    .txt_field input:-webkit-autofill ~ .i,
+    .txt_field input:autofill ~ .i,
     .txt_field select:focus ~ .i,
-    .txt_field select:valid ~ .i {
+    .txt_field select:valid ~ .i,
+    .txt_field select:-webkit-autofill ~ .i,
+    .txt_field select:autofill ~ .i {
         color: var(--accent);
     }
 
@@ -189,8 +206,12 @@ body {
 
     .txt_field input:focus ~ span::before,
     .txt_field input:valid ~ span::before,
+    .txt_field input:autofill ~ span::before,
+    .txt_field input:-webkit-autofill ~ span::before,
     .txt_field select:focus ~ span::before,
-    .txt_field select:valid ~ span::before {
+    .txt_field select:valid ~ span::before,
+    .txt_field select:autofill ~ span::before,
+    .txt_field select:-webkit-autofill ~ span::before {
         width: 100%;
     }
 
@@ -201,6 +222,8 @@ body {
 
 a.forgot-password,
 a.change-password-link {
+    text-align: right;
+    display: block;
     font-size: 0.8rem;
     padding-top: 10px;
 }
@@ -214,8 +237,6 @@ a.change-password-link {
     }
 
 a {
-    display: block;
-    text-align: right;
     text-decoration: none;
     color: var(--default-light);
     transition: 0.3s;
@@ -247,6 +268,13 @@ a {
     .btn:hover, .btn:focus {
         background: var(--accent-hover);
         box-shadow: 0 0 5px var(--shadow);
+    }
+
+    .btn:disabled,
+    .btn:disabled:hover {
+        background: var(--default-light);
+        cursor: not-allowed;
+        box-shadow: unset;
     }
 
 .separator {
@@ -340,7 +368,9 @@ a {
         }
 
     .external-button a.icon-button:focus,
-    .external-button a.icon-button:hover {
+    .external-button a.icon-button:hover,
+    .external-button button.icon-button:focus,
+    .external-button button.icon-button:hover {
         color: var(--accent-hover);
         border: var(--accent-hover);
         border-width: 1px;
@@ -348,9 +378,27 @@ a {
         box-shadow: 0 0 5px var(--shadow);
     }
 
-    .external-button a.icon-button {
+    .external-button a.icon-button,
+    .external-button button.icon-button {
         cursor: pointer;
     }
+
+    .external-button button.icon-button {
+        color: var(--accent);
+        width: 100%;
+        background-color: var(--button-background);
+        font-size: 1rem;
+        transition: 0.3s;
+    }
+
+        .external-button button.icon-button:disabled,
+        .external-button button.icon-button:disabled:hover {
+            color: var(--default-light);
+            cursor: not-allowed;
+            border-width: 1px;
+            border: 1px solid var(--default-light);
+            box-shadow: unset;
+        }
 
     .external-button .icon-button {
         display: flex;
@@ -403,6 +451,25 @@ a {
     margin-bottom: 1rem;
 }
 
+.change-or-cancel-box {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancel-box {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: right;
+}
+
+    .cancel-box a:hover,
+    .cancel-box a:focus {
+        outline: 0;
+        color: var(--accent-hover);
+        font-weight: 700;
+    }
+
 .verification-description {
     display: block;
     margin-bottom: 2rem;
@@ -454,7 +521,7 @@ a {
 
 
 .fa-identity {
-    background-image: url(../images/identity-64.png);
+    background-image: url(../images/identity-64.png?v=1.0.0);
     background-size: 16px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -463,7 +530,7 @@ a {
 }
 
 .fa-activedirectory {
-    background-image: url(../images/windows-64.png);
+    background-image: url(../images/windows-64.png?v=1.0.0);
     background-size: 16px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -480,6 +547,7 @@ a {
 }
 
     .mfa-provider-content .registration-url a {
+        display: block;
         font-size: 0.8rem;
     }
 

@@ -4,7 +4,7 @@
 </div>
 <div class="external-login-box">
     {{#Registrations}}
-    <div class="external-button">
+    <form class="external-button" method="get" action="{{RedirectPath}}">
         {{#IsLinked}}
         <div class="icon-button">
             {{#CssClass}}
@@ -18,16 +18,19 @@
         {{/IsLinked}}
 
         {{^IsLinked}}
-        <a class="icon-button" href="{{RedirectUri}}">
+        {{#RedirectParams}}
+        <input type="hidden" name="{{Name}}" value="{{Value}}" />
+        {{/RedirectParams}}
+        <button class="icon-button" type="submit">
             {{#CssClass}}
             <div class="i">
                 <i class="fa-brands {{.}}"></i>
             </div>
             {{/CssClass}}
             {{Name}}
-        </a>
+        </button>
         {{/IsLinked}}
-    </div>
+    </form>
     {{/Registrations}}
     {{#Registrations}}
     {{#Error}}

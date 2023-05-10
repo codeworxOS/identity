@@ -170,7 +170,7 @@ namespace Codeworx.Identity.Cryptography.Json
             switch (_signingKey)
             {
                 case ECDsaSecurityKey ecd:
-                    algorithm = $"ES{ecd.KeySize}";
+                    algorithm = $"ES{_hashAlgorithm.HashSize}";
                     break;
 
                 case RsaSecurityKey rsa:

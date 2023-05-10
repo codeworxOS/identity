@@ -29,7 +29,7 @@ namespace Codeworx.Identity.OAuth.Token
 
             var user = await _identityService.GetClaimsIdentityFromUserAsync(client.User).ConfigureAwait(false);
 
-            builder.WithUser(user);
+            builder.WithUser(user, client.User);
         }
     }
 }

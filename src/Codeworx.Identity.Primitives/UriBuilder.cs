@@ -86,7 +86,7 @@ namespace Codeworx.Identity
                 .Add(value);
         }
 
-        public override string ToString()
+        public string ToString(bool skipQueryAndFragment)
         {
             var result = $"{Schema}://{Host}";
             if (Port.HasValue)
@@ -99,7 +99,7 @@ namespace Codeworx.Identity
                 result += $"/{string.Join("/", _segments.Select(x => Uri.EscapeDataString(x)))}";
             }
 
-            if (Query.Any(p => p.Value.Any()))
+            if (!skipQueryAndFragment && Query.Any(p => p.Value.Any()))
             {
                 var queryParams = from q in Query
                                   from value in q.Value
@@ -109,7 +109,7 @@ namespace Codeworx.Identity
                 result += $"?{string.Join("&", queryParams)}";
             }
 
-            if (Fragment.Any(p => p.Value.Any()))
+            if (!skipQueryAndFragment && Fragment.Any(p => p.Value.Any()))
             {
                 var queryParams = from q in Fragment
                                   from value in q.Value
@@ -120,6 +120,11 @@ namespace Codeworx.Identity
             }
 
             return result;
+        }
+
+        public override string ToString()
+        {
+            return ToString(false);
         }
 
         private static ConcurrentDictionary<string, ConcurrentBag<string>> GetParameters(string queryPart)
