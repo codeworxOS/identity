@@ -30,7 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 currentTenant = parameters.Scopes.FirstOrDefault(p => tenants.Any(x => x.Key == p));
             }
 
-            var userId = Guid.Parse(parameters.User.GetUserId());
+            var userId = Guid.Parse(parameters.IdentityUser.Identity);
 
             IQueryable<ClaimValue> query = _db.Set<ClaimValue>();
 
@@ -58,24 +58,27 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
             var scopeIds = scopes.Select(p => p.Id).ToList();
 
-            query = query
-                        .Where(p => p.ClaimType.ScopeClaims.Any(p => scopeIds.Contains(p.ScopeId)));
-
-            var result = await query.Select(p => new
+            if (scopeIds.Any())
             {
-                TypeKey = p.ClaimType.TypeKey,
-                TypeTarget = p.ClaimType.Target,
-                Value = p.Value,
-            })
-                        .ToListAsync();
+                query = query
+                            .Where(p => p.ClaimType.ScopeClaims.Any(p => scopeIds.Contains(p.ScopeId)));
 
-            foreach (var item in result.GroupBy(p => p.TypeKey))
-            {
-                var target = item.First().TypeTarget;
-                var key = item.Key;
-                var values = item.Select(p => p.Value).ToList();
+                var result = await query.Select(p => new
+                {
+                    TypeKey = p.ClaimType.TypeKey,
+                    TypeTarget = p.ClaimType.Target,
+                    Value = p.Value,
+                })
+                            .ToListAsync();
 
-                assigned.Add(AssignedClaim.Create(key, values, target));
+                foreach (var item in result.GroupBy(p => p.TypeKey))
+                {
+                    var target = item.First().TypeTarget;
+                    var key = item.Key;
+                    var values = item.Select(p => p.Value).ToList();
+
+                    assigned.Add(AssignedClaim.Create(key, values, target));
+                }
             }
 
             return assigned;

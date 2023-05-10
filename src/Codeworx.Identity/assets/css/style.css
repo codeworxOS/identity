@@ -51,7 +51,7 @@ body {
     display: block;
 }
 
-.ta-right{
+.ta-right {
     text-align: right;
 }
 
@@ -174,7 +174,6 @@ body {
             color: var(--accent);
         }
 
-    s
     .txt_field input:focus ~ label,
     .txt_field input:valid ~ label,
     .txt_field input:read-only ~ label,
@@ -224,7 +223,7 @@ body {
 a.forgot-password,
 a.change-password-link {
     text-align: right;
-    display:block;
+    display: block;
     font-size: 0.8rem;
     padding-top: 10px;
 }
@@ -452,6 +451,25 @@ a {
     margin-bottom: 1rem;
 }
 
+.change-or-cancel-box {
+    display: flex;
+    justify-content: space-between;
+}
+
+.cancel-box {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    display: flex;
+    justify-content: right;
+}
+
+    .cancel-box a:hover,
+    .cancel-box a:focus {
+        outline: 0;
+        color: var(--accent-hover);
+        font-weight: 700;
+    }
+
 .verification-description {
     display: block;
     margin-bottom: 2rem;
@@ -529,7 +547,7 @@ a {
 }
 
     .mfa-provider-content .registration-url a {
-        display:block;
+        display: block;
         font-size: 0.8rem;
     }
 

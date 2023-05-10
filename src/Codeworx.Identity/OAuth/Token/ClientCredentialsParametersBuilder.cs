@@ -7,10 +7,11 @@ namespace Codeworx.Identity.OAuth.Token
     public class ClientCredentialsParametersBuilder : IClientCredentialsParametersBuilder
     {
         private ClaimsIdentity _user;
+        private IUser _identityUser;
         private IClientRegistration _client;
         private string[] _scopes;
 
-        public IClientCredentialsParameters Parameters => new ClientCredentialsParameters(_client, _scopes, _user);
+        public IClientCredentialsParameters Parameters => new ClientCredentialsParameters(_client, _scopes, _user, _identityUser);
 
         public void SetValue(string property, object value)
         {
@@ -18,6 +19,9 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 case nameof(IClientCredentialsParameters.User):
                     _user = (ClaimsIdentity)value;
+                    break;
+                case nameof(IClientCredentialsParameters.IdentityUser):
+                    _identityUser = (IUser)value;
                     break;
                 case nameof(IClientCredentialsParameters.Client):
                     _client = (IClientRegistration)value;

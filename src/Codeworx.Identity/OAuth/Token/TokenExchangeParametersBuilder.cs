@@ -11,12 +11,13 @@ namespace Codeworx.Identity.OAuth.Token
         private string _actorToken;
         private string _actorTokenType;
         private ClaimsIdentity _user;
+        private IUser _identityUser;
         private IClientRegistration _client;
         private string[] _scopes;
         private string _audience;
         private string[] _requestedTokenTypes;
 
-        public ITokenExchangeParameters Parameters => new TokenExchangeParameters(_client, _scopes, _user, _audience, _subjectToken, _subjectTokenType, _actorToken, _actorTokenType, _requestedTokenTypes);
+        public ITokenExchangeParameters Parameters => new TokenExchangeParameters(_client, _scopes, _user, _identityUser, _audience, _subjectToken, _subjectTokenType, _actorToken, _actorTokenType, _requestedTokenTypes);
 
         public void SetValue(string property, object value)
         {
@@ -24,6 +25,9 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 case nameof(ITokenExchangeParameters.User):
                     _user = (ClaimsIdentity)value;
+                    break;
+                case nameof(ITokenExchangeParameters.IdentityUser):
+                    _identityUser = (IUser)value;
                     break;
                 case nameof(ITokenExchangeParameters.Client):
                     _client = (IClientRegistration)value;

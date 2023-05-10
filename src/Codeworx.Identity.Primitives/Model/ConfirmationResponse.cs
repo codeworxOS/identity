@@ -8,16 +8,29 @@ namespace Codeworx.Identity.Model
     {
         public ConfirmationResponse(
             IUser user,
-            ClaimsIdentity identity = null,
-            string message = null,
-            string error = null,
-            bool rememberMe = false)
+            ClaimsIdentity identity,
+            string backUrl,
+            string message,
+            string error,
+            bool rememberMe)
         {
+            BackUrl = backUrl;
             Identity = identity;
             User = user;
             Message = message;
             Error = error;
             RememberMe = rememberMe;
+            HasError = Error != null;
+        }
+
+        public ConfirmationResponse(
+            IUser user,
+            string error,
+            string backUrl)
+        {
+            User = user;
+            Error = error;
+            BackUrl = backUrl;
             HasError = Error != null;
         }
 
@@ -28,6 +41,8 @@ namespace Codeworx.Identity.Model
         public string Message { get; }
 
         public string Error { get; }
+
+        public string BackUrl { get; }
 
         public bool RememberMe { get; }
 
@@ -41,6 +56,7 @@ namespace Codeworx.Identity.Model
             target.Add(nameof(HasError), HasError);
             target.Add(nameof(RememberMe), RememberMe);
             target.Add(nameof(Identity), Identity);
+            target.Add(nameof(BackUrl), BackUrl);
         }
     }
 }

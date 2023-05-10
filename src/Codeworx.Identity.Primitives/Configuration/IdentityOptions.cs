@@ -38,7 +38,7 @@ namespace Codeworx.Identity.Configuration
                 Mode = TermsOption.TermsMode.None,
             };
             Signing = new SigningOptions();
-            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.2" };
+            Styles = new List<string> { Constants.Assets.Css.TrimStart('/') + "/font-awesome.min.css?v=6.2.1", Constants.Assets.Css.TrimStart('/') + "/style.css?v=1.0.4" };
             Scripts = new List<string> { Constants.Assets.Js.TrimStart('/') + "/main.js?v=1.0.2" };
             Preloads = new Dictionary<string, PreloadOption>
             {
@@ -88,6 +88,7 @@ namespace Codeworx.Identity.Configuration
             PasswordHistoryLength = 0;
             EnableAccountConfirmation = false;
             FormsPersistenceMode = FormsPersistenceMode.SessionWithPersistOption;
+            Cache = new CacheOptions();
         }
 
         public int? MaxFailedLogins { get; set; }
@@ -122,6 +123,8 @@ namespace Codeworx.Identity.Configuration
 
         public FormsPersistenceMode FormsPersistenceMode { get; set; }
 
+        public CacheOptions Cache { get; set; }
+
         public int PasswordHistoryLength { get; set; }
 
         public void CopyTo(IdentityOptions target)
@@ -136,6 +139,7 @@ namespace Codeworx.Identity.Configuration
             target.CompanyName = this.CompanyName;
             target.SupportEmail = this.SupportEmail;
             target.Signing = new SigningOptions(this.Signing);
+            target.Cache = new CacheOptions(this.Cache);
 
             target.Styles.Clear();
 

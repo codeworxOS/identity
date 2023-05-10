@@ -7,7 +7,9 @@ using Codeworx.Identity.Configuration.Internal;
 using Codeworx.Identity.EntityFrameworkCore;
 using Codeworx.Identity.EntityFrameworkCore.Account;
 using Codeworx.Identity.EntityFrameworkCore.Cache;
+using Codeworx.Identity.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -35,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
                          .LoginRegistrations<LoginRegistrationProvider<TContext>>()
                          .Tenants<EntityTenantService<TContext>>()
                          .Clients<EntityClientService<TContext>>()
+                         .ReplaceService<IRequestEntityCache, RequestEntityCache>(ServiceLifetime.Scoped)
                          .ReplaceService<IConfirmationService, EntityConfirmationService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IChangeUsernameService, EntityChangeUsernameService<TContext>>(ServiceLifetime.Scoped)
                          .ReplaceService<IChangePasswordService, EntityChangePasswordService<TContext>>(ServiceLifetime.Scoped)
@@ -50,7 +53,8 @@ namespace Microsoft.Extensions.DependencyInjection
                          .ReplaceService<IScopeProvider, EntityScopeProvider<TContext>>(ServiceLifetime.Scoped)
                          .RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped)
                          .RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient)
-                         .ReplaceService<IClaimsProvider, EntityClaimsProvider<TContext>>(ServiceLifetime.Transient);
+                         .ReplaceService<IClaimsProvider, EntityClaimsProvider<TContext>>(ServiceLifetime.Transient)
+                         .ReplaceService<IHostedService, EntityCacheCleanup<TContext>>(ServiceLifetime.Singleton);
 
             return result;
         }

@@ -98,8 +98,8 @@ namespace Codeworx.Identity.Web.Test
                     .AddSmtpMailConnector()
                     .AddMfaTotp()
                     .WithLoginAsEmail()
-                    .UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
-            //.UseDbContext(options => options.UseSqlServer("Data Source=.;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+                    //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
+                    .UseDbContext(options => options.UseSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
             //.UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();

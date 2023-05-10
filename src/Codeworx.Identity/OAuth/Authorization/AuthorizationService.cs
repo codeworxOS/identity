@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Codeworx.Identity.Model;
 
 namespace Codeworx.Identity.OAuth.Authorization
 {
@@ -34,7 +35,14 @@ namespace Codeworx.Identity.OAuth.Authorization
                 throw new ArgumentNullException(nameof(request));
             }
 
-            IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, user);
+            IUser identityUser = null;
+
+            if (user != null)
+            {
+                identityUser = await _userService.GetUserByIdentityAsync(user);
+            }
+
+            IAuthorizationParametersBuilder builder = new AuthorizationParametersBuilder(request, user, identityUser);
 
             foreach (var processor in _requestProcessors)
             {
@@ -48,8 +56,7 @@ namespace Codeworx.Identity.OAuth.Authorization
                 .WithResponseMode(parameters.ResponseMode)
                 .WithRedirectUri(parameters.RedirectUri);
 
-            var currentUser = await _userService.GetUserByIdentityAsync(parameters.User)
-                                         .ConfigureAwait(false);
+            var currentUser = parameters.IdentityUser;
 
             if (currentUser == null)
             {

@@ -11,11 +11,12 @@ namespace Codeworx.Identity.OAuth.Token
     {
         private readonly DateTimeOffset _validFrom;
 
-        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IToken parsedRefreshToken)
+        public RefreshTokenParameters(IClientRegistration client, string refreshToken, string[] scopes, ClaimsIdentity user, IUser identityUser, IToken parsedRefreshToken)
         {
             Client = client;
             Scopes = scopes.ToImmutableList();
             User = user;
+            IdentityUser = identityUser;
             RefreshToken = refreshToken;
             ParsedRefreshToken = parsedRefreshToken;
             _validFrom = DateTimeOffset.UtcNow;
@@ -34,6 +35,8 @@ namespace Codeworx.Identity.OAuth.Token
         public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
 
         public ClaimsIdentity User { get; }
+
+        public IUser IdentityUser { get; }
 
         public void Throw(string error, string errorDescription)
         {

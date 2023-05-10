@@ -9,6 +9,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
         public CodeworxIdentityDbContext(DbContextOptions<CodeworxIdentityDbContext> options)
             : base(options)
         {
+            this.Database.AutoSavepointsEnabled = true;
         }
 
         protected CodeworxIdentityDbContext(DbContextOptions options)
@@ -77,11 +78,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new IdentityCacheEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new LicenseEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new LicenseAssignmentEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ProviderFilterEntityTypeConfiguration(this.Database.ProviderName));
+            modelBuilder.ApplyConfiguration(new RightHolderEntityTypeConfiguration(this.Database.ProviderName));
             modelBuilder.ApplyConfiguration(new RightHolderGroupConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ScopeEntityTypeConfiguration(this.Database.ProviderName));
             modelBuilder.ApplyConfiguration(new ScopeAssignmentEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeClaimEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeHierarchyEntityTypeConfiguration());
@@ -90,6 +91,9 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new UserInvitationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserPasswordHistoryEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());
+
+            modelBuilder.Entity<DomainNameProviderFilter>();
+            modelBuilder.Entity<IPv4ProviderFilter>();
 
             modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Property);
         }

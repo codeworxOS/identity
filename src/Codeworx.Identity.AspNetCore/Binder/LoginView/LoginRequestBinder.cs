@@ -47,7 +47,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.LoginView
 
             var authenticateResult = await _handler.AuthenticateAsync(request.HttpContext);
 
-            if (authenticateResult.Succeeded && prompt?.Contains(Constants.OAuth.Prompt.Login) != true)
+            if (authenticateResult.Succeeded && string.IsNullOrWhiteSpace(prompt))
             {
                 return new LoggedinRequest((ClaimsIdentity)authenticateResult.Principal.Identity, returnUrl, false, providerId, providerError);
             }

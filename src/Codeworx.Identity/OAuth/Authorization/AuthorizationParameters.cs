@@ -12,16 +12,17 @@ namespace Codeworx.Identity.OAuth.Authorization
         private readonly DateTimeOffset _validFrom;
 
         public AuthorizationParameters(
-                    IClientRegistration client,
-                    string nonce,
-                    string redirectUri,
-                    string responseMode,
-                    IReadOnlyCollection<string> responseTypes,
-                    IReadOnlyCollection<string> scopes,
-                    IReadOnlyCollection<string> prompts,
-                    string state,
-                    ClaimsIdentity user,
-                    AuthorizationRequest request)
+            IClientRegistration client,
+            string nonce,
+            string redirectUri,
+            string responseMode,
+            IReadOnlyCollection<string> responseTypes,
+            IReadOnlyCollection<string> scopes,
+            IReadOnlyCollection<string> prompts,
+            string state,
+            ClaimsIdentity user,
+            IUser identityUser,
+            AuthorizationRequest request)
         {
             Client = client;
             Nonce = nonce;
@@ -32,6 +33,7 @@ namespace Codeworx.Identity.OAuth.Authorization
             Prompts = ImmutableArray.CreateRange(prompts);
             State = state;
             User = user;
+            IdentityUser = identityUser;
             Request = request;
             _validFrom = DateTimeOffset.UtcNow;
         }
@@ -59,6 +61,8 @@ namespace Codeworx.Identity.OAuth.Authorization
         public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
 
         public ClaimsIdentity User { get; }
+
+        public IUser IdentityUser { get; }
 
         public void Throw(string error, string errorDescription)
         {

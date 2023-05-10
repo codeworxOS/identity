@@ -7,6 +7,7 @@ namespace Codeworx.Identity.OAuth.Authorization
     public class AuthorizationParametersBuilder : IAuthorizationParametersBuilder
     {
         private readonly ClaimsIdentity _user;
+        private readonly IUser _identityUser;
         private readonly AuthorizationRequest _request;
         private IClientRegistration _client;
         private string _nonce;
@@ -17,9 +18,10 @@ namespace Codeworx.Identity.OAuth.Authorization
         private string _state;
         private string[] _prompts;
 
-        public AuthorizationParametersBuilder(AuthorizationRequest request, ClaimsIdentity user)
+        public AuthorizationParametersBuilder(AuthorizationRequest request, ClaimsIdentity user, IUser idenitityUser)
         {
             _user = user;
+            _identityUser = idenitityUser;
             _request = request ?? throw new System.ArgumentNullException(nameof(request));
             _scopes = new string[] { };
             _responseTypes = new string[] { };
@@ -36,6 +38,7 @@ namespace Codeworx.Identity.OAuth.Authorization
              _prompts,
              _state,
              _user,
+             _identityUser,
              _request);
 
         public void SetValue(string property, object value)

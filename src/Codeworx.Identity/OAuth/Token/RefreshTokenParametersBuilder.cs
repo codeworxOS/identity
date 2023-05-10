@@ -10,6 +10,7 @@ namespace Codeworx.Identity.OAuth.Token
         private IClientRegistration _client;
         private string _refreshToken;
         private ClaimsIdentity _user;
+        private IUser _identityUser;
         private string[] _scopes;
         private IToken _parsedRefreshToken;
 
@@ -17,7 +18,7 @@ namespace Codeworx.Identity.OAuth.Token
         {
         }
 
-        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_client, _refreshToken, _scopes, _user, _parsedRefreshToken);
+        public IRefreshTokenParameters Parameters => new RefreshTokenParameters(_client, _refreshToken, _scopes, _user, _identityUser, _parsedRefreshToken);
 
         public void SetValue(string property, object value)
         {
@@ -25,6 +26,9 @@ namespace Codeworx.Identity.OAuth.Token
             {
                 case nameof(IRefreshTokenParameters.User):
                     _user = (ClaimsIdentity)value;
+                    break;
+                case nameof(IRefreshTokenParameters.IdentityUser):
+                    _identityUser = (IUser)value;
                     break;
                 case nameof(IRefreshTokenParameters.RefreshToken):
                     _refreshToken = (string)value;

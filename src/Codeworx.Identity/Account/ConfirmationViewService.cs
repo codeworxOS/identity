@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Resources;
 
@@ -12,17 +13,23 @@ namespace Codeworx.Identity.Account
         private readonly IStringResources _stringResources;
         private readonly IConfirmationService _confirmationService;
         private readonly IIdentityService _identityService;
+        private readonly IBaseUriAccessor _baseUriAccessor;
+        private readonly IdentityServerOptions _options;
 
         public ConfirmationViewService(
             IUserService userService,
             IStringResources stringResources,
             IConfirmationService confirmationService,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            IBaseUriAccessor baseUriAccessor,
+            IdentityServerOptions options)
         {
             _userService = userService;
             _stringResources = stringResources;
             _confirmationService = confirmationService;
             _identityService = identityService;
+            _baseUriAccessor = baseUriAccessor;
+            _options = options;
         }
 
         public async Task<ConfirmationResponse> ProcessAsync(ConfirmationRequest request, CancellationToken token = default)
@@ -44,7 +51,12 @@ namespace Codeworx.Identity.Account
                 error = _stringResources.GetResource(StringResource.ConfirmationCodeInvalid);
             }
 
-            var response = new ConfirmationResponse(user, identity, message, error, request.RememberMe);
+            var uriBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            uriBuilder.AppendPath(_options.AccountEndpoint);
+            uriBuilder.AppendPath("login");
+            uriBuilder.AppendQueryParameter(Constants.OAuth.PromptName, Constants.OAuth.Prompt.SelectAccount);
+
+            var response = new ConfirmationResponse(user, identity, uriBuilder.ToString(), message, error, request.RememberMe);
 
             return response;
         }
