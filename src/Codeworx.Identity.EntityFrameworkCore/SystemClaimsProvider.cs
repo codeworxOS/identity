@@ -49,7 +49,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                             if (parameters.Scopes.Contains(Constants.Scopes.GroupNames))
                             {
-                                result.Add(new AssignedClaim(new[] { Constants.Claims.GroupNames, item.GroupId.ToString("N") }, new[] { item.Name }, ClaimTarget.AllTokens));
+                                result.Add(new AssignedClaim(new[] { Constants.Claims.GroupNames, item.GroupId.ToString("N") }, new[] { item.Name }, ClaimTarget.All));
                             }
                         }
                     }
