@@ -54,7 +54,7 @@ namespace Microsoft.Extensions.DependencyInjection
                          .RegisterMultiple<ISystemScopeProvider, SystemScopeProvider>(ServiceLifetime.Scoped)
                          .RegisterMultiple<ISystemClaimsProvider, SystemClaimsProvider<TContext>>(ServiceLifetime.Transient)
                          .ReplaceService<IClaimsProvider, EntityClaimsProvider<TContext>>(ServiceLifetime.Transient)
-                         .ReplaceService<IHostedService, EntityCacheCleanup<TContext>>(ServiceLifetime.Singleton);
+                         .RegisterMultiple<IHostedService, EntityCacheCleanup<TContext>>(ServiceLifetime.Singleton);
 
             return result;
         }
