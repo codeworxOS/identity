@@ -3,14 +3,10 @@ Copyright (c) 2023 codeworx gmbh (FN 423068i)
 # CODEWORX DEVELOPER LICENSE AGREEMENT #
 Permission is herby granted, free of charge, for non-commercial use as well as
 commercial use, as log as:
-    - this software component is an integrated part of another software product
-      and solely used as the authentication solution for that product,
-    - this software component is not used for a product, that itself is 
-      an identity server solution.
-    - the identity server features provided by this software component are not 
-      separately licensed and/or billed.
-    - this software component is not used for a product categorized as a 
-      SaaS (Software as a Service) solution.
+- this software component is an integrated part of another software product and solely used as the authentication solution for that product,
+- this software component is not used for a product, that itself is an identity server solution.
+- the identity server features provided by this software component are not separately licensed and/or billed.
+- this software component is not used for a product categorized as a SaaS (Software as a Service) solution.
 
 If the above conditions apply to your product, your are free to use and distribute
 this software component with your product.
