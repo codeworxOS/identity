@@ -11,9 +11,9 @@ namespace Codeworx.Identity.Configuration
             MfaAuthenticationCookie = Constants.DefaultMfaAuthenticationCookieName;
             MfaAuthenticationScheme = Constants.DefaultMfaAuthenticationScheme;
             CookieExpiration = TimeSpan.FromHours(1);
-            SelectTenantEndpoint = AccountEndpoint + "/tenant";
             UserInfoEndpoint = "/userinfo";
             AccountEndpoint = "/account";
+            SelectTenantEndpoint = AccountEndpoint + "/tenant";
             OauthAuthorizationEndpoint = "/oauth20";
             OauthTokenEndpoint = OauthAuthorizationEndpoint + "/token";
             OauthInstrospectionEndpoint = OauthAuthorizationEndpoint + "/introspect";
