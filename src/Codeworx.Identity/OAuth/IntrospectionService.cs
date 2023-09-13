@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Cache;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
@@ -56,7 +57,15 @@ namespace Codeworx.Identity.OAuth
 
             var tokenFormat = _tokenProviderService.GetTokenFormat(request.Token);
             var accessToken = await _tokenProviderService.CreateTokenAsync(tokenFormat, TokenType.AccessToken, null, token).ConfigureAwait(false);
-            await accessToken.ParseAsync(request.Token, token).ConfigureAwait(false);
+
+            try
+            {
+                await accessToken.ParseAsync(request.Token, token).ConfigureAwait(false);
+            }
+            catch (CacheEntryNotFoundException)
+            {
+                return new IntrospectResponse(false);
+            }
 
             var validUntil = accessToken.ValidUntil;
             return new IntrospectResponse(validUntil, accessToken.IdentityData.GetTokenClaims(ClaimTarget.ProfileEndpoint));
