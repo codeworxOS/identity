@@ -123,12 +123,16 @@ function setButtonToggleBox(id) {
                     if (ev.target.parentElement.disabled === true) {
                         var box = document.getElementById(id);
                         var errors = box.parentElement.getElementsByClassName('error');
-                        var error_1 = errors.length > 0 ? errors.item(0) : undefined;
-                        if (error_1 instanceof HTMLDivElement) {
-                            error_1.classList.remove('hide');
-                        }
-                        error_1.classList.add('horizontal-shake');
-                        window.setTimeout(function () { error_1.classList.remove('horizontal-shake'); }, 500);
+                        for (error of errors) {
+                            if (error.classList.contains('shakeable')) {
+                                if (error instanceof HTMLDivElement) {
+                                    error.classList.remove('hide');
+                                }
+                                error.classList.add('horizontal-shake');
+                                window.setTimeout(function () { error.classList.remove('horizontal-shake'); }, 500);
+                            }
+                        };
+                        
                     }
                 }
             });
