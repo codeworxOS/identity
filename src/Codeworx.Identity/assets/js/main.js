@@ -123,7 +123,8 @@ function setButtonToggleBox(id) {
                     if (ev.target.parentElement.disabled === true) {
                         var box = document.getElementById(id);
                         var errors = box.parentElement.getElementsByClassName('error');
-                        for (error of errors) {
+                        var _loop_1 = function (i_1) {
+                            var error = errors.item(i_1);
                             if (error.classList.contains('shakeable')) {
                                 if (error instanceof HTMLDivElement) {
                                     error.classList.remove('hide');
@@ -132,7 +133,9 @@ function setButtonToggleBox(id) {
                                 window.setTimeout(function () { error.classList.remove('horizontal-shake'); }, 500);
                             }
                         };
-                        
+                        for (var i_1 = 0; i_1 < errors.length; i_1++) {
+                            _loop_1(i_1);
+                        }
                     }
                 }
             });

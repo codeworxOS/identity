@@ -132,14 +132,16 @@ function setButtonToggleBox(id: string): void {
                         if (ev.target.parentElement.disabled === true) {
                             let box = document.getElementById(id);
                             let errors = box.parentElement.getElementsByClassName('error');
-                            let error = errors.length > 0 ? errors.item(0) : undefined;
-
-                            if (error instanceof HTMLDivElement) {
-                                error.classList.remove('hide');
+                            for (let i = 0; i < errors.length; i++) {
+                                let error = errors.item(i);
+                                if (error.classList.contains('shakeable')) {
+                                    if (error instanceof HTMLDivElement) {
+                                        error.classList.remove('hide');
+                                    }
+                                    error.classList.add('horizontal-shake');
+                                    window.setTimeout(function () { error.classList.remove('horizontal-shake'); }, 500);
+                                }
                             }
-
-                            error.classList.add('horizontal-shake');
-                            window.setTimeout(() => { error.classList.remove('horizontal-shake') }, 500);
                         }
                     }
                 });
