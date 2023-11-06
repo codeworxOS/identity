@@ -156,6 +156,8 @@
                     return Translation.MfaProviderCancel;
                 case StringResource.ConfirmationBack:
                     return Translation.ConfirmationBack;
+                case StringResource.AcceptTermsError:
+                    return Translation.AcceptTermsError;
                 default:
                     throw new MissingResourceException(resource);
             }

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Codeworx.Identity.Invitation;
 
 namespace Codeworx.Identity.Cache
 {
     public class InvitationExpiredException : Exception
     {
-        public InvitationExpiredException()
+        public InvitationExpiredException(InvitationItem invitation)
             : this("Invitation expired!")
         {
+            Invitation = invitation;
         }
 
         protected InvitationExpiredException(string message)
@@ -24,5 +26,7 @@ namespace Codeworx.Identity.Cache
             : base(info, context)
         {
         }
+
+        public InvitationItem Invitation { get; }
     }
 }

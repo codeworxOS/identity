@@ -7,13 +7,13 @@
     <form class="external-button" method="get" action="{{RedirectPath}}">
         {{#IsLinked}}
         <div class="icon-button">
-            {{#CssClass}}
-            <div class="i">
+            <span>
+                {{#CssClass}}
                 <i class="fa-brands {{.}}"></i>
-            </div>
-            {{/CssClass}}
-            {{Name}}
-            <a class="unlink" title="{{Translate 'UnlinkProvider'}}" href="{{RedirectUri}}"><i class="fa-solid fa-link-slash"></i></a>
+                {{/CssClass}}
+                {{Name}}
+                <a class="unlink" title="{{Translate 'UnlinkProvider'}}" href="{{RedirectUri}}"><i class="fa-solid fa-link-slash"></i></a>
+            </span>
         </div>
         {{/IsLinked}}
 
@@ -22,12 +22,12 @@
         <input type="hidden" name="{{Name}}" value="{{Value}}" />
         {{/RedirectParams}}
         <button class="icon-button" type="submit">
-            {{#CssClass}}
-            <div class="i">
+            <span>
+                {{#CssClass}}
                 <i class="fa-brands {{.}}"></i>
-            </div>
-            {{/CssClass}}
-            {{Name}}
+                {{/CssClass}}
+                {{Name}}
+            </span>
         </button>
         {{/IsLinked}}
     </form>
