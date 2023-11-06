@@ -28,10 +28,21 @@
                 {{/HasError}}
 
                 {{#Terms}}
+                {{#ShowCheckbox}}<input type="checkbox" required id="acceptTerms" /> {{/ShowCheckbox}}
                 <label for="acceptTerms">
-                    {{#ShowCheckbox}}<input type="checkbox" id="acceptTerms" /> {{/ShowCheckbox}}{{{Text}}}
+                    {{{Text}}}
                 </label>
+                <div class="error hide shakeable">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{Translate 'AcceptTermsError'}}</span>
+                </div>
                 {{/Terms}}
+
+                {{#LoginUrl}}
+                <a href="{{.}}" class="btn">
+                    {{Translate 'ReturnToLogin'}}
+                </a>
+                {{/LoginUrl}}
 
                 {{> progress}}
             </div>

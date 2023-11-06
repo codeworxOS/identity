@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Model;
-using Codeworx.Identity.OAuth;
+using Codeworx.Identity.Response;
 using Codeworx.Identity.Token;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
@@ -37,8 +37,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth
             }
             catch (Exception)
             {
-                var errorResponseBinder = context.GetResponseBinder<ErrorResponse>();
-                var errorResponse = new ErrorResponse(Constants.OAuth.Error.InvalidRequest, "Token not provided", null);
+                var errorResponseBinder = context.GetResponseBinder<UnauthorizedResponse>();
+                var errorResponse = new UnauthorizedResponse();
                 await errorResponseBinder.BindAsync(errorResponse, context.Response);
                 return;
             }

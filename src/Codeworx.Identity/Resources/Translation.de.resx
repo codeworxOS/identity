@@ -342,4 +342,7 @@
   <data name="ConfirmationBack" xml:space="preserve">
     <value>Zurück</value>
   </data>
+  <data name="AcceptTermsError" xml:space="preserve">
+    <value>Die Nutzungsbedingungen müssen akzeptieren werden.</value>
+  </data>
 </root>

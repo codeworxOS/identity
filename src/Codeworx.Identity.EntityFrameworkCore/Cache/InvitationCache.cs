@@ -126,7 +126,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             else if (entry.ValidUntil < DateTime.UtcNow)
             {
                 _logKeyExpired(_logger, code, null);
-                throw new InvitationExpiredException();
+                throw new InvitationExpiredException(new InvitationItem { Action = entry.Action, RedirectUri = entry.RedirectUri, UserId = entry.UserId.ToString("N") });
             }
 
             return entry;

@@ -265,6 +265,12 @@ a {
     transition: 0.5s;
 }
 
+    .btn span {
+        display: flex;
+        justify-content: center;
+    }
+
+
     .btn:hover, .btn:focus {
         background: var(--accent-hover);
         box-shadow: 0 0 5px var(--shadow);
@@ -401,8 +407,6 @@ a {
         }
 
     .external-button .icon-button {
-        display: flex;
-        align-items: center;
         white-space: nowrap;
         border: 1px solid var(--default-light);
         border-radius: 3px;
@@ -410,10 +414,17 @@ a {
         padding: 0 0.5rem;
     }
 
-        .external-button .icon-button .i {
-            padding-right: 0.3rem;
-            font-size: 1.2rem;
+        .external-button .icon-button span {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: left;
         }
+
+            .external-button .icon-button span i {
+                padding-right: 0.3rem;
+                font-size: 1.2rem;
+            }
 
 .mfa-provider-select {
     display: flex;
@@ -558,13 +569,51 @@ a {
             font-weight: 700;
         }
 
+#acceptTerms ~ div.error {
+    position: absolute;
+    margin-top: 0;
+    display: none;
+}
+
+#acceptTerms:invalid ~ div.error {
+    display: block;
+}
+
+    #acceptTerms:invalid ~ div.error.hide {
+        display: none;
+    }
+
 .error {
     color: var(--error);
     font-size: 0.8rem;
     margin-top: 1rem;
 }
 
+@keyframes horizontal-shaking {
+    0% {
+        transform: translateX(0)
+    }
 
+    25% {
+        transform: translateX(5px)
+    }
+
+    50% {
+        transform: translateX(-5px)
+    }
+
+    75% {
+        transform: translateX(5px)
+    }
+
+    100% {
+        transform: translateX(0)
+    }
+}
+
+.horizontal-shake {
+    animation: horizontal-shaking 0.20s forwards;
+}
 
 
 .ispinner {

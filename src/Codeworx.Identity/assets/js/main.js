@@ -114,6 +114,33 @@ function setButtonToggleBox(id) {
             }
         }
     });
+    var buttons = document.getElementsByTagName('button');
+    for (var i = 0; i < buttons.length; i++) {
+        var child = buttons.item(i).getElementsByTagName("span").item(0);
+        if (child) {
+            child.addEventListener("click", function (ev) {
+                if (ev.target instanceof HTMLSpanElement && ev.target.parentElement instanceof HTMLButtonElement) {
+                    if (ev.target.parentElement.disabled === true) {
+                        var box = document.getElementById(id);
+                        var errors = box.parentElement.getElementsByClassName('error');
+                        var _loop_1 = function (i_1) {
+                            var error = errors.item(i_1);
+                            if (error.classList.contains('shakeable')) {
+                                if (error instanceof HTMLDivElement) {
+                                    error.classList.remove('hide');
+                                }
+                                error.classList.add('horizontal-shake');
+                                window.setTimeout(function () { error.classList.remove('horizontal-shake'); }, 500);
+                            }
+                        };
+                        for (var i_1 = 0; i_1 < errors.length; i_1++) {
+                            _loop_1(i_1);
+                        }
+                    }
+                }
+            });
+        }
+    }
 }
 window.addEventListener('beforeunload', function (p) { return showBusyIndicator(); });
 inputs.forEach(function (input) {

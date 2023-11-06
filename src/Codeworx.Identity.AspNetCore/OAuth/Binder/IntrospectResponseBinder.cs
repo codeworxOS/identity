@@ -33,7 +33,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
             using (var memoryStream = new MemoryStream())
             {
-                using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 4096, true))
+                var encoding = new UTF8Encoding(false);
+                using (var writer = new StreamWriter(memoryStream, encoding, 4096, true))
                 {
                     ser.Serialize(writer, responseData);
                 }

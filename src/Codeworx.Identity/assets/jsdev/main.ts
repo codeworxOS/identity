@@ -96,31 +96,57 @@ function onKeyUp(event: KeyboardEvent): void {
     }
 }
 
-function showBusyIndicator() : void{
+function showBusyIndicator(): void {
     const indicators = document.querySelectorAll<HTMLInputElement>(".busy-indicator");
     indicators.forEach(p => p.classList.add('active'));
 }
 
-function changeButtonsState(disable: boolean) : void{
+function changeButtonsState(disable: boolean): void {
     let items = document.getElementsByTagName('button');
     for (let i = 0; i < items.length; i++) {
         items.item(i).disabled = disable;
     }
 }
 
-function setButtonToggleBox(id: string) : void{
+function setButtonToggleBox(id: string): void {
     changeButtonsState(true);
     let checkBox = document.getElementById(id);
     checkBox.addEventListener('change', p => {
-        var box = document.getElementById(id);
-        if(box instanceof HTMLInputElement){
-            if(box.checked){
+        let box = document.getElementById(id);
+        if (box instanceof HTMLInputElement) {
+            if (box.checked) {
                 changeButtonsState(false);
             } else {
                 changeButtonsState(true);
             }
         }
     });
+
+    let buttons = document.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+        let child = buttons.item(i).getElementsByTagName("span").item(0);
+        if (child) {
+            child.addEventListener("click",
+                (ev) => {
+                    if (ev.target instanceof HTMLSpanElement && ev.target.parentElement instanceof HTMLButtonElement) {
+                        if (ev.target.parentElement.disabled === true) {
+                            let box = document.getElementById(id);
+                            let errors = box.parentElement.getElementsByClassName('error');
+                            for (let i = 0; i < errors.length; i++) {
+                                let error = errors.item(i);
+                                if (error.classList.contains('shakeable')) {
+                                    if (error instanceof HTMLDivElement) {
+                                        error.classList.remove('hide');
+                                    }
+                                    error.classList.add('horizontal-shake');
+                                    window.setTimeout(function () { error.classList.remove('horizontal-shake'); }, 500);
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+    }
 }
 
 window.addEventListener('beforeunload', p => showBusyIndicator());
