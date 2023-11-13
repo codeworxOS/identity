@@ -16,6 +16,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\Codeworx.Identity.AspNetCore\Codeworx.Identity.AspNetCore.csproj" />
+		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFramework.Scim.Api\Codeworx.Identity.EntityFrameworkCore.Scim.Api.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore.Api.Nswag\Codeworx.Identity.EntityFrameworkCore.Api.Nswag.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj" />
 		<ProjectReference Include="..\..\src\Codeworx.Identity.Mfa.Totp\Codeworx.Identity.Mfa.Totp.csproj" />

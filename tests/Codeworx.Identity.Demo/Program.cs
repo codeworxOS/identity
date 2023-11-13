@@ -32,6 +32,7 @@ internal class Program
         };
 
         // setup swagger
+        builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
         builder.Services.AddScoped<IContextWrapper, DbContextWrapper<DemoIdentityDbContext>>();
         builder.Services.AddOpenApiDocument<DemoIdentityDbContext>((options, s) =>
         {
@@ -56,7 +57,8 @@ internal class Program
 
         // Setup MVC Middleware and add identity admin controllers
         builder.Services.AddControllers()
-            .AddApplicationPart(typeof(UserController).Assembly);
+            .AddApplicationPart(typeof(UserController).Assembly)
+            .AddApplicationPart(typeof(Codeworx.Identity.EntityFrameworkCore.Scim.Api.UsersController).Assembly);
 
         // setup authentication providers
         builder.Services.AddAuthentication()
@@ -75,6 +77,9 @@ internal class Program
             p.AddPolicy(Policies.Admin, builder => builder.RequireAuthenticatedUser()
                                             .RequireClaim("upn", "admin")
                                             .AddAuthenticationSchemes("JWT"));
+
+            // policy for admin controllers
+            p.AddPolicy("api_none", builder => builder.RequireAssertion(d => true));
         });
 
         // setup custom identity DbContext.
