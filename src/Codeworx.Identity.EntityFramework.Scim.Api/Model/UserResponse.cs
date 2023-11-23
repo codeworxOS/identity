@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model
 {
-    public class UserResponse
+    public class UserResponse : IResource
     {
         public UserResponse()
         {

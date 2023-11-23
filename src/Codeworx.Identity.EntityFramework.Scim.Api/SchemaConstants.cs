@@ -9,5 +9,7 @@
         public const string Schema = "urn:ietf:params:scim:schemas:core:2.0:Schema";
         public const string ServiceProviderConfig = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
         public const string ResourceType = "urn:ietf:params:scim:schemas:core:2.0:ResourceType";
+
+        public const string PatchOperation = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
     }
 }

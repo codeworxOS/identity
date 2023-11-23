@@ -4,13 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model
 {
-    public class GroupResponse
+    public class GroupResponse : IResource
     {
         public GroupResponse()
         {
             Schemas = new string[]
             {
-                SchemaConstants.User,
+                SchemaConstants.Group,
             };
             AdditionalProperties = new Dictionary<string, object>();
         }
