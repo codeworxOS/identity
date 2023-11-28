@@ -286,9 +286,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (context.Properties.AllowRefresh ?? true)
             {
+#if NET8_0_OR_GREATER
+                var timeProvider = context.HttpContext.RequestServices.GetRequiredService<TimeProvider>();
+                var currentUtc = timeProvider.GetUtcNow();
+#else
                 var clock = context.HttpContext.RequestServices.GetRequiredService<ISystemClock>();
-
                 var currentUtc = clock.UtcNow;
+#endif
                 var issuedUtc = context.Properties.IssuedUtc;
                 var expiresUtc = context.Properties.ExpiresUtc;
                 var allowRefresh = context.Properties.AllowRefresh ?? true;
