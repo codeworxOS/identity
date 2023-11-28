@@ -15,9 +15,11 @@ namespace Codeworx.Identity.Invitation
     {
         private readonly IInvitationService _service;
         private readonly IStringResources _stringResources;
+        private readonly IBaseUriAccessor _baseUriAccessor;
         private readonly IUserService _userService;
         private readonly ILoginService _loginService;
         private readonly IIdentityService _identityService;
+        private readonly IdentityServerOptions _identityServerOptions;
         private readonly IdentityOptions _identityOptions;
         private readonly IPasswordPolicyProvider _passwordPolicyProvider;
         private readonly ILoginPolicyProvider _loginPolicyProvider;
@@ -30,18 +32,22 @@ namespace Codeworx.Identity.Invitation
             ILoginService loginService,
             IIdentityService identityService,
             IOptionsSnapshot<IdentityOptions> identityOptions,
+            IdentityServerOptions identityServerOptions,
             IPasswordPolicyProvider passwordPolicyProvider,
             ILoginPolicyProvider loginPolicyProvider,
             IChangePasswordService changePasswordService,
             IStringResources stringResources,
+            IBaseUriAccessor baseUriAccessor,
             IChangeUsernameService changeUsernameService = null)
         {
             _service = service;
             _stringResources = stringResources;
+            _baseUriAccessor = baseUriAccessor;
             _changeUsernameService = changeUsernameService;
             _userService = userService;
             _loginService = loginService;
             _identityService = identityService;
+            _identityServerOptions = identityServerOptions;
             _identityOptions = identityOptions.Value;
             _passwordPolicyProvider = passwordPolicyProvider;
             _loginPolicyProvider = loginPolicyProvider;
@@ -51,6 +57,10 @@ namespace Codeworx.Identity.Invitation
         public async Task<SignInResponse> ProcessAsync(ProcessInvitationViewRequest request)
         {
             var languageCode = _stringResources.GetResource(StringResource.LanguageCode);
+
+            var urlBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            urlBuilder.AppendPath(_identityServerOptions.AccountEndpoint);
+            urlBuilder.AppendPath("login");
 
             try
             {
@@ -115,19 +125,24 @@ namespace Codeworx.Identity.Invitation
             catch (InvitationNotFoundException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
-            catch (InvitationExpiredException)
+            catch (InvitationExpiredException ex)
             {
+                if (ex.Invitation.RedirectUri != null)
+                {
+                    urlBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, ex.Invitation.RedirectUri);
+                }
+
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (InvitationAlreadyRedeemedException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
-                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                var response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
                 throw new ErrorResponseException<InvitationViewResponse>(response);
             }
             catch (PasswordChangeException)
@@ -140,6 +155,10 @@ namespace Codeworx.Identity.Invitation
 
         public async Task<InvitationViewResponse> ShowAsync(InvitationViewRequest request)
         {
+            var urlBuilder = new UriBuilder(_baseUriAccessor.BaseUri);
+            urlBuilder.AppendPath(_identityServerOptions.AccountEndpoint);
+            urlBuilder.AppendPath("login");
+
             InvitationViewResponse response = null;
             try
             {
@@ -155,22 +174,27 @@ namespace Codeworx.Identity.Invitation
 
                 var registrationInfoResponse = await _loginService.GetRegistrationInfosAsync(providerRequest);
 
-                response = new InvitationViewResponse(registrationInfoResponse.Groups, GetTerms());
+                response = new InvitationViewResponse(registrationInfoResponse.Groups, null, GetTerms());
             }
             catch (InvitationNotFoundException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeInvalidError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
             }
-            catch (InvitationExpiredException)
+            catch (InvitationExpiredException ex)
             {
+                if (ex.Invitation.RedirectUri != null)
+                {
+                    urlBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, ex.Invitation.RedirectUri);
+                }
+
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeExpiredError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
             }
             catch (InvitationAlreadyRedeemedException)
             {
                 var errorMessage = _stringResources.GetResource(StringResource.InvitationCodeRedeemedError);
-                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), null, errorMessage);
+                response = new InvitationViewResponse(Enumerable.Empty<ILoginRegistrationGroup>(), urlBuilder.ToString(), null, errorMessage);
             }
 
             return response;

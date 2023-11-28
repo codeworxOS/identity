@@ -70,6 +70,15 @@ namespace Codeworx.Identity.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have to accept the terms and conditions..
+        /// </summary>
+        internal static string AcceptTermsError {
+            get {
+                return ResourceManager.GetString("AcceptTermsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The account has not yet been confirmed..
         /// </summary>
         internal static string AccountConfirmationPending {

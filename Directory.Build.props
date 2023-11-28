@@ -10,7 +10,8 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	<LangVersion>9</LangVersion>
   </PropertyGroup>
 
@@ -23,6 +24,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <None Include="..\..\license.md" Pack="true" PackagePath="$(PackageLicenseFile)">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
   </ItemGroup>
 
   <PropertyGroup>

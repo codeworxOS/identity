@@ -7,14 +7,17 @@ namespace Codeworx.Identity.Model
 {
     public class InvitationViewResponse : IViewData
     {
-        public InvitationViewResponse(IEnumerable<ILoginRegistrationGroup> groups, Terms terms, string error = null)
+        public InvitationViewResponse(IEnumerable<ILoginRegistrationGroup> groups, string loginUrl, Terms terms, string error = null)
         {
             Terms = terms;
+            LoginUrl = loginUrl;
             Error = error;
             Groups = groups.ToImmutableList();
         }
 
         public Terms Terms { get; }
+
+        public string LoginUrl { get; }
 
         public string Error { get; }
 
@@ -28,6 +31,7 @@ namespace Codeworx.Identity.Model
             target.Add(nameof(HasError), HasError);
             target.Add(nameof(Groups), Groups);
             target.Add(nameof(Terms), Terms);
+            target.Add(nameof(LoginUrl), LoginUrl);
         }
     }
 }

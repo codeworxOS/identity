@@ -8,12 +8,12 @@
         <input type="hidden" name="{{Name}}" value="{{Value}}" />
         {{/RedirectParams}}
         <button class="icon-button" type="submit">
-            {{#CssClass}}
-            <div class="i">
-                <i class="fa-brands {{.}}"></i>
-            </div>
-            {{/CssClass}}
-            {{Name}}
+            <span>
+                {{#CssClass}}
+                    <i class="fa-brands {{.}}"></i>
+                {{/CssClass}}
+                {{Name}}
+            </span>
         </button>
     </form>
     {{/Registrations}}
