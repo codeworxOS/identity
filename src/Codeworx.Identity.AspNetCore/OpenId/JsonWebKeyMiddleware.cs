@@ -26,7 +26,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             var defaultKey = keyProvider.GetKey();
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
-            context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
+            context.Response.Headers.Append(HeaderNames.ContentType, "application/json;charset=utf-8");
 
             var responseString = JsonConvert.SerializeObject(new KeyList { Keys = new[] { serializer.SerializeKeyToJsonWebKey(defaultKey, string.Empty) } });
 

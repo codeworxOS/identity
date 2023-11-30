@@ -31,7 +31,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
             if (Equals(responseData.ResponseMode, Constants.OpenId.ResponseMode.FormPost))
             {
-                response.Headers.Add(HeaderNames.ContentType, "text/html;charset=UTF-8");
+                response.Headers.Append(HeaderNames.ContentType, "text/html;charset=UTF-8");
 
                 if (headerOnly)
                 {
