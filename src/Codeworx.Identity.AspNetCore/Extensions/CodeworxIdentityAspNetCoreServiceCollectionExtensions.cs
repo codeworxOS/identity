@@ -90,7 +90,9 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityServerOptions identityServerOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
-            builder.Argon2()
+
+            builder.RegisterCoreServices()
+                .Argon2()
                 .WithAesSymmetricEncryption();
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityServerOptions.AuthenticationScheme; })
@@ -257,6 +259,7 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddTransient<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
             collection.AddSingleton<ITokenCache, DistributedTokenCache>();
+            collection.AddSingleton<IInvitationCache, DistributedInvitationCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
             collection.AddSingleton<IMailMfaCodeCache, DistributedMailMfaCodeCache>();
