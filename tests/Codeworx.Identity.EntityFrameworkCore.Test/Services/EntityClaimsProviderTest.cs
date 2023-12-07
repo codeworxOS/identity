@@ -140,7 +140,7 @@ namespace Codeworx.Identity.Test.Services
             var tenant = new EntityFrameworkCore.Model.Tenant { Id = Guid.NewGuid(), Name = "tenant" };
             var tenant2 = new EntityFrameworkCore.Model.Tenant { Id = Guid.NewGuid(), Name = "tenant2" };
 
-            var tenantUser = new EntityFrameworkCore.Model.TenantUser { RightHolderId = user.Id, TenantId = tenant.Id };
+            var tenantUser = new EntityFrameworkCore.Model.TenantRightHolder { RightHolderId = user.Id, TenantId = tenant.Id };
 
             var client = new EntityFrameworkCore.Model.ClientConfiguration { Id = Guid.NewGuid(), ClientType = Model.ClientType.Native };
             var scope = new EntityFrameworkCore.Model.Scope { Id = Guid.NewGuid(), ScopeKey = "testscope" };
@@ -191,7 +191,7 @@ namespace Codeworx.Identity.Test.Services
             var tenant = new EntityFrameworkCore.Model.Tenant { Id = Guid.NewGuid(), Name = "tenant" };
             var tenant2 = new EntityFrameworkCore.Model.Tenant { Id = Guid.NewGuid(), Name = "tenant2" };
 
-            var tenantUser = new EntityFrameworkCore.Model.TenantUser { RightHolderId = user.Id, TenantId = tenant.Id };
+            var tenantUser = new EntityFrameworkCore.Model.TenantRightHolder { RightHolderId = user.Id, TenantId = tenant.Id };
 
             var client = new EntityFrameworkCore.Model.ClientConfiguration { Id = Guid.NewGuid(), ClientType = Model.ClientType.Native };
             var scope = new EntityFrameworkCore.Model.Scope { Id = Guid.NewGuid(), ScopeKey = "testscope" };

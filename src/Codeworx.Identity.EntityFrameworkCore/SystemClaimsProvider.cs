@@ -11,18 +11,36 @@ namespace Codeworx.Identity.EntityFrameworkCore
         where TContext : DbContext
     {
         private readonly TContext _db;
+        private readonly ITenantService _tenantService;
 
-        public SystemClaimsProvider(TContext db)
+        public SystemClaimsProvider(TContext db, ITenantService tenantService = null)
         {
             _db = db;
+            _tenantService = tenantService;
         }
 
         public async Task<IEnumerable<AssignedClaim>> GetClaimsAsync(IIdentityDataParameters parameters)
         {
             var result = new List<AssignedClaim>();
 
+            Guid? tenantIdFilter = null;
+
             if (parameters.Scopes.Contains(Constants.Scopes.Groups) || parameters.Scopes.Contains(Constants.Scopes.GroupNames))
             {
+                if (parameters.Scopes.Contains(Constants.Scopes.Tenant))
+                {
+                    if (_tenantService != null)
+                    {
+                        var tenants = await _tenantService.GetTenantsByIdentityAsync(parameters).ConfigureAwait(false);
+                        var tenant = tenants.Where(p => parameters.Scopes.Contains(p.Key)).ToList();
+
+                        if (tenant.Count == 1 && Guid.TryParse(tenant[0].Key, out var parsed))
+                        {
+                            tenantIdFilter = parsed;
+                        }
+                    }
+                }
+
                 var search = new List<Guid>();
                 search.Add(Guid.Parse(parameters.IdentityUser.Identity));
 
@@ -30,8 +48,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
                 while (search.Any())
                 {
-                    var nextLayer = await _db.Set<RightHolder>()
-                                        .Where(p => search.Contains(p.Id))
+                    var baseQuery = _db.Set<RightHolder>()
+                                        .Where(p => search.Contains(p.Id));
+
+                    if (tenantIdFilter.HasValue)
+                    {
+                        baseQuery = baseQuery.Where(p => p.Tenants.Any(x => x.TenantId == tenantIdFilter.Value));
+                    }
+
+                    var nextLayer = await baseQuery
                                         .SelectMany(p => p.MemberOf)
                                         .Select(p => new { p.GroupId, p.Group.Name })
                                         .Distinct()
