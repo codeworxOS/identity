@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
@@ -170,6 +171,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         {
             if (!await _db.Context.Set<ClientConfiguration>().AnyAsync(x => x.Id == id))
             {
+                // TODO return 404;
                 throw new NotSupportedException();
             }
 
@@ -194,20 +196,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotSupportedException();
             }
 
-            var redirectUrls = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.Id == urlId).Select(t => new ValidRedirectUrlInfoData
+            var redirectUrl = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.Id == urlId).Select(t => new ValidRedirectUrlInfoData
             {
                 Id = t.Id,
                 ClientId = t.ClientId,
                 Url = t.Url,
             }).FirstOrDefaultAsync();
 
-            if (redirectUrls == null)
+            if (redirectUrl == null)
             {
                 // TODO return 404;
                 throw new NotSupportedException();
             }
 
-            return redirectUrls;
+            return redirectUrl;
         }
 
         [HttpPost("{id}/redirect-urls")]
@@ -221,7 +223,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotSupportedException();
             }
 
-            var entities = urls.Select(t => new ValidRedirectUrl
+            var invalid = urls.Where(t => !Uri.IsWellFormedUriString(t, UriKind.Absolute)).ToList();
+            if (invalid.Any())
+            {
+                // TODO return 400
+                throw new NotSupportedException();
+            }
+
+            var existing = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.ClientId == id).Select(t => t.Url).ToListAsync();
+
+            var entities = urls.Where(t => !existing.Contains(t, StringComparer.InvariantCultureIgnoreCase)).Select(t => new ValidRedirectUrl
             {
                 Id = Guid.NewGuid(),
                 ClientId = id,
