@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,27 +13,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("authProvider/{authProviderId}/scim/Groups")]
+    [Route("scim/Groups")]
     [AllowAnonymous]
     public class GroupsController : Controller
     {
         private readonly DbContext _db;
-        private readonly IEnumerable<ISchemaParameterDescription<Group>> _parameters;
 
-        public GroupsController(IContextWrapper contextWrapper, IEnumerable<ISchemaParameterDescription<Group>> parameters)
+        public GroupsController(IContextWrapper contextWrapper)
         {
             _db = contextWrapper.Context;
-            _parameters = parameters;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ListResponse<GroupResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count)
         {
-            if (startIndex < 1)
-            {
-                startIndex = 1;
-            }
+            ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
             var query = _db.Set<Group>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
             int totalResults = await query.CountAsync();
@@ -52,14 +48,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             foreach (var item in groups)
             {
-                var data = new GroupResponse
-                {
-                    Id = item.Id,
-                };
+                var info = new ScimResponseInfo(item.Id.ToString("N"), this.Url.ActionLink(controller: "Groups")!, DateTime.Today, DateTime.Today);
 
-                data.ApplyParameters(item, _parameters);
+                var response = new GroupResponse(info, new GroupResource { }, new ISchemaResource[] { });
 
-                result.Add(data);
+                result.Add(response);
             }
 
             return new ListResponse<GroupResponse>(startIndex, totalResults, count, result);
@@ -68,7 +61,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GroupResponse>> GetGroupASync(Guid id)
+        public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id)
         {
             var group = await _db.Set<Group>().FirstOrDefaultAsync(x => x.Id == id);
 
@@ -77,93 +70,62 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 return NotFound();
             }
 
-            var result = new GroupResponse { Id = group.Id };
+            var info = new ScimResponseInfo(group.Id.ToString("N"), this.Url.ActionLink(controller: "Groups")!, DateTime.Today, DateTime.Today);
 
-            result.ApplyParameters(group, _parameters);
+            var response = new GroupResponse(info, new GroupResource(), new ISchemaResource[] { });
 
-            return result;
+            return response;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<GroupResponse>> AddGroupAsync([FromBody] GroupResponse group)
+        public async Task<ActionResult<GroupResponse>> AddGroupAsync([RequestResourceBinder] GroupResponse group)
         {
-            var entity = new Group
+            using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                Id = Guid.NewGuid(),
-            };
+                var entity = new Group
+                {
+                    Id = Guid.NewGuid(),
+                };
 
-            entity.ApplyParameters(group, _parameters);
+                _db.Add(entity);
 
-            _db.Add(entity);
+                // ToDo DI?
+                ////entity.ApplyParameters(group, _parameter);
 
-            await _db.SaveChangesAsync().ConfigureAwait(false);
+                await _db.SaveChangesAsync();
 
-            var response = await GetGroupASync(group.Id);
-            return CreatedAtAction(nameof(AddGroupAsync), response.Value);
+                await transaction.CommitAsync();
+
+                var response = await GetGroupAsync(entity.Id);
+                return CreatedAtAction(nameof(AddGroupAsync), response.Value);
+            }
         }
 
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GroupResponse>> UpdateGroupAsync(Guid id, [FromBody] GroupResponse group)
+        public async Task<ActionResult<GroupResponse>> UpdateGroupAsync(Guid id, [RequestResourceBinder] GroupResponse group)
         {
-            var entity = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
-
-            if (entity == null)
+            using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return NotFound();
+                var entity = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
+
+                if (entity == null)
+                {
+                    return NotFound();
+                }
+
+                // ToDo DI?
+                //// entity.ApplyParameters(group, _parameters);
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(await GetGroupAsync(entity.Id));
             }
-
-            entity.ApplyParameters(group, _parameters);
-
-            await _db.SaveChangesAsync();
-
-            return Ok(await GetGroupASync(entity.Id));
-        }
-
-        [HttpPatch("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GroupResponse>> PatchGroupAsync(Guid id, [FromBody] PatchOperation patch)
-        {
-            var entity = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            foreach (var operation in patch.Operations)
-            {
-                // todo patch opertaion
-            }
-
-            ////entity.ApplyParameters(group, _parameters);
-
-            await _db.SaveChangesAsync();
-
-            return Ok(await GetGroupASync(entity.Id));
-        }
-
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteUsersAsync(Guid id)
-        {
-            var entity = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
-
-            if (entity == null)
-            {
-                return NotFound();
-            }
-
-            var entry = _db.Remove(entity);
-
-            await _db.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

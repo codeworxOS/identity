@@ -6,9 +6,16 @@
 		<OutputType>Library</OutputType>
 		<IsPackable>true</IsPackable>
 		<NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+		<Nullable>enable</Nullable>
+		<NoWarn>CA1033</NoWarn>
+		<!--// Interface methods should be callable by child types-->
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Model\" />
 	</ItemGroup>
 </Project>

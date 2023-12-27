@@ -77,9 +77,6 @@ internal class Program
             p.AddPolicy(Policies.Admin, builder => builder.RequireAuthenticatedUser()
                                             .RequireClaim("upn", "admin")
                                             .AddAuthenticationSchemes("JWT"));
-
-            // policy for admin controllers
-            p.AddPolicy("api_none", builder => builder.RequireAssertion(d => true));
         });
 
         // setup custom identity DbContext.

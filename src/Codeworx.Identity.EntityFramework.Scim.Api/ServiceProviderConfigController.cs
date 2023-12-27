@@ -1,19 +1,17 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("authProvider/{authProviderId}/scim/ServiceProviderConfig")]
-    [Authorize(Policy = "api_none")]
-    public class ServiceProviderConfigController
+    [Route("scim/ServiceProviderConfig")]
+    [AllowAnonymous]
+    public class ServiceProviderConfigController : Controller
     {
-        public ServiceProviderConfigController()
-        {
-        }
-
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public Task<ServiceProviderConfigResponse> GetAsync()
         {
             return Task.FromResult(new ServiceProviderConfigResponse());

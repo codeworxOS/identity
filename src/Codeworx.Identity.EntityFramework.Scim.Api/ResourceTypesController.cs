@@ -1,80 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("authProvider/{authProviderId}/scim/ResourceTypes")]
-    [Authorize(Policy = "api_none")]
-    public class ResourceTypesController
+    [Route("scim/ResourceTypes")]
+    [AllowAnonymous]
+    public class ResourceTypesController : Controller
     {
-        public ResourceTypesController()
-        {
-        }
-
         [HttpGet]
-        public async Task<ListResponse<ResourceTypeResponse>> GetResourceTypesAsync([FromQuery] string filter)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<ListResponse<ResourceTypeResponse>>> GetResourceTypesAsync([FromQuery] string filter)
         {
             if (filter != null)
             {
                 // 403 - If a "filter" is provided, the service provider SHOULD respond with HTTP status
                 // code 403(Forbidden) to ensure that clients cannot incorrectly assume that any matching
                 // conditions specified in a filter are true.
-                throw new NotSupportedException();
+                return Forbid();
             }
 
             List<ResourceTypeResponse> result = new List<ResourceTypeResponse>
             {
-                await GetResourceTypeAsync("User"),
-                await GetResourceTypeAsync("Group"),
+                GetUserResourceInfo(),
+                GetGroupResourceInfo(),
             };
+
+            await Task.Yield();
 
             return new ListResponse<ResourceTypeResponse>(result);
         }
 
         [HttpGet("{resource}")]
-        public Task<ResourceTypeResponse> GetResourceTypeAsync(string resource)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ResourceTypeResponse>> GetResourceTypeAsync(string resource)
         {
-            ResourceTypeResponse resourceType;
+            await Task.Yield();
+
             switch (resource)
             {
                 case "User":
-                    resourceType = new ResourceTypeResponse()
-                    {
-                        Id = "User",
-                        Name = "User",
-                        EndPoint = "/Users",
-                        Schema = SchemaConstants.User,
-                        Meta = new MetaData
-                        {
-                            Location = "scim/ResourceTypes/User",
-                            ResourceType = "ResourceType",
-                        },
-                    };
-                    break;
+                    return GetUserResourceInfo();
                 case "Group":
-                    resourceType = new ResourceTypeResponse()
-                    {
-                        Id = "Group",
-                        Name = "Group",
-                        EndPoint = "/Groups",
-                        Schema = SchemaConstants.Group,
-                        Meta = new MetaData
-                        {
-                            Location = "scim/ResourceTypes/Group",
-                            ResourceType = "ResourceType",
-                        },
-                    };
-                    break;
+                    return GetGroupResourceInfo();
                 default:
-                    // 404
-                    throw new NotSupportedException();
+                    return NotFound();
             }
+        }
 
-            return Task.FromResult(resourceType);
+        private ResourceTypeResponse GetUserResourceInfo()
+        {
+            ResourceTypeResponse resourceType;
+            var info = new ScimResponseInfo("User", this.Url.ActionLink(controller: "ResourceTypes")!, null, null);
+            resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(this.Url.ActionLink(controller: "Users")!, "User", ScimConstants.Schemas.User));
+            return resourceType;
+        }
+
+        private ResourceTypeResponse GetGroupResourceInfo()
+        {
+            var info = new ScimResponseInfo("Group", this.Url.ActionLink(controller: "ResourceTypes")!, null, null);
+            var resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(this.Url.ActionLink(controller: "Groups")!, "Group", ScimConstants.Schemas.Group));
+            return resourceType;
         }
     }
 }

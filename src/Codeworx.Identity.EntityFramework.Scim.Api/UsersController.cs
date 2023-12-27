@@ -2,46 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Codeworx.Identity.Account;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("authProvider/{authProviderId}/scim/Users")]
+    [Route("scim/Users")]
     [AllowAnonymous]
     public class UsersController : Controller
     {
         private DbContext _db;
-        private IEnumerable<ISchemaParameterDescription<User>> _parameter;
-        private IOptionsSnapshot<IdentityOptions> _options;
-        private IUserService _userService;
-        private IConfirmationService _confirmationService;
 
-        public UsersController(IContextWrapper contextWrapper, IEnumerable<ISchemaParameterDescription<User>> parameter, IOptionsSnapshot<IdentityOptions> options, IUserService userService, IConfirmationService confirmationService = null)
+        public UsersController(IContextWrapper contextWrapper)
         {
             _db = contextWrapper.Context;
-            _parameter = parameter;
-            _options = options;
-            _userService = userService;
-            _confirmationService = confirmationService;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ListResponse<UserResponse>> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count)
         {
-            if (startIndex < 1)
-            {
-                startIndex = 1;
-            }
+            ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
             var query = _db.Set<User>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
             var totalResults = await query.CountAsync();
@@ -62,14 +49,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             foreach (var item in users)
             {
-                var data = new UserResponse
-                {
-                    Id = item.Id,
-                };
+                var info = new ScimResponseInfo(item.Id.ToString("N"), this.Url.ActionLink(controller: "Users")!, DateTime.Today, DateTime.Today);
 
-                data.ApplyParameters(item, _parameter);
+                var response = new UserResponse(info, new UserResource(), new ISchemaResource[] { });
 
-                result.Add(data);
+                result.Add(response);
             }
 
             return new ListResponse<UserResponse>(startIndex, totalResults, count, result);
@@ -87,20 +71,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 return NotFound();
             }
 
-            var result = new UserResponse
-            {
-                Id = user.Id,
-            };
+            var info = new ScimResponseInfo(user.Id.ToString("N"), this.Url.ActionLink(controller: "Users")!, DateTime.Today, DateTime.Today);
 
-            result.ApplyParameters(user, _parameter);
+            var response = new UserResponse(info, new UserResource(), new ISchemaResource[] { });
 
-            return result;
+            return response;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<UserResponse>> AddUserAsync([FromBody] UserResponse user)
+        public async Task<ActionResult<UserResponse>> AddUserAsync([RequestResourceBinder] UserRequest user)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -112,27 +93,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     AuthenticationMode = Login.AuthenticationMode.Login,
                 };
 
-                entity.ApplyParameters(user, _parameter);
-
                 _db.Add(entity);
-                var entry = _db.Entry(entity);
+
+                // ToDo DI?
+                ////entity.ApplyParameters(user, _parameter);
 
                 await _db.SaveChangesAsync();
 
-                if (_options.Value.EnableAccountConfirmation)
-                {
-                    if (_confirmationService == null)
-                    {
-                        // TODO return 412
-                        throw new NotSupportedException("Missing IConfirmationService!");
-                    }
-
-                    var userData = await _userService.GetUserByIdAsync(entity.Id.ToString("N")).ConfigureAwait(false);
-
-                    await _confirmationService.RequireConfirmationAsync(userData).ConfigureAwait(false);
-                }
-
-                transaction.Commit();
+                await transaction.CommitAsync();
 
                 var response = await GetUserAsync(entity.Id);
                 return CreatedAtAction(nameof(AddUserAsync), response.Value);
@@ -143,61 +111,67 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [FromBody] UserResponse user)
+        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserResponse user)
         {
-            var entity = await _db.Set<User>().Where(p => p.Id == user.Id).FirstOrDefaultAsync();
-
-            if (entity == null)
+            using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                return NotFound();
+                var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+
+                if (entity == null)
+                {
+                    return NotFound();
+                }
+
+                // ToDo DI?
+                ////entity.ApplyParameters(user, _parameter);
+
+                await _db.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(await GetUserAsync(entity.Id));
             }
-
-            entity.ApplyParameters(user, _parameter);
-
-            await _db.SaveChangesAsync();
-
-            return Ok(await GetUserAsync(entity.Id));
         }
 
-        [HttpPatch("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserResponse>> PatchUserAsync(Guid id, [FromBody] PatchOperation patch)
-        {
-            var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+        ////[HttpPatch("{id}")]
+        ////[ProducesResponseType(StatusCodes.Status200OK)]
+        ////[ProducesResponseType(StatusCodes.Status200OK)]
+        ////public async Task<ActionResult<UserResponse>> PatchUserAsync(Guid id, [FromBody] PatchOperation patch)
+        ////{
+        ////    var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
 
-            if (entity == null)
-            {
-                return NotFound();
-            }
+        ////    if (entity == null)
+        ////    {
+        ////        return NotFound();
+        ////    }
 
-            foreach (var operation in patch.Operations)
-            {
-                // todo apply operations
-            }
+        ////    foreach (var operation in patch.Operations)
+        ////    {
+        ////        // todo apply operations
+        ////    }
 
-            await _db.SaveChangesAsync();
+        ////    await _db.SaveChangesAsync();
 
-            return Ok(await GetUserAsync(entity.Id));
-        }
+        ////    return Ok(await GetUserAsync(entity.Id));
+        ////}
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> DeleteUsersAsync(Guid id)
-        {
-            var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+        ////[HttpDelete("{id}")]
+        ////[ProducesResponseType(StatusCodes.Status204NoContent)]
+        ////[ProducesResponseType(StatusCodes.Status404NotFound)]
+        ////public async Task<ActionResult> DeleteUsersAsync(Guid id)
+        ////{
+        ////    var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
 
-            if (entity == null)
-            {
-                return NotFound();
-            }
+        ////    if (entity == null)
+        ////    {
+        ////        return NotFound();
+        ////    }
 
-            var entry = _db.Remove(entity);
+        ////    var entry = _db.Remove(entity);
 
-            await _db.SaveChangesAsync();
+        ////    await _db.SaveChangesAsync();
 
-            return NoContent();
-        }
+        ////    return NoContent();
+        ////}
     }
 }
