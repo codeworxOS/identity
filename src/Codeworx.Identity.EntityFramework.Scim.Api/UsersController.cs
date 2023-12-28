@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
@@ -17,16 +18,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [AllowAnonymous]
     public class UsersController : Controller
     {
-        private DbContext _db;
+        private readonly DbContext _db;
+        private readonly IEnumerable<IUserSchemaProperty> _mappedProperties;
 
-        public UsersController(IContextWrapper contextWrapper)
+        public UsersController(IContextWrapper contextWrapper, IEnumerable<IUserSchemaProperty> mappedProperties)
         {
             _db = contextWrapper.Context;
+            _mappedProperties = mappedProperties;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse<UserResponse>> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count)
+        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
@@ -49,14 +52,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             foreach (var item in users)
             {
-                var info = new ScimResponseInfo(item.Id.ToString("N"), this.Url.ActionLink(controller: "Users")!, DateTime.Today, DateTime.Today);
-
-                var response = new UserResponse(info, new UserResource(), new ISchemaResource[] { });
+                UserResponse response = GenerateUserResponse(item);
 
                 result.Add(response);
             }
 
-            return new ListResponse<UserResponse>(startIndex, totalResults, count, result);
+            return new ListResponse(startIndex, totalResults, count, result);
         }
 
         [HttpGet("{userId}")]
@@ -71,9 +72,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 return NotFound();
             }
 
-            var info = new ScimResponseInfo(user.Id.ToString("N"), this.Url.ActionLink(controller: "Users")!, DateTime.Today, DateTime.Today);
-
-            var response = new UserResponse(info, new UserResource(), new ISchemaResource[] { });
+            UserResponse response = GenerateUserResponse(user);
 
             return response;
         }
@@ -85,7 +84,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var entity = new User
+                var item = new User
                 {
                     Id = Guid.NewGuid(),
                     Created = DateTime.UtcNow,
@@ -93,16 +92,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     AuthenticationMode = Login.AuthenticationMode.Login,
                 };
 
-                _db.Add(entity);
+                _db.Add(item);
 
-                // ToDo DI?
-                ////entity.ApplyParameters(user, _parameter);
+                ApplyEntityChanges(user, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                var response = await GetUserAsync(entity.Id);
+                var response = await GetUserAsync(item.Id);
                 return CreatedAtAction(nameof(AddUserAsync), response.Value);
             }
         }
@@ -111,25 +109,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserResponse user)
+        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserRequest user)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+                var item = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
 
-                if (entity == null)
+                if (item == null)
                 {
                     return NotFound();
                 }
 
-                // ToDo DI?
-                ////entity.ApplyParameters(user, _parameter);
+                ApplyEntityChanges(user, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return Ok(await GetUserAsync(entity.Id));
+                return Ok(await GetUserAsync(item.Id));
             }
         }
 
@@ -155,23 +152,85 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         ////    return Ok(await GetUserAsync(entity.Id));
         ////}
 
-        ////[HttpDelete("{id}")]
-        ////[ProducesResponseType(StatusCodes.Status204NoContent)]
-        ////[ProducesResponseType(StatusCodes.Status404NotFound)]
-        ////public async Task<ActionResult> DeleteUsersAsync(Guid id)
-        ////{
-        ////    var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteUsersAsync(Guid id)
+        {
+            var item = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
 
-        ////    if (entity == null)
-        ////    {
-        ////        return NotFound();
-        ////    }
+            if (item == null)
+            {
+                return NotFound();
+            }
 
-        ////    var entry = _db.Remove(entity);
+            var entry = _db.Remove(item);
 
-        ////    await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
 
-        ////    return NoContent();
-        ////}
+            return NoContent();
+        }
+
+        private UserResponse GenerateUserResponse(User item)
+        {
+            var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUser", values: new { userId = item.Id.ToString("N") })!;
+
+            var info = new ScimResponseInfo(item.Id.ToString("N"), userUrl, item.Created, item.Created);
+
+            var entityEntry = _db.Entry(item);
+            var resource = new UserResource();
+            var list = new List<ISchemaResource>();
+            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            {
+                object data;
+                if (resourceType.Key == typeof(UserResource))
+                {
+                    data = resource;
+                }
+                else
+                {
+                    if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
+                    {
+                        data = d;
+                        list.Add(d);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                }
+
+                foreach (var property in resourceType)
+                {
+                    property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
+                }
+            }
+
+            var response = new UserResponse(info, resource, list.ToArray());
+            return response;
+        }
+
+        private void ApplyEntityChanges(UserRequest user, User item)
+        {
+            var entityEntry = _db.Entry(item);
+
+            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            {
+                object data;
+                if (resourceType.Key == typeof(UserResource))
+                {
+                    data = user.Resource;
+                }
+                else
+                {
+                    data = user.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
+                }
+
+                foreach (var property in resourceType)
+                {
+                    entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
+                }
+            }
+        }
     }
 }

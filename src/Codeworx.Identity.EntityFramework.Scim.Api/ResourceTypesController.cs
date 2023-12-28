@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<ListResponse<ResourceTypeResponse>>> GetResourceTypesAsync([FromQuery] string filter)
+        public async Task<ActionResult<ListResponse>> GetResourceTypesAsync([FromQuery] string filter)
         {
             if (filter != null)
             {
@@ -32,7 +33,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             await Task.Yield();
 
-            return new ListResponse<ResourceTypeResponse>(result);
+            return new ListResponse(result);
         }
 
         [HttpGet("{resource}")]
@@ -55,15 +56,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         private ResourceTypeResponse GetUserResourceInfo()
         {
             ResourceTypeResponse resourceType;
-            var info = new ScimResponseInfo("User", this.Url.ActionLink(controller: "ResourceTypes")!, null, null);
-            resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(this.Url.ActionLink(controller: "Users")!, "User", ScimConstants.Schemas.User));
+            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "User" })!;
+            var info = new ScimResponseInfo("User", resourceTypeUrl, null, null);
+
+            var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUsers")!;
+            resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(userUrl, "User", ScimConstants.Schemas.User));
             return resourceType;
         }
 
         private ResourceTypeResponse GetGroupResourceInfo()
         {
-            var info = new ScimResponseInfo("Group", this.Url.ActionLink(controller: "ResourceTypes")!, null, null);
-            var resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(this.Url.ActionLink(controller: "Groups")!, "Group", ScimConstants.Schemas.Group));
+            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "Group" })!;
+            var info = new ScimResponseInfo("Group", resourceTypeUrl, null, null);
+
+            var groupUrl = this.Url.ActionLink(controller: "Groups", action: "GetGroups")!;
+            var resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(groupUrl, "Group", ScimConstants.Schemas.Group));
             return resourceType;
         }
     }

@@ -31,8 +31,16 @@ internal class Program
             DataSource = Path.Combine(Path.GetTempPath(), "IdentityDemo.db"),
         };
 
-        // setup swagger
+        // setup scim
         builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
+        builder.Services.ScimUserPropertyBuilder()
+            .AddUserProperty(d => d.UserName, d => d.Name);
+
+        builder.Services.ScimGroupPropertyBuilder()
+            .AddGroupProperty(d => d.DisplayName, d => d.Name);
+        ////services.AddScimUserSchemaExtension<EnterpriseUserResource>(ScimConstants.Schemas.EnterpriseUser);
+
+        // setup swagger
         builder.Services.AddScoped<IContextWrapper, DbContextWrapper<DemoIdentityDbContext>>();
         builder.Services.AddOpenApiDocument<DemoIdentityDbContext>((options, s) =>
         {

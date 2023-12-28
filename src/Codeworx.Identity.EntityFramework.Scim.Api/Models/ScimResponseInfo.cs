@@ -4,10 +4,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 {
     public class ScimResponseInfo
     {
-        public ScimResponseInfo(string id, string baseUri, DateTime? created, DateTime? lastModified)
+        public ScimResponseInfo(string id, string location, DateTime? created, DateTime? lastModified)
         {
             Id = id;
-            BaseUri = baseUri;
+            Location = location;
             Created = created;
             LastModified = lastModified;
         }
@@ -16,7 +16,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 
         public string? ExternalId { get; set; }
 
-        public string BaseUri { get; set; }
+        public string Location { get; set; }
 
         public DateTime? Created { get; set; }
 

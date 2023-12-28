@@ -11,8 +11,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 
         public List<GroupMemberResource>? Members { get; set; }
 
-        string IResourceType.ResourceType => ScimConstants.ResourceTypes.User;
+        string IResourceType.ResourceType => ScimConstants.ResourceTypes.Group;
 
-        string ISchemaResource.Schema => ScimConstants.Schemas.User;
+        string ISchemaResource.Schema => ScimConstants.Schemas.Group;
     }
 }

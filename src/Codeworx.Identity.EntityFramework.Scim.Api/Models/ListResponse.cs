@@ -1,12 +1,11 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 {
-    public class ListResponse<T>
+    public class ListResponse
     {
-        public ListResponse(int startIndex, int totalResults, int itemsPerPage, List<T> resources)
+        public ListResponse(int startIndex, int totalResults, int itemsPerPage, IList resources)
         {
             Schemas = new string[]
             {
@@ -20,7 +19,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
             Resources = resources;
         }
 
-        public ListResponse(List<T> resources)
+        public ListResponse(IList resources)
         {
             Schemas = new string[]
             {
@@ -42,6 +41,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 
         public int TotalResults { get; set; }
 
-        public List<T> Resources { get; }
+        public IList Resources { get; }
     }
 }

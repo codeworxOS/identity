@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
@@ -18,15 +19,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     public class GroupsController : Controller
     {
         private readonly DbContext _db;
+        private readonly IEnumerable<IGroupSchemaProperty> _mappedProperties;
 
-        public GroupsController(IContextWrapper contextWrapper)
+        public GroupsController(IContextWrapper contextWrapper, IEnumerable<IGroupSchemaProperty> mappedProperties)
         {
             _db = contextWrapper.Context;
+            _mappedProperties = mappedProperties;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse<GroupResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count)
+        public async Task<ListResponse> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
@@ -48,14 +51,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             foreach (var item in groups)
             {
-                var info = new ScimResponseInfo(item.Id.ToString("N"), this.Url.ActionLink(controller: "Groups")!, DateTime.Today, DateTime.Today);
-
-                var response = new GroupResponse(info, new GroupResource { }, new ISchemaResource[] { });
+                var response = GenerateGroupResponse(item);
 
                 result.Add(response);
             }
 
-            return new ListResponse<GroupResponse>(startIndex, totalResults, count, result);
+            return new ListResponse(startIndex, totalResults, count, result);
         }
 
         [HttpGet("{id}")]
@@ -63,16 +64,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id)
         {
-            var group = await _db.Set<Group>().FirstOrDefaultAsync(x => x.Id == id);
+            var item = await _db.Set<Group>().FirstOrDefaultAsync(x => x.Id == id);
 
-            if (group == null)
+            if (item == null)
             {
                 return NotFound();
             }
 
-            var info = new ScimResponseInfo(group.Id.ToString("N"), this.Url.ActionLink(controller: "Groups")!, DateTime.Today, DateTime.Today);
-
-            var response = new GroupResponse(info, new GroupResource(), new ISchemaResource[] { });
+            var response = GenerateGroupResponse(item);
 
             return response;
         }
@@ -80,25 +79,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<GroupResponse>> AddGroupAsync([RequestResourceBinder] GroupResponse group)
+        public async Task<ActionResult<GroupResponse>> AddGroupAsync([RequestResourceBinder] GroupRequest group)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var entity = new Group
+                var item = new Group
                 {
                     Id = Guid.NewGuid(),
                 };
 
-                _db.Add(entity);
+                _db.Add(item);
 
-                // ToDo DI?
-                ////entity.ApplyParameters(group, _parameter);
+                ApplyEntityChanges(group, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                var response = await GetGroupAsync(entity.Id);
+                var response = await GetGroupAsync(item.Id);
                 return CreatedAtAction(nameof(AddGroupAsync), response.Value);
             }
         }
@@ -106,25 +104,86 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GroupResponse>> UpdateGroupAsync(Guid id, [RequestResourceBinder] GroupResponse group)
+        public async Task<ActionResult<GroupResponse>> UpdateGroupAsync(Guid id, [RequestResourceBinder] GroupRequest group)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
-                var entity = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
+                var item = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
 
-                if (entity == null)
+                if (item == null)
                 {
                     return NotFound();
                 }
 
-                // ToDo DI?
-                //// entity.ApplyParameters(group, _parameters);
+                ApplyEntityChanges(group, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return Ok(await GetGroupAsync(entity.Id));
+                return Ok(await GetGroupAsync(item.Id));
+            }
+        }
+
+        private GroupResponse GenerateGroupResponse(Group item)
+        {
+            var groupUrl = this.Url.ActionLink(controller: "Groups", action: "GetGroup", values: new { id = item.Id.ToString("N") })!;
+
+            var info = new ScimResponseInfo(item.Id.ToString("N"), groupUrl, DateTime.Today, DateTime.Today);
+
+            var entityEntry = _db.Entry(item);
+            var resource = new GroupResource();
+            var list = new List<ISchemaResource>();
+            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            {
+                object data;
+                if (resourceType.Key == typeof(GroupResource))
+                {
+                    data = resource;
+                }
+                else
+                {
+                    if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
+                    {
+                        data = d;
+                        list.Add(d);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+                }
+
+                foreach (var property in resourceType)
+                {
+                    property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
+                }
+            }
+
+            var response = new GroupResponse(info, resource, list.ToArray());
+            return response;
+        }
+
+        private void ApplyEntityChanges(GroupRequest groupRequest, Group item)
+        {
+            var entityEntry = _db.Entry(item);
+
+            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            {
+                object data;
+                if (resourceType.Key == typeof(GroupResource))
+                {
+                    data = groupRequest.Resource;
+                }
+                else
+                {
+                    data = groupRequest.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
+                }
+
+                foreach (var property in resourceType)
+                {
+                    entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
+                }
             }
         }
     }
