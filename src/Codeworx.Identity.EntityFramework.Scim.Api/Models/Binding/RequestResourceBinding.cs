@@ -18,14 +18,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding
         private readonly IHttpRequestStreamReaderFactory _reader;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IOptions<MvcOptions> _mvcOptions;
-        private readonly IEnumerable<IUserSchemaExtension> _userSchemaExtensions;
+        private readonly IEnumerable<ISchemaExtension> _schemaExtensions;
 
-        public RequestResourceBinding(IHttpRequestStreamReaderFactory reader, ILoggerFactory loggerFactory, IOptions<MvcOptions> mvcOptions, IEnumerable<IUserSchemaExtension> userSchemaExtensions)
+        public RequestResourceBinding(IHttpRequestStreamReaderFactory reader, ILoggerFactory loggerFactory, IOptions<MvcOptions> mvcOptions, IEnumerable<ISchemaExtension> schemaExtensions)
         {
             _reader = reader;
             _loggerFactory = loggerFactory;
             _mvcOptions = mvcOptions;
-            _userSchemaExtensions = userSchemaExtensions;
+            _schemaExtensions = schemaExtensions;
         }
 
         public async Task BindModelAsync(ModelBindingContext bindingContext)
@@ -46,9 +46,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding
                 },
             };
 
-            foreach (var userExtension in _userSchemaExtensions)
+            foreach (var extension in _schemaExtensions)
             {
-                options.JsonSerializerOptions.Converters.Add(new ScimSchemaConverter(userExtension.Schema, userExtension.TargetType));
+                options.JsonSerializerOptions.Converters.Add(new ScimSchemaConverter(extension.Schema, extension.TargetType));
             }
 
             var formatter = new SystemTextJsonInputFormatter(options, _loggerFactory.CreateLogger<SystemTextJsonInputFormatter>());

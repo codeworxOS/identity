@@ -1,53 +1,45 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class PropertyBuilder<TResource>
-        where TResource : ISchemaResource, new()
+    public class PropertyBuilder<TResource, TEntity>
+        where TResource : IScimResource
+        where TEntity : class
     {
-        private IServiceCollection _services;
+        private readonly IServiceCollection _services;
 
         public PropertyBuilder(IServiceCollection services)
         {
             _services = services;
         }
 
-        public PropertyBuilder<TResource> AddUserProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<User, TData>> entityExpression)
+        public PropertyBuilder<TResource, TEntity> AddMapping(IResourceMapping<TEntity> mapping)
         {
-            var body = entityExpression.Body;
-            if (body is MemberExpression me)
-            {
-                return this.AddUserProperty(resourceExpression, me.Member.Name);
-            }
-
-            throw new NotSupportedException();
-        }
-
-        public PropertyBuilder<TResource> AddUserProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, string entityPropertyName)
-        {
-            _services.AddSingleton<IUserSchemaProperty>(new UserSchemaProperty<TResource, TData>(resourceExpression, entityPropertyName));
+            _services.AddSingleton(mapping);
 
             return this;
         }
 
-        public PropertyBuilder<TResource> AddGroupProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<Group, TData>> entityExpression)
+        public PropertyBuilder<TResource, TEntity> Schema(string schema)
         {
-            var body = entityExpression.Body;
-            if (body is MemberExpression me)
-            {
-                return this.AddGroupProperty(resourceExpression, me.Member.Name);
-            }
-
-            throw new NotSupportedException();
+            _services.AddSingleton<ISchemaExtension>(new SchemaExtension(schema, typeof(TResource)));
+            return this;
         }
 
-        public PropertyBuilder<TResource> AddGroupProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, string entityPropertyName)
+        public PropertyBuilder<TResource, TEntity> AddClrProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<TEntity, TData>> entityExpression, bool readOnly = false)
         {
-            _services.AddSingleton<IGroupSchemaProperty>(new GroupSchemaProperty<TResource, TData>(resourceExpression, entityPropertyName));
+            _services.AddSingleton<IResourceMapping<TEntity>>(new ClrPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, entityExpression, readOnly));
+
+            return this;
+        }
+
+        public PropertyBuilder<TResource, TEntity> AddShadowProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, string propertyName)
+        {
+            _services.AddSingleton<IResourceMapping<TEntity>>(new ShadowPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, propertyName));
 
             return this;
         }

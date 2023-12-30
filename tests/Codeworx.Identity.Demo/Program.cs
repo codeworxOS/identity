@@ -1,6 +1,9 @@
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Demo.Database;
 using Codeworx.Identity.EntityFrameworkCore.Api;
+using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Codeworx.Identity.Mail;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authorization;
@@ -33,12 +36,17 @@ internal class Program
 
         // setup scim
         builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
-        builder.Services.ScimUserPropertyBuilder()
-            .AddUserProperty(d => d.UserName, d => d.Name);
+        builder.Services.AddScimProperties<User, UserResource>(d => d.AddClrProperty(d => d.UserName, d => d.Name));
 
-        builder.Services.ScimGroupPropertyBuilder()
-            .AddGroupProperty(d => d.DisplayName, d => d.Name);
-        ////services.AddScimUserSchemaExtension<EnterpriseUserResource>(ScimConstants.Schemas.EnterpriseUser);
+        builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true)
+                                                                 .AddClrProperty(d => d.Created, d => d.Created, true)
+                                                                 .AddClrProperty(d => d.LastModified, d => d.Created, true));
+
+        builder.Services.AddScimProperties<Group, GroupResource>(d => d.AddClrProperty(d => d.DisplayName, d => d.Name));
+
+        builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true));
+
+        ////builder.Services.AddScimProperties<User, EnterpriseUserResource>(d => d.Schema(ScimConstants.Schemas.EnterpriseUser));
 
         // setup swagger
         builder.Services.AddScoped<IContextWrapper, DbContextWrapper<DemoIdentityDbContext>>();

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
@@ -20,13 +19,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     public class UsersController : Controller
     {
         private readonly DbContext _db;
-        private readonly IEnumerable<IUserSchemaProperty> _mappedProperties;
         private readonly IResourceMapper<User> _mapper;
 
-        public UsersController(IContextWrapper contextWrapper, IEnumerable<IUserSchemaProperty> mappedProperties, IResourceMapper<User> mapper)
+        public UsersController(IContextWrapper contextWrapper, IResourceMapper<User> mapper)
         {
             _db = contextWrapper.Context;
-            _mappedProperties = mappedProperties;
             _mapper = mapper;
         }
 

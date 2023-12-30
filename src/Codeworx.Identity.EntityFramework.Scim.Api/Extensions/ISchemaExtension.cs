@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions
 {
-    public interface IUserSchemaExtension
+    public interface ISchemaExtension
     {
         string Schema { get; }
 
