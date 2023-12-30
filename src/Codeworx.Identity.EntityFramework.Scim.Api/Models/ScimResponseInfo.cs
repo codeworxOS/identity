@@ -1,8 +1,9 @@
 ﻿using System;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 {
-    public class ScimResponseInfo
+    public class ScimResponseInfo : IScimResource
     {
         public ScimResponseInfo(string id, string location, DateTime? created, DateTime? lastModified)
         {
@@ -10,6 +11,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
             Location = location;
             Created = created;
             LastModified = lastModified;
+        }
+
+        internal ScimResponseInfo()
+        {
+            Id = null!;
+            Location = null!;
         }
 
         public string Id { get; set; }

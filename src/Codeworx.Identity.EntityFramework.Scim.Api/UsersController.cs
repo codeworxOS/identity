@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
@@ -20,11 +21,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     {
         private readonly DbContext _db;
         private readonly IEnumerable<IUserSchemaProperty> _mappedProperties;
+        private readonly IResourceMapper<User> _mapper;
 
-        public UsersController(IContextWrapper contextWrapper, IEnumerable<IUserSchemaProperty> mappedProperties)
+        public UsersController(IContextWrapper contextWrapper, IEnumerable<IUserSchemaProperty> mappedProperties, IResourceMapper<User> mapper)
         {
             _db = contextWrapper.Context;
             _mappedProperties = mappedProperties;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -34,25 +37,27 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
             var query = _db.Set<User>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
-            var totalResults = await query.CountAsync();
+            var mapped = _mapper.GetResourceQuery(query);
+
+            var totalResults = await mapped.CountAsync();
 
             if (startIndex > 1)
             {
-                query = query.Skip(startIndex - 1);
+                mapped = mapped.Skip(startIndex - 1);
             }
 
             if (count > 0)
             {
-                query = query.Take(count);
+                mapped = mapped.Take(count);
             }
 
-            var users = await query.ToListAsync();
+            var users = await mapped.ToListAsync();
 
             var result = new List<UserResponse>();
 
             foreach (var item in users)
             {
-                UserResponse response = GenerateUserResponse(item);
+                UserResponse response = GenerateUserResponse(item.Values);
 
                 result.Add(response);
             }
@@ -65,14 +70,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId)
         {
-            var user = await _db.Set<User>().AsQueryable().Where(t => t.Id == userId).FirstOrDefaultAsync();
+            var query = _db.Set<User>().AsQueryable().Where(t => t.Id == userId);
+
+            var mapped = _mapper.GetResourceQuery(query);
+
+            var user = await mapped.FirstOrDefaultAsync().ConfigureAwait(false);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            UserResponse response = GenerateUserResponse(user);
+            UserResponse response = GenerateUserResponse(user.Values);
 
             return response;
         }
@@ -94,14 +103,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
                 _db.Add(item);
 
-                ApplyEntityChanges(user, item);
+                await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+
+                ////ApplyEntityChanges(user, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
                 var response = await GetUserAsync(item.Id);
-                return CreatedAtAction(nameof(AddUserAsync), response.Value);
+                return CreatedAtAction("AddUser", response.Value);
             }
         }
 
@@ -120,7 +131,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     return NotFound();
                 }
 
-                ApplyEntityChanges(user, item);
+                await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+
+                ////ApplyEntityChanges(user, item);
 
                 await _db.SaveChangesAsync();
 
@@ -171,66 +184,77 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return NoContent();
         }
 
-        private UserResponse GenerateUserResponse(User item)
+        private UserResponse GenerateUserResponse(IEnumerable<IScimResource> resources)
         {
-            var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUser", values: new { userId = item.Id.ToString("N") })!;
+            var info = resources.OfType<ScimResponseInfo>().FirstOrDefault();
 
-            var info = new ScimResponseInfo(item.Id.ToString("N"), userUrl, item.Created, item.Created);
-
-            var entityEntry = _db.Entry(item);
-            var resource = new UserResource();
-            var list = new List<ISchemaResource>();
-            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            if (info == null)
             {
-                object data;
-                if (resourceType.Key == typeof(UserResource))
-                {
-                    data = resource;
-                }
-                else
-                {
-                    if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
-                    {
-                        data = d;
-                        list.Add(d);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-                }
-
-                foreach (var property in resourceType)
-                {
-                    property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
-                }
+                throw new NotSupportedException("ScimResponseInfo must be mapped for entity!");
             }
 
-            var response = new UserResponse(info, resource, list.ToArray());
-            return response;
-        }
+            var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUser", values: new { userId = info.Id })!;
 
-        private void ApplyEntityChanges(UserRequest user, User item)
-        {
-            var entityEntry = _db.Entry(item);
+            info.Location = userUrl;
+            ////var info = new ScimResponseInfo(item.Id.ToString("N"), userUrl, item.Created, item.Created);
 
-            foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            var user = resources.OfType<UserResource>().FirstOrDefault();
+
+            if (user == null)
             {
-                object data;
-                if (resourceType.Key == typeof(UserResource))
-                {
-                    data = user.Resource;
-                }
-                else
-                {
-                    data = user.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
-                }
-
-                foreach (var property in resourceType)
-                {
-                    entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
-                }
+                throw new NotSupportedException("At least one property of UserResource must be mapped!");
             }
+
+            return new UserResponse(info, user, resources.OfType<ISchemaResource>().Except(new[] { user }).ToArray());
+
+            ////foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+            ////{
+            ////    object data;
+            ////    if (resourceType.Key == typeof(UserResource))
+            ////    {
+            ////        data = resource;
+            ////    }
+            ////    else
+            ////    {
+            ////        if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
+            ////        {
+            ////            data = d;
+            ////            list.Add(d);
+            ////        }
+            ////        else
+            ////        {
+            ////            throw new NotSupportedException();
+            ////        }
+            ////    }
+
+            ////    foreach (var property in resourceType)
+            ////    {
+            ////        property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
+            ////    }
+            ////}
         }
+
+        ////private void ApplyEntityChanges(UserRequest user, User item)
+        ////{
+        ////    var entityEntry = _db.Entry(item);
+
+        ////    foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
+        ////    {
+        ////        object data;
+        ////        if (resourceType.Key == typeof(UserResource))
+        ////        {
+        ////            data = user.Resource;
+        ////        }
+        ////        else
+        ////        {
+        ////            data = user.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
+        ////        }
+
+        ////        foreach (var property in resourceType)
+        ////        {
+        ////            entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
+        ////        }
+        ////    }
+        ////}
     }
 }

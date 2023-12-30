@@ -1,5 +1,9 @@
-﻿using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
+﻿using System;
+using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +15,12 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
         {
             services.AddScoped<IContextWrapper, DbContextWrapper<TContext>>();
+            services.AddSingleton(typeof(IResourceMapper<>), typeof(ResourceMapper<>));
+            services.AddSingleton<IResourceMapping<User>>(new ClrPropertyResourceMapping<User, UserResource, string>(p => p.UserName!, p => p.Name));
+            services.AddSingleton<IResourceMapping<Group>>(new ClrPropertyResourceMapping<Group, GroupResource, string>(p => p.DisplayName!, p => p.Name));
+            services.AddSingleton<IResourceMapping<User>>(new ClrPropertyResourceMapping<User, ScimResponseInfo, string>(p => p.Id, p => p.Id.ToString("N"), true));
+            services.AddSingleton<IResourceMapping<User>>(new ClrPropertyResourceMapping<User, ScimResponseInfo, DateTime?>(p => p.Created, p => p.Created, true));
+            services.AddSingleton<IResourceMapping<User>>(new ClrPropertyResourceMapping<User, ScimResponseInfo, DateTime?>(p => p.LastModified, p => p.Created, true));
 
             return services;
         }

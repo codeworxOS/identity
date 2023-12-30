@@ -1,7 +1,6 @@
 ﻿namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 {
-    public interface ISchemaResource : IScimResource
+    public interface IScimResource
     {
-        string Schema { get; }
     }
 }

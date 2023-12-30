@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
@@ -21,5 +22,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 
         [JsonIgnore]
         public ISchemaResource[] Extensions { get; }
+
+        public IEnumerable<ISchemaResource> Flatten()
+        {
+            yield return Resource;
+
+            foreach (var item in Extensions)
+            {
+                yield return item;
+            }
+        }
     }
 }
