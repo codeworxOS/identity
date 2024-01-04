@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 {
-    public class ClrPropertyResourceMapping<TEntity, TResource, TData> : ResourceMapping<TEntity, TResource, TData>
+    public class ClrPropertyResourceMapping<TEntity, TResource, TData> : ResourceMapping<TEntity, TResource, TData>, IReadOnly
         where TEntity : class
         where TResource : IScimResource
     {

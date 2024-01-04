@@ -14,6 +14,7 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
@@ -21,12 +22,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [AllowAnonymous]
     public class SchemasController : Controller
     {
+        private IContextWrapper _context;
         private IEnumerable<ISchemaExtension> _schemaExtensions;
         private IEnumerable<IResourceMapping<User>> _userMappings;
         private IEnumerable<IResourceMapping<Group>> _groupMappings;
 
-        public SchemasController(IEnumerable<ISchemaExtension> schemaExtensions, IEnumerable<IResourceMapping<User>> userMappings, IEnumerable<IResourceMapping<Group>> groupMappings)
+        public SchemasController(IContextWrapper context, IEnumerable<ISchemaExtension> schemaExtensions, IEnumerable<IResourceMapping<User>> userMappings, IEnumerable<IResourceMapping<Group>> groupMappings)
         {
+            _context = context;
             _schemaExtensions = schemaExtensions;
             _userMappings = userMappings;
             _groupMappings = groupMappings;
@@ -93,7 +96,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             {
                 if (mapping.ResourceExpression.Parameters.First().Type == type)
                 {
-                    AddAttribute(attributes, mapping.ResourceExpression);
+                    string? propertyName = (mapping as IPropertyName)?.PropertyName;
+                    bool readOnly = (mapping as IReadOnly)?.ReadOnly ?? false;
+                    AddAttribute(attributes, mapping.ResourceExpression, mapping.EntityExpression, propertyName, readOnly);
                 }
             }
 
@@ -101,7 +106,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             {
                 if (mapping.ResourceExpression.Parameters.First().Type == type)
                 {
-                    AddAttribute(attributes, mapping.ResourceExpression);
+                    string? propertyName = (mapping as IPropertyName)?.PropertyName;
+                    bool readOnly = (mapping as IReadOnly)?.ReadOnly ?? false;
+                    AddAttribute(attributes, mapping.ResourceExpression, mapping.EntityExpression, propertyName, readOnly);
                 }
             }
 
@@ -109,7 +116,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return schemaResponse;
         }
 
-        private void AddAttribute(List<SchemaDataAttributeResource> attributes, LambdaExpression resourceExpression)
+        private void AddAttribute(List<SchemaDataAttributeResource> attributes, LambdaExpression resourceExpression, LambdaExpression entityExpression, string? shadowProperty = null, bool readOnly = false)
         {
             var paths = new List<MemberExpression>();
 
@@ -170,14 +177,47 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                         memberType = "dateTime";
                     }
 
-                    bool isRequired = false;
-                    string mutable = "readWrite";
+                    var entityInfo = GetEntityPropertyDetails(entityExpression, shadowProperty);
+                    string mutable = readOnly ? "readOnly" : "readWrite";
                     string returned = "default";
-                    string uniqueness = "none";
 
-                    currentAttributes.Add(new SchemaDataAttributeResource(entry.Member.Name, memberType, false, null, isRequired, null, false, mutable, returned, uniqueness, null));
+                    currentAttributes.Add(new SchemaDataAttributeResource(entry.Member.Name, memberType, false, null, entityInfo.Required, null, false, mutable, returned, entityInfo.Unique ? "global" : "none", null));
                 }
             }
+        }
+
+        private (bool Required, bool Unique) GetEntityPropertyDetails(LambdaExpression entityExpression, string? propertyName = null)
+        {
+            var type = _context.Context.Model.FindEntityType(entityExpression.Parameters[0].Type);
+            if (type == null)
+            {
+                throw new NotSupportedException("EntityType does not exist in model!");
+            }
+
+            IProperty? property = null;
+
+            if (propertyName != null)
+            {
+                property = type!.FindProperty(propertyName);
+            }
+            else
+            {
+                var member = entityExpression.Body as MemberExpression;
+
+                if (member == null)
+                {
+                    throw new NotSupportedException("Only member expressions are supported e.g. (p.Username or p.Name.FirstName)");
+                }
+
+                property = type.FindProperty(member.Member);
+            }
+
+            if (property == null)
+            {
+                throw new NotSupportedException("Property not found!");
+            }
+
+            return (!property.IsNullable, property.IsUniqueIndex() || (type.FindIndex(property)?.IsUnique ?? false));
         }
     }
 }

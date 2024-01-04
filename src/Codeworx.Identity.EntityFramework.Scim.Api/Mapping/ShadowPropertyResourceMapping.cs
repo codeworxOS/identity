@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 {
-    public class ShadowPropertyResourceMapping<TEntity, TResource, TData> : ResourceMapping<TEntity, TResource, TData>
+    public class ShadowPropertyResourceMapping<TEntity, TResource, TData> : ResourceMapping<TEntity, TResource, TData>, IPropertyName
         where TEntity : class
         where TResource : IScimResource
     {
