@@ -92,6 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var builder = new IdentityServiceBuilder(collection);
 
             builder.RegisterCoreServices()
+                .AddDefaultSecretGenerator()
                 .Argon2()
                 .WithAesSymmetricEncryption();
 
