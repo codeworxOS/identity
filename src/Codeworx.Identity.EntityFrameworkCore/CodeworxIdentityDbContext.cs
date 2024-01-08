@@ -55,7 +55,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         public DbSet<Tenant> Tenants { get; set; }
 
-        public DbSet<TenantUser> TenantUsers { get; set; }
+        public DbSet<TenantRightHolder> TenantUsers { get; set; }
 
         public DbSet<UserInvitation> UserInvitations { get; set; }
 
@@ -87,7 +87,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             modelBuilder.ApplyConfiguration(new ScopeClaimEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ScopeHierarchyEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TenantEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new TenantUserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TenantRightHolderEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserInvitationEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserPasswordHistoryEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ValidRedirectUrlEntityTypeConfiguration());

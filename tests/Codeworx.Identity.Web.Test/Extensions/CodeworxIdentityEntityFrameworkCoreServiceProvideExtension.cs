@@ -97,15 +97,19 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(TestConstants.Tenants.DefaultTenant.Id),
                             Name = TestConstants.Tenants.DefaultTenant.Name,
-                            Users =
+                            RightHolders =
                             {
-                                new TenantUser
+                                new TenantRightHolder
                                 {
                                     RightHolderId = Guid.Parse(TestConstants.Users.DefaultAdmin.UserId),
                                 },
-                                new TenantUser
+                                new TenantRightHolder
                                 {
                                     RightHolderId = Guid.Parse(TestConstants.Users.MultiTenant.UserId),
+                                },
+                                new TenantRightHolder
+                                {
+                                    RightHolderId = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
                                 },
                             },
                         });
@@ -119,11 +123,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         {
                             Id = Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id),
                             Name = TestConstants.Tenants.DefaultSecondTenant.Name,
-                            Users =
+                            RightHolders =
                             {
-                                new TenantUser
+                                new TenantRightHolder
                                 {
                                     RightHolderId = Guid.Parse(TestConstants.Users.MultiTenant.UserId),
+                                },
+                                                                new TenantRightHolder
+                                {
+                                    RightHolderId = Guid.Parse(TestConstants.Groups.DefaultAdminGroupId),
                                 },
                             },
                         });
@@ -314,8 +322,8 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         context.Users.Add(invitationUser);
 
                         context.TenantUsers.AddRange(
-                        new TenantUser { TenantId = Guid.Parse(TestConstants.Tenants.DefaultTenant.Id), RightHolderId = invitationUser.Id },
-                        new TenantUser { TenantId = Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id), RightHolderId = invitationUser.Id });
+                        new TenantRightHolder { TenantId = Guid.Parse(TestConstants.Tenants.DefaultTenant.Id), RightHolderId = invitationUser.Id },
+                        new TenantRightHolder { TenantId = Guid.Parse(TestConstants.Tenants.DefaultSecondTenant.Id), RightHolderId = invitationUser.Id });
 
                         context.UserInvitations.Add(new UserInvitation { RedirectUri = "https://example.org/redirect", UserId = invitationUser.Id, InvitationCode = "abc", ValidUntil = DateTime.UtcNow.AddMinutes(10) });
                     }

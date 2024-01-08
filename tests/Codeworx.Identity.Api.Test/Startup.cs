@@ -156,7 +156,7 @@ namespace Codeworx.Identity.Api.Test
 
             app.UseCodeworxIdentity();
 
-            app.UseSwaggerUi3(settings =>
+            app.UseSwaggerUi(settings =>
             {
                 settings.OAuth2Client = new OAuth2ClientSettings
                 {

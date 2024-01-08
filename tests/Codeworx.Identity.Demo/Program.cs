@@ -130,7 +130,7 @@ internal class Program
 
         app.UseStaticFiles();
 
-        app.UseSwaggerUi3(options =>
+        app.UseSwaggerUi(options =>
         {
             options.OAuth2Client = new OAuth2ClientSettings
             {

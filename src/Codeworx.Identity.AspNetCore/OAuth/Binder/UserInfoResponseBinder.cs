@@ -21,7 +21,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                 throw new ArgumentNullException(nameof(response));
             }
 
-            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
+            response.Headers.Append(HeaderNames.ContentType, "application/json;charset=utf-8");
 
             if (headerOnly)
             {

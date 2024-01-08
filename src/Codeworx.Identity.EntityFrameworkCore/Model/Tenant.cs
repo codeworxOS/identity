@@ -9,7 +9,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
     {
         public Tenant()
         {
-            this.Users = new HashSet<TenantUser>();
+            this.RightHolders = new HashSet<TenantRightHolder>();
         }
 
         public Guid Id { get; set; }
@@ -20,6 +20,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public AuthenticationMode AuthenticationMode { get; set; }
 
-        public ICollection<TenantUser> Users { get; }
+        public ICollection<TenantRightHolder> RightHolders { get; }
     }
 }

@@ -9,7 +9,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
     {
         public User()
         {
-            this.Tenants = new HashSet<TenantUser>();
             this.Clients = new HashSet<ClientConfiguration>();
             this.IdentityCaches = new HashSet<IdentityCache>();
             this.Invitations = new HashSet<UserInvitation>();
@@ -41,8 +40,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         public string PasswordHash { get; set; }
 
         public AuthenticationMode AuthenticationMode { get; set; }
-
-        public ICollection<TenantUser> Tenants { get; }
 
         public ICollection<ClientConfiguration> Clients { get; }
 

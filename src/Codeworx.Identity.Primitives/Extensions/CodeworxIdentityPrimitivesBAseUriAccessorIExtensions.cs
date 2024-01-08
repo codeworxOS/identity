@@ -13,6 +13,11 @@ namespace Codeworx.Identity
                 return baseUriAccessor.BaseUri.IsBaseOf(toCheck);
             }
 
+            if (uri.StartsWith("//"))
+            {
+                return false;
+            }
+
             return true;
         }
     }
