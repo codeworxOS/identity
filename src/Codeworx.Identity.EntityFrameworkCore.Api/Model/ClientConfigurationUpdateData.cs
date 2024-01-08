@@ -18,6 +18,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public ClientType ClientType { get; set; }
 
-        public Guid? UserId { get; set; }
+        public UserInfoData User { get; set; }
     }
 }

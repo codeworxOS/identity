@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,17 +31,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IEnumerable<ClientConfigurationInfoData>> GetClientConfigurationsAsync()
         {
-            var configurations = await _db.Context.Set<ClientConfiguration>().Select(t => new ClientConfigurationInfoData
+            var configurations = await _db.Context.Set<ClientConfiguration>().Select(p => new ClientConfigurationInfoData
             {
-                Id = t.Id,
-                AccessTokenType = t.AccessTokenType,
-                AccessTokenTypeConfiguration = t.AccessTokenTypeConfiguration,
-                AuthenticationMode = t.AuthenticationMode,
-                ClientType = t.ClientType,
-                TokenExpiration = t.TokenExpiration,
-                UserId = t.UserId,
-                Scopes = t.ScopeAssignments.Select(t => t.ScopeId).ToList(),
-                ValidRedirectUrls = t.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                Id = p.Id,
+                AccessTokenType = p.AccessTokenType,
+                AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
+                AuthenticationMode = p.AuthenticationMode,
+                ClientType = p.ClientType,
+                TokenExpiration = p.TokenExpiration,
+                User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
+                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
+                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
 
             return configurations;
@@ -58,10 +60,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
                 AuthenticationMode = p.AuthenticationMode,
                 TokenExpiration = p.TokenExpiration,
-                UserId = p.UserId,
+                User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 ClientType = p.ClientType,
-                Scopes = p.ScopeAssignments.Select(t => t.ScopeId).ToList(),
+                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
                 ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                HasClientSecret = p.ClientSecretHash != null,
             }).FirstOrDefaultAsync();
 
             if (configuration == null)
@@ -84,17 +87,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotImplementedException();
             }
 
-            var configurations = await _db.Context.Set<ClientConfiguration>().Where(p => p.UserId == userId).Select(t => new ClientConfigurationInfoData
+            var configurations = await _db.Context.Set<ClientConfiguration>().Where(p => p.UserId == userId).Select(p => new ClientConfigurationInfoData
             {
-                Id = t.Id,
-                AccessTokenType = t.AccessTokenType,
-                AccessTokenTypeConfiguration = t.AccessTokenTypeConfiguration,
-                AuthenticationMode = t.AuthenticationMode,
-                ClientType = t.ClientType,
-                TokenExpiration = t.TokenExpiration,
-                UserId = t.UserId,
-                Scopes = t.ScopeAssignments.Select(t => t.ScopeId).ToList(),
-                ValidRedirectUrls = t.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                Id = p.Id,
+                AccessTokenType = p.AccessTokenType,
+                AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
+                AuthenticationMode = p.AuthenticationMode,
+                ClientType = p.ClientType,
+                TokenExpiration = p.TokenExpiration,
+                User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
+                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
+                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
 
             return configurations;
@@ -107,23 +111,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             var entity = new ClientConfiguration
             {
                 Id = Guid.NewGuid(),
-                ClientSecretHash = _hashingProvider.Create(configuration.Secret),
                 AccessTokenType = configuration.AccessTokenType,
                 AccessTokenTypeConfiguration = configuration.AccessTokenTypeConfiguration,
                 AuthenticationMode = configuration.AuthenticationMode,
                 ClientType = configuration.ClientType,
                 TokenExpiration = configuration.TokenExpiration,
-                UserId = configuration.UserId,
+                UserId = configuration.User?.Id,
             };
+
+            string secret = null;
+            if (configuration.ClientType == ClientType.Web || configuration.ClientType == ClientType.ApiKey || configuration.ClientType == ClientType.Backend)
+            {
+                secret = GenerateClientSecret();
+                entity.ClientSecretHash = _hashingProvider.Create(secret);
+            }
 
             _db.Context.Add(entity);
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
 
-            return await GetClientConfigurationByIdAsync(entity.Id);
+            var result = await GetClientConfigurationByIdAsync(entity.Id);
+            result.ClientSecret = secret;
+            return result;
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ClientConfigurationInfoData> UpdateClientConfigurationAsync([FromBody] ClientConfigurationUpdateData configuration)
         {
@@ -140,11 +153,39 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             entity.AuthenticationMode = configuration.AuthenticationMode;
             entity.ClientType = configuration.ClientType;
             entity.TokenExpiration = configuration.TokenExpiration;
-            entity.UserId = configuration.UserId;
+            entity.UserId = configuration.User.Id;
 
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
 
             return await GetClientConfigurationByIdAsync(configuration.Id);
+        }
+
+        [HttpPut("{id:guid}/reset-secret")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ClientConfigurationInfoData> ResetClientSecretAsync(Guid id)
+        {
+            var entity = await _db.Context.Set<ClientConfiguration>().FirstOrDefaultAsync(x => x.Id == id);
+
+            if (entity == null)
+            {
+                // TODO return 404
+                throw new NotImplementedException();
+            }
+
+            if (entity.ClientType != ClientType.Web && entity.ClientType == ClientType.ApiKey && entity.ClientType == ClientType.Backend)
+            {
+                // TODO return 409
+                throw new NotImplementedException();
+            }
+
+            string secret = GenerateClientSecret();
+            entity.ClientSecretHash = _hashingProvider.Create(secret);
+            await _db.Context.SaveChangesAsync().ConfigureAwait(false);
+
+            var result = await GetClientConfigurationByIdAsync(entity.Id);
+            result.ClientSecret = secret;
+            return result;
         }
 
         [HttpDelete("{id:guid}")]
@@ -215,7 +256,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [HttpPost("{id}/redirect-urls")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<ValidRedirectUrlInfoData>> InsertValidRedirectUrlsAsync(Guid id, [FromBody] IEnumerable<string> urls)
+        public async Task<ValidRedirectUrlInfoData> InsertValidRedirectUrlsAsync(Guid id, [FromBody] string url)
         {
             if (!await _db.Context.Set<ClientConfiguration>().AnyAsync(x => x.Id == id))
             {
@@ -223,26 +264,29 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotSupportedException();
             }
 
-            var invalid = urls.Where(t => !Uri.IsWellFormedUriString(t, UriKind.Absolute)).ToList();
-            if (invalid.Any())
+            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
                 // TODO return 400
                 throw new NotSupportedException();
             }
 
-            var existing = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.ClientId == id).Select(t => t.Url).ToListAsync();
+            var existingEntries = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.ClientId == id).AsNoTracking().ToListAsync();
 
-            var entities = urls.Where(t => !existing.Contains(t, StringComparer.InvariantCultureIgnoreCase)).Select(t => new ValidRedirectUrl
+            var entity = existingEntries.FirstOrDefault(d => d.Url.Equals(url, StringComparison.InvariantCultureIgnoreCase));
+            if (entity == null)
             {
-                Id = Guid.NewGuid(),
-                ClientId = id,
-                Url = t,
-            }).ToList();
+                entity = new ValidRedirectUrl
+                {
+                    Id = Guid.NewGuid(),
+                    ClientId = id,
+                    Url = url,
+                };
 
-            _db.Context.AddRange(entities);
-            await _db.Context.SaveChangesAsync().ConfigureAwait(false);
+                _db.Context.Add(entity);
+                await _db.Context.SaveChangesAsync().ConfigureAwait(false);
+            }
 
-            return await GetValidRedirectUrlsAsync(id);
+            return await GetValidRedirectUrlByIdAsync(id, entity.Id);
         }
 
         [HttpDelete("{id}/redirect-urls/{urlId}")]
@@ -266,6 +310,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
             _db.Context.Remove(entity);
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        private string GenerateClientSecret()
+        {
+            string uniq = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).Replace('+', '-').Replace('/', '_')[..^1];
+            return uniq;
         }
     }
 }

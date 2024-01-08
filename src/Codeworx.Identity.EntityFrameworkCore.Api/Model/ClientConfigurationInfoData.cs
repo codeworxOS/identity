@@ -19,10 +19,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public ClientType ClientType { get; set; }
 
-        public Guid? UserId { get; set; }
+        public UserInfoData User { get; set; }
 
-        public List<Guid> Scopes { get; set; }
+        public List<ScopeInfoData> Scopes { get; set; }
 
         public List<string> ValidRedirectUrls { get; set; }
+
+        public string ClientSecret { get; set; }
+
+        public bool HasClientSecret { get; set; }
     }
 }

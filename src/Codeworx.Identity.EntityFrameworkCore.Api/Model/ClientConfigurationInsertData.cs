@@ -6,8 +6,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
     public class ClientConfigurationInsertData
     {
-        public string Secret { get; set; }
-
         public TimeSpan TokenExpiration { get; set; }
 
         public string AccessTokenType { get; set; }
@@ -18,6 +16,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public ClientType ClientType { get; set; }
 
-        public Guid? UserId { get; set; }
+        public UserInfoData User { get; set; }
     }
 }
