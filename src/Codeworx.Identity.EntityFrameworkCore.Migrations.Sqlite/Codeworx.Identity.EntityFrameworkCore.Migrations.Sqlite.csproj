@@ -1,31 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6</TargetFrameworks>
+		<TargetFrameworks>net6;net8;</TargetFrameworks>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(EfVersion)' == ''">
+	<PropertyGroup Condition="'$(EfVersion)' == '6'">
+		<TargetFrameworks>net6</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)' == '7'">
+		<TargetFrameworks>net6</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)' == '8'">
+		<TargetFrameworks>net8</TargetFrameworks>
+	</PropertyGroup>
+
+
+	<PropertyGroup Condition="'$(EfVersion)' == '' And '$(TargetFramework)' == 'net8' ">
+		<EfVersion>8</EfVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)' == '' And '$(TargetFramework)' == 'net6' ">
 		<EfVersion>6</EfVersion>
 	</PropertyGroup>
 
-  <ItemGroup Condition="'$(EfVersion)' == '6'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(EfVersion)' == '6'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
+	</ItemGroup>
 
 	<ItemGroup Condition="'$(EfVersion)' == '7'">
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
 	</ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Remove="StyleCop.Analyzers" />
-  </ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.3" />
+
+	<ItemGroup Condition="'$(EfVersion)' == '8'">
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
 	</ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Remove="StyleCop.Analyzers" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.7" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Migrations\" />
+	</ItemGroup>
 </Project>

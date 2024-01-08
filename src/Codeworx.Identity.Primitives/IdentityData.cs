@@ -69,7 +69,7 @@ namespace Codeworx.Identity
                     values.Add(GetClaimsStructure(run + 1, children));
                 }
 
-                result.Add(grp.Key, values.Count > 1 ? (object)values : values.FirstOrDefault());
+                result.Add(grp.Key, values.Count > 1 ? (object)values.ToList() : values.FirstOrDefault());
             }
 
             return result;

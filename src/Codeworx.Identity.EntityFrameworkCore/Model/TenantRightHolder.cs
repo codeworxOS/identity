@@ -2,7 +2,7 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
-    public class TenantUser
+    public class TenantRightHolder
     {
         public Guid RightHolderId { get; set; }
 
@@ -10,6 +10,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public Guid TenantId { get; set; }
 
-        public User User { get; set; }
+        public RightHolder RightHolder { get; set; }
     }
 }

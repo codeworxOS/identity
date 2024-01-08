@@ -423,7 +423,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.ToTable("Tenant", (string)null);
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantRightHolder", b =>
                 {
                     b.Property<Guid>("RightHolderId")
                         .HasColumnType("uniqueidentifier");
@@ -809,23 +809,23 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantRightHolder", b =>
                 {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", "RightHolder")
                         .WithMany("Tenants")
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
-                        .WithMany("Users")
+                        .WithMany("RightHolders")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Tenant");
+                    b.Navigation("RightHolder");
 
-                    b.Navigation("User");
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
@@ -908,6 +908,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.Navigation("MemberOf");
 
                     b.Navigation("Providers");
+
+                    b.Navigation("Tenants");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Scope", b =>
@@ -923,7 +925,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("RightHolders");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
@@ -940,8 +942,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.Navigation("Invitations");
 
                     b.Navigation("PasswordHistory");
-
-                    b.Navigation("Tenants");
                 });
 #pragma warning restore 612, 618
         }

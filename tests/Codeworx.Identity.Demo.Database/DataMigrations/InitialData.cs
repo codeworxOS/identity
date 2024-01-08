@@ -119,7 +119,7 @@ namespace Codeworx.Identity.Demo.Database.DataMigrations
 
             context.Tenants.Add(defaultTenant);
 
-            var defaultTenantUser = new TenantUser
+            var defaultTenantUser = new TenantRightHolder
             {
                 RightHolderId = defaultAdmin.Id,
                 TenantId = defaultTenant.Id,

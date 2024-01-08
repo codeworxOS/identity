@@ -33,7 +33,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
 
                 if (AuthenticationHeaderValue.TryParse(response.HttpContext.Request.Headers[HeaderNames.Authorization], out var authenticationHeaderValue))
                 {
-                    response.Headers.Add(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
+                    response.Headers.Append(HeaderNames.WWWAuthenticate, authenticationHeaderValue.Scheme);
                 }
             }
             else if (responseData.Error == Constants.OAuth.Error.InvalidRequest)
@@ -45,7 +45,7 @@ namespace Codeworx.Identity.AspNetCore.Binder
                 response.StatusCode = StatusCodes.Status400BadRequest;
             }
 
-            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
+            response.Headers.Append(HeaderNames.ContentType, "application/json;charset=utf-8");
 
             if (headerOnly)
             {

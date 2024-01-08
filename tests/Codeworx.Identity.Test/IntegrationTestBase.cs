@@ -74,6 +74,22 @@ namespace Codeworx.Identity.Test
             this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
         }
 
+        protected virtual async Task AuthenticateWindows()
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+
+            var response = await this.TestClient.PostAsync("test-setup/windowslogin",
+                                                           new FormUrlEncodedContent(new Dictionary<string, string>
+                                                                                     {
+                                                                                         {"username", TestConstants.Users.DefaultAdmin.UserName},
+                                                                                     }));
+
+            response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
+
+            var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith(".AspNetCore.Windows"));
+            this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+        }
+
         [TearDown()]
         public void TearDown()
         {
