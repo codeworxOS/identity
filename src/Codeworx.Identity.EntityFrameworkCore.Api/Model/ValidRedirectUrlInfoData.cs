@@ -6,8 +6,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
     {
         public Guid Id { get; set; }
 
-        public Guid ClientId { get; set; }
-
         public string Url { get; set; }
     }
 }

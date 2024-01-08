@@ -90,7 +90,8 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityServerOptions identityServerOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
-            builder.Argon2()
+            builder.AddDefaultSecretGenerator()
+                .Argon2()
                 .WithAesSymmetricEncryption();
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityServerOptions.AuthenticationScheme; })

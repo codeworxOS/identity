@@ -24,5 +24,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return builder.ReplaceService<ISymmetricDataEncryption, AesDataEncryption>(ServiceLifetime.Singleton);
         }
+
+        public static IIdentityServiceBuilder AddDefaultSecretGenerator(this IIdentityServiceBuilder builder)
+        {
+            return builder.ReplaceService<ISecretGenerator, DefaultSecretGenerator>(ServiceLifetime.Singleton);
+        }
     }
 }

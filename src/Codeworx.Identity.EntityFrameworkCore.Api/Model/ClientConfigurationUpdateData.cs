@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 
@@ -12,7 +13,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public string AccessTokenType { get; set; }
 
-        public string AccessTokenTypeConfiguration { get; set; }
+        public Dictionary<string, object> AccessTokenTypeConfiguration { get; set; }
 
         public AuthenticationMode AuthenticationMode { get; set; }
 

@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cryptography;
+using Codeworx.Identity.Cryptography.Argon2;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
@@ -20,30 +23,49 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
     {
         private readonly IContextWrapper _db;
         private readonly IHashingProvider _hashingProvider;
+        private readonly ISecretGenerator _secretGenerator;
+        private readonly ClientConfigurationOptions _options;
 
-        public ClientConfigurationController(IContextWrapper db, IHashingProvider hashingProvider)
+        public ClientConfigurationController(IContextWrapper db, IHashingProvider hashingProvider, ISecretGenerator secretGenerator, IOptionsSnapshot<ClientConfigurationOptions> options)
         {
             _db = db;
             _hashingProvider = hashingProvider;
+            _secretGenerator = secretGenerator;
+            _options = options.Value;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IEnumerable<ClientConfigurationInfoData>> GetClientConfigurationsAsync()
         {
-            var configurations = await _db.Context.Set<ClientConfiguration>().Select(p => new ClientConfigurationInfoData
+            var data = await _db.Context.Set<ClientConfiguration>().Select(p => new
             {
-                Id = p.Id,
-                AccessTokenType = p.AccessTokenType,
-                AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
-                AuthenticationMode = p.AuthenticationMode,
-                ClientType = p.ClientType,
-                TokenExpiration = p.TokenExpiration,
+                p.Id,
+                p.AccessTokenType,
+                p.AccessTokenTypeConfiguration,
+                p.AuthenticationMode,
+                p.ClientType,
+                p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
-                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
+
+            var scopes = await _db.Context.Set<ScopeAssignment>().Select(d => new { d.ClientId, Data = new ScopeInfoData { Id = d.ScopeId, DisplayName = d.Scope.ScopeKey } }).ToListAsync();
+            var redirectUrls = await _db.Context.Set<ValidRedirectUrl>().Select(d => new { d.ClientId, Data = new ValidRedirectUrlInfoData { Id = d.Id, Url = d.Url } }).ToListAsync();
+
+            var configurations = data.Select(d => new ClientConfigurationInfoData
+            {
+                Id = d.Id,
+                AccessTokenType = d.AccessTokenType,
+                AuthenticationMode = d.AuthenticationMode,
+                ClientType = d.ClientType,
+                TokenExpiration = d.TokenExpiration,
+                Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
+                ValidRedirectUrls = redirectUrls.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
+                User = d.User,
+                HasClientSecret = d.HasClientSecret,
+                AccessTokenTypeConfiguration = d.AccessTokenTypeConfiguration != null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(d.AccessTokenTypeConfiguration) : null,
+            });
 
             return configurations;
         }
@@ -53,25 +75,40 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ClientConfigurationInfoData> GetClientConfigurationByIdAsync(Guid id)
         {
-            var configuration = await _db.Context.Set<ClientConfiguration>().Where(p => p.Id == id).Select(p => new ClientConfigurationInfoData
+            var data = await _db.Context.Set<ClientConfiguration>().Where(p => p.Id == id).Select(p => new
             {
-                Id = p.Id,
-                AccessTokenType = p.AccessTokenType,
-                AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
-                AuthenticationMode = p.AuthenticationMode,
-                TokenExpiration = p.TokenExpiration,
+                p.Id,
+                p.AccessTokenType,
+                p.AccessTokenTypeConfiguration,
+                p.AuthenticationMode,
+                p.ClientType,
+                p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
-                ClientType = p.ClientType,
-                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).FirstOrDefaultAsync();
 
-            if (configuration == null)
+            if (data == null)
             {
                 // TODO return 404;
                 throw new NotImplementedException();
             }
+
+            var scopes = await _db.Context.Set<ScopeAssignment>().Where(d => d.ClientId == id).Select(d => new ScopeInfoData { Id = d.ScopeId, DisplayName = d.Scope.ScopeKey }).ToListAsync();
+            var redirectUrls = await _db.Context.Set<ValidRedirectUrl>().Where(d => d.ClientId == id).Select(d => new ValidRedirectUrlInfoData { Id = d.Id, Url = d.Url }).ToListAsync();
+
+            var configuration = new ClientConfigurationInfoData
+            {
+                Id = data.Id,
+                AccessTokenType = data.AccessTokenType,
+                AuthenticationMode = data.AuthenticationMode,
+                ClientType = data.ClientType,
+                Scopes = scopes,
+                TokenExpiration = data.TokenExpiration,
+                ValidRedirectUrls = redirectUrls,
+                User = data.User,
+                HasClientSecret = data.HasClientSecret,
+                AccessTokenTypeConfiguration = data.AccessTokenTypeConfiguration != null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(data.AccessTokenTypeConfiguration) : null,
+            };
 
             return configuration;
         }
@@ -87,42 +124,73 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotImplementedException();
             }
 
-            var configurations = await _db.Context.Set<ClientConfiguration>().Where(p => p.UserId == userId).Select(p => new ClientConfigurationInfoData
+            var data = await _db.Context.Set<ClientConfiguration>().Where(p => p.UserId == userId).Select(p => new
             {
-                Id = p.Id,
-                AccessTokenType = p.AccessTokenType,
-                AccessTokenTypeConfiguration = p.AccessTokenTypeConfiguration,
-                AuthenticationMode = p.AuthenticationMode,
-                ClientType = p.ClientType,
-                TokenExpiration = p.TokenExpiration,
+                p.Id,
+                p.AccessTokenType,
+                p.AccessTokenTypeConfiguration,
+                p.AuthenticationMode,
+                p.ClientType,
+                p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
-                Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
+
+            var scopes = await _db.Context.Set<ScopeAssignment>().Where(p => p.Client.UserId == userId).Select(d => new { d.ClientId, Data = new ScopeInfoData { Id = d.ScopeId, DisplayName = d.Scope.ScopeKey } }).ToListAsync();
+            var redirectUrls = await _db.Context.Set<ValidRedirectUrl>().Where(p => p.Client.UserId == userId).Select(d => new { d.ClientId, Data = new ValidRedirectUrlInfoData { Id = d.Id, Url = d.Url } }).ToListAsync();
+
+            var configurations = data.Select(d => new ClientConfigurationInfoData
+            {
+                Id = d.Id,
+                AccessTokenType = d.AccessTokenType,
+                AuthenticationMode = d.AuthenticationMode,
+                ClientType = d.ClientType,
+                TokenExpiration = d.TokenExpiration,
+                Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
+                ValidRedirectUrls = redirectUrls.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
+                User = d.User,
+                HasClientSecret = d.HasClientSecret,
+                AccessTokenTypeConfiguration = d.AccessTokenTypeConfiguration != null ? JsonConvert.DeserializeObject<Dictionary<string, object>>(d.AccessTokenTypeConfiguration) : null,
+            });
 
             return configurations;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ClientConfigurationInfoData> InsertClientConfigurationAsync([FromBody] ClientConfigurationInsertData configuration)
         {
             var entity = new ClientConfiguration
             {
                 Id = Guid.NewGuid(),
-                AccessTokenType = configuration.AccessTokenType,
-                AccessTokenTypeConfiguration = configuration.AccessTokenTypeConfiguration,
                 AuthenticationMode = configuration.AuthenticationMode,
                 ClientType = configuration.ClientType,
                 TokenExpiration = configuration.TokenExpiration,
                 UserId = configuration.User?.Id,
             };
 
+            if (!string.IsNullOrEmpty(configuration.AccessTokenType))
+            {
+                string config = null;
+                ////if (_configurationTypeLookup.TryGetValue(configuration.AccessTokenType, out var configType))
+                ////{
+                ////    config = GetSerializedConfig(configuration.AccessTokenTypeConfiguration, configType);
+                ////}
+                ////else
+                ////{
+                ////    // TODO return 404;
+                ////    throw new NotImplementedException();
+                ////}
+
+                entity.AccessTokenType = configuration.AccessTokenType;
+                entity.AccessTokenTypeConfiguration = config;
+            }
+
             string secret = null;
             if (configuration.ClientType == ClientType.Web || configuration.ClientType == ClientType.ApiKey || configuration.ClientType == ClientType.Backend)
             {
-                secret = GenerateClientSecret();
+                secret = _secretGenerator.Create(_options.SecretLength);
                 entity.ClientSecretHash = _hashingProvider.Create(secret);
             }
 
@@ -136,7 +204,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ClientConfigurationInfoData> UpdateClientConfigurationAsync([FromBody] ClientConfigurationUpdateData configuration)
         {
@@ -148,12 +215,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotImplementedException();
             }
 
-            entity.AccessTokenType = configuration.AccessTokenType;
-            entity.AccessTokenTypeConfiguration = configuration.AccessTokenTypeConfiguration;
+            if (!string.IsNullOrEmpty(configuration.AccessTokenType))
+            {
+                string config = null;
+                ////if (_configurationTypeLookup.TryGetValue(configuration.AccessTokenType, out var configType))
+                ////{
+                ////    config = GetSerializedConfig(configuration.AccessTokenTypeConfiguration, configType);
+                ////}
+                ////else
+                ////{
+                ////    // TODO return 404;
+                ////    throw new NotImplementedException();
+                ////}
+
+                entity.AccessTokenType = configuration.AccessTokenType;
+                entity.AccessTokenTypeConfiguration = config;
+            }
+            else
+            {
+                entity.AccessTokenType = null;
+                entity.AccessTokenTypeConfiguration = null;
+            }
+
             entity.AuthenticationMode = configuration.AuthenticationMode;
             entity.ClientType = configuration.ClientType;
             entity.TokenExpiration = configuration.TokenExpiration;
-            entity.UserId = configuration.User.Id;
+            entity.UserId = configuration.User?.Id;
 
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -179,7 +266,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 throw new NotImplementedException();
             }
 
-            string secret = GenerateClientSecret();
+            string secret = _secretGenerator.Create(_options.SecretLength);
             entity.ClientSecretHash = _hashingProvider.Create(secret);
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -219,7 +306,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             var redirectUrls = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.ClientId == id).Select(t => new ValidRedirectUrlInfoData
             {
                 Id = t.Id,
-                ClientId = t.ClientId,
                 Url = t.Url,
             }).ToListAsync();
 
@@ -240,7 +326,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             var redirectUrl = await _db.Context.Set<ValidRedirectUrl>().Where(t => t.Id == urlId).Select(t => new ValidRedirectUrlInfoData
             {
                 Id = t.Id,
-                ClientId = t.ClientId,
                 Url = t.Url,
             }).FirstOrDefaultAsync();
 
@@ -310,12 +395,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 
             _db.Context.Remove(entity);
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
-        }
-
-        private string GenerateClientSecret()
-        {
-            string uniq = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)).Replace('+', '-').Replace('/', '_')[..^1];
-            return uniq;
         }
     }
 }
