@@ -8,13 +8,14 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("scim/Users")]
+    [Route("{providerId}/scim/Users")]
     [AllowAnonymous]
     public class UsersController : Controller
     {
@@ -29,7 +30,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count)
+        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
@@ -65,7 +66,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpGet("{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId)
+        public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId, Guid providerId)
         {
             var query = _db.Set<User>().AsQueryable().Where(t => t.Id == userId);
 
@@ -86,10 +87,23 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<UserResponse>> AddUserAsync([RequestResourceBinder] UserRequest user)
+        public async Task<ActionResult<UserResponse>> AddUserAsync([RequestResourceBinder] UserRequest user, Guid providerId)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
+                if (user.ExternalId == null)
+                {
+                    return Conflict();
+                }
+
+                var existing = await _db.Set<AuthenticationProviderRightHolder>().Where(p => p.ProviderId == providerId && p.ExternalIdentifier == user.ExternalId)
+                                    .AnyAsync();
+
+                if (existing)
+                {
+                    return Conflict();
+                }
+
                 var item = new User
                 {
                     Id = Guid.NewGuid(),
@@ -98,17 +112,23 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     AuthenticationMode = Login.AuthenticationMode.Login,
                 };
 
+                var mapping = new AuthenticationProviderRightHolder
+                {
+                    ExternalIdentifier = user.ExternalId,
+                    ProviderId = providerId,
+                    RightHolderId = item.Id,
+                };
+
                 _db.Add(item);
+                _db.Add(mapping);
 
                 await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
-
-                ////ApplyEntityChanges(user, item);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                var response = await GetUserAsync(item.Id);
+                var response = await GetUserAsync(item.Id, providerId);
                 return CreatedAtAction("AddUser", response.Value);
             }
         }
@@ -117,7 +137,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserRequest user)
+        public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserRequest user, Guid providerId)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
@@ -136,7 +156,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
                 await transaction.CommitAsync();
 
-                return Ok(await GetUserAsync(item.Id));
+                return Ok(await GetUserAsync(item.Id, providerId));
             }
         }
 

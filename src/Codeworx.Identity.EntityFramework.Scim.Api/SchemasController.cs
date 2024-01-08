@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("scim/Schemas")]
+    [Route("{providerId}/scim/Schemas")]
     [AllowAnonymous]
     public class SchemasController : Controller
     {
@@ -175,6 +175,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     else if (type == typeof(DateTime))
                     {
                         memberType = "dateTime";
+                    }
+                    else if (type == typeof(string))
+                    {
+                        memberType = "string";
                     }
 
                     var entityInfo = GetEntityPropertyDetails(entityExpression, shadowProperty);

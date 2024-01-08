@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("scim/ServiceProviderConfig")]
+    [Route("{providerId}/scim/ServiceProviderConfig")]
     [AllowAnonymous]
     public class ServiceProviderConfigController : Controller
     {

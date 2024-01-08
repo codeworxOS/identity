@@ -2,10 +2,8 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 {
-    public class MultiValueResource<TValue>
+    public class MultiValueResource
     {
-        public TValue Value { get; set; } = default!;
-
         public string? Type { get; set; }
 
         public bool Primary { get; set; }

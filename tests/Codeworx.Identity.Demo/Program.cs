@@ -36,13 +36,26 @@ internal class Program
 
         // setup scim
         builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
-        builder.Services.AddScimProperties<User, UserResource>(d => d.AddClrProperty(d => d.UserName, d => d.Name));
+        builder.Services.AddScimProperties<User, UserResource>(d => d
+                                                    .AddClrProperty(d => d.UserName, d => d.Name)
+                                                    .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
+                                                    .AddShadowProperty(p => p.Name!.FamilyName, "LastName")
+                                                    .AddShadowProperty<EmailResource, string>(p => p.Emails!, "Email", "work", true));
 
         builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true)
                                                                  .AddClrProperty(d => d.Created, d => d.Created, true)
                                                                  .AddClrProperty(d => d.LastModified, d => d.Created, true));
 
-        builder.Services.AddScimProperties<Group, GroupResource>(d => d.AddClrProperty(d => d.DisplayName, d => d.Name));
+        builder.Services.AddScimProperties<Group, GroupResource>(d => d
+                                                    .AddClrProperty(d => d.DisplayName, d => d.Name)
+                                                    .AddNavigationProperty(
+                                                                d => d.Members!,
+                                                                d => d.Members.Select(x => new GroupMemberResource
+                                                                {
+                                                                    Value = x.RightHolderId.ToString("N"),
+                                                                    Ref = x.RightHolder is User ? "user" : "group",
+                                                                    Display = x.RightHolder.Name,
+                                                                }).ToList()));
 
         builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true));
 

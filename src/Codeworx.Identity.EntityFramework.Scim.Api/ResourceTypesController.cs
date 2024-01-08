@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
@@ -8,13 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
-    [Route("scim/ResourceTypes")]
+    [Route("{providerId}/scim/ResourceTypes")]
     [AllowAnonymous]
     public class ResourceTypesController : Controller
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<ListResponse>> GetResourceTypesAsync([FromQuery] string filter)
+        public async Task<ActionResult<ListResponse>> GetResourceTypesAsync([FromQuery] string filter, Guid providerId)
         {
             if (filter != null)
             {
@@ -26,8 +27,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
             List<ResourceTypeResponse> result = new List<ResourceTypeResponse>
             {
-                GetUserResourceInfo(),
-                GetGroupResourceInfo(),
+                GetUserResourceInfo(providerId),
+                GetGroupResourceInfo(providerId),
             };
 
             await Task.Yield();
@@ -37,38 +38,40 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet("{resource}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ResourceTypeResponse>> GetResourceTypeAsync(string resource)
+        public async Task<ActionResult<ResourceTypeResponse>> GetResourceTypeAsync(string resource, Guid providerId)
         {
             await Task.Yield();
 
             switch (resource)
             {
                 case "User":
-                    return GetUserResourceInfo();
+                    return GetUserResourceInfo(providerId);
                 case "Group":
-                    return GetGroupResourceInfo();
+                    return GetGroupResourceInfo(providerId);
                 default:
                     return NotFound();
             }
         }
 
-        private ResourceTypeResponse GetUserResourceInfo()
+        private ResourceTypeResponse GetUserResourceInfo(Guid providerId)
         {
             ResourceTypeResponse resourceType;
-            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "User" })!;
+            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "User", providerId = providerId })!;
             var info = new ScimResponseInfo("User", resourceTypeUrl, null, null);
 
-            var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUsers")!;
+            ////var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUsers", values: new { providerId = providerId })!;
+            var userUrl = "/Users";
             resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(userUrl, "User", ScimConstants.Schemas.User));
             return resourceType;
         }
 
-        private ResourceTypeResponse GetGroupResourceInfo()
+        private ResourceTypeResponse GetGroupResourceInfo(Guid providerId)
         {
-            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "Group" })!;
+            var resourceTypeUrl = this.Url.ActionLink(controller: "ResourceTypes", action: "GetResourceType", values: new { resource = "Group", providerId = providerId })!;
             var info = new ScimResponseInfo("Group", resourceTypeUrl, null, null);
 
-            var groupUrl = this.Url.ActionLink(controller: "Groups", action: "GetGroups")!;
+            ////var groupUrl = this.Url.ActionLink(controller: "Groups", action: "GetGroups", values: new { providerId = providerId })!;
+            var groupUrl = "/Groups";
             var resourceType = new ResourceTypeResponse(info, new Models.Resources.ResourceTypeResource(groupUrl, "Group", ScimConstants.Schemas.Group));
             return resourceType;
         }

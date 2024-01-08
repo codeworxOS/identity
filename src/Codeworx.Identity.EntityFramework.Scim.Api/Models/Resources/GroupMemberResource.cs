@@ -1,12 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
+﻿namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 {
-    public class GroupMemberResource
+    public class GroupMemberResource : MultiValueResource<string>
     {
-        public string? Id { get; set; }
-
-        [JsonPropertyName("$ref")]
-        public string? Ref { get; set; }
     }
 }
