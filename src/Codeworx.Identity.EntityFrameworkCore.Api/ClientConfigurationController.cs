@@ -41,7 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 TokenExpiration = p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
 
@@ -63,7 +63,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 ClientType = p.ClientType,
                 Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).FirstOrDefaultAsync();
 
@@ -97,7 +97,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 TokenExpiration = p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 Scopes = p.ScopeAssignments.Select(t => new ScopeInfoData { Id = t.ScopeId, DisplayName = t.Scope.ScopeKey }).ToList(),
-                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => t.Url).ToList(),
+                ValidRedirectUrls = p.ValidRedirectUrls.Select(t => new ValidRedirectUrlInfoData { ClientId = p.Id, Id = t.Id, Url = t.Url }).ToList(),
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
 

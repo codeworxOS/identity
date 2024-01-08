@@ -23,7 +23,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public List<ScopeInfoData> Scopes { get; set; }
 
-        public List<string> ValidRedirectUrls { get; set; }
+        public List<ValidRedirectUrlInfoData> ValidRedirectUrls { get; set; }
 
         public string ClientSecret { get; set; }
 
