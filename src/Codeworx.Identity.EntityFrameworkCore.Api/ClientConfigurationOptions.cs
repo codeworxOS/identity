@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.Cryptography.Argon2
+﻿namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
     public class ClientConfigurationOptions
     {
