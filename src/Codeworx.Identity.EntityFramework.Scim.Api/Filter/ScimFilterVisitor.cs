@@ -11,6 +11,38 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         {
         }
 
+        public override FilterNode VisitAndExp([NotNull] ScimFilterParser.AndExpContext context)
+        {
+            var left = context.filter().First().Accept(this);
+            var right = context.filter().Last().Accept(this);
+
+            return new LogicFilterNode(left, right, LogicOperator.Add);
+        }
+
+        public override FilterNode VisitOrExp([NotNull] ScimFilterParser.OrExpContext context)
+        {
+            var left = context.filter().First().Accept(this);
+            var right = context.filter().Last().Accept(this);
+
+            return new LogicFilterNode(left, right, LogicOperator.Or);
+        }
+
+        ////public override FilterNode VisitValPathAndExp([NotNull] ScimFilterParser.ValPathAndExpContext context)
+        ////{
+        ////    var left = context.valPathFilter().First().Accept(this);
+        ////    var right = context.valPathFilter().Last().Accept(this);
+
+        ////    return new LogicFilterNode(left, right, LogicOperator.Add);
+        ////}
+
+        ////public override FilterNode VisitValPathOrExp([NotNull] ScimFilterParser.ValPathOrExpContext context)
+        ////{
+        ////    var left = context.valPathFilter().First().Accept(this);
+        ////    var right = context.valPathFilter().Last().Accept(this);
+
+        ////    return new LogicFilterNode(left, right, LogicOperator.Or);
+        ////}
+
         public override FilterNode VisitOperatorExp([NotNull] ScimFilterParser.OperatorExpContext context)
         {
             FilterOperator op = FilterOperator.Equal;
