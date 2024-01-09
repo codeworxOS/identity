@@ -1,5 +1,6 @@
 ﻿using System;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builderAction(builder);
 
+            return services;
+        }
+
+        public static IServiceCollection AddScimSchema<TResource>(this IServiceCollection services, string name, string schema)
+        {
+            services.AddSingleton<ISchemaExtension>(new SchemaExtension(name, schema, typeof(TResource)));
             return services;
         }
     }

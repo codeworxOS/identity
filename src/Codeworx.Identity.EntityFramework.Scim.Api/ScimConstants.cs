@@ -23,6 +23,7 @@
             public const string Group = "Group";
             public const string Schema = "Schema";
             public const string ResourceType = "ResourceType";
+            public const string EnterpriseUser = "EnterpriseUser";
         }
     }
 }

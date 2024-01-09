@@ -10,7 +10,6 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,22 +21,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [AllowAnonymous]
     public class SchemasController : Controller
     {
-        private IContextWrapper _context;
-        private IEnumerable<ISchemaExtension> _schemaExtensions;
-        private IEnumerable<IResourceMapping<User>> _userMappings;
-        private IEnumerable<IResourceMapping<Group>> _groupMappings;
+        private readonly IResourceMapper<User> _userMapper;
+        private readonly IResourceMapper<Group> _groupMapper;
+        private readonly IContextWrapper _context;
+        private readonly IEnumerable<ISchemaExtension> _schemaExtensions;
+        private readonly IEnumerable<IResourceMapping<User>> _userMappings;
+        private readonly IEnumerable<IResourceMapping<Group>> _groupMappings;
 
-        public SchemasController(IContextWrapper context, IEnumerable<ISchemaExtension> schemaExtensions, IEnumerable<IResourceMapping<User>> userMappings, IEnumerable<IResourceMapping<Group>> groupMappings)
+        public SchemasController(
+            IContextWrapper context,
+            IEnumerable<ISchemaExtension> schemaExtensions,
+            IEnumerable<IResourceMapping<User>> userMappings,
+            IEnumerable<IResourceMapping<Group>> groupMappings,
+            IResourceMapper<User> userMapper,
+            IResourceMapper<Group> groupMapper)
         {
             _context = context;
             _schemaExtensions = schemaExtensions;
             _userMappings = userMappings;
             _groupMappings = groupMappings;
+            _userMapper = userMapper;
+            _groupMapper = groupMapper;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<ListResponse>> GetSchemasAsync([FromQuery] string filter)
+        public async Task<ActionResult<ListResponse>> GetSchemasAsync([FromQuery] string filter, Guid providerId)
         {
             if (filter != null)
             {
@@ -47,72 +56,65 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 return Forbid();
             }
 
-            List<SchemaDataResponse> result = new List<SchemaDataResponse>
-            {
-                GetSchemaData(typeof(UserResource), ScimConstants.Schemas.User),
-                GetSchemaData(typeof(GroupResource), ScimConstants.Schemas.Group),
-            };
+            var schemas = new List<SchemaDataResource>();
 
-            foreach (var extension in _schemaExtensions)
+            await foreach (var item in _userMapper.GetSchemasAsync(_context.Context))
             {
-                GetSchemaData(extension.TargetType, extension.Schema);
+                schemas.Add(item);
             }
 
-            await Task.Yield();
+            await foreach (var item in _groupMapper.GetSchemasAsync(_context.Context))
+            {
+                schemas.Add(item);
+            }
+
+            var result = schemas.Select(p => GetSchemaData(p, providerId)).ToList();
 
             return new ListResponse(result);
         }
 
         [HttpGet("{schema}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SchemaDataResponse>> GetSchemaAsync(string schema)
+        public async Task<ActionResult<SchemaDataResponse>> GetSchemaAsync(string schema, Guid providerId)
         {
             await Task.Yield();
 
-            switch (schema)
-            {
-                case ScimConstants.Schemas.User:
-                    return GetSchemaData(typeof(UserResource), ScimConstants.Schemas.User);
-                case ScimConstants.Schemas.Group:
-                    return GetSchemaData(typeof(GroupResource), ScimConstants.Schemas.Group);
-                default:
-                    var data = _schemaExtensions.FirstOrDefault(d => d.Schema == schema);
-                    if (data != null)
-                    {
-                        return GetSchemaData(data.TargetType, data.Schema);
-                    }
+            SchemaDataResource? found = null;
 
-                    return NotFound();
+            await foreach (var item in _userMapper.GetSchemasAsync(_context.Context))
+            {
+                if (item.Id == schema)
+                {
+                    found = item;
+                    break;
+                }
             }
+
+            if (found == null)
+            {
+                await foreach (var item in _groupMapper.GetSchemasAsync(_context.Context))
+                {
+                    if (item.Id == schema)
+                    {
+                        found = item;
+                        break;
+                    }
+                }
+            }
+
+            if (found != null)
+            {
+                return GetSchemaData(found, providerId);
+            }
+
+            return NotFound();
         }
 
-        private SchemaDataResponse GetSchemaData(Type type, string schema)
+        private SchemaDataResponse GetSchemaData(SchemaDataResource resource, Guid providerId)
         {
-            var schemaUrl = this.Url.ActionLink(controller: "Schemas", action: "GetSchema", values: new { schema = schema })!;
-            var info = new ScimResponseInfo(schema, schemaUrl, null, null);
-
-            List<SchemaDataAttributeResource> attributes = new List<SchemaDataAttributeResource>();
-            foreach (var mapping in _userMappings)
-            {
-                if (mapping.ResourceExpression.Parameters.First().Type == type)
-                {
-                    string? propertyName = (mapping as IPropertyName)?.PropertyName;
-                    bool readOnly = (mapping as IReadOnly)?.ReadOnly ?? false;
-                    AddAttribute(attributes, mapping.ResourceExpression, mapping.EntityExpression, propertyName, readOnly);
-                }
-            }
-
-            foreach (var mapping in _groupMappings)
-            {
-                if (mapping.ResourceExpression.Parameters.First().Type == type)
-                {
-                    string? propertyName = (mapping as IPropertyName)?.PropertyName;
-                    bool readOnly = (mapping as IReadOnly)?.ReadOnly ?? false;
-                    AddAttribute(attributes, mapping.ResourceExpression, mapping.EntityExpression, propertyName, readOnly);
-                }
-            }
-
-            var schemaResponse = new SchemaDataResponse(info, new SchemaDataResource(type.Name, attributes));
+            var schemaUrl = this.Url.ActionLink(controller: "Schemas", action: "GetSchema", values: new { schema = resource.Id, providerId = providerId })!;
+            var info = new ScimResponseInfo(resource.Id, schemaUrl, null, null);
+            var schemaResponse = new SchemaDataResponse(info, resource);
             return schemaResponse;
         }
 

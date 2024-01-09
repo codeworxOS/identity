@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
@@ -24,6 +25,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             entry.Property(PropertyName).CurrentValue = GetResourceValue(resource);
 
             return Task.CompletedTask;
+        }
+
+        protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)
+        {
+            if (Resource.Body is MemberExpression member)
+            {
+                var column = db.Model.FindEntityType(typeof(TEntity))?.FindProperty(PropertyName);
+                if (column != null)
+                {
+                    yield return new MappedPropertyInfo(member.Member, column, member.Expression);
+                }
+            }
         }
     }
 }

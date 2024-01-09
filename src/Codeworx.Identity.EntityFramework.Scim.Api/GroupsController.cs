@@ -61,6 +61,25 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return new ListResponse(startIndex, totalResults, count, result);
         }
 
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteGroupAsync(Guid id)
+        {
+            var item = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var entry = _db.Remove(item);
+
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -123,7 +142,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 await transaction.CommitAsync();
 
                 var response = await GetGroupAsync(item.Id, providerId);
-                return CreatedAtAction(nameof(AddGroupAsync), response.Value);
+                return CreatedAtAction("AddGroup", "Groups", new { providerId = providerId }, response.Value);
             }
         }
 

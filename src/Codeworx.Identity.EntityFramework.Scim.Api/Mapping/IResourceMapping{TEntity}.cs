@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -13,5 +14,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         LambdaExpression EntityExpression { get; }
 
         Task ToDatabaseAsync(DbContext db, TEntity entity, ISchemaResource resource);
+
+        IAsyncEnumerable<SchemaInfo> GetSchemaAttributesAsync(DbContext db);
     }
 }

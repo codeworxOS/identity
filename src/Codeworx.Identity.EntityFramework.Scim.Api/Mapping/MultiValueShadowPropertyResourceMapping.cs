@@ -51,5 +51,19 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
             return Task.CompletedTask;
         }
+
+        protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)
+        {
+            var resourceType = typeof(TMultiValueResource);
+
+            var column = db.Model.FindEntityType(typeof(TEntity))?.FindProperty(PropertyName);
+            var valueMember = resourceType.GetProperty(nameof(MultiValueResource<string>.Value));
+            if (valueMember != null)
+            {
+                yield return new MappedPropertyInfo(valueMember, column, ResourceExpression.Body);
+                yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(MultiValueResource<string>.Type))!, null, ResourceExpression.Body);
+                yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(MultiValueResource<string>.Primary))!, null, ResourceExpression.Body);
+            }
+        }
     }
 }

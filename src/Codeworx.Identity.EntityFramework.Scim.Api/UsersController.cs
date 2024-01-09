@@ -8,7 +8,6 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

@@ -2,6 +2,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Demo.Database;
 using Codeworx.Identity.EntityFrameworkCore.Api;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Codeworx.Identity.Mail;
@@ -36,7 +37,12 @@ internal class Program
 
         // setup scim
         builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
+        builder.Services.AddScimSchema<UserResource>(ScimConstants.ResourceTypes.User, ScimConstants.Schemas.User);
+        builder.Services.AddScimSchema<GroupResource>(ScimConstants.ResourceTypes.Group, ScimConstants.Schemas.Group);
+        builder.Services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
+
         builder.Services.AddScimProperties<User, UserResource>(d => d
+                                                    .AddClrProperty(p => p.Active, d => !d.IsDisabled, (d, v) => d.IsDisabled = v.GetValueOrDefault())
                                                     .AddClrProperty(d => d.UserName, d => d.Name)
                                                     .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
                                                     .AddShadowProperty(p => p.Name!.FamilyName, "LastName")
@@ -62,7 +68,8 @@ internal class Program
         ////builder.Services.AddScimProperties<User, EnterpriseUserResource>(d => d.Schema(ScimConstants.Schemas.EnterpriseUser));
 
         // setup swagger
-        builder.Services.AddScoped<IContextWrapper, DbContextWrapper<DemoIdentityDbContext>>();
+        builder.Services.AddScoped<Codeworx.Identity.EntityFrameworkCore.Api.IContextWrapper, Codeworx.Identity.EntityFrameworkCore.Api.DbContextWrapper<DemoIdentityDbContext>>();
+        builder.Services.AddScoped<Codeworx.Identity.EntityFrameworkCore.Scim.Api.IContextWrapper, Codeworx.Identity.EntityFrameworkCore.Scim.Api.DbContextWrapper<DemoIdentityDbContext>>();
         builder.Services.AddOpenApiDocument<DemoIdentityDbContext>((options, s) =>
         {
             options.Title = "Codeworx Identity Demo";

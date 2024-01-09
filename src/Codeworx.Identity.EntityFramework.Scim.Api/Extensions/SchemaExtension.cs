@@ -5,8 +5,9 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     internal class SchemaExtension : ISchemaExtension
     {
-        public SchemaExtension(string schema, Type type)
+        public SchemaExtension(string name, string schema, Type type)
         {
+            Name = name;
             Schema = schema;
             TargetType = type;
         }
@@ -14,5 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public string Schema { get; }
 
         public Type TargetType { get; }
+
+        public string Name { get; }
     }
 }

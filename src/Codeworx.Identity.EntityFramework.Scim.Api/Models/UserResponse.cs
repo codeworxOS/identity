@@ -18,7 +18,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 
         public string? UserName => Resource.UserName;
 
-        public bool Active => Resource.Active;
+        public bool? Active => Resource.Active;
 
         public string? DisplayName => Resource.DisplayName;
 

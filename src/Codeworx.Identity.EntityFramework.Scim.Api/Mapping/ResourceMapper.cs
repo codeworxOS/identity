@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,10 +16,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         where TEntity : class
     {
         private readonly IEnumerable<IResourceMapping<TEntity>> _mappings;
+        private readonly ImmutableDictionary<Type, ISchemaExtension> _schemas;
 
-        public ResourceMapper(IEnumerable<IResourceMapping<TEntity>> mappings)
+        public ResourceMapper(IEnumerable<IResourceMapping<TEntity>> mappings, IEnumerable<ISchemaExtension> schemas)
         {
             _mappings = mappings;
+            _schemas = schemas.ToImmutableDictionary(p => p.TargetType, p => p);
         }
 
         public IQueryable<Dictionary<string, IScimResource>> GetResourceQuery(IQueryable<TEntity> baseQuery)
@@ -50,6 +55,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     elementInits), entity);
 
             return baseQuery.Select(select);
+        }
+
+        public async IAsyncEnumerable<SchemaDataResource> GetSchemasAsync(DbContext db)
+        {
+            var container = new ComplexMemberSchemaTreeItem(new SchemaPath("root", false), typeof(CommonResponseResource));
+
+            foreach (var mapping in _mappings)
+            {
+                await foreach (var schemaInfo in mapping.GetSchemaAttributesAsync(db))
+                {
+                    container.Parse(schemaInfo);
+                }
+            }
+
+            var grouped = container.Members.Values.GroupBy(p => p.ResourceType)
+                            .ToDictionary(p => p.Key, p => p.ToList());
+
+            foreach (var item in grouped)
+            {
+                if (_schemas.TryGetValue(item.Key, out var schema))
+                {
+                    yield return new SchemaDataResource(schema.Schema, schema.Name, item.Value.Select(p => p.GetAttribute()).ToList());
+                }
+            }
         }
 
         public async Task ToDatabaseAsync(DbContext db, TEntity entity, IEnumerable<ISchemaResource> resources)
@@ -149,6 +178,74 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                 return Expression.MemberInit(
                                     Expression.New(DataType),
                                     bindings);
+            }
+        }
+
+        private abstract class MemberSchemaTreeItem
+        {
+            public abstract Type ResourceType { get; }
+
+            public abstract SchemaDataAttributeResource GetAttribute();
+        }
+
+        private class ScalarMemberSchemaTreeItem : MemberSchemaTreeItem
+        {
+            public ScalarMemberSchemaTreeItem(SchemaInfo info, Type resourceType)
+            {
+                Info = info;
+                ResourceType = resourceType;
+            }
+
+            public SchemaInfo Info { get; }
+
+            public override Type ResourceType { get; }
+
+            public override SchemaDataAttributeResource GetAttribute()
+            {
+                return new SchemaDataAttributeResource(Info.Paths.Last().Name, Info.DataType, false, null, false, null, false, "readWrite", "default", "none", null);
+            }
+        }
+
+        private class ComplexMemberSchemaTreeItem : MemberSchemaTreeItem
+        {
+            public ComplexMemberSchemaTreeItem(SchemaPath path, Type resourceType)
+            {
+                Path = path;
+                ResourceType = resourceType;
+            }
+
+            public Dictionary<string, MemberSchemaTreeItem> Members { get; } = new Dictionary<string, MemberSchemaTreeItem>();
+
+            public SchemaPath Path { get; }
+
+            public override Type ResourceType { get; }
+
+            public void Parse(SchemaInfo info)
+            {
+                var paths = new List<MemberExpression>();
+
+                ComplexMemberSchemaTreeItem container = this;
+
+                for (int i = 0; i < (info.Paths.Count - 1); i++)
+                {
+                    var currentPath = info.Paths[i];
+                    if (!this.Members.TryGetValue(currentPath.Name, out var next))
+                    {
+                        next = new ComplexMemberSchemaTreeItem(currentPath, info.ResourceType);
+                        this.Members.Add(currentPath.Name, next);
+                    }
+
+                    container = (ComplexMemberSchemaTreeItem)next;
+                }
+
+                container.Members.Add(info.Paths.Last().Name, new ScalarMemberSchemaTreeItem(info, info.ResourceType));
+            }
+
+            public override SchemaDataAttributeResource GetAttribute()
+            {
+                var result = new SchemaDataAttributeResource(Path.Name, Path.IsMulti, null, false, false);
+                result.SubAttributes!.AddRange(Members.Values.Select(p => p.GetAttribute()));
+                return result;
             }
         }
 

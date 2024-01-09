@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 {
@@ -28,6 +31,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             }
         }
 
+        public ClrPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<TEntity, TData>> entityExpression, Action<TEntity, TData> setValueDelegate)
+            : base(entityExpression, resourceExpression)
+        {
+            ReadOnly = false;
+            _setValueDelegate = setValueDelegate;
+        }
+
         public bool ReadOnly { get; }
 
         public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource)
@@ -41,6 +51,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             _setValueDelegate(entity, value);
 
             return Task.CompletedTask;
+        }
+
+        protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)
+        {
+            if (Resource.Body is MemberExpression member)
+            {
+                IProperty? column = null;
+
+                if (EntityExpression.Body is MemberExpression entityMember)
+                {
+                    column = db.Model.FindEntityType(entityMember.Expression!.Type)?.FindProperty(entityMember.Member);
+                }
+
+                yield return new MappedPropertyInfo(member.Member, column, member.Expression);
+            }
         }
     }
 }

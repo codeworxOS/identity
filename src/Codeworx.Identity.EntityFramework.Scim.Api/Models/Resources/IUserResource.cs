@@ -6,7 +6,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
     {
         string? UserName { get; }
 
-        bool Active { get; }
+        bool? Active { get; }
 
         string? DisplayName { get; }
 
