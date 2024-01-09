@@ -25,6 +25,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 
         public string? PreferredLanguage { get; set; }
 
+        [ScimMutability(ScimMutabilityAttribute.MutabilityType.ReadOnly)]
         public string? ExternalId { get; set; }
 
         public string? Locale { get; set; }

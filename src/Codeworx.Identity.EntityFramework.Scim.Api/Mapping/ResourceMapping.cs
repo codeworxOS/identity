@@ -104,6 +104,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         protected virtual string GetSchemaType(IEnumerable<Attribute> attributes, Type type)
         {
+            type = Nullable.GetUnderlyingType(type) ?? type;
+
             var attrib = attributes.OfType<ScimReferenceTypesAttribute>().FirstOrDefault();
             if (attrib != null)
             {
