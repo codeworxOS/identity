@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
@@ -166,7 +168,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
                 await transaction.CommitAsync();
 
-                return Ok(await GetGroupAsync(item.Id, providerId));
+                return await GetGroupAsync(item.Id, providerId);
             }
         }
 

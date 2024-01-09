@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Antlr4.Runtime;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
@@ -29,11 +31,25 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, Guid providerId)
+        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
             var query = _db.Set<User>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
+
+            if (filter != null)
+            {
+                var visitor = new ScimFilterVisitor();
+
+                var inputStream = new AntlrInputStream(filter);
+                var lexer = new ScimFilterLexer(inputStream);
+                var tokenStream = new CommonTokenStream(lexer);
+                var parser = new ScimFilterParser(tokenStream);
+
+                var tree = parser.filter();
+                var expression = tree.Accept(visitor);
+            }
+
             var mapped = _mapper.GetResourceQuery(query);
 
             var totalResults = await mapped.CountAsync();
@@ -85,77 +101,93 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<UserResponse>> AddUserAsync([RequestResourceBinder] UserRequest user, Guid providerId)
         {
-            using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
+            try
             {
-                if (user.ExternalId == null)
+                using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
                 {
-                    return Conflict();
+                    if (user.ExternalId == null)
+                    {
+                        return Conflict();
+                    }
+
+                    var existing = await _db.Set<AuthenticationProviderRightHolder>().Where(p => p.ProviderId == providerId && p.ExternalIdentifier == user.ExternalId)
+                                        .AnyAsync();
+
+                    if (existing)
+                    {
+                        return Conflict();
+                    }
+
+                    var item = new User
+                    {
+                        Id = Guid.NewGuid(),
+                        Created = DateTime.UtcNow,
+                        ForceChangePassword = true,
+                        AuthenticationMode = Login.AuthenticationMode.Login,
+                    };
+
+                    var mapping = new AuthenticationProviderRightHolder
+                    {
+                        ExternalIdentifier = user.ExternalId,
+                        ProviderId = providerId,
+                        RightHolderId = item.Id,
+                    };
+
+                    _db.Add(item);
+                    _db.Add(mapping);
+
+                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+
+                    await _db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    var response = await GetUserAsync(item.Id, providerId);
+                    return CreatedAtAction("AddUser", response.Value);
                 }
-
-                var existing = await _db.Set<AuthenticationProviderRightHolder>().Where(p => p.ProviderId == providerId && p.ExternalIdentifier == user.ExternalId)
-                                    .AnyAsync();
-
-                if (existing)
-                {
-                    return Conflict();
-                }
-
-                var item = new User
-                {
-                    Id = Guid.NewGuid(),
-                    Created = DateTime.UtcNow,
-                    ForceChangePassword = true,
-                    AuthenticationMode = Login.AuthenticationMode.Login,
-                };
-
-                var mapping = new AuthenticationProviderRightHolder
-                {
-                    ExternalIdentifier = user.ExternalId,
-                    ProviderId = providerId,
-                    RightHolderId = item.Id,
-                };
-
-                _db.Add(item);
-                _db.Add(mapping);
-
-                await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
-
-                await _db.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-
-                var response = await GetUserAsync(item.Id, providerId);
-                return CreatedAtAction("AddUser", response.Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
 
         [HttpPut("{id}")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserResponse>> UpdateUsersAsync(Guid id, [RequestResourceBinder] UserRequest user, Guid providerId)
         {
-            using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
+            try
             {
-                var item = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
-
-                if (item == null)
+                using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
                 {
-                    return NotFound();
+                    var item = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+
+                    if (item == null)
+                    {
+                        return NotFound();
+                    }
+
+                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+
+                    ////ApplyEntityChanges(user, item);
+
+                    await _db.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    return await GetUserAsync(item.Id, providerId);
                 }
-
-                await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
-
-                ////ApplyEntityChanges(user, item);
-
-                await _db.SaveChangesAsync();
-
-                await transaction.CommitAsync();
-
-                return Ok(await GetUserAsync(item.Id, providerId));
+            }
+            catch (Exception)
+            {
+                return BadRequest();
             }
         }
 

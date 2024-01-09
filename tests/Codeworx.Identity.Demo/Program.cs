@@ -10,6 +10,7 @@ using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Namotion.Reflection;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
@@ -42,7 +43,7 @@ internal class Program
         builder.Services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
 
         builder.Services.AddScimProperties<User, UserResource>(d => d
-                                                    .AddClrProperty(p => p.Active, d => !d.IsDisabled, (d, v) => d.IsDisabled = v.GetValueOrDefault())
+                                                    .AddClrProperty(p => p.Active, d => !d.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
                                                     .AddClrProperty(d => d.UserName, d => d.Name)
                                                     .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
                                                     .AddShadowProperty(p => p.Name!.FamilyName, "LastName")

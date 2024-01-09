@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 {
@@ -48,6 +47,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             }
 
             var value = GetResourceValue(resource);
+
+            ////if (value == null && Required)
+            ////{
+
+            ////}
+
             _setValueDelegate(entity, value);
 
             return Task.CompletedTask;
