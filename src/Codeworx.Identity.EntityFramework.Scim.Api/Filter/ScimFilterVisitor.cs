@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 
@@ -46,7 +45,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return new OperationFilterNode(
                 string.Join(".", context.attrPath().ATTRNAME().Select(p => p.GetText())),
                 op,
-                context.VALUE().GetText(),
+                context.VALUE().GetText().Trim('"'),
                 context.attrPath().SCHEMA()?.GetText());
         }
     }

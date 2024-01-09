@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -15,7 +16,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         where TResource : IScimResource
         where TData : IEnumerable<MultiValueResource>
     {
-        public MultiValueNavigationPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<TEntity, TData>> entityExpression, bool readOnly = false)
+        public MultiValueNavigationPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression, bool readOnly = false)
             : base(entityExpression, resourceExpression)
         {
             ReadOnly = readOnly;
@@ -29,6 +30,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             ////_setValueDelegate(entity, value);
 
             return Task.CompletedTask;
+        }
+
+        public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
+        {
+            if (operationFilterNode.Path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotImplementedException();
+            }
+
+            return null;
         }
 
         protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)

@@ -30,37 +30,62 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count, Guid providerId)
+        public async Task<ActionResult<ListResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string filter, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
-
-            var query = _db.Set<Group>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
-            var mapped = _mapper.GetResourceQuery(query);
-
-            int totalResults = await query.CountAsync();
-
-            if (startIndex > 1)
+            try
             {
-                mapped = mapped.Skip(startIndex - 1);
-            }
+                var query = from g in _db.Set<Group>().AsNoTracking()
+                            from p in g.Providers.Where(p => p.ProviderId == providerId)
+                            select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier };
 
-            if (count > 0)
+                FilterNode? filterNode = null;
+
+                if (filter != null)
+                {
+                    var visitor = new ScimFilterVisitor();
+
+                    var inputStream = new AntlrInputStream(filter);
+                    var lexer = new ScimFilterLexer(inputStream);
+                    var tokenStream = new CommonTokenStream(lexer);
+                    var parser = new ScimFilterParser(tokenStream);
+
+                    var tree = parser.filter();
+                    filterNode = tree.Accept(visitor);
+                }
+
+                var mapped = _mapper.GetResourceQuery(query, filterNode);
+
+                int totalResults = await mapped.CountAsync();
+
+                if (startIndex > 1)
+                {
+                    mapped = mapped.Skip(startIndex - 1);
+                }
+
+                if (count > 0)
+                {
+                    mapped = mapped.Take(count);
+                }
+
+                var groups = await mapped.ToListAsync();
+                var result = new List<GroupResponse>();
+
+                foreach (var item in groups)
+                {
+                    var response = GenerateGroupResponse(item.Values);
+
+                    result.Add(response);
+                }
+
+                return new ListResponse(startIndex, totalResults, count, result);
+            }
+            catch (Exception)
             {
-                mapped = mapped.Take(count);
+                return BadRequest();
             }
-
-            var groups = await mapped.ToListAsync();
-            var result = new List<GroupResponse>();
-
-            foreach (var item in groups)
-            {
-                var response = GenerateGroupResponse(item.Values);
-
-                result.Add(response);
-            }
-
-            return new ListResponse(startIndex, totalResults, count, result);
         }
 
         [HttpDelete("{id}")]
@@ -87,7 +112,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id, Guid providerId)
         {
-            var query = _db.Set<Group>().Where(x => x.Id == id);
+            var query = from g in _db.Set<Group>().AsNoTracking()
+                        from p in g.Providers.Where(p => p.ProviderId == providerId)
+                        where g.Id == id
+                        select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier };
+
             var mapped = _mapper.GetResourceQuery(query);
 
             var item = await mapped.FirstOrDefaultAsync();

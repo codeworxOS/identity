@@ -10,6 +10,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
     {
         Expression<Func<TResource, TData>> Resource { get; }
 
-        Expression<Func<TEntity, TData>> Entity { get; }
+        Expression<Func<ScimEntity<TEntity>, TData>> Entity { get; }
     }
 }

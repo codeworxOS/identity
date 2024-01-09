@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +25,17 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             _schemas = schemas.ToImmutableDictionary(p => p.TargetType, p => p);
         }
 
-        public IQueryable<Dictionary<string, IScimResource>> GetResourceQuery(IQueryable<TEntity> baseQuery)
+        public IQueryable<Dictionary<string, IScimResource>> GetResourceQuery(IQueryable<ScimEntity<TEntity>> baseQuery, FilterNode? filterNode)
         {
-            var entity = Expression.Parameter(typeof(TEntity), "p");
+            var entity = Expression.Parameter(typeof(ScimEntity<TEntity>), "p");
 
             var resources = _mappings.GroupBy(p => p.ResourceExpression.Parameters[0].Type);
+
+            if (filterNode != null)
+            {
+                var expression = filterNode.ToExpression(_mappings);
+                baseQuery = baseQuery.Where(expression);
+            }
 
             var addMethod = typeof(Dictionary<string, IScimResource>).GetMethod(nameof(Dictionary<string, IScimResource>.Add), new Type[] { typeof(string), typeof(IScimResource) })!;
 
@@ -49,7 +56,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                 elementInits.Add(Expression.ElementInit(addMethod, Expression.Constant(resource.Key.Name), expression));
             }
 
-            var select = Expression.Lambda<Func<TEntity, Dictionary<string, IScimResource>>>(
+            var select = Expression.Lambda<Func<ScimEntity<TEntity>, Dictionary<string, IScimResource>>>(
                 Expression.ListInit(
                     Expression.New(typeof(Dictionary<string, IScimResource>)),
                     elementInits), entity);

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -15,22 +16,26 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         where TEntity : class
         where TResource : IScimResource
     {
-        private readonly Expression<Func<TEntity, TData>> _entityExpression;
+        private readonly Expression<Func<ScimEntity<TEntity>, TData>> _entityExpression;
         private readonly Expression<Func<TResource, TData>> _resourceExpression;
         private readonly Func<TResource, TData> _resourceValueDelegate;
 
         public ResourceMapping(
-            Expression<Func<TEntity, TData>> entityExpression,
+            Expression<Func<ScimEntity<TEntity>, TData>> entityExpression,
             Expression<Func<TResource, TData>> resourceExpression)
         {
             _entityExpression = entityExpression;
             _resourceExpression = resourceExpression;
             _resourceValueDelegate = _resourceExpression.Compile();
+
+            ResourcePath = _resourceExpression.Body.GetPath();
         }
+
+        public string ResourcePath { get; }
 
         public Expression<Func<TResource, TData>> Resource => _resourceExpression;
 
-        public Expression<Func<TEntity, TData>> Entity => _entityExpression;
+        public Expression<Func<ScimEntity<TEntity>, TData>> Entity => _entityExpression;
 
         public LambdaExpression ResourceExpression => Resource;
 
@@ -50,6 +55,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         }
 
         public abstract Task CopyValueAsync(DbContext db, TEntity entity, TResource resource);
+
+        public abstract Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode);
 
         public virtual async IAsyncEnumerable<SchemaInfo> GetSchemaAttributesAsync(DbContext db)
         {

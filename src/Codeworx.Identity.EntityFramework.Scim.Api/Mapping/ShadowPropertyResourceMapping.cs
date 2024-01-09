@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         where TResource : IScimResource
     {
         public ShadowPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, string propertyName)
-            : base(p => EF.Property<TData>(p, propertyName), resourceExpression)
+            : base(p => EF.Property<TData>(p.Entity, propertyName), resourceExpression)
         {
             PropertyName = propertyName;
         }
@@ -25,6 +26,19 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             entry.Property(PropertyName).CurrentValue = GetResourceValue(resource);
 
             return Task.CompletedTask;
+        }
+
+        public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
+        {
+            if (operationFilterNode.Path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
+            {
+                var value = Expression.Constant(operationFilterNode.Value);
+                var body = Expression.Equal(Entity.Body, value);
+
+                return Expression.Lambda<Func<ScimEntity<TEntity>, bool>>(body, Entity.Parameters[0]);
+            }
+
+            return null;
         }
 
         protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)

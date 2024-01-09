@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
-        public PropertyBuilder<TResource, TEntity> AddClrProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<TEntity, TData>> entityExpression, bool readOnly = false)
+        public PropertyBuilder<TResource, TEntity> AddClrProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression, bool readOnly = false)
         {
             _services.AddSingleton<IResourceMapping<TEntity>>(new ClrPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, entityExpression, readOnly));
 
@@ -33,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public PropertyBuilder<TResource, TEntity> AddClrProperty<TData>(
             Expression<Func<TResource, TData>> resourceExpression,
-            Expression<Func<TEntity, TData>> entityExpression,
+            Expression<Func<ScimEntity<TEntity>, TData>> entityExpression,
             Action<TEntity, TData> setValueDelegate)
         {
             _services.AddSingleton<IResourceMapping<TEntity>>(new ClrPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, entityExpression, setValueDelegate));
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return this;
         }
 
-        public PropertyBuilder<TResource, TEntity> AddNavigationProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<TEntity, TData>> entityExpression)
+        public PropertyBuilder<TResource, TEntity> AddNavigationProperty<TData>(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression)
             where TData : class, IEnumerable<MultiValueResource>
         {
             _services.AddSingleton<IResourceMapping<TEntity>>(new MultiValueNavigationPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, entityExpression, true));

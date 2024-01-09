@@ -30,52 +30,64 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListResponse> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, Guid providerId)
+        public async Task<ActionResult<ListResponse>> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
-            var query = _db.Set<User>().AsNoTracking().OrderBy(c => c.Id).AsQueryable();
-
-            if (filter != null)
+            try
             {
-                var visitor = new ScimFilterVisitor();
+                var query = from u in _db.Set<User>().AsNoTracking()
+                            from p in u.Providers.Where(p => p.ProviderId == providerId)
+                            select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier };
 
-                var inputStream = new AntlrInputStream(filter);
-                var lexer = new ScimFilterLexer(inputStream);
-                var tokenStream = new CommonTokenStream(lexer);
-                var parser = new ScimFilterParser(tokenStream);
+                FilterNode? filterNode = null;
 
-                var tree = parser.filter();
-                var expression = tree.Accept(visitor);
+                if (filter != null)
+                {
+                    var visitor = new ScimFilterVisitor();
+
+                    var inputStream = new AntlrInputStream(filter);
+                    var lexer = new ScimFilterLexer(inputStream);
+                    var tokenStream = new CommonTokenStream(lexer);
+                    var parser = new ScimFilterParser(tokenStream);
+
+                    var tree = parser.filter();
+                    filterNode = tree.Accept(visitor);
+                }
+
+                var mapped = _mapper.GetResourceQuery(query, filterNode);
+
+                var totalResults = await mapped.CountAsync();
+
+                if (startIndex > 1)
+                {
+                    mapped = mapped.Skip(startIndex - 1);
+                }
+
+                if (count > 0)
+                {
+                    mapped = mapped.Take(count);
+                }
+
+                var users = await mapped.ToListAsync();
+
+                var result = new List<UserResponse>();
+
+                foreach (var item in users)
+                {
+                    UserResponse response = GenerateUserResponse(item.Values);
+
+                    result.Add(response);
+                }
+
+                return new ListResponse(startIndex, totalResults, count, result);
             }
-
-            var mapped = _mapper.GetResourceQuery(query);
-
-            var totalResults = await mapped.CountAsync();
-
-            if (startIndex > 1)
+            catch (Exception)
             {
-                mapped = mapped.Skip(startIndex - 1);
+                return BadRequest();
             }
-
-            if (count > 0)
-            {
-                mapped = mapped.Take(count);
-            }
-
-            var users = await mapped.ToListAsync();
-
-            var result = new List<UserResponse>();
-
-            foreach (var item in users)
-            {
-                UserResponse response = GenerateUserResponse(item.Values);
-
-                result.Add(response);
-            }
-
-            return new ListResponse(startIndex, totalResults, count, result);
         }
 
         [HttpGet("{userId}")]
@@ -83,7 +95,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId, Guid providerId)
         {
-            var query = _db.Set<User>().AsQueryable().Where(t => t.Id == userId);
+            var query = from u in _db.Set<User>().AsNoTracking()
+                        from p in u.Providers.Where(p => p.ProviderId == providerId)
+                        where u.Id == userId
+                        select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier };
 
             var mapped = _mapper.GetResourceQuery(query);
 

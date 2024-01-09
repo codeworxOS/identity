@@ -10,7 +10,6 @@ using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Namotion.Reflection;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
@@ -43,21 +42,22 @@ internal class Program
         builder.Services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
 
         builder.Services.AddScimProperties<User, UserResource>(d => d
-                                                    .AddClrProperty(p => p.Active, d => !d.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
-                                                    .AddClrProperty(d => d.UserName, d => d.Name)
+                                                    .AddClrProperty(d => d.ExternalId, d => d.ExternalId, true)
+                                                    .AddClrProperty(d => d.Active, d => !d.Entity.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
+                                                    .AddClrProperty(d => d.UserName, d => d.Entity.Name)
                                                     .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
                                                     .AddShadowProperty(p => p.Name!.FamilyName, "LastName")
                                                     .AddShadowProperty<EmailResource, string>(p => p.Emails!, "Email", "work", true));
 
-        builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true)
-                                                                 .AddClrProperty(d => d.Created, d => d.Created, true)
-                                                                 .AddClrProperty(d => d.LastModified, d => d.Created, true));
+        builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true)
+                                                                 .AddClrProperty(d => d.Created, d => d.Entity.Created, true));
 
         builder.Services.AddScimProperties<Group, GroupResource>(d => d
-                                                    .AddClrProperty(d => d.DisplayName, d => d.Name)
+                                                    .AddClrProperty(d => d.ExternalId, d => d.ExternalId, true)
+                                                    .AddClrProperty(d => d.DisplayName, d => d.Entity.Name)
                                                     .AddNavigationProperty(
                                                                 d => d.Members!,
-                                                                d => d.Members.Select(x => new GroupMemberResource
+                                                                d => d.Entity.Members.Select(x => new GroupMemberResource
                                                                 {
                                                                     Value = x.RightHolderId.ToString("N"),
                                                                     Type = x.RightHolder is User ? "user" : "group",
@@ -65,7 +65,7 @@ internal class Program
                                                                     Display = x.RightHolder.Name,
                                                                 }).ToList()));
 
-        builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Id.ToString("N"), true));
+        builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true));
 
         ////builder.Services.AddScimProperties<User, EnterpriseUserResource>(d => d.Schema(ScimConstants.Schemas.EnterpriseUser));
 

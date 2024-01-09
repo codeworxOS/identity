@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                       {
                           new TMultiValueResource
                           {
-                              Value = EF.Property<TData>(p, propertyName),
+                              Value = EF.Property<TData>(p.Entity, propertyName),
                               Type = type,
                               Primary = primary,
                           },
@@ -50,6 +51,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             }
 
             return Task.CompletedTask;
+        }
+
+        public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
+        {
+            if (operationFilterNode.Path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotImplementedException();
+            }
+
+            return null;
         }
 
         protected override IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db)

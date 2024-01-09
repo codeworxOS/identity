@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,5 +18,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         Task ToDatabaseAsync(DbContext db, TEntity entity, ISchemaResource resource);
 
         IAsyncEnumerable<SchemaInfo> GetSchemaAttributesAsync(DbContext db);
+
+        Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode);
     }
 }
