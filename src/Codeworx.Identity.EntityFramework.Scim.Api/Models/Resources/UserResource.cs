@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
@@ -11,6 +12,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 
         public string? DisplayName { get; set; }
 
+        [ScimMutability(ScimMutabilityAttribute.MutabilityType.WriteOnly)]
         public string? Password { get; set; }
 
         public string? NickName { get; set; }

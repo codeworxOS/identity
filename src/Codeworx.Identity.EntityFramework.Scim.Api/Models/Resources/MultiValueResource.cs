@@ -2,15 +2,15 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 {
-    public class MultiValueResource
+    public abstract class MultiValueResource
     {
-        public string? Type { get; set; }
+        public virtual string? Type { get; set; }
 
-        public bool Primary { get; set; }
+        public virtual bool Primary { get; set; }
 
-        public string? Display { get; set; }
+        public virtual string? Display { get; set; }
 
         [JsonPropertyName("$ref")]
-        public string? Ref { get; set; }
+        public virtual string? Ref { get; set; }
     }
 }

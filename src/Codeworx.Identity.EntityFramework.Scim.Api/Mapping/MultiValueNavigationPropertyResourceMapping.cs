@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -40,9 +41,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
                 if (memberInit != null)
                 {
+                    var members = elementType!.GetProperties();
+
                     foreach (var item in memberInit.Bindings)
                     {
-                        var member = item.Member;
+                        var member = members.FirstOrDefault(d => d.Name == item.Member.Name) ?? item.Member;
                         IProperty? column = null;
                         if (item is MemberAssignment assign && assign.Expression is MemberExpression entityMember)
                         {
@@ -53,6 +56,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     }
                 }
             }
+        }
+
+        protected override string GetMutability(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            if (ReadOnly)
+            {
+                return "immutable";
+            }
+
+            return base.GetMutability(attributes, property);
         }
     }
 }

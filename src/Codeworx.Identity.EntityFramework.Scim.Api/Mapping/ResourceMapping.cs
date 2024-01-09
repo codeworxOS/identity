@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -74,11 +76,167 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     throw new NotSupportedException("The resource expression does not contain a propper path to the root parameter! e.g. p => value.FirstName instead of p => p.FirstName");
                 }
 
-                yield return new SchemaInfo(paths, "string", typeof(TResource));
+                var memberType = GetMemberType(property.Member);
+
+                var attributes = property.Member.GetCustomAttributes(true).OfType<Attribute>();
+
+                string schemaType = GetSchemaType(attributes, memberType);
+                string? description = GetSchemaDescription(attributes, property);
+                bool isRequired = GetIsRequired(attributes, property, memberType);
+                bool isUnique = GetIsUnique(attributes, property);
+                bool caseExact = GetIsCaseExact(attributes, property);
+                string mutability = GetMutability(attributes, property);
+                var referenceTypes = GetReferenceTypes(attributes, property);
+                var canonicalValues = GetCanonicalValues(attributes, property);
+
+                yield return new SchemaInfo(paths, schemaType, typeof(TResource), description, isRequired, isUnique, caseExact, mutability, referenceTypes, canonicalValues);
             }
         }
 
         protected abstract IEnumerable<MappedPropertyInfo> GetMappedProperties(DbContext db);
+
+        protected virtual string GetSchemaType(IEnumerable<Attribute> attributes, Type type)
+        {
+            var attrib = attributes.OfType<ScimReferenceTypesAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return "reference";
+            }
+
+            if (type == typeof(int) || type == typeof(uint) || type == typeof(ushort) || type == typeof(short) || type == typeof(byte) || type == typeof(sbyte) || type == typeof(long) || type == typeof(ulong))
+            {
+                return "integer";
+            }
+            else if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
+            {
+                return "decimal";
+            }
+            else if (type == typeof(bool))
+            {
+                return "boolean";
+            }
+            else if (type == typeof(DateTime))
+            {
+                return "dateTime";
+            }
+
+            return "string";
+        }
+
+        protected virtual string? GetSchemaDescription(IEnumerable<Attribute> attributes, ResourceMapping<TEntity, TResource, TData>.MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimDescriptionAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.Description;
+            }
+
+            return null;
+        }
+
+        protected virtual bool GetIsRequired(IEnumerable<Attribute> attributes, MappedPropertyInfo property, Type type)
+        {
+            var attrib = attributes.OfType<ScimRequiredAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.IsRequired;
+            }
+
+            if (property.Column != null)
+            {
+                return !property.Column.IsNullable;
+            }
+
+            bool canBeNull = !type.IsValueType || Nullable.GetUnderlyingType(type) != null;
+
+            return !canBeNull;
+        }
+
+        protected virtual bool GetIsUnique(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimUniqueAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.IsUnique;
+            }
+
+            if (property.Column != null)
+            {
+                return property.Column.IsUniqueIndex();
+            }
+
+            return false;
+        }
+
+        protected virtual bool GetIsCaseExact(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimCaseExactAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.CaseExact;
+            }
+
+            return false;
+        }
+
+        protected virtual string GetMutability(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimMutabilityAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                switch (attrib.Mutability)
+                {
+                    case ScimMutabilityAttribute.MutabilityType.ReadWrite:
+                        return "readWrite";
+
+                    case ScimMutabilityAttribute.MutabilityType.ReadOnly:
+                        return "readOnly";
+
+                    case ScimMutabilityAttribute.MutabilityType.Immutable:
+                        return "immutable";
+
+                    case ScimMutabilityAttribute.MutabilityType.WriteOnly:
+                        return "writeOnly";
+
+                    default:
+                        return "readWrite";
+                }
+            }
+
+            return "readWrite";
+        }
+
+        protected virtual List<string>? GetReferenceTypes(IEnumerable<Attribute> attributes, ResourceMapping<TEntity, TResource, TData>.MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimReferenceTypesAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.ReferenceTypes.ToList();
+            }
+
+            return null;
+        }
+
+        protected virtual List<string>? GetCanonicalValues(IEnumerable<Attribute> attributes, ResourceMapping<TEntity, TResource, TData>.MappedPropertyInfo property)
+        {
+            var attrib = attributes.OfType<ScimCanonicalValuesAttribute>().FirstOrDefault();
+            if (attrib != null)
+            {
+                return attrib.CanonicalValues.ToList();
+            }
+
+            return null;
+        }
+
+        private Type GetMemberType(MemberInfo info)
+        {
+            if (info is PropertyInfo propInfo)
+            {
+                return propInfo.PropertyType;
+            }
+
+            throw new NotSupportedException("Unsupported Type, MemberInfo");
+        }
 
         protected class MappedPropertyInfo
         {

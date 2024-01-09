@@ -1,7 +1,7 @@
 ﻿namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
 {
-    public class MultiValueResource<TValue> : MultiValueResource
+    public abstract class MultiValueResource<TValue> : MultiValueResource
     {
-        public TValue Value { get; set; } = default!;
+        public virtual TValue Value { get; set; } = default!;
     }
 }
