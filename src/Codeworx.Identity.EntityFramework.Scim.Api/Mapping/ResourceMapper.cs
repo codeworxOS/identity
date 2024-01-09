@@ -190,19 +190,51 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         private class ScalarMemberSchemaTreeItem : MemberSchemaTreeItem
         {
+            private List<SchemaInfo> _infos = new List<SchemaInfo>();
+
             public ScalarMemberSchemaTreeItem(SchemaInfo info, Type resourceType)
             {
-                Info = info;
+                _infos.Add(info);
                 ResourceType = resourceType;
             }
 
-            public SchemaInfo Info { get; }
+            public IReadOnlyList<SchemaInfo> Infos => _infos.AsReadOnly();
 
             public override Type ResourceType { get; }
 
             public override SchemaDataAttributeResource GetAttribute()
             {
-                return new SchemaDataAttributeResource(Info.Paths.Last().Name, Info.DataType, false, null, false, null, false, "readWrite", "default", "none", null);
+                var name = _infos.Select(c => c.Paths.Last().Name).First();
+                var dataType = _infos.Select(c => c.DataType).First();
+                var description = string.Join("; ", _infos.Select(c => c.Description).Where(d => !string.IsNullOrWhiteSpace(d)).Distinct());
+                var isRequired = _infos.Any(c => c.IsRequired);
+                var canonicalValues = _infos.Where(d => d.CanonicalValues != null).SelectMany(c => c.CanonicalValues!).ToList();
+                var caseExact = _infos.Select(c => c.CaseExact).First();
+                var mutability = _infos.Select(c => c.Mutability).First();
+                var isUnique = _infos.Any(c => c.IsUnique);
+                var referenceTypes = _infos.Where(d => d.ReferenceTypes != null).SelectMany(c => c.ReferenceTypes!).ToList();
+
+                if (string.IsNullOrWhiteSpace(description))
+                {
+                    description = null;
+                }
+
+                if (!canonicalValues.Any())
+                {
+                    canonicalValues = null;
+                }
+
+                if (!referenceTypes.Any())
+                {
+                    referenceTypes = null;
+                }
+
+                return new SchemaDataAttributeResource(name, dataType, false, description, isRequired, canonicalValues, caseExact, mutability, "default", isUnique ? "server" : "none", referenceTypes);
+            }
+
+            internal void Add(SchemaInfo info)
+            {
+                _infos.Add(info);
             }
         }
 
@@ -238,12 +270,26 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     container = (ComplexMemberSchemaTreeItem)next;
                 }
 
-                container.Members.Add(info.Paths.Last().Name, new ScalarMemberSchemaTreeItem(info, info.ResourceType));
+                if (container.Members.TryGetValue(info.Paths.Last().Name, out var treeItem))
+                {
+                    if (treeItem is ScalarMemberSchemaTreeItem scalar && scalar.ResourceType == info.ResourceType)
+                    {
+                        scalar.Add(info);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Unsupported SchemaNode");
+                    }
+                }
+                else
+                {
+                    container.Members.Add(info.Paths.Last().Name, new ScalarMemberSchemaTreeItem(info, info.ResourceType));
+                }
             }
 
             public override SchemaDataAttributeResource GetAttribute()
             {
-                var result = new SchemaDataAttributeResource(Path.Name, Path.IsMulti, null, false, false);
+                var result = new SchemaDataAttributeResource(Path.Name, Path.IsMulti, null, false, false, Path.IsMulti ? "readWrite" : null);
                 result.SubAttributes!.AddRange(Members.Values.Select(p => p.GetAttribute()));
                 return result;
             }

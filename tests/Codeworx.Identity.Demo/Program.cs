@@ -60,6 +60,7 @@ internal class Program
                                                                 d => d.Members.Select(x => new GroupMemberResource
                                                                 {
                                                                     Value = x.RightHolderId.ToString("N"),
+                                                                    Type = x.RightHolder is User ? "user" : "group",
                                                                     Ref = x.RightHolder is User ? "user" : "group",
                                                                     Display = x.RightHolder.Name,
                                                                 }).ToList()));

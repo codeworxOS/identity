@@ -19,8 +19,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
             ReferenceTypes = referenceTypes;
         }
 
-        public SchemaDataAttributeResource(string name, bool multiValued, string? description, bool required, bool caseExact)
-            : this(name, "complex", multiValued, description, required, null, caseExact, null, null, null, null)
+        public SchemaDataAttributeResource(string name, bool multiValued, string? description, bool required, bool caseExact, string? mutability)
+            : this(name, "complex", multiValued, description, required, null, caseExact, mutability, null, null, null)
         {
             SubAttributes = new List<SchemaDataAttributeResource>();
         }

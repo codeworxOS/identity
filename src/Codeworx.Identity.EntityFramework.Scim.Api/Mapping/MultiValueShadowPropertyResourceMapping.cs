@@ -65,5 +65,29 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                 yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(MultiValueResource<string>.Primary))!, null, ResourceExpression.Body);
             }
         }
+
+        protected override List<string>? GetCanonicalValues(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            var baseVal = base.GetCanonicalValues(attributes, property);
+
+            if (baseVal == null && property.Member.Name == nameof(MultiValueResource<string>.Type))
+            {
+                return new List<string> { Type };
+            }
+
+            return baseVal;
+        }
+
+        protected override bool GetIsRequired(IEnumerable<Attribute> attributes, MappedPropertyInfo property, Type type)
+        {
+            var baseVal = base.GetIsRequired(attributes, property, type);
+
+            if (property.Member.Name != nameof(MultiValueResource<string>.Value))
+            {
+                return false;
+            }
+
+            return baseVal;
+        }
     }
 }
