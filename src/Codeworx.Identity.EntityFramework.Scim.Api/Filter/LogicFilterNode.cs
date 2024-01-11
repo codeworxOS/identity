@@ -6,18 +6,18 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
 {
-    public class LogicFilterNode : FilterNode
+    public class LogicFilterNode : BooleanFilterNode
     {
-        public LogicFilterNode(FilterNode left, FilterNode right, LogicOperator logicOperator)
+        public LogicFilterNode(BooleanFilterNode left, BooleanFilterNode right, LogicOperator logicOperator)
         {
             Left = left;
             Right = right;
             LogicOperator = logicOperator;
         }
 
-        public FilterNode Left { get; }
+        public BooleanFilterNode Left { get; }
 
-        public FilterNode Right { get; }
+        public BooleanFilterNode Right { get; }
 
         public LogicOperator LogicOperator { get; }
 

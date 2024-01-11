@@ -67,9 +67,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
         {
-            var path = string.Join(".", operationFilterNode.Paths);
-
-            if (path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
+            if (operationFilterNode.Path.Members.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
             {
                 var value = Expression.Constant(operationFilterNode.Value);
                 var body = Expression.Equal(Entity.Body, value);

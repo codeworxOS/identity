@@ -55,11 +55,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                             from p in u.Providers.Where(p => p.ProviderId == providerId)
                             select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
-                FilterNode? filterNode = null;
+                BooleanFilterNode? filterNode = null;
 
                 if (filter != null)
                 {
-                    filterNode = _filterParser.Parse(filter);
+                    filterNode = (BooleanFilterNode)_filterParser.Parse(filter);
                 }
 
                 var parameters = new QueryParameter(filterNode, excludedAttributes, providerId);
@@ -255,11 +255,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 }
                 else if (!operation.Path.Contains("["))
                 {
+                    var parsed = _filterParser.Parse(operation.Path);
+
                     if (operation.Value is JsonElement node)
                     {
                         var value = JsonValue.Create(node)!;
 
-                        SetPropertyValue(operation.Path, json, value);
+                        if (parsed is PathFilterNode path)
+                        {
+                            SetPropertyValue(path, json, value);
+                        }
                     }
                 }
                 else
@@ -280,7 +285,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                                     if (array.Member != null)
                                     {
                                         var value = JsonValue.Create(node)!;
-                                        SetPropertyValue(array.Member, row.AsObject(), value);
+                                        var memberParsed = _filterParser.Parse(array.Member);
+                                        if (memberParsed is PathFilterNode path)
+                                        {
+                                            SetPropertyValue(path, row.AsObject(), value);
+                                        }
                                     }
                                     else
                                     {
@@ -357,15 +366,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             foreach (var item in node.ToList())
             {
                 node.Remove(item.Key);
-                SetPropertyValue(item.Key, target, item.Value!);
+
+                var parsed = _filterParser.Parse(item.Key);
+
+                if (parsed is PathFilterNode path)
+                {
+                    SetPropertyValue(path, target, item.Value!);
+                }
             }
         }
 
-        private void SetPropertyValue(string key, JsonObject target, JsonNode value)
+        private void SetPropertyValue(PathFilterNode path, JsonObject target, JsonNode value)
         {
-            var paths = key.Split(".");
-
             JsonObject parent = target;
+
+            if (path.Scheme != null)
+            {
+                if (!parent.TryGetPropertyValue(path.Scheme, out var schemeValue))
+                {
+                    schemeValue = new JsonObject();
+                    parent.Add(path.Scheme, schemeValue);
+                }
+
+                parent = schemeValue!.AsObject();
+            }
+
+            var paths = path.Paths;
 
             for (int i = 0; i < paths.Length; i++)
             {

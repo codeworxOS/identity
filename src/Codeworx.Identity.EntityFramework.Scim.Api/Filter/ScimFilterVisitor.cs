@@ -12,12 +12,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         {
         }
 
+        public override FilterNode VisitAttrPath([NotNull] ScimFilterParser.AttrPathContext context)
+        {
+            var schema = context.SCHEMA()?.GetText();
+            var paths = context.ATTRNAME().Select(p => p.GetText()).ToArray();
+
+            return new PathFilterNode(paths, schema?.TrimEnd(':'));
+        }
+
         public override FilterNode VisitAndExp([NotNull] ScimFilterParser.AndExpContext context)
         {
             var left = context.filter().First().Accept(this);
             var right = context.filter().Last().Accept(this);
 
-            return new LogicFilterNode(left, right, LogicOperator.Add);
+            return new LogicFilterNode((BooleanFilterNode)left, (BooleanFilterNode)right, LogicOperator.Add);
         }
 
         public override FilterNode VisitOrExp([NotNull] ScimFilterParser.OrExpContext context)
@@ -25,7 +33,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             var left = context.filter().First().Accept(this);
             var right = context.filter().Last().Accept(this);
 
-            return new LogicFilterNode(left, right, LogicOperator.Or);
+            return new LogicFilterNode((BooleanFilterNode)left, (BooleanFilterNode)right, LogicOperator.Or);
         }
 
         public override FilterNode VisitValPathAndExp([NotNull] ScimFilterParser.ValPathAndExpContext context)
@@ -33,7 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             var left = context.valPathFilter().First().Accept(this);
             var right = context.valPathFilter().Last().Accept(this);
 
-            return new LogicFilterNode(left, right, LogicOperator.Add);
+            return new LogicFilterNode((BooleanFilterNode)left, (BooleanFilterNode)right, LogicOperator.Add);
         }
 
         public override FilterNode VisitValPathOrExp([NotNull] ScimFilterParser.ValPathOrExpContext context)
@@ -41,17 +49,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             var left = context.valPathFilter().First().Accept(this);
             var right = context.valPathFilter().Last().Accept(this);
 
-            return new LogicFilterNode(left, right, LogicOperator.Or);
+            return new LogicFilterNode((BooleanFilterNode)left, (BooleanFilterNode)right, LogicOperator.Or);
         }
 
         public override FilterNode VisitValPathExp([NotNull] ScimFilterParser.ValPathExpContext context)
         {
-            var schema = context.attrPath().SCHEMA()?.GetText();
-            var paths = context.attrPath().ATTRNAME().Select(p => p.GetText()).ToArray();
-            var filter = context.valPathFilter().Accept(this);
+            var path = (PathFilterNode)context.attrPath().Accept(this);
+            ////var schema = context.attrPath().SCHEMA()?.GetText();
+            ////var paths = context.attrPath().ATTRNAME().Select(p => p.GetText()).ToArray();
+            var filter = (BooleanFilterNode)context.valPathFilter().Accept(this);
             var member = context.ATTRNAME()?.GetText();
 
-            return new ArrayFilterNode(paths, filter, member, schema);
+            return new ArrayFilterNode(path, filter, member);
         }
 
         public override FilterNode VisitValPathOperatorExp([NotNull] ScimFilterParser.ValPathOperatorExpContext context)
@@ -60,10 +69,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             FilterOperator op = GetOperator(compare);
 
             return new OperationFilterNode(
-                context.attrPath().ATTRNAME().Select(p => p.GetText()).ToArray(),
+                (PathFilterNode)context.attrPath().Accept(this),
                 op,
-                context.VALUE().GetText().Trim('"'),
-                context.attrPath().SCHEMA()?.GetText());
+                context.VALUE().GetText().Trim('"'));
         }
 
         public override FilterNode VisitOperatorExp([NotNull] ScimFilterParser.OperatorExpContext context)
@@ -72,10 +80,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             FilterOperator op = GetOperator(compare);
 
             return new OperationFilterNode(
-                context.attrPath().ATTRNAME().Select(p => p.GetText()).ToArray(),
+                (PathFilterNode)context.attrPath().Accept(this),
                 op,
-                context.VALUE().GetText().Trim('"'),
-                context.attrPath().SCHEMA()?.GetText());
+                context.VALUE().GetText().Trim('"'));
         }
 
         private static FilterOperator GetOperator(ITerminalNode compare)

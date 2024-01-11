@@ -44,11 +44,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                             from p in g.Providers.Where(p => p.ProviderId == providerId)
                             select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
-                FilterNode? filterNode = null;
+                BooleanFilterNode? filterNode = null;
 
                 if (filter != null)
                 {
-                    filterNode = _filterParser.Parse(filter);
+                    filterNode = (BooleanFilterNode)_filterParser.Parse(filter);
                 }
 
                 var parameter = new QueryParameter(filterNode, excludedAttributes, providerId);

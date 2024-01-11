@@ -2,6 +2,7 @@
 
 parse
     : filter
+	| attrPath
     ;
 
 filter

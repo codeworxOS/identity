@@ -13,7 +13,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ScimFilterParser(tokenStream);
 
-            var tree = parser.filter();
+            var tree = parser.parse();
+
             return tree.Accept(visitor);
         }
     }
