@@ -7,7 +7,7 @@
 		<IsPackable>true</IsPackable>
 		<NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
 		<Nullable>enable</Nullable>
-		<NoWarn>CA1033</NoWarn>
+		<NoWarn>CA1033;AC0180</NoWarn>
 		<!--// Interface methods should be callable by child types-->
 	</PropertyGroup>
 
