@@ -20,7 +20,8 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj",
-"..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj"
+"..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj",
+"..\src\Codeworx.Identity.EntityFrameworkCore.Scim.Api\Codeworx.Identity.EntityFrameworkCore.Scim.Api.csproj"
 
 
     New-NugetPackages `

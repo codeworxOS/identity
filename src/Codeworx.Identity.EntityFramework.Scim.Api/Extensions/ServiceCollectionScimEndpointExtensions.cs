@@ -1,8 +1,10 @@
 ﻿using System;
+using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +18,27 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IContextWrapper, DbContextWrapper<TContext>>();
             services.AddSingleton<IFilterParser, FilterParser>();
             services.AddSingleton(typeof(IResourceMapper<>), typeof(ResourceMapper<>));
+
+            services.AddScimSchema<UserResource>(ScimConstants.ResourceTypes.User, ScimConstants.Schemas.User);
+            services.AddScimSchema<GroupResource>(ScimConstants.ResourceTypes.Group, ScimConstants.Schemas.Group);
+            services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
+
+            services.AddScimProperties<User, UserResource>(d => d
+                                                        .AddExternalIdProperty(p => p.ExternalId!)
+                                                        .AddClrProperty(d => d.Active, d => !d.Entity.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
+                                                        .AddClrProperty(d => d.UserName, d => d.Entity.Name));
+
+            services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true)
+                                                                     .AddClrProperty(d => d.Created, d => d.Entity.Created, true));
+
+            services.AddScimProperties<Group, GroupResource>(d => d
+                                                        .AddExternalIdProperty(d => d.ExternalId!)
+                                                        .AddClrProperty(d => d.DisplayName, d => d.Entity.Name)
+                                                        .AddMembersProperty());
+
+            services.AddScimProperties<Group, ScimResponseInfo>(d => d
+                                                        .AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true));
+
             return services;
         }
 

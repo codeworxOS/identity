@@ -18,12 +18,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             : base(
                       p => new List<TMultiValueResource>()
                       {
+                          EF.Property<TData>(p.Entity, propertyName) != null ?
                           new TMultiValueResource
                           {
                               Value = EF.Property<TData>(p.Entity, propertyName),
                               Type = type,
                               Primary = primary,
-                          },
+                          }
+                          : null!,
                       },
                       resourceExpression)
         {

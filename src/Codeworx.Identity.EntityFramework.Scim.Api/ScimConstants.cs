@@ -25,5 +25,10 @@
             public const string ResourceType = "ResourceType";
             public const string EnterpriseUser = "EnterpriseUser";
         }
+
+        public class Policies
+        {
+            public const string ScimInterop = "identity_api_scim_policy";
+        }
     }
 }

@@ -47,6 +47,13 @@ namespace Codeworx.Identity.Test
             return this;
         }
 
+        public OAuthAuthorizationRequestBuilder WithNonce(string value)
+        {
+            _nonce = value;
+
+            return this;
+        }
+
         public AuthorizationRequest Build()
         {
             return new AuthorizationRequest(_clientId, _redirectUri, _responseType, _scope, _state, _nonce);

@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/ResourceTypes")]
-    [Produces("application/scim+json")]
-    [Consumes("application/scim+json")]
-    [AllowAnonymous]
+    [Produces("application/scim+json", "application/json")]
+    [Consumes("application/scim+json", "application/json")]
+    [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
     public class ResourceTypesController : Controller
     {
         [HttpGet]

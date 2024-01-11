@@ -29,7 +29,8 @@ namespace Codeworx.Identity.Notification
                     }
 
                     throw new NotSupportedException();
-                }, token);
+                },
+                token);
         }
 
         public void Dispose()

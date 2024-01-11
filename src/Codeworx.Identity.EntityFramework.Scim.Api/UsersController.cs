@@ -22,7 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [Route("{providerId}/scim/Users")]
     [Produces("application/scim+json", "application/json")]
     [Consumes("application/scim+json", "application/json")]
-    [AllowAnonymous]
+    [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
     public class UsersController : Controller
     {
         private readonly DbContext _db;
@@ -341,7 +341,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             var userUrl = this.Url.ActionLink(controller: "Users", action: "GetUser", values: new { userId = info.Id })!;
 
             info.Location = userUrl;
-            ////var info = new ScimResponseInfo(item.Id.ToString("N"), userUrl, item.Created, item.Created);
 
             var user = resources.OfType<UserResource>().FirstOrDefault();
 
@@ -351,56 +350,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             }
 
             return new UserResponse(info, user, resources.OfType<ISchemaResource>().Except(new[] { user }).ToArray());
-
-            ////foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
-            ////{
-            ////    object data;
-            ////    if (resourceType.Key == typeof(UserResource))
-            ////    {
-            ////        data = resource;
-            ////    }
-            ////    else
-            ////    {
-            ////        if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
-            ////        {
-            ////            data = d;
-            ////            list.Add(d);
-            ////        }
-            ////        else
-            ////        {
-            ////            throw new NotSupportedException();
-            ////        }
-            ////    }
-
-            ////    foreach (var property in resourceType)
-            ////    {
-            ////        property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
-            ////    }
-            ////}
         }
-
-        ////private void ApplyEntityChanges(UserRequest user, User item)
-        ////{
-        ////    var entityEntry = _db.Entry(item);
-
-        ////    foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
-        ////    {
-        ////        object data;
-        ////        if (resourceType.Key == typeof(UserResource))
-        ////        {
-        ////            data = user.Resource;
-        ////        }
-        ////        else
-        ////        {
-        ////            data = user.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
-        ////        }
-
-        ////        foreach (var property in resourceType)
-        ////        {
-        ////            entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
-        ////        }
-        ////    }
-        ////}
 
         private void MergeProperties(JsonObject node, JsonObject target)
         {

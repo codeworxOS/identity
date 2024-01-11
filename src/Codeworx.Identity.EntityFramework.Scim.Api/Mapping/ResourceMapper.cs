@@ -62,7 +62,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             var select = Expression.Lambda<Func<ScimEntity<TEntity>, Dictionary<string, IScimResource>>>(
                 Expression.ListInit(
                     Expression.New(typeof(Dictionary<string, IScimResource>)),
-                    elementInits), entity);
+                    elementInits),
+                entity);
 
             return baseQuery.Select(select);
         }

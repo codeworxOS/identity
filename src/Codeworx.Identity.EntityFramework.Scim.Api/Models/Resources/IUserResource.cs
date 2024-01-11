@@ -22,14 +22,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 
         string? PreferredLanguage { get; }
 
-        string? Locale { get;  }
+        string? Locale { get; }
 
-        NameResource? Name { get;  }
+        NameResource? Name { get; }
 
         string? Timezone { get; }
 
         public string? ExternalId { get; }
 
-        List<EmailResource>? Emails { get; }
+        List<EmailResource?>? Emails { get; }
     }
 }

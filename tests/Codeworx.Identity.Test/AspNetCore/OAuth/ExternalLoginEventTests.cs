@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.Windows;
 using Codeworx.Identity.Model;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -20,6 +17,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task ExternalLoginEvent_MissingUser_ExpectsAuthenticationException()
         {
+            await Task.Yield();
+
             var services = new ServiceCollection();
 
             services

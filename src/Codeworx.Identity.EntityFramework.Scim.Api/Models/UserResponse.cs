@@ -40,7 +40,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 
         public string? Timezone => Resource.Timezone;
 
-        public List<EmailResource>? Emails => Resource.Emails;
+        public List<EmailResource?>? Emails => Resource.Emails;
 
         public ScimMetadata Meta => Common.Meta;
 

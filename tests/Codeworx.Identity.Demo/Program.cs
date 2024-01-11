@@ -3,7 +3,6 @@ using Codeworx.Identity.Demo.Database;
 using Codeworx.Identity.EntityFrameworkCore.Api;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Codeworx.Identity.Mail;
 using IdentityModel.AspNetCore.OAuth2Introspection;
@@ -39,35 +38,20 @@ internal class Program
 
         // setup scim
         builder.Services.AddScimEndpoint<DemoIdentityDbContext>();
-        builder.Services.AddScimSchema<UserResource>(ScimConstants.ResourceTypes.User, ScimConstants.Schemas.User);
-        builder.Services.AddScimSchema<GroupResource>(ScimConstants.ResourceTypes.Group, ScimConstants.Schemas.Group);
-        builder.Services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
+        builder.Services.AddScimProperties<User, UserResource>(p => p
+                            .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
+                            .AddShadowProperty(p => p.Name!.FamilyName, "LastName")
+                            .AddShadowProperty(p => p.Name!.Formatted, "DisplayName")
+                            .AddShadowProperty<EmailResource, string>(p => p.Emails!, "Email", "work", true));
 
-        builder.Services.AddScimProperties<User, UserResource>(d => d
-                                                    .AddExternalIdProperty(p => p.ExternalId!)
-                                                    .AddClrProperty(d => d.Active, d => !d.Entity.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
-                                                    .AddClrProperty(d => d.UserName, d => d.Entity.Name)
-                                                    .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
-                                                    .AddShadowProperty(p => p.Name!.FamilyName, "LastName")
-                                                    .AddShadowProperty<EmailResource, string>(p => p.Emails!, "Email", "work", true));
-
-        builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true)
-                                                                 .AddClrProperty(d => d.Created, d => d.Entity.Created, true));
-
-        var test = Guid.NewGuid();
-
-        builder.Services.AddScimProperties<Group, GroupResource>(d => d
-                                                    .AddExternalIdProperty(d => d.ExternalId!)
-                                                    .AddClrProperty(d => d.DisplayName, d => d.Entity.Name)
-                                                    .AddMembersProperty());
-
-        builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true));
+        builder.Services.AddScimProperties<User, EnterpriseUserResource>(p => p
+                            .AddShadowProperty(d => d.Department, "Department")
+                            .AddShadowProperty(d => d.Organization, "Organization"));
 
         ////builder.Services.AddScimProperties<User, EnterpriseUserResource>(d => d.Schema(ScimConstants.Schemas.EnterpriseUser));
 
         // setup swagger
         builder.Services.AddScoped<Codeworx.Identity.EntityFrameworkCore.Api.IContextWrapper, Codeworx.Identity.EntityFrameworkCore.Api.DbContextWrapper<DemoIdentityDbContext>>();
-        builder.Services.AddScoped<Codeworx.Identity.EntityFrameworkCore.Scim.Api.IContextWrapper, Codeworx.Identity.EntityFrameworkCore.Scim.Api.DbContextWrapper<DemoIdentityDbContext>>();
         builder.Services.AddOpenApiDocument<DemoIdentityDbContext>((options, s) =>
         {
             options.Title = "Codeworx Identity Demo";
@@ -97,20 +81,25 @@ internal class Program
         // setup authentication providers
         builder.Services.AddAuthentication()
            .AddNegotiate("Windows", p => { }) // remove if using iisexpress or iis
-           .AddOAuth2Introspection("JWT", p => ConfigureIntrospect(p, configuration));
+           .AddOAuth2Introspection("token", p => ConfigureIntrospect(p, configuration));
 
         // setup authorziation policies
         builder.Services.AddAuthorization(p =>
         {
             p.FallbackPolicy = new AuthorizationPolicyBuilder()
                                     .RequireAuthenticatedUser()
-                                    .AddAuthenticationSchemes("JWT")
+                                    .AddAuthenticationSchemes("token")
                                     .Build();
+
+            // scim allow anonymous for testing
+            p.AddPolicy(ScimConstants.Policies.ScimInterop, builder => builder.RequireAuthenticatedUser()
+                                            .RequireClaim("upn", "admin")
+                                            .AddAuthenticationSchemes("token"));
 
             // policy for admin controllers
             p.AddPolicy(Policies.Admin, builder => builder.RequireAuthenticatedUser()
                                             .RequireClaim("upn", "admin")
-                                            .AddAuthenticationSchemes("JWT"));
+                                            .AddAuthenticationSchemes("token"));
         });
 
         // setup custom identity DbContext.
