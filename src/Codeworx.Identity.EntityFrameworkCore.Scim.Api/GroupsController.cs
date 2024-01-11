@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Error;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Binding;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Patch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,75 +21,72 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [Produces("application/scim+json", "application/json")]
     [Consumes("application/scim+json", "application/json")]
     [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
+    [ScimError]
     public class GroupsController : Controller
     {
         private readonly DbContext _db;
         private readonly IResourceMapper<Group> _mapper;
         private readonly IFilterParser _filterParser;
+        private readonly IPatchProcessor _patchProcessor;
 
-        public GroupsController(IContextWrapper contextWrapper, IResourceMapper<Group> mapper, IFilterParser filterParser)
+        public GroupsController(IContextWrapper contextWrapper, IResourceMapper<Group> mapper, IFilterParser filterParser, IPatchProcessor patchProcessor)
         {
             _db = contextWrapper.Context;
             _mapper = mapper;
             _filterParser = filterParser;
+            _patchProcessor = patchProcessor;
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ListResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
-            try
+            var query = from g in _db.Set<Group>().AsNoTracking()
+                        from p in g.Providers.Where(p => p.ProviderId == providerId)
+                        select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
+
+            BooleanFilterNode? filterNode = null;
+
+            if (filter != null)
             {
-                var query = from g in _db.Set<Group>().AsNoTracking()
-                            from p in g.Providers.Where(p => p.ProviderId == providerId)
-                            select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
-
-                BooleanFilterNode? filterNode = null;
-
-                if (filter != null)
-                {
-                    filterNode = (BooleanFilterNode)_filterParser.Parse(filter);
-                }
-
-                var parameter = new QueryParameter(filterNode, excludedAttributes, providerId);
-
-                var mapped = _mapper.GetResourceQuery(_db, query, parameter);
-
-                int totalResults = await mapped.CountAsync();
-
-                if (startIndex > 1)
-                {
-                    mapped = mapped.Skip(startIndex - 1);
-                }
-
-                if (count > 0)
-                {
-                    mapped = mapped.Take(count);
-                }
-
-                var groups = await mapped.ToListAsync();
-                var result = new List<GroupResponse>();
-
-                foreach (var item in groups)
-                {
-                    var response = GenerateGroupResponse(item.Values);
-
-                    result.Add(response);
-                }
-
-                return new ListResponse(startIndex, totalResults, count, result);
+                filterNode = (BooleanFilterNode)_filterParser.Parse(filter);
             }
-            catch (Exception)
+
+            var parameter = new QueryParameter(filterNode, excludedAttributes, providerId);
+
+            var mapped = _mapper.GetResourceQuery(_db, query, parameter);
+
+            int totalResults = await mapped.CountAsync();
+
+            if (startIndex > 1)
             {
-                return BadRequest();
+                mapped = mapped.Skip(startIndex - 1);
             }
+
+            if (count > 0)
+            {
+                mapped = mapped.Take(count);
+            }
+
+            var groups = await mapped.ToListAsync();
+            var result = new List<GroupResponse>();
+
+            foreach (var item in groups)
+            {
+                var response = GenerateGroupResponse(item.Values);
+
+                result.Add(response);
+            }
+
+            return new ListResponse(startIndex, totalResults, count, result);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult> DeleteGroupAsync(Guid id)
         {
             var item = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
@@ -107,6 +106,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             var query = from g in _db.Set<Group>().AsNoTracking()
@@ -132,7 +132,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResource))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<GroupResponse>> AddGroupAsync([RequestResourceBinder] GroupRequest group, Guid providerId)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
@@ -176,9 +177,30 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             }
         }
 
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
+        public async Task<ActionResult<GroupResponse>> PatchGroupAsync(Guid id, [RequestResourceBinder] PatchRequest patch, Guid providerId)
+        {
+            var user = await GetGroupAsync(id, null, providerId);
+
+            var current = user?.Value;
+
+            if (current == null)
+            {
+                return NotFound();
+            }
+
+            var groupRequest = await _patchProcessor.ProcessAsync<GroupResponse, GroupRequest>(current, patch.Resource);
+
+            return await UpdateGroupAsync(id, groupRequest, providerId);
+        }
+
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<GroupResponse>> UpdateGroupAsync(Guid id, [RequestResourceBinder] GroupRequest group, Guid providerId)
         {
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
@@ -213,7 +235,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             var groupUrl = this.Url.ActionLink(controller: "Groups", action: "GetGroup", values: new { id = info.Id })!;
 
             info.Location = groupUrl;
-            ////var info = new ScimResponseInfo(item.Id.ToString("N"), userUrl, item.Created, item.Created);
 
             var group = resources.OfType<GroupResource>().FirstOrDefault();
 
@@ -223,69 +244,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             }
 
             return new GroupResponse(info, group, resources.OfType<ISchemaResource>().Except(new[] { group }).ToArray());
-
-            ////}
-
-            ////private GroupResponse GenerateGroupResponse(Group item)
-            ////{
-
-            ////    var info = new ScimResponseInfo(item.Id.ToString("N"), groupUrl, DateTime.Today, DateTime.Today);
-
-            ////    var entityEntry = _db.Entry(item);
-            ////    var resource = new GroupResource();
-            ////    var list = new List<ISchemaResource>();
-            ////    foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
-            ////    {
-            ////        object data;
-            ////        if (resourceType.Key == typeof(GroupResource))
-            ////        {
-            ////            data = resource;
-            ////        }
-            ////        else
-            ////        {
-            ////            if (Activator.CreateInstance(resourceType.Key) is ISchemaResource d)
-            ////            {
-            ////                data = d;
-            ////                list.Add(d);
-            ////            }
-            ////            else
-            ////            {
-            ////                throw new NotSupportedException();
-            ////            }
-            ////        }
-
-            ////        foreach (var property in resourceType)
-            ////        {
-            ////            property.SetResourceValue(data, entityEntry.Property(property.EntityPropertyName).CurrentValue);
-            ////        }
-            ////    }
-
-            ////    var response = new GroupResponse(info, resource, list.ToArray());
-            ////    return response;
-            ////}
-
-            ////private void ApplyEntityChanges(GroupRequest groupRequest, Group item)
-            ////{
-            ////    var entityEntry = _db.Entry(item);
-
-            ////    foreach (var resourceType in _mappedProperties.GroupBy(d => d.ResourceType))
-            ////    {
-            ////        object data;
-            ////        if (resourceType.Key == typeof(GroupResource))
-            ////        {
-            ////            data = groupRequest.Resource;
-            ////        }
-            ////        else
-            ////        {
-            ////            data = groupRequest.Extensions.FirstOrDefault(d => d.GetType() == resourceType.Key) ?? Activator.CreateInstance(resourceType.Key) ?? throw new InvalidOperationException();
-            ////        }
-
-            ////        foreach (var property in resourceType)
-            ////        {
-            ////            entityEntry.Property(property.EntityPropertyName).CurrentValue = property.GetResourceValue(data);
-            ////        }
-            ////    }
-            ////}
         }
     }
 }

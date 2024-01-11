@@ -71,7 +71,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return new OperationFilterNode(
                 (PathFilterNode)context.attrPath().Accept(this),
                 op,
-                context.VALUE().GetText().Trim('"'));
+                context.VALUE().GetText());
         }
 
         public override FilterNode VisitOperatorExp([NotNull] ScimFilterParser.OperatorExpContext context)
@@ -82,7 +82,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             return new OperationFilterNode(
                 (PathFilterNode)context.attrPath().Accept(this),
                 op,
-                context.VALUE().GetText().Trim('"'));
+                context.VALUE().GetText());
         }
 
         private static FilterOperator GetOperator(ITerminalNode compare)

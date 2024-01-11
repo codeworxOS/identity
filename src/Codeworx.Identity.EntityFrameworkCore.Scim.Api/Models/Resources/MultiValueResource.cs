@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 {
@@ -12,5 +13,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 
         [JsonPropertyName("$ref")]
         public virtual string? Ref { get; set; }
+
+        [JsonExtensionData]
+        public Dictionary<string, object> Extensions { get; set; } = new Dictionary<string, object>();
     }
 }

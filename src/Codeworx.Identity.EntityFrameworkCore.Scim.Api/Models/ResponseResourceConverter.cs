@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {
@@ -21,12 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 
         public override void Write(Utf8JsonWriter writer, ScimResponse<TResource> value, JsonSerializerOptions options)
         {
-            options = new JsonSerializerOptions(options)
-            {
-                PropertyNameCaseInsensitive = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            };
+            options = SerializationSetup.CreateOptionsForSerialize();
 
             var result = JsonSerializer.SerializeToNode(value.Resource, options)!.AsObject();
             var common = JsonSerializer.SerializeToNode(value.Common, options)!.AsObject();

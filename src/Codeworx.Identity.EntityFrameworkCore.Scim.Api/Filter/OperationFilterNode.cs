@@ -12,12 +12,15 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
         {
             Path = path;
             Op = op;
-            Value = value;
+            RawValue = value;
+            Value = value.Trim('"');
         }
 
         public PathFilterNode Path { get; }
 
         public FilterOperator Op { get; }
+
+        public string RawValue { get; }
 
         public string Value { get; }
 
@@ -45,6 +48,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             }
 
             return false;
+        }
+
+        protected override IEnumerable<FilterNode> GetChildren()
+        {
+            return Path.Flatten();
         }
     }
 }

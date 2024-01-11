@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json.Nodes;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
@@ -26,7 +27,33 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             throw new NotImplementedException();
         }
 
-        public override object? Evaluate(JsonObject json)
+        public override JsonNode? Evaluate(JsonObject json)
+        {
+            var parent = GetParent(json, false);
+
+            if (parent != null && parent.TryGetPropertyValue(this.Paths.Last(), out var result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+
+        public override void SetValue(JsonObject json, JsonNode value)
+        {
+            var parent = GetParent(json, true);
+
+            var member = this.Paths.Last();
+
+            if (parent!.TryGetPropertyValue(member, out var result))
+            {
+                parent.Remove(member);
+            }
+
+            parent.Add(member, value);
+        }
+
+        public JsonObject? GetParent(JsonObject json, bool createIfNotExists)
         {
             if (Scheme != null)
             {
@@ -39,26 +66,25 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
                 json = schemeValue!.AsObject();
             }
 
-            for (int i = 0; i < Paths.Length; i++)
+            for (int i = 0; i < Paths.Length - 1; i++)
             {
-                if (i < Paths.Length - 1)
+                if (!json.TryGetPropertyValue(Paths[i], out var nextNode))
                 {
-                    var next = json[Paths[i]]?.AsObject();
-
-                    if (next == null)
+                    if (createIfNotExists)
                     {
-                        throw new NotSupportedException("Invalid Path!");
+                        nextNode = new JsonObject();
+                        json.Add(Paths[i], nextNode);
                     }
+                    else
+                    {
+                        return null;
+                    }
+                }
 
-                    json = next;
-                }
-                else
-                {
-                    return json[Paths[i]];
-                }
+                json = nextNode!.AsObject();
             }
 
-            return null;
+            return json;
         }
 
         public override string ToString()
@@ -66,6 +92,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             var split = Scheme != null ? ":" : string.Empty;
 
             return $"{Scheme}{split}{string.Join(".", Paths)}";
+        }
+
+        protected override IEnumerable<FilterNode> GetChildren()
+        {
+            yield break;
         }
     }
 }

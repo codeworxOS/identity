@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Serialization
 {
     public class ScimSchemaConverter : JsonConverter<object>
     {

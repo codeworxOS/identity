@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Serialization;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Error;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +14,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [Produces("application/scim+json", "application/json")]
     [Consumes("application/scim+json", "application/json")]
     [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
+    [ScimError]
     public class ResourceTypesController : Controller
     {
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<ListResponse>> GetResourceTypesAsync([FromQuery] string filter, Guid providerId)
         {
             if (filter != null)
@@ -39,6 +43,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet("{resource}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<ResourceTypeResponse>> GetResourceTypeAsync(string resource, Guid providerId)
         {
             await Task.Yield();

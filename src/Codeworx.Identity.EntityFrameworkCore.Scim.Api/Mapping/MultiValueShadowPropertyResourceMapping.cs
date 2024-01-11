@@ -41,18 +41,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         {
             var entry = db.Entry(entity);
             var resourceValue = GetResourceValue(resource);
-            if (resourceValue != null)
-            {
-                var filtered = resourceValue.Where(p => p.Type == Type).FirstOrDefault();
 
-                if (filtered != null)
-                {
-                    entry.Property(PropertyName).CurrentValue = filtered.Value;
-                }
-                else
-                {
-                    entry.Property(PropertyName).CurrentValue = null;
-                }
+            var filtered = resourceValue?.Where(p => p.Type == Type).FirstOrDefault();
+
+            if (filtered != null)
+            {
+                entry.Property(PropertyName).CurrentValue = filtered.Value;
+            }
+            else
+            {
+                entry.Property(PropertyName).CurrentValue = null;
             }
 
             return Task.CompletedTask;

@@ -13,7 +13,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             return Convert<TEntity>(mappings);
         }
 
-        public abstract object? Evaluate(JsonObject json);
+        public abstract JsonNode? Evaluate(JsonObject json);
+
+        public abstract void SetValue(JsonObject json, JsonNode value);
 
         public abstract LambdaExpression Convert<TEntity>(IEnumerable<IResourceMapping<TEntity>> mappings)
             where TEntity : class;

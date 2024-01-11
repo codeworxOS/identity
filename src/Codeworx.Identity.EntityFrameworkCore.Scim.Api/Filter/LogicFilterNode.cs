@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Json.Nodes;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
@@ -53,6 +54,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             }
 
             return Left.Evaluate(json) || Right.Evaluate(json);
+        }
+
+        protected override IEnumerable<FilterNode> GetChildren()
+        {
+            return Left.Flatten().Concat(Right.Flatten());
         }
     }
 }

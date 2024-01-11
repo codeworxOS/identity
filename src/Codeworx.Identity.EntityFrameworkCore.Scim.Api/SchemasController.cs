@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Error;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
@@ -16,6 +17,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
     [Produces("application/scim+json", "application/json")]
     [Consumes("application/scim+json", "application/json")]
     [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
+    [ScimError]
     public class SchemasController : Controller
     {
         private readonly IResourceMapper<User> _userMapper;
@@ -34,6 +36,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<ListResponse>> GetSchemasAsync([FromQuery] string filter, Guid providerId)
         {
             if (filter != null)
@@ -63,6 +66,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
         [HttpGet("{schema}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
         public async Task<ActionResult<SchemaDataResponse>> GetSchemaAsync(string schema, Guid providerId)
         {
             await Task.Yield();

@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.Configuration;
+﻿using System.Text.Json.Serialization;
+using Codeworx.Identity.Configuration;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 {
@@ -10,6 +11,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 
         [ScimReferenceTypes("User", "Group")]
         [ScimMutability(ScimMutabilityAttribute.MutabilityType.Immutable)]
+        [JsonPropertyName("$ref")]
         public override string? Ref { get; set; }
 
         [ScimMutability(ScimMutabilityAttribute.MutabilityType.Immutable)]
@@ -19,8 +21,5 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
         [ScimMutability(ScimMutabilityAttribute.MutabilityType.Immutable)]
         [ScimRequired(false)]
         public override string? Display { get => base.Display; set => base.Display = value; }
-
-        [ScimMutability(ScimMutabilityAttribute.MutabilityType.ReadOnly)]
-        public string? ExternalId { get; set; }
     }
 }

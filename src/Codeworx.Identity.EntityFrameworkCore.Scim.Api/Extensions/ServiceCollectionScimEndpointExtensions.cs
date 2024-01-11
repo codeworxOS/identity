@@ -6,6 +6,8 @@ using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Patch;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -18,6 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IContextWrapper, DbContextWrapper<TContext>>();
             services.AddSingleton<IFilterParser, FilterParser>();
             services.AddSingleton(typeof(IResourceMapper<>), typeof(ResourceMapper<>));
+            services.AddSingleton<ISerializationSetup, SerializationSetup>();
+            services.AddSingleton<IPatchProcessor, PatchProcessor>();
 
             services.AddScimSchema<UserResource>(ScimConstants.ResourceTypes.User, ScimConstants.Schemas.User);
             services.AddScimSchema<GroupResource>(ScimConstants.ResourceTypes.Group, ScimConstants.Schemas.Group);

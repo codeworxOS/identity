@@ -24,6 +24,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override async Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId)
         {
+            var resourceValue = GetResourceValue(resource);
+
+            if (resourceValue == null)
+            {
+                return;
+            }
+
             var rightHolderId = entity.Id;
 
             var current = db.ChangeTracker.Entries<AuthenticationProviderRightHolder>().Where(p => p.Entity.RightHolderId == rightHolderId).Select(p => p.Entity).FirstOrDefault();
@@ -38,7 +45,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                 }
             }
 
-            current.ExternalIdentifier = GetResourceValue(resource);
+            current.ExternalIdentifier = resourceValue;
         }
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)

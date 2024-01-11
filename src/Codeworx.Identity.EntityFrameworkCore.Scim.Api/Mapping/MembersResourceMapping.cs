@@ -17,10 +17,32 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         {
         }
 
-        public override Task CopyValueAsync(DbContext db, Group entity, GroupResource resource, Guid providerId)
+        public override async Task CopyValueAsync(DbContext db, Group entity, GroupResource resource, Guid providerId)
         {
-            // TODO implememt;
-            return Task.CompletedTask;
+            var currentMembers = await db.Set<RightHolderGroup>()
+                                    .Where(p => p.GroupId == entity.Id && p.RightHolder.Providers.Any(x => x.ProviderId == providerId))
+                                    .Select(p => p.RightHolderId)
+                                    .ToListAsync();
+
+            var newMembers = resource.Members?.Select(p => Guid.Parse(p.Value)).ToList() ?? new List<Guid>();
+
+            foreach (var member in currentMembers)
+            {
+                if (!newMembers.Contains(member))
+                {
+                    var toRemove = new RightHolderGroup { GroupId = entity.Id, RightHolderId = member };
+                    db.Entry(toRemove).State = EntityState.Deleted;
+                }
+            }
+
+            foreach (var member in newMembers)
+            {
+                if (!currentMembers.Contains(member))
+                {
+                    var toAdd = new RightHolderGroup { GroupId = entity.Id, RightHolderId = member };
+                    db.Add(toAdd);
+                }
+            }
         }
 
         public override Expression<Func<ScimEntity<Group>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
@@ -42,34 +64,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             var entity = db.Model.FindEntityType(typeof(RightHolder));
             if (entity != null)
             {
-                ////yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(GroupMemberResource.Type))!, null, ResourceExpression.Body);
                 yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(GroupMemberResource.Ref))!, null, ResourceExpression.Body);
                 yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(GroupMemberResource.Value))!, entity.GetProperty(nameof(RightHolder.Id)), ResourceExpression.Body);
                 yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(GroupMemberResource.Display))!, entity.GetProperty(nameof(RightHolder.Name)), ResourceExpression.Body);
-                yield return new MappedPropertyInfo(resourceType.GetProperty(nameof(GroupMemberResource.ExternalId))!, null, ResourceExpression.Body);
             }
         }
 
         private static Expression<Func<ScimEntity<Group>, List<GroupMemberResource>>> CreateEntityExpression()
         {
-            return p => (from rhg in Query.Set<RightHolderGroup>()
-                         from provider in rhg.RightHolder.Providers
-                         where provider.ProviderId == Query.ProviderId
-                         select new
-                         {
-                             GroupId = rhg.GroupId,
-                             Id = rhg.RightHolderId,
-                             Name = rhg.RightHolder.Name,
-                             Type = rhg.RightHolder is User ? "User" : "Group",
-                             ExternalId = provider.ExternalIdentifier,
-                         })
-                        .Where(x => x.GroupId == p.Entity.Id)
+            return p => p.Entity.Members
                         .Select(p => new GroupMemberResource
                         {
-                            Type = p.Type,
-                            Display = p.Name,
-                            ExternalId = p.ExternalId,
-                            Value = p.Id.ToString("N"),
+                            Ref = p.RightHolder is User ? "User" : "Group",
+                            Display = p.RightHolder.Name,
+                            Value = p.RightHolderId.ToString("N"),
                         })
                         .ToList();
         }

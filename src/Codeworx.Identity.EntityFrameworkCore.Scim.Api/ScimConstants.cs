@@ -15,6 +15,8 @@
             public const string PatchOperation = "urn:ietf:params:scim:api:messages:2.0:PatchOp";
 
             public const string EnterpriseUser = "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User";
+
+            public const string Error = "urn:ietf:params:scim:api:messages:2.0:Error";
         }
 
         public class ResourceTypes
@@ -29,6 +31,20 @@
         public class Policies
         {
             public const string ScimInterop = "identity_api_scim_policy";
+        }
+
+        public class Error
+        {
+            public const string InvalidFilter = "invalidFilter";
+            public const string TooMany = "tooMany";
+            public const string Uniqueness = "uniqueness";
+            public const string Mutability = "mutability";
+            public const string InvalidSyntax = "invalidSyntax";
+            public const string InvalidPath = "invalidPath";
+            public const string NoTarget = "noTarget";
+            public const string InvalidValue = "invalidValue";
+            public const string InvalidVers = "invalidVers";
+            public const string Sensitive = "sensitive";
         }
     }
 }
