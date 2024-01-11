@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {
     [JsonConverter(typeof(ResponseResourceConverter<GroupResource>))]
     public class GroupResponse : ScimResponse<GroupResource>, IGroupResource, ICommonResponseResource

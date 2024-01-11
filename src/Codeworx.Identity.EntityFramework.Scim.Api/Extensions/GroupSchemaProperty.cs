@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
 public class GroupSchemaProperty<TResource, TProperty> : IGroupSchemaProperty
     where TResource : ISchemaResource, new()

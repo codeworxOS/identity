@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text.Json.Nodes;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
@@ -42,6 +43,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
             }
 
             return Expression.Lambda<Func<ScimEntity<TEntity>, bool>>(body, param);
+        }
+
+        public override bool Evaluate(JsonObject json)
+        {
+            if (LogicOperator == LogicOperator.Add)
+            {
+                return Left.Evaluate(json) && Right.Evaluate(json);
+            }
+
+            return Left.Evaluate(json) || Right.Evaluate(json);
         }
     }
 }

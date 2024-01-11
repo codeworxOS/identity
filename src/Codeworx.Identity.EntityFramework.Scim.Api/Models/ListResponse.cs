@@ -1,7 +1,7 @@
 ﻿using System.Collections;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
+using System.Text.Json.Serialization;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {
     public class ListResponse
     {
@@ -41,6 +41,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
 
         public int TotalResults { get; set; }
 
+        [JsonPropertyName("Resources")]
         public IList Resources { get; }
     }
 }

@@ -5,12 +5,12 @@ parse
     ;
 
 filter
-	: attrPath SP PR                             #presentExp
-	| attrPath SP COMPAREOPERATOR SP VALUE       #operatorExp
-	| NOT? SP* '(' filter ')'                    #braceExp
-	| attrPath '[' valPathFilter ']'             #valPathExp
-	| filter SP AND SP filter                    #andExp
-	| filter SP OR SP filter                     #orExp
+	: attrPath SP PR									#presentExp
+	| attrPath SP COMPAREOPERATOR SP VALUE				#operatorExp
+	| NOT? SP* '(' filter ')'							#braceExp
+	| attrPath '[' valPathFilter ']' ('.' ATTRNAME)?	#valPathExp
+	| filter SP AND SP filter							#andExp
+	| filter SP OR SP filter							#orExp
 	;										     
 											     
 valPathFilter								     

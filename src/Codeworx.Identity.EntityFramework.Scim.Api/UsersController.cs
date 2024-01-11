@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Codeworx.Identity.EntityFrameworkCore.Model;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Binding;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,22 +20,32 @@ using Microsoft.EntityFrameworkCore;
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/Users")]
+    [Produces("application/scim+json", "application/json")]
+    [Consumes("application/scim+json", "application/json")]
     [AllowAnonymous]
     public class UsersController : Controller
     {
         private readonly DbContext _db;
+        private readonly IFilterParser _filterParser;
         private readonly IResourceMapper<User> _mapper;
+        private readonly IEnumerable<ISchemaExtension> _schemaExtensions;
 
-        public UsersController(IContextWrapper contextWrapper, IResourceMapper<User> mapper)
+        public UsersController(
+            IContextWrapper contextWrapper,
+            IFilterParser filterParser,
+            IResourceMapper<User> mapper,
+            IEnumerable<ISchemaExtension> schemaExtensions)
         {
             _db = contextWrapper.Context;
+            _filterParser = filterParser;
             _mapper = mapper;
+            _schemaExtensions = schemaExtensions;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ListResponse>> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, Guid providerId)
+        public async Task<ActionResult<ListResponse>> GetUsersAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
 
@@ -40,24 +53,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             {
                 var query = from u in _db.Set<User>().AsNoTracking()
                             from p in u.Providers.Where(p => p.ProviderId == providerId)
-                            select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier };
+                            select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
                 FilterNode? filterNode = null;
 
                 if (filter != null)
                 {
-                    var visitor = new ScimFilterVisitor();
-
-                    var inputStream = new AntlrInputStream(filter);
-                    var lexer = new ScimFilterLexer(inputStream);
-                    var tokenStream = new CommonTokenStream(lexer);
-                    var parser = new ScimFilterParser(tokenStream);
-
-                    var tree = parser.filter();
-                    filterNode = tree.Accept(visitor);
+                    filterNode = _filterParser.Parse(filter);
                 }
 
-                var mapped = _mapper.GetResourceQuery(query, filterNode);
+                var parameters = new QueryParameter(filterNode, excludedAttributes, providerId);
+
+                var mapped = _mapper.GetResourceQuery(_db, query, parameters);
 
                 var totalResults = await mapped.CountAsync();
 
@@ -93,14 +100,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpGet("{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId, Guid providerId)
+        public async Task<ActionResult<UserResponse>> GetUserAsync(Guid userId, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             var query = from u in _db.Set<User>().AsNoTracking()
                         from p in u.Providers.Where(p => p.ProviderId == providerId)
                         where u.Id == userId
-                        select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier };
+                        select new ScimEntity<User> { Entity = u, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
-            var mapped = _mapper.GetResourceQuery(query);
+            var parameters = new QueryParameter(null, excludedAttributes, providerId);
+
+            var mapped = _mapper.GetResourceQuery(_db, query, parameters);
 
             var user = await mapped.FirstOrDefaultAsync().ConfigureAwait(false);
 
@@ -155,13 +164,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                     _db.Add(item);
                     _db.Add(mapping);
 
-                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten(), providerId);
 
                     await _db.SaveChangesAsync();
 
                     await transaction.CommitAsync();
 
-                    var response = await GetUserAsync(item.Id, providerId);
+                    var response = await GetUserAsync(item.Id, null, providerId);
                     return CreatedAtAction("AddUser", response.Value);
                 }
             }
@@ -183,13 +192,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
                 {
                     var item = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+                    await _db.Set<AuthenticationProviderRightHolder>().Where(p => p.ProviderId == providerId && p.RightHolderId == id).LoadAsync();
 
                     if (item == null)
                     {
                         return NotFound();
                     }
 
-                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten());
+                    await _mapper.ToDatabaseAsync(_db, item, user.Flatten(), providerId);
 
                     ////ApplyEntityChanges(user, item);
 
@@ -197,7 +207,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 
                     await transaction.CommitAsync();
 
-                    return await GetUserAsync(item.Id, providerId);
+                    return await GetUserAsync(item.Id, null, providerId);
                 }
             }
             catch (Exception)
@@ -206,27 +216,99 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             }
         }
 
-        ////[HttpPatch("{id}")]
-        ////[ProducesResponseType(StatusCodes.Status200OK)]
-        ////[ProducesResponseType(StatusCodes.Status200OK)]
-        ////public async Task<ActionResult<UserResponse>> PatchUserAsync(Guid id, [FromBody] PatchOperation patch)
-        ////{
-        ////    var entity = await _db.Set<User>().Where(p => p.Id == id).FirstOrDefaultAsync();
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserResponse>> PatchUserAsync(Guid id, [RequestResourceBinder] PatchRequest patch, Guid providerId)
+        {
+            var options = new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            };
 
-        ////    if (entity == null)
-        ////    {
-        ////        return NotFound();
-        ////    }
+            var user = await GetUserAsync(id, null, providerId);
 
-        ////    foreach (var operation in patch.Operations)
-        ////    {
-        ////        // todo apply operations
-        ////    }
+            var current = user?.Value;
 
-        ////    await _db.SaveChangesAsync();
+            if (current == null)
+            {
+                return NotFound();
+            }
 
-        ////    return Ok(await GetUserAsync(entity.Id));
-        ////}
+            var json = JsonSerializer.SerializeToNode<UserResponse>(current, options)!.AsObject();
+
+            foreach (var operation in patch.Operations)
+            {
+                if (operation.Path == null)
+                {
+                    if (operation.Op == PatchOp.Remove)
+                    {
+                        return BadRequest();
+                    }
+
+                    if (operation.Value is JsonElement node)
+                    {
+                        MergeProperties(JsonObject.Create(node)!, json);
+                    }
+                }
+                else if (!operation.Path.Contains("["))
+                {
+                    if (operation.Value is JsonElement node)
+                    {
+                        var value = JsonValue.Create(node)!;
+
+                        SetPropertyValue(operation.Path, json, value);
+                    }
+                }
+                else
+                {
+                    if (operation.Op == PatchOp.Remove && operation.Value != null)
+                    {
+                        return BadRequest();
+                    }
+                    else if (operation.Op == PatchOp.Replace)
+                    {
+                        var parsed = _filterParser.Parse(operation.Path);
+                        if (parsed is ArrayFilterNode array)
+                        {
+                            if (operation.Value is JsonElement node)
+                            {
+                                foreach (var row in array.GetItems(json))
+                                {
+                                    if (array.Member != null)
+                                    {
+                                        var value = JsonValue.Create(node)!;
+                                        SetPropertyValue(array.Member, row.AsObject(), value);
+                                    }
+                                    else
+                                    {
+                                        MergeProperties(JsonObject.Create(node)!, row.AsObject());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            var options2 = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            };
+
+            foreach (var extension in _schemaExtensions)
+            {
+                options2.Converters.Add(new ScimSchemaConverter(extension.Schema, extension.TargetType));
+            }
+
+            var userRequest = JsonSerializer.Deserialize<UserRequest>(json, options2)!;
+
+            return await UpdateUsersAsync(id, userRequest, providerId);
+        }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -319,5 +401,43 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         ////        }
         ////    }
         ////}
+
+        private void MergeProperties(JsonObject node, JsonObject target)
+        {
+            foreach (var item in node.ToList())
+            {
+                node.Remove(item.Key);
+                SetPropertyValue(item.Key, target, item.Value!);
+            }
+        }
+
+        private void SetPropertyValue(string key, JsonObject target, JsonNode value)
+        {
+            var paths = key.Split(".");
+
+            JsonObject parent = target;
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                if (i < paths.Length - 1)
+                {
+                    if (parent.TryGetPropertyValue(paths[i], out var next))
+                    {
+                        parent = next!.AsObject();
+                    }
+                    else
+                    {
+                        var child = new JsonObject();
+                        parent.Add(paths[i], child);
+                        parent = child;
+                    }
+                }
+                else
+                {
+                    parent.Remove(paths[i]);
+                    parent.Add(paths[i], value);
+                }
+            }
+        }
     }
 }

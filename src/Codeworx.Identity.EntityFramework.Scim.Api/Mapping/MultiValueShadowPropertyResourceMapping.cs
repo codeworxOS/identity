@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
@@ -35,19 +35,22 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public string PropertyName { get; }
 
-        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource)
+        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId)
         {
             var entry = db.Entry(entity);
             var resourceValue = GetResourceValue(resource);
-            var filtered = resourceValue.Where(p => p.Type == Type).FirstOrDefault();
+            if (resourceValue != null)
+            {
+                var filtered = resourceValue.Where(p => p.Type == Type).FirstOrDefault();
 
-            if (filtered != null)
-            {
-                entry.Property(PropertyName).CurrentValue = filtered.Value;
-            }
-            else
-            {
-                entry.Property(PropertyName).CurrentValue = null;
+                if (filtered != null)
+                {
+                    entry.Property(PropertyName).CurrentValue = filtered.Value;
+                }
+                else
+                {
+                    entry.Property(PropertyName).CurrentValue = null;
+                }
             }
 
             return Task.CompletedTask;
@@ -55,7 +58,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
         {
-            if (operationFilterNode.Path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
+            var path = string.Join(".", operationFilterNode.Paths);
+
+            if (path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
             {
                 throw new NotImplementedException();
             }
@@ -87,6 +92,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             }
 
             return baseVal;
+        }
+
+        protected override string GetMutability(IEnumerable<Attribute> attributes, MappedPropertyInfo property)
+        {
+            var result = base.GetMutability(attributes, property);
+
+            if (property.Member.Name == nameof(MultiValueResource<string>.Primary))
+            {
+                return "readOnly";
+            }
+
+            return result;
         }
 
         protected override bool GetIsRequired(IEnumerable<Attribute> attributes, MappedPropertyInfo property, Type type)

@@ -305,7 +305,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(500)")
+                        .UseCollation("sql_latin1_general_cp1_ci_as");
 
                     b.Property<byte>("Type")
                         .HasColumnType("tinyint");

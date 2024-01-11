@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -24,7 +24,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public bool ReadOnly { get; }
 
-        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource)
+        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId)
         {
             var value = GetResourceValue(resource);
             ////_setValueDelegate(entity, value);
@@ -34,7 +34,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
         {
-            if (operationFilterNode.Path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
+            var path = string.Join(".", operationFilterNode.Paths);
+
+            if (path.StartsWith(ResourcePath + ".", StringComparison.OrdinalIgnoreCase))
             {
                 throw new NotImplementedException();
             }

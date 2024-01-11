@@ -6,9 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
@@ -25,21 +23,24 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             _schemas = schemas.ToImmutableDictionary(p => p.TargetType, p => p);
         }
 
-        public IQueryable<Dictionary<string, IScimResource>> GetResourceQuery(IQueryable<ScimEntity<TEntity>> baseQuery, FilterNode? filterNode)
+        public IQueryable<Dictionary<string, IScimResource>> GetResourceQuery(DbContext db, IQueryable<ScimEntity<TEntity>> baseQuery, QueryParameter queryParamter)
         {
             var entity = Expression.Parameter(typeof(ScimEntity<TEntity>), "p");
 
-            var resources = _mappings.GroupBy(p => p.ResourceExpression.Parameters[0].Type);
+            var mappings = _mappings.Where(p => IsIncluded(p, queryParamter.ExcludedAttributes)).ToList();
 
-            if (filterNode != null)
+            var resources = mappings.GroupBy(p => p.ResourceExpression.Parameters[0].Type);
+
+            if (queryParamter.Filter != null)
             {
-                var expression = filterNode.ToExpression(_mappings);
+                var expression = queryParamter.Filter.ToExpression(_mappings);
                 baseQuery = baseQuery.Where(expression);
             }
 
             var addMethod = typeof(Dictionary<string, IScimResource>).GetMethod(nameof(Dictionary<string, IScimResource>.Add), new Type[] { typeof(string), typeof(IScimResource) })!;
 
             List<ElementInit> elementInits = new List<ElementInit>();
+            var queryVisitor = new QueryReplaceVisitor(new QueryData(db, queryParamter.ProviderId));
 
             foreach (var resource in resources)
             {
@@ -48,8 +49,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                 foreach (var item in resource)
                 {
                     var visitor = new ReplaceParameterVisitor(item.EntityExpression.Parameters[0], entity);
+                    var valueExpression = visitor.Visit(item.EntityExpression.Body);
+                    valueExpression = queryVisitor.Visit(valueExpression);
 
-                    members.Parse(item.ResourceExpression, visitor.Visit(item.EntityExpression.Body));
+                    members.Parse(item.ResourceExpression, valueExpression);
                 }
 
                 var expression = members.GetExpression();
@@ -88,15 +91,34 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
             }
         }
 
-        public async Task ToDatabaseAsync(DbContext db, TEntity entity, IEnumerable<ISchemaResource> resources)
+        public async Task ToDatabaseAsync(DbContext db, TEntity entity, IEnumerable<ISchemaResource> resources, Guid providerId)
         {
             foreach (var resource in resources)
             {
                 foreach (var mapping in _mappings)
                 {
-                    await mapping.ToDatabaseAsync(db, entity, resource);
+                    await mapping.ToDatabaseAsync(db, entity, resource, providerId);
                 }
             }
+        }
+
+        private bool IsIncluded(IResourceMapping<TEntity> mapping, IReadOnlyList<string> excludedAttributes)
+        {
+            if (excludedAttributes.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (var attribute in excludedAttributes)
+            {
+                if (attribute.Equals(mapping.ResourcePath, StringComparison.OrdinalIgnoreCase)
+                    || mapping.ResourcePath.StartsWith($"{attribute}.", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private abstract class MemberBindingTreeItem
@@ -236,7 +258,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     referenceTypes = null;
                 }
 
-                return new SchemaDataAttributeResource(name, dataType, false, description, isRequired, canonicalValues, caseExact, mutability, "default", isUnique ? "server" : "none", referenceTypes);
+                return new SchemaDataAttributeResource(name, dataType, false, description, isRequired, canonicalValues, caseExact, mutability, name == "members" ? "request" : "default", isUnique ? "server" : "none", referenceTypes);
             }
 
             internal void Add(SchemaInfo info)
@@ -296,8 +318,18 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
             public override SchemaDataAttributeResource GetAttribute()
             {
-                var result = new SchemaDataAttributeResource(Path.Name, Path.IsMulti, null, false, false, Path.IsMulti ? "readWrite" : null);
-                result.SubAttributes!.AddRange(Members.Values.Select(p => p.GetAttribute()));
+                var subAttributes = Members.Values.Select(p => p.GetAttribute());
+
+                var result = new SchemaDataAttributeResource(
+                    Path.Name,
+                    Path.IsMulti,
+                    null,
+                    subAttributes.Any(p => p.Required),
+                    subAttributes.Any(p => p.CaseExact),
+                    subAttributes.Any(p => p.Mutability == "readWrite") ? "readWrite" : "readOnly",
+                    "default");
+                result.SubAttributes!.AddRange(subAttributes);
+
                 return result;
             }
         }

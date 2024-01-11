@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Binding
 {
     public class RequestResourceBinding : IModelBinder
     {
@@ -42,7 +42,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding
                 {
                     PropertyNameCaseInsensitive = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
+                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
                 },
             };
 

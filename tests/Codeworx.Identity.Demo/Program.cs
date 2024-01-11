@@ -3,8 +3,8 @@ using Codeworx.Identity.Demo.Database;
 using Codeworx.Identity.EntityFrameworkCore.Api;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Codeworx.Identity.Mail;
 using IdentityModel.AspNetCore.OAuth2Introspection;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +16,12 @@ using NSwag.Generation.Processors.Security;
 
 internal class Program
 {
-    private static void ConfigureIntrospect(OAuth2IntrospectionOptions options)
+    private static void ConfigureIntrospect(OAuth2IntrospectionOptions options, IConfiguration configuration)
     {
         options.ClientId = "18d1fb80b3974e78be9e01c90e20d5f0";
         options.ClientSecret = "clientsecret";
         options.ClientCredentialStyle = IdentityModel.Client.ClientCredentialStyle.AuthorizationHeader;
-        options.Authority = "https://localhost:7127/";
+        options.Authority = $"{configuration.GetValue<string>("Identity:Authority")}";
 
         options.CacheDuration = TimeSpan.FromMinutes(30);
     }
@@ -29,6 +29,8 @@ internal class Program
     private static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        var configuration = builder.Configuration;
 
         var connectionStringBuilder = new SqliteConnectionStringBuilder
         {
@@ -42,7 +44,7 @@ internal class Program
         builder.Services.AddScimSchema<EnterpriseUserResource>(ScimConstants.ResourceTypes.EnterpriseUser, ScimConstants.Schemas.EnterpriseUser);
 
         builder.Services.AddScimProperties<User, UserResource>(d => d
-                                                    .AddClrProperty(d => d.ExternalId, d => d.ExternalId, true)
+                                                    .AddExternalIdProperty(p => p.ExternalId!)
                                                     .AddClrProperty(d => d.Active, d => !d.Entity.IsDisabled, (d, v) => d.IsDisabled = !v.GetValueOrDefault(true))
                                                     .AddClrProperty(d => d.UserName, d => d.Entity.Name)
                                                     .AddShadowProperty(p => p.Name!.GivenName, "FirstName")
@@ -52,18 +54,12 @@ internal class Program
         builder.Services.AddScimProperties<User, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true)
                                                                  .AddClrProperty(d => d.Created, d => d.Entity.Created, true));
 
+        var test = Guid.NewGuid();
+
         builder.Services.AddScimProperties<Group, GroupResource>(d => d
-                                                    .AddClrProperty(d => d.ExternalId, d => d.ExternalId, true)
+                                                    .AddExternalIdProperty(d => d.ExternalId!)
                                                     .AddClrProperty(d => d.DisplayName, d => d.Entity.Name)
-                                                    .AddNavigationProperty(
-                                                                d => d.Members!,
-                                                                d => d.Entity.Members.Select(x => new GroupMemberResource
-                                                                {
-                                                                    Value = x.RightHolderId.ToString("N"),
-                                                                    Type = x.RightHolder is User ? "user" : "group",
-                                                                    Ref = x.RightHolder is User ? "user" : "group",
-                                                                    Display = x.RightHolder.Name,
-                                                                }).ToList()));
+                                                    .AddMembersProperty());
 
         builder.Services.AddScimProperties<Group, ScimResponseInfo>(d => d.AddClrProperty(d => d.Id, d => d.Entity.Id.ToString("N"), true));
 
@@ -83,8 +79,8 @@ internal class Program
                 {
                     AuthorizationCode = new OpenApiOAuthFlow
                     {
-                        AuthorizationUrl = $"https://localhost:7127/openid10",
-                        TokenUrl = $"https://localhost:7127/openid10/token",
+                        AuthorizationUrl = $"{configuration.GetValue<string>("Identity:Authority")}/openid10",
+                        TokenUrl = $"{configuration.GetValue<string>("Identity:Authority")}/openid10/token",
                         Scopes = new Dictionary<string, string> { { "openid", "Api Access" } },
                     },
                 },
@@ -101,7 +97,7 @@ internal class Program
         // setup authentication providers
         builder.Services.AddAuthentication()
            .AddNegotiate("Windows", p => { }) // remove if using iisexpress or iis
-           .AddOAuth2Introspection("JWT", ConfigureIntrospect);
+           .AddOAuth2Introspection("JWT", p => ConfigureIntrospect(p, configuration));
 
         // setup authorziation policies
         builder.Services.AddAuthorization(p =>

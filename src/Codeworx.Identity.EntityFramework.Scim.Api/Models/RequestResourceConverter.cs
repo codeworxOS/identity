@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {
     public class RequestResourceConverter<TResource> : JsonConverter<ScimRequest<TResource>>
         where TResource : ISchemaResource

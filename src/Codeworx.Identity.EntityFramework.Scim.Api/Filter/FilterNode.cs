@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Text.Json.Nodes;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
@@ -12,6 +13,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter
         {
             return Convert<TEntity>(mappings);
         }
+
+        public abstract bool Evaluate(JsonObject json);
 
         public abstract Expression<Func<ScimEntity<TEntity>, bool>> Convert<TEntity>(IEnumerable<IResourceMapping<TEntity>> mappings)
             where TEntity : class;

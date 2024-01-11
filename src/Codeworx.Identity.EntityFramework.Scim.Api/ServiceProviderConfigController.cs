@@ -8,6 +8,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/ServiceProviderConfig")]
     [Produces("application/scim+json")]
+    [Consumes("application/scim+json")]
     [AllowAnonymous]
     public class ServiceProviderConfigController : Controller
     {

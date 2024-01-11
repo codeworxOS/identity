@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {
     public class ResponseResourceConverter<TResource> : JsonConverter<ScimResponse<TResource>>
         where TResource : ISchemaResource, IResourceType
@@ -25,7 +25,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models
             {
                 PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             };
 
             var result = JsonSerializer.SerializeToNode(value.Resource, options)!.AsObject();

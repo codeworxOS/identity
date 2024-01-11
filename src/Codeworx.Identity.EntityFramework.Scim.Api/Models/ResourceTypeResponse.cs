@@ -1,7 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models
 {

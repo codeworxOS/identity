@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -41,20 +41,27 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public LambdaExpression EntityExpression => Entity;
 
-        public TData GetResourceValue(TResource resource)
+        public TData? GetResourceValue(TResource resource)
         {
-            return _resourceValueDelegate(resource);
-        }
-
-        public virtual async Task ToDatabaseAsync(DbContext db, TEntity entity, ISchemaResource resource)
-        {
-            if (resource is TResource typed)
+            try
             {
-                await CopyValueAsync(db, entity, typed);
+                return _resourceValueDelegate(resource);
+            }
+            catch (Exception)
+            {
+                return default;
             }
         }
 
-        public abstract Task CopyValueAsync(DbContext db, TEntity entity, TResource resource);
+        public virtual async Task ToDatabaseAsync(DbContext db, TEntity entity, ISchemaResource resource, Guid providerId)
+        {
+            if (resource is TResource typed)
+            {
+                await CopyValueAsync(db, entity, typed, providerId);
+            }
+        }
+
+        public abstract Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId);
 
         public abstract Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode);
 

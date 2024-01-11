@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/ResourceTypes")]
+    [Produces("application/scim+json")]
+    [Consumes("application/scim+json")]
     [AllowAnonymous]
     public class ResourceTypesController : Controller
     {

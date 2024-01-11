@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -34,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public PropertyBuilder<TResource, TEntity> AddClrProperty<TData>(
             Expression<Func<TResource, TData>> resourceExpression,
             Expression<Func<ScimEntity<TEntity>, TData>> entityExpression,
-            Action<TEntity, TData> setValueDelegate)
+            Action<TEntity, TData?> setValueDelegate)
         {
             _services.AddSingleton<IResourceMapping<TEntity>>(new ClrPropertyResourceMapping<TEntity, TResource, TData>(resourceExpression, entityExpression, setValueDelegate));
 

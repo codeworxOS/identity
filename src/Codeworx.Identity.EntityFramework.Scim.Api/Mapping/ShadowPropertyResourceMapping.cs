@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
@@ -20,7 +20,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public string PropertyName { get; }
 
-        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource)
+        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId)
         {
             var entry = db.Entry(entity);
             entry.Property(PropertyName).CurrentValue = GetResourceValue(resource);
@@ -30,7 +30,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
         {
-            if (operationFilterNode.Path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
+            var path = string.Join(".", operationFilterNode.Paths);
+
+            if (path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
             {
                 var value = Expression.Constant(operationFilterNode.Value);
                 var body = Expression.Equal(Entity.Body, value);

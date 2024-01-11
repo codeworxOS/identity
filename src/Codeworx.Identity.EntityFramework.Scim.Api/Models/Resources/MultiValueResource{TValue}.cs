@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
+﻿namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 {
     public abstract class MultiValueResource<TValue> : MultiValueResource
     {

@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Antlr4.Runtime;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Binding;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Binding;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,46 +16,44 @@ using Microsoft.EntityFrameworkCore;
 namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/Groups")]
+    [Produces("application/scim+json")]
+    [Consumes("application/scim+json")]
     [AllowAnonymous]
     public class GroupsController : Controller
     {
         private readonly DbContext _db;
         private readonly IResourceMapper<Group> _mapper;
+        private readonly IFilterParser _filterParser;
 
-        public GroupsController(IContextWrapper contextWrapper, IResourceMapper<Group> mapper)
+        public GroupsController(IContextWrapper contextWrapper, IResourceMapper<Group> mapper, IFilterParser filterParser)
         {
             _db = contextWrapper.Context;
             _mapper = mapper;
+            _filterParser = filterParser;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ListResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string filter, Guid providerId)
+        public async Task<ActionResult<ListResponse>> GetGroupsAsync([FromQuery] int startIndex, [FromQuery] int count, [FromQuery] string? filter, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             ConfigHelper.ValidateDefaultPagination(ref startIndex, ref count);
             try
             {
                 var query = from g in _db.Set<Group>().AsNoTracking()
                             from p in g.Providers.Where(p => p.ProviderId == providerId)
-                            select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier };
+                            select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
                 FilterNode? filterNode = null;
 
                 if (filter != null)
                 {
-                    var visitor = new ScimFilterVisitor();
-
-                    var inputStream = new AntlrInputStream(filter);
-                    var lexer = new ScimFilterLexer(inputStream);
-                    var tokenStream = new CommonTokenStream(lexer);
-                    var parser = new ScimFilterParser(tokenStream);
-
-                    var tree = parser.filter();
-                    filterNode = tree.Accept(visitor);
+                    filterNode = _filterParser.Parse(filter);
                 }
 
-                var mapped = _mapper.GetResourceQuery(query, filterNode);
+                var parameter = new QueryParameter(filterNode, excludedAttributes, providerId);
+
+                var mapped = _mapper.GetResourceQuery(_db, query, parameter);
 
                 int totalResults = await mapped.CountAsync();
 
@@ -110,14 +107,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id, Guid providerId)
+        public async Task<ActionResult<GroupResponse>> GetGroupAsync(Guid id, [FromQuery] string? excludedAttributes, Guid providerId)
         {
             var query = from g in _db.Set<Group>().AsNoTracking()
                         from p in g.Providers.Where(p => p.ProviderId == providerId)
                         where g.Id == id
-                        select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier };
+                        select new ScimEntity<Group> { Entity = g, ExternalId = p.ExternalIdentifier, ProviderId = p.ProviderId };
 
-            var mapped = _mapper.GetResourceQuery(query);
+            var parameters = new QueryParameter(null, excludedAttributes, providerId);
+
+            var mapped = _mapper.GetResourceQuery(_db, query, parameters);
 
             var item = await mapped.FirstOrDefaultAsync();
 
@@ -166,13 +165,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 _db.Add(item);
                 _db.Add(mapping);
 
-                await _mapper.ToDatabaseAsync(_db, item, group.Flatten());
+                await _mapper.ToDatabaseAsync(_db, item, group.Flatten(), providerId);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                var response = await GetGroupAsync(item.Id, providerId);
+                var response = await GetGroupAsync(item.Id, null, providerId);
                 return CreatedAtAction("AddGroup", "Groups", new { providerId = providerId }, response.Value);
             }
         }
@@ -185,19 +184,20 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
             using (var transaction = await _db.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var item = await _db.Set<Group>().Where(p => p.Id == id).FirstOrDefaultAsync();
+                await _db.Set<AuthenticationProviderRightHolder>().Where(p => p.ProviderId == providerId && p.RightHolderId == id).LoadAsync();
 
                 if (item == null)
                 {
                     return NotFound();
                 }
 
-                await _mapper.ToDatabaseAsync(_db, item, group.Flatten());
+                await _mapper.ToDatabaseAsync(_db, item, group.Flatten(), providerId);
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return await GetGroupAsync(item.Id, providerId);
+                return await GetGroupAsync(item.Id, null, providerId);
             }
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -13,7 +13,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
         where TEntity : class
         where TResource : IScimResource
     {
-        private readonly Action<TEntity, TData>? _setValueDelegate;
+        private readonly Action<TEntity, TData?>? _setValueDelegate;
 
         public ClrPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression, bool readOnly = false)
             : base(entityExpression, resourceExpression)
@@ -22,7 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
             if (!ReadOnly)
             {
-                var valueParameter = Expression.Parameter(typeof(TData), "value");
+                var valueParameter = Expression.Parameter(typeof(TData?), "value");
                 var entityParameter = Expression.Parameter(typeof(TEntity), "entity");
                 var scimEntityParameter = entityExpression.Parameters[0];
 
@@ -31,13 +31,13 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
                     entityParameter);
 
                 body = Expression.Assign(body, valueParameter);
-                var setValueExpression = Expression.Lambda<Action<TEntity, TData>>(body, entityParameter, valueParameter);
+                var setValueExpression = Expression.Lambda<Action<TEntity, TData?>>(body, entityParameter, valueParameter);
 
                 _setValueDelegate = setValueExpression.Compile();
             }
         }
 
-        public ClrPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression, Action<TEntity, TData> setValueDelegate)
+        public ClrPropertyResourceMapping(Expression<Func<TResource, TData>> resourceExpression, Expression<Func<ScimEntity<TEntity>, TData>> entityExpression, Action<TEntity, TData?> setValueDelegate)
             : base(entityExpression, resourceExpression)
         {
             ReadOnly = false;
@@ -46,7 +46,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public bool ReadOnly { get; }
 
-        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource)
+        public override Task CopyValueAsync(DbContext db, TEntity entity, TResource resource, Guid providerId)
         {
             if (_setValueDelegate == null)
             {
@@ -67,7 +67,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping
 
         public override Expression<Func<ScimEntity<TEntity>, bool>>? GetFilter(OperationFilterNode operationFilterNode)
         {
-            if (operationFilterNode.Path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
+            var path = string.Join(".", operationFilterNode.Paths);
+
+            if (path.Equals(ResourcePath, StringComparison.OrdinalIgnoreCase))
             {
                 var value = Expression.Constant(operationFilterNode.Value);
                 var body = Expression.Equal(Entity.Body, value);

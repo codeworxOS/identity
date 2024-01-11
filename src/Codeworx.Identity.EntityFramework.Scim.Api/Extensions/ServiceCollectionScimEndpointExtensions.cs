@@ -1,8 +1,9 @@
 ﻿using System;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Extensions;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Filter;
 using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Mapping;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources;
+using Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -13,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TContext : DbContext
         {
             services.AddScoped<IContextWrapper, DbContextWrapper<TContext>>();
+            services.AddSingleton<IFilterParser, FilterParser>();
             services.AddSingleton(typeof(IResourceMapper<>), typeof(ResourceMapper<>));
             return services;
         }

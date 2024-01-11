@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Codeworx.Identity.EntityFrameworkCore.Scim.Api;
 
-namespace Codeworx.Identity.EntityFrameworkCore.Scim.Models.Resources
+namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
 {
     public class GroupResource : IGroupResource, ISchemaResource, IResourceType
     {
