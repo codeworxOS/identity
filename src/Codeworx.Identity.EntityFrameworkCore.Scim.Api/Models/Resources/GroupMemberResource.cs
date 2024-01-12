@@ -21,5 +21,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api.Models.Resources
         [ScimMutability(ScimMutabilityAttribute.MutabilityType.Immutable)]
         [ScimRequired(false)]
         public override string? Display { get => base.Display; set => base.Display = value; }
+
+        [JsonIgnore]
+        public override bool Primary { get => base.Primary; set => base.Primary = value; }
     }
 }

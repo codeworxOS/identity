@@ -19,7 +19,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/Groups")]
     [Produces("application/scim+json", "application/json")]
-    [Consumes("application/scim+json", "application/json")]
     [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
     [ScimError]
     public class GroupsController : Controller
@@ -84,6 +83,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpDelete("{id}")]
+        [Consumes("application/scim+json", "application/json")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
@@ -131,6 +131,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpPost]
+        [Consumes("application/scim+json", "application/json")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status409Conflict, Type = typeof(ErrorResource))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
@@ -178,6 +179,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpPatch("{id}")]
+        [Consumes("application/scim+json", "application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]
@@ -198,6 +200,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
         }
 
         [HttpPut("{id}")]
+        [Consumes("application/scim+json", "application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResource))]

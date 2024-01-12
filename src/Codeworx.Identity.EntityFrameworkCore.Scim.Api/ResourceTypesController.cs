@@ -12,7 +12,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
 {
     [Route("{providerId}/scim/ResourceTypes")]
     [Produces("application/scim+json", "application/json")]
-    [Consumes("application/scim+json", "application/json")]
     [Authorize(Policy = ScimConstants.Policies.ScimInterop)]
     [ScimError]
     public class ResourceTypesController : Controller
