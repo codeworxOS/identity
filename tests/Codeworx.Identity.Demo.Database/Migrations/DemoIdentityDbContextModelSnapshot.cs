@@ -170,6 +170,11 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Property<string>("AccessTokenTypeConfiguration")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("AllowScim")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("AuthenticationMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")

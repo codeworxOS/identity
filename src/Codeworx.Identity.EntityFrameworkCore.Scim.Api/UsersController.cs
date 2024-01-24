@@ -141,7 +141,6 @@ namespace Codeworx.Identity.EntityFrameworkCore.Scim.Api
                 {
                     Id = Guid.NewGuid(),
                     Created = DateTime.UtcNow,
-                    ForceChangePassword = true,
                     AuthenticationMode = Login.AuthenticationMode.Login,
                 };
 

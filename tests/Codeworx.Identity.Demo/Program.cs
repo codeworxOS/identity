@@ -1,3 +1,4 @@
+using Codeworx.Identity;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Demo.Database;
 using Codeworx.Identity.EntityFrameworkCore.Api;
@@ -93,7 +94,7 @@ internal class Program
 
             // scim allow anonymous for testing
             p.AddPolicy(ScimConstants.Policies.ScimInterop, builder => builder.RequireAuthenticatedUser()
-                                            .RequireClaim("upn", "admin")
+                                            .RequireClaim(Constants.Claims.Scim, Constants.Claims.Values.Allow)
                                             .AddAuthenticationSchemes("token"));
 
             // policy for admin controllers

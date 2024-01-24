@@ -14,6 +14,8 @@ namespace Codeworx.Identity.Model
 
         string AccessTokenTypeConfiguration { get; }
 
+        bool AllowScim { get; }
+
         ClientType ClientType { get; }
 
         TimeSpan TokenExpiration { get; }

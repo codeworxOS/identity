@@ -4,7 +4,7 @@
 
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
-    public partial class ChangeUserNameCollation : Migration
+    public partial class EnableScim : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,10 +18,21 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                 oldClrType: typeof(string),
                 oldType: "TEXT",
                 oldMaxLength: 500);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "AllowScim",
+                table: "ClientConfiguration",
+                type: "INTEGER",
+                nullable: false,
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "AllowScim",
+                table: "ClientConfiguration");
+
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
                 table: "RightHolder",

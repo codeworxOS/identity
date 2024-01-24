@@ -6,10 +6,13 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Api.Model;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.OAuth;
+using Codeworx.Identity.OAuth.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -17,20 +20,31 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
 {
     [Route("api/identity/clients")]
     [Authorize(Policy = Policies.Admin)]
-    public class ClientConfigurationController
+    public partial class ClientConfigurationController : Controller
     {
         private readonly IContextWrapper _db;
         private readonly IHashingProvider _hashingProvider;
         private readonly ISecretGenerator _secretGenerator;
+        private readonly ILogger<ClientConfigurationController> _logger;
         private readonly ClientConfigurationOptions _options;
 
-        public ClientConfigurationController(IContextWrapper db, IHashingProvider hashingProvider, ISecretGenerator secretGenerator, IOptionsSnapshot<ClientConfigurationOptions> options)
+        public ClientConfigurationController(
+            IContextWrapper db,
+            IHashingProvider hashingProvider,
+            ISecretGenerator secretGenerator,
+            IOptionsSnapshot<ClientConfigurationOptions> options,
+            ILogger<ClientConfigurationController> logger)
         {
             _db = db;
             _hashingProvider = hashingProvider;
             _secretGenerator = secretGenerator;
+            _logger = logger;
             _options = options.Value;
+            _logger = logger;
         }
+
+        [LoggerMessage(Level = LogLevel.Error)]
+        public static partial void LogUnhandledError(ILogger logger, Exception ex);
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -43,6 +57,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.AccessTokenTypeConfiguration,
                 p.AuthenticationMode,
                 p.ClientType,
+                p.AllowScim,
                 p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
@@ -56,6 +71,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 Id = d.Id,
                 AccessTokenType = d.AccessTokenType,
                 AuthenticationMode = d.AuthenticationMode,
+                AllowScim = d.AllowScim,
                 ClientType = d.ClientType,
                 TokenExpiration = d.TokenExpiration,
                 Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
@@ -66,6 +82,59 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             });
 
             return configurations;
+        }
+
+        [HttpPut("api/token")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> CreateAccessToken([FromBody] ApiTokenRequest tokenRequest, [FromServices] ITokenService<ClientCredentialsTokenRequest> tokenService)
+        {
+            try
+            {
+                await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+                {
+                    var request = new ClientCredentialsTokenRequest(tokenRequest.ClientId.ToString("N"), tokenRequest.ClientSecret, tokenRequest.Scopes, tokenRequest.ValidUntil);
+                    var userId = await _db.Context.Set<ClientConfiguration>().Where(p => p.Id == tokenRequest.ClientId).Select(p => p.UserId).FirstOrDefaultAsync();
+
+                    if (userId.HasValue)
+                    {
+                        var query = _db.Context.Set<IdentityCache>().Where(p => p.UserId == userId.Value && !p.Disabled);
+#if NET8_0_OR_GREATER
+                        await query.ExecuteUpdateAsync(p => p.SetProperty(p => p.Disabled, true));
+#else
+                        var entities = await query.Select(p => new IdentityCache { Key = p.Key, Disabled = p.Disabled }).ToListAsync();
+                        entities.ForEach(p =>
+                        {
+                            _db.Context.Entry(p).State = EntityState.Unchanged;
+                            p.Disabled = true;
+                        });
+                        await _db.Context.SaveChangesAsync();
+#endif
+                    }
+
+                    var response = await tokenService.ProcessAsync(request);
+
+                    await transaction.CommitAsync();
+                    return response.AccessToken;
+                }
+            }
+            catch (ErrorResponseException<ErrorResponse> ex)
+            {
+                if (ex.TypedResponse.Error == Constants.OAuth.Error.InvalidClient)
+                {
+                    return this.NotFound(ex.TypedResponse);
+                }
+                else
+                {
+                    return this.BadRequest(ex.TypedResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogUnhandledError(_logger, ex);
+                return this.BadRequest(new ErrorResponse(Constants.OAuth.Error.ServerError, null, null));
+            }
         }
 
         [HttpGet("{id:guid}")]
@@ -81,6 +150,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.AuthenticationMode,
                 p.ClientType,
                 p.TokenExpiration,
+                p.AllowScim,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
             }).FirstOrDefaultAsync();
@@ -99,6 +169,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 Id = data.Id,
                 AccessTokenType = data.AccessTokenType,
                 AuthenticationMode = data.AuthenticationMode,
+                AllowScim = data.AllowScim,
                 ClientType = data.ClientType,
                 Scopes = scopes,
                 TokenExpiration = data.TokenExpiration,
@@ -129,6 +200,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.AccessTokenTypeConfiguration,
                 p.AuthenticationMode,
                 p.ClientType,
+                p.AllowScim,
                 p.TokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
@@ -144,6 +216,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 AuthenticationMode = d.AuthenticationMode,
                 ClientType = d.ClientType,
                 TokenExpiration = d.TokenExpiration,
+                AllowScim = d.AllowScim,
                 Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 ValidRedirectUrls = redirectUrls.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 User = d.User,
@@ -166,6 +239,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 ClientType = configuration.ClientType,
                 TokenExpiration = configuration.TokenExpiration,
                 UserId = configuration.User?.Id,
+                AllowScim = configuration.AllowScim,
             };
 
             if (!string.IsNullOrEmpty(configuration.AccessTokenType))
@@ -235,6 +309,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 entity.AccessTokenTypeConfiguration = null;
             }
 
+            entity.AllowScim = configuration.AllowScim;
             entity.AuthenticationMode = configuration.AuthenticationMode;
             entity.ClientType = configuration.ClientType;
             entity.TokenExpiration = configuration.TokenExpiration;

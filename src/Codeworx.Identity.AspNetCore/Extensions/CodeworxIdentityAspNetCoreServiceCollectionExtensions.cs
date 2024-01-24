@@ -250,6 +250,8 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, TenantClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, ExternalTokenClaimsProvider>();
+            collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
+            collection.AddSingleton<ISystemClaimsProvider, ScimClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
             collection.AddTransient<IIntrospectionService, IntrospectionService>();
