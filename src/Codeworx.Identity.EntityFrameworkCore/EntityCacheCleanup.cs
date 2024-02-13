@@ -39,7 +39,12 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_options.Cache.CleanupInterval);
+                await Task.Delay(_options.Cache.CleanupInterval, stoppingToken);
+                if (stoppingToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 await using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     CleanupStarted(_logger);
