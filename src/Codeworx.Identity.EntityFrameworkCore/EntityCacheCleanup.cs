@@ -39,8 +39,11 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_options.Cache.CleanupInterval, stoppingToken);
-                if (stoppingToken.IsCancellationRequested)
+                try
+                {
+                    await Task.Delay(_options.Cache.CleanupInterval, stoppingToken);
+                }
+                catch (Exception ex) when (ex is TaskCanceledException or ObjectDisposedException)
                 {
                     break;
                 }
