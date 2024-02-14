@@ -277,7 +277,9 @@ namespace Codeworx.Identity.Test
 
             public string PasswordHash => _password;
 
-            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>();
+            public IDictionary<string, string> ExternalIdentifiers { get; } = new Dictionary<string, string>() {
+                { TestConstants.LoginProviders.ExternalWindowsProvider.Id, TestConstants.Users.ForceChangePassword.WindowsSid }
+            };
 
             public IReadOnlyList<string> LinkedLoginProviders => ExternalIdentifiers.Keys.ToImmutableList();
 

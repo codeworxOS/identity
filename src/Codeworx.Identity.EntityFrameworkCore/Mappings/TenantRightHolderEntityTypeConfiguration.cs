@@ -4,20 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Mappings
 {
-    public class TenantUserEntityTypeConfiguration : IEntityTypeConfiguration<TenantUser>
+    public class TenantRightHolderEntityTypeConfiguration : IEntityTypeConfiguration<TenantRightHolder>
     {
-        public void Configure(EntityTypeBuilder<TenantUser> builder)
+        public void Configure(EntityTypeBuilder<TenantRightHolder> builder)
         {
+            // TODO rename to TenantRightHolder on next Major Version update.
             builder.ToTable("TenantUser");
             builder.HasKey(p => new { p.RightHolderId, p.TenantId });
 
-            builder.HasOne(p => p.User)
+            builder.HasOne(p => p.RightHolder)
                    .WithMany(p => p.Tenants)
                    .HasForeignKey(p => p.RightHolderId)
                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(p => p.Tenant)
-                   .WithMany(p => p.Users)
+                   .WithMany(p => p.RightHolders)
                    .HasForeignKey(p => p.TenantId)
                    .OnDelete(DeleteBehavior.Restrict);
         }

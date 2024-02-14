@@ -16,6 +16,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(p => p.AllowScim).HasDefaultValue(false);
+
             builder.Property(p => p.AuthenticationMode).HasDefaultValue(AuthenticationMode.Login);
         }
     }

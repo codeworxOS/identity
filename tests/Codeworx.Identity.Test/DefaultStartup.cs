@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace Codeworx.Identity.Test
                 {
                     var identity = new ClaimsIdentity(Constants.WindowsAuthenticationSchema);
                     identity.AddClaim(new Claim(Constants.Claims.Upn, ctx.Request.Form["username"]));
+                    identity.AddClaim(new Claim(ClaimTypes.PrimarySid, ctx.Request.Form["sid"]));
                     var principal = new ClaimsPrincipal(identity);
 
                     await ctx.SignInAsync(Constants.WindowsAuthenticationSchema, principal);
@@ -40,7 +42,11 @@ namespace Codeworx.Identity.Test
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            var builder = services.AddCodeworxIdentity()
+            services.AddAuthentication()
+                .AddCookie(Constants.WindowsAuthenticationSchema);
+
+            var builder = services
+                .AddCodeworxIdentity()
                 .WithLoginAsEmail()
                 .AddMfaTotp()
                 .UseTestSetup()

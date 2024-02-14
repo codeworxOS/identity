@@ -28,6 +28,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public string AccessTokenTypeConfiguration { get; set; }
 
+        public bool AllowScim { get; set; }
+
         public AuthenticationMode AuthenticationMode { get; set; }
 
         public ICollection<ValidRedirectUrl> ValidRedirectUrls { get; }

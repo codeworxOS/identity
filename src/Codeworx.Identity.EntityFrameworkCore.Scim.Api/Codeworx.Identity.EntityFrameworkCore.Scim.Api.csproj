@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6;net7;net8;</TargetFrameworks>
+		<AddRazorSupportForMvc>false</AddRazorSupportForMvc>
+		<OutputType>Library</OutputType>
+		<IsPackable>true</IsPackable>
+		<NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+		<Nullable>enable</Nullable>
+		<NoWarn>CA1033;AC0180</NoWarn>
+		<!--// Interface methods should be callable by child types-->
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(EfVersion)' == '6'">
+		<TargetFrameworks>net6;net7</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)' == '7'">
+		<TargetFrameworks>net6;net7</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(EfVersion)' == '8'">
+		<TargetFrameworks>net8</TargetFrameworks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Antlr4" Version="4.6.6">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.EntityFrameworkCore.csproj" />
+	</ItemGroup>
+</Project>

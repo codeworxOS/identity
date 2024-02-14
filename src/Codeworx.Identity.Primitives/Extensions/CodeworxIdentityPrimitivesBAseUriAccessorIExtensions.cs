@@ -13,7 +13,7 @@ namespace Codeworx.Identity
                 return baseUriAccessor.BaseUri.IsBaseOf(toCheck);
             }
 
-            if (uri.StartsWith("//"))
+            if (uri.Trim().StartsWith("//"))
             {
                 return false;
             }

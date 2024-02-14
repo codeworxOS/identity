@@ -92,6 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var builder = new IdentityServiceBuilder(collection);
 
             builder.RegisterCoreServices()
+                .AddDefaultSecretGenerator()
                 .Argon2()
                 .WithAesSymmetricEncryption();
 
@@ -249,6 +250,8 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, TenantClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, ExternalTokenClaimsProvider>();
+            collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
+            collection.AddSingleton<ISystemClaimsProvider, ScimClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
             collection.AddTransient<IIntrospectionService, IntrospectionService>();

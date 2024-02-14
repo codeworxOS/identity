@@ -27,6 +27,14 @@ namespace Codeworx.Identity.Test
         }
 
         [Test]
+        public async Task LoginEndpoint_SpaceAndDoubleSlash_Expects_Error()
+        {
+            var response = await this.TestClient.GetAsync($"https://localhost/account/login?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
         public async Task WindowsLoginEndpoint_Expects_Error()
         {
             await AuthenticateWindows();
@@ -42,6 +50,16 @@ namespace Codeworx.Identity.Test
             await AuthenticateWindows();
 
             var response = await this.TestClient.GetAsync($"https://localhost/account/winlogin/{TestConstants.LoginProviders.ExternalWindowsProvider.Id}?returnUrl={Uri.EscapeDataString("//www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
+        public async Task WindowsLoginEndpoint_SpaceAndDoubleSlash_Expects_Error()
+        {
+            await AuthenticateWindows();
+
+            var response = await this.TestClient.GetAsync($"https://localhost/account/winlogin/{TestConstants.LoginProviders.ExternalWindowsProvider.Id}?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
@@ -63,6 +81,14 @@ namespace Codeworx.Identity.Test
         }
 
         [Test]
+        public async Task LogoutEndpoint_SpaceAndDoubleSlash_Expects_Error()
+        {
+            var response = await this.TestClient.GetAsync($"https://localhost/account/logout?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
         public async Task ForgotPasswordEndpoint_Expects_Error()
         {
             var response = await this.TestClient.GetAsync($"https://localhost/account/forgot-password?returnUrl={Uri.EscapeDataString("https://other/redirect")}");
@@ -74,6 +100,14 @@ namespace Codeworx.Identity.Test
         public async Task ForgotPasswordEndpoint_DoubleSlash_Expects_Error()
         {
             var response = await this.TestClient.GetAsync($"https://localhost/account/forgot-password?returnUrl={Uri.EscapeDataString("//www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
+        public async Task ForgotPasswordEndpoint_SpaceAndDoubleSlash_Expects_Error()
+        {
+            var response = await this.TestClient.GetAsync($"https://localhost/account/forgot-password?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
@@ -100,6 +134,16 @@ namespace Codeworx.Identity.Test
         }
 
         [Test]
+        public async Task PasswordChangeEndpoint_SpaceAndDoubleSlash_Get_Expects_Error()
+        {
+            await this.Authenticate();
+
+            var response = await this.TestClient.GetAsync($"https://localhost/account/change-password?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
         public async Task OauthRedirectEndpoint_Get_Expects_Error()
         {
             await this.Authenticate();
@@ -120,6 +164,16 @@ namespace Codeworx.Identity.Test
         }
 
         [Test]
+        public async Task OauthRedirectEndpoint_SpaceAndDoubleSlash_Get_Expects_Error()
+        {
+            await this.Authenticate();
+
+            var response = await this.TestClient.GetAsync($"https://localhost/account/oauth/{TestConstants.LoginProviders.ExternalOAuthProvider.Id}?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
         public async Task MfaLoginEndpoint_Get_Expects_Error()
         {
             await this.Authenticate();
@@ -135,6 +189,16 @@ namespace Codeworx.Identity.Test
             await this.Authenticate();
 
             var response = await this.TestClient.GetAsync($"https://localhost/account/login/mfa/{TestConstants.LoginProviders.TotpProvider.Id}?returnUrl={Uri.EscapeDataString("//www.whatever.com")}");
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
+        public async Task MfaLoginEndpoint_SpaceAndDoubleSlash_Get_Expects_Error()
+        {
+            await this.Authenticate();
+
+            var response = await this.TestClient.GetAsync($"https://localhost/account/login/mfa/{TestConstants.LoginProviders.TotpProvider.Id}?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}");
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
@@ -172,6 +236,22 @@ namespace Codeworx.Identity.Test
         }
 
         [Test]
+        public async Task TotpLoginEndpoint_SpaceAndDoubleSlash_Get_Expects_Error()
+        {
+            await this.Authenticate();
+
+            var content = new FormUrlEncodedContent(
+                new Dictionary<string, string>
+                {
+                    { "provider-id", TestConstants.LoginProviders.TotpProvider.Id }
+                });
+
+            var response = await this.TestClient.PostAsync($"https://localhost/account/login/mfa/{TestConstants.LoginProviders.TotpProvider.Id}?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}", content);
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
         public async Task PasswordChangeEndpoint_Post_Expects_Error()
         {
             await this.Authenticate();
@@ -187,6 +267,16 @@ namespace Codeworx.Identity.Test
             await this.Authenticate();
 
             var response = await this.TestClient.PostAsync($"https://localhost/account/change-password?returnUrl={Uri.EscapeDataString("//www.whatever.com")}", new FormUrlEncodedContent(new Dictionary<string, string>()));
+
+            Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
+        }
+
+        [Test]
+        public async Task PasswordChangeEndpoint_SpaceAndDoubleSlash_Post_Expects_Error()
+        {
+            await this.Authenticate();
+
+            var response = await this.TestClient.PostAsync($"https://localhost/account/change-password?returnUrl={Uri.EscapeDataString(" //www.whatever.com")}", new FormUrlEncodedContent(new Dictionary<string, string>()));
 
             Assert.AreEqual(HttpStatusCode.NotAcceptable, response.StatusCode);
         }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Codeworx.Identity.Test.Provider;
 using NUnit.Framework;
 
@@ -14,6 +9,7 @@ namespace Codeworx.Identity.Test.Claims
         [Test]
         public async Task GetClaimsOnIdToken()
         {
+            await Task.Yield();
             var claims = new[]
             {
                 AssignedClaim.Create("test1","test1Value",ClaimTarget.AllTokens),
@@ -46,6 +42,8 @@ namespace Codeworx.Identity.Test.Claims
         [Test]
         public async Task GetClaimsOnAccessToken()
         {
+            await Task.Yield();
+
             var claims = new[]
             {
                 AssignedClaim.Create("test1","test1Value",ClaimTarget.AllTokens),
@@ -78,6 +76,8 @@ namespace Codeworx.Identity.Test.Claims
         [Test]
         public async Task GetClaimsOnProfileEndpoint()
         {
+            await Task.Yield();
+
             var claims = new[]
             {
                 AssignedClaim.Create("test1","test1Value",ClaimTarget.AllTokens),
