@@ -82,6 +82,7 @@ namespace Codeworx.Identity.Test
                                                            new FormUrlEncodedContent(new Dictionary<string, string>
                                                                                      {
                                                                                          {"username", TestConstants.Users.DefaultAdmin.UserName},
+                                                                                         {"sid", TestConstants.Users.DefaultAdmin.WindowsSid},
                                                                                      }));
 
             response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);

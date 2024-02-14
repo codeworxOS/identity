@@ -57,6 +57,7 @@
                 public const string UserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
                 public const string UserName = "admin";
                 public const string Password = "admin";
+                public const string WindowsSid = "S-1-5-21-3A934309-2641-47F3-833B-F2EE37EC44AB";
             }
 
             public static class DefaultServiceAccount
@@ -77,6 +78,7 @@
                 public const string UserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
                 public const string UserName = "changepassword";
                 public const string Password = "changepassword";
+                public const string WindowsSid = "S-1-5-21-99E39B6B-BEA9-4445-9909-D3FA7F0DAE4F";
             }
 
             public static class MultiTenant

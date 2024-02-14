@@ -15,8 +15,6 @@ namespace Codeworx.Identity.Test
         {
             base.ConfigureServices(services);
 
-            services.AddAuthentication().AddCookie(Constants.WindowsAuthenticationSchema, _ => { });
-
             var builder = new IdentityServiceBuilder(services);
             builder.AddSmtpMailConnector();
         }
