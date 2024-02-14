@@ -170,6 +170,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<string>("AccessTokenTypeConfiguration")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("AllowScim")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("AuthenticationMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -300,7 +305,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");

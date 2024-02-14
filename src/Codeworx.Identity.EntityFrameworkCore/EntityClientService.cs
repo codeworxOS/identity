@@ -46,6 +46,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 ClientSecretHash = result.ClientSecretHash,
                 ClientType = result.ClientType,
                 TokenExpiration = result.TokenExpiration,
+                AllowScim = result.AllowScim,
                 ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList(),
                 User = user,
                 AccessTokenType = result.AccessTokenType,

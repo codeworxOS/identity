@@ -74,6 +74,12 @@
             public const string Amr = "amr";
             public const string Trk = "trk";
             public const string Session = "session";
+            public const string Scim = "scim";
+
+            public static class Values
+            {
+                public const string Allow = "allow";
+            }
         }
 
         public static class Cache

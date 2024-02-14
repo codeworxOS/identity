@@ -10,8 +10,11 @@ namespace Codeworx.Identity.OAuth.Token
         private IUser _identityUser;
         private IClientRegistration _client;
         private string[] _scopes;
+        private DateTimeOffset? _validUntil;
 
-        public IClientCredentialsParameters Parameters => new ClientCredentialsParameters(_client, _scopes, _user, _identityUser);
+        public IClientCredentialsParameters Parameters => _validUntil.HasValue ?
+            new ClientCredentialsParameters(_client, _scopes, _user, _identityUser, _validUntil.Value) :
+            new ClientCredentialsParameters(_client, _scopes, _user, _identityUser);
 
         public void SetValue(string property, object value)
         {
@@ -28,6 +31,9 @@ namespace Codeworx.Identity.OAuth.Token
                     break;
                 case nameof(IClientCredentialsParameters.Scopes):
                     _scopes = (string[])value;
+                    break;
+                case nameof(IClientCredentialsParameters.TokenValidUntil):
+                    _validUntil = (DateTimeOffset)value;
                     break;
                 default:
                     throw new NotSupportedException($"Property {property} not supported!");
