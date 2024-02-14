@@ -72,6 +72,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
 
 
@@ -107,6 +109,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
 
 
@@ -145,6 +149,7 @@ namespace Codeworx.Identity.Test
 
             public string AccessTokenTypeConfiguration => null;
 
+            public bool AllowScim => false;
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
@@ -181,6 +186,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
@@ -218,6 +225,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
 
         private class MfaRequiredClientRegistration : IDummyClientRegistration
@@ -254,6 +263,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
 
         public class MfaTestServiceAccountClientRegistration : IDummyClientRegistration
@@ -289,6 +300,8 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
 
             public void SetMfaRequired(bool isMfaRequired)
             {
@@ -331,6 +344,8 @@ namespace Codeworx.Identity.Test
             public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public bool AllowScim => false;
         }
     }
 }

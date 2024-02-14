@@ -147,6 +147,8 @@ namespace Codeworx.Identity.Test.AspNetCore
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
         }
     }
 }

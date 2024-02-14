@@ -13,6 +13,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public string AccessTokenType { get; set; }
 
+        public bool AllowScim { get; set; }
+
         public Dictionary<string, object> AccessTokenTypeConfiguration { get; set; }
 
         public AuthenticationMode AuthenticationMode { get; set; }

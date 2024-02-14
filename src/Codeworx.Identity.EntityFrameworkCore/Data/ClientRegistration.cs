@@ -21,6 +21,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Data
 
         public AuthenticationMode AuthenticationMode { get; set; }
 
+        public bool AllowScim { get; set; }
+
         public string AccessTokenType { get; set; }
 
         public string AccessTokenTypeConfiguration { get; set; }

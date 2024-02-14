@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore.OAuth;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
@@ -65,6 +64,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_InvalidSecretOnHeader_ReturnsInvalidClient()
         {
+            await Task.Yield();
             var request = new TokenRequestBuilder().WithClientId("clientId")
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
@@ -90,6 +90,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_InvalidSecretOnRequest_ReturnsInvalidClient()
         {
+            await Task.Yield();
+
             var request = new TokenRequestBuilder().WithClientId("clientId")
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
@@ -116,6 +118,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_MoreThanOneAuthenticationMechanism_ReturnsInvalidRequest()
         {
+            await Task.Yield();
             var request = new TokenRequestBuilder().WithClientId("abc")
                                                    .WithClientSecret("clientSecret")
                                                    .Build();
@@ -132,6 +135,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_NoCredentials_ReturnsInvalidClient()
         {
+            await Task.Yield();
             var request = new TokenRequestBuilder().WithClientId(string.Empty)
                                                    .WithClientSecret(string.Empty)
                                                    .Build();
@@ -148,10 +152,9 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_RequestClientIdDiffersFromHeaderClientId_ReturnsInvalidRequest()
         {
+            await Task.Yield();
             var request = new TokenRequestBuilder().WithClientId("differentClientId")
                                                    .Build();
-
-            var header = ("clientId", "clientSecret");
 
             var clientRegistrationStub = new Mock<IClientRegistration>();
             clientRegistrationStub.SetupGet(p => p.ClientSecretHash)
@@ -174,6 +177,7 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_UnknownClientOnHeader_ReturnsInvalidClient()
         {
+            await Task.Yield();
             var request = new TokenRequestBuilder().WithClientId(string.Empty)
                                                    .WithClientSecret(string.Empty)
                                                    .WithClientId("clientId")
@@ -193,6 +197,8 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
         [Test]
         public async Task AuthenticateClient_UnknownClientOnRequest_ReturnsInvalidClient()
         {
+            await Task.Yield();
+
             var request = new TokenRequestBuilder().WithClientId("clientId")
                                                    .WithClientSecret("clientSecret")
                                                    .Build();

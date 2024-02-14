@@ -24,6 +24,11 @@ namespace Codeworx.Identity.Demo.Database
             {
                 p.Property<string>("FirstName").HasMaxLength(400);
                 p.Property<string>("LastName").HasMaxLength(400);
+
+                p.Property<string>("DisplayName").HasMaxLength(800);
+                p.Property<string>("Organization").HasMaxLength(500);
+                p.Property<string>("Department").HasMaxLength(500);
+
                 p.Property<string>("Email").HasMaxLength(600).IsRequired();
             });
         }

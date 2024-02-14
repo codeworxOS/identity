@@ -11,6 +11,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 
         public TimeSpan TokenExpiration { get; set; }
 
+        public bool AllowScim { get; set; }
+
         public string AccessTokenType { get; set; }
 
         public Dictionary<string, object> AccessTokenTypeConfiguration { get; set; }

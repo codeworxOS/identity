@@ -9,7 +9,7 @@ namespace Codeworx.Identity.Configuration.Model
 {
     public class ClientRegistration : IClientRegistration
     {
-        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, string accessTokenType, string accessTokenTypeConfiguration, IEnumerable<string> validRedirectUrls = null, IUser user = null)
+        public ClientRegistration(string clientId, string clientSecretHash, ClientType clientType, TimeSpan tokenExpiration, string accessTokenType, string accessTokenTypeConfiguration, IEnumerable<string> validRedirectUrls = null, IUser user = null, bool allowScim = false)
         {
             ClientId = clientId;
             ClientSecretHash = clientSecretHash;
@@ -17,6 +17,7 @@ namespace Codeworx.Identity.Configuration.Model
             TokenExpiration = tokenExpiration;
             AccessTokenType = accessTokenType;
             AccessTokenTypeConfiguration = accessTokenTypeConfiguration;
+            AllowScim = allowScim;
 
             if (validRedirectUrls != null)
             {
@@ -47,5 +48,7 @@ namespace Codeworx.Identity.Configuration.Model
         public string AccessTokenType { get; }
 
         public string AccessTokenTypeConfiguration { get; }
+
+        public bool AllowScim { get; }
     }
 }

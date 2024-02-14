@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Test.Provider;
@@ -15,6 +13,7 @@ namespace Codeworx.Identity.Test.Claims
         [Test]
         public async Task RefreshTokenWithLostExternalTokenCache_ExpectsLogout()
         {
+            await Task.Yield();
             var services = new ServiceCollection();
 
             services.AddCodeworxIdentity()
