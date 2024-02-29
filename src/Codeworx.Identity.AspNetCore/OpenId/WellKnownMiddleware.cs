@@ -24,7 +24,7 @@ namespace Codeworx.Identity.AspNetCore.OpenId
         public async Task Invoke(
             HttpContext context,
             IBaseUriAccessor baseUriAccessor,
-            IDefaultSigningKeyProvider keyProvider,
+            IDefaultSigningDataProvider dataProvider,
             IdentityServerOptions identityOptions,
             IScopeService scopeService)
         {
@@ -40,8 +40,10 @@ namespace Codeworx.Identity.AspNetCore.OpenId
                 Constants.OpenId.ResponseType.IdToken,
             };
 
-            var defaultKey = keyProvider.GetKey();
-            var hashAlgorithm = keyProvider.GetHashAlgorithm();
+            var data = await dataProvider.GetSigningDataAsync(context.RequestAborted).ConfigureAwait(false);
+
+            var defaultKey = data.Key;
+            var hashAlgorithm = data.Hash;
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
             var supportedSigningAlgorithms = new[] { serializer.GetAlgorithm(defaultKey, hashAlgorithm) };

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
@@ -16,20 +15,18 @@ namespace Codeworx.Identity.Cryptography.Json
     {
         private readonly JwtConfiguration _configuration;
         private readonly JsonWebTokenHandler _handler;
-        private readonly HashAlgorithm _hashAlgorithm;
-        private readonly SecurityKey _signingKey;
         private readonly ITokenCache _tokenCache;
+        private readonly IDefaultSigningDataProvider _defaultSigningDataProvider;
         private string _key;
 
         private DateTimeOffset _validFrom;
 
-        public Jwt(TokenType tokenType, ITokenCache tokenCache, IDefaultSigningKeyProvider defaultSigningKeyProvider, JwtConfiguration configuration)
+        public Jwt(TokenType tokenType, ITokenCache tokenCache, IDefaultSigningDataProvider defaultSigningDataProvider, JwtConfiguration configuration)
         {
             TokenType = tokenType;
             _tokenCache = tokenCache;
+            _defaultSigningDataProvider = defaultSigningDataProvider;
             _configuration = configuration;
-            _signingKey = defaultSigningKeyProvider.GetKey();
-            _hashAlgorithm = defaultSigningKeyProvider.GetHashAlgorithm();
 
             _handler = new JsonWebTokenHandler();
         }
@@ -78,6 +75,8 @@ namespace Codeworx.Identity.Cryptography.Json
 
             payload.TryGetValue(Constants.Claims.Issuer, out var issuer);
 
+            var signingData = await _defaultSigningDataProvider.GetSigningDataAsync(token);
+
             var descriptor = new SecurityTokenDescriptor
             {
                 Issuer = issuer?.ToString(),
@@ -86,7 +85,7 @@ namespace Codeworx.Identity.Cryptography.Json
                 Expires = ValidUntil.UtcDateTime,
                 IssuedAt = _validFrom.UtcDateTime,
                 NotBefore = _validFrom.UtcDateTime,
-                SigningCredentials = GetSigningCredentials(),
+                SigningCredentials = signingData.Credentials,
             };
 
             return _handler.CreateToken(descriptor);
@@ -161,27 +160,6 @@ namespace Codeworx.Identity.Cryptography.Json
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-        private SigningCredentials GetSigningCredentials()
-        {
-            string algorithm = null;
-
-            switch (_signingKey)
-            {
-                case ECDsaSecurityKey ecd:
-                    algorithm = $"ES{_hashAlgorithm.HashSize}";
-                    break;
-
-                case RsaSecurityKey rsa:
-                    algorithm = $"RS{_hashAlgorithm.HashSize}";
-                    break;
-
-                default:
-                    throw new NotSupportedException("provided Signing Key is not supported!");
-            }
-
-            return new SigningCredentials(_signingKey, algorithm);
         }
 
         private class ArraySubObjectConverter : JsonConverter

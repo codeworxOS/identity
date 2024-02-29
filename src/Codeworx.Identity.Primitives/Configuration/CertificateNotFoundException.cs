@@ -5,14 +5,8 @@ namespace Codeworx.Identity.Configuration
 {
     public class CertificateNotFoundException : Exception
     {
-        public CertificateNotFoundException(SigningOptions options)
-            : this($"Certificate not found for search text: {options?.Search}")
-        {
-            SigningOptions = options;
-        }
-
-        protected CertificateNotFoundException(string message)
-            : base(message)
+        public CertificateNotFoundException(string key)
+            : base($"Certificate not found for search text: {key}")
         {
         }
 
@@ -25,7 +19,5 @@ namespace Codeworx.Identity.Configuration
             : base(info, context)
         {
         }
-
-        public SigningOptions SigningOptions { get; }
     }
 }

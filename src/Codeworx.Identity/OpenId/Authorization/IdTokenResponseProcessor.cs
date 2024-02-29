@@ -13,13 +13,13 @@ namespace Codeworx.Identity.OpenId.Authorization
     {
         private readonly IClientService _clientService;
         private readonly ITokenProviderService _tokenProviderService;
-        private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
+        private readonly IDefaultSigningDataProvider _defaultSigningDataProvider;
 
-        public IdTokenResponseProcessor(IClientService clientService, ITokenProviderService tokenProviderService, IDefaultSigningKeyProvider defaultSigningKeyProvider)
+        public IdTokenResponseProcessor(IClientService clientService, ITokenProviderService tokenProviderService, IDefaultSigningDataProvider defaultSigningDataProvider)
         {
             _clientService = clientService;
             _tokenProviderService = tokenProviderService;
-            _defaultSigningKeyProvider = defaultSigningKeyProvider;
+            _defaultSigningDataProvider = defaultSigningDataProvider;
         }
 
         public async Task<IAuthorizationResponseBuilder> ProcessAsync(IAuthorizationParameters parameters, IdentityData data, IAuthorizationResponseBuilder responseBuilder)
@@ -36,7 +36,9 @@ namespace Codeworx.Identity.OpenId.Authorization
             var token = await _tokenProviderService.CreateIdentityTokenAsync(parameters.Client).ConfigureAwait(false);
 
             var claims = data.Claims.ToList();
-            claims.Add(AssignedClaim.Create(Constants.Claims.AtHash, GetAtHashClaim(responseBuilder.Response.Token), ClaimTarget.IdToken));
+            var hash = await GetAtHashClaim(responseBuilder.Response.Token);
+
+            claims.Add(AssignedClaim.Create(Constants.Claims.AtHash, hash, ClaimTarget.IdToken));
 
             await token.SetPayloadAsync(new IdentityData(data.ClientId, data.Identifier, data.Login, claims, data.ExternalTokenKey), parameters.TokenValidUntil).ConfigureAwait(false);
             var identityToken = await token.SerializeAsync().ConfigureAwait(false);
@@ -44,9 +46,11 @@ namespace Codeworx.Identity.OpenId.Authorization
             return responseBuilder.WithIdToken(identityToken);
         }
 
-        private string GetAtHashClaim(string accessTokenValue)
+        private async Task<string> GetAtHashClaim(string accessTokenValue)
         {
-            var hashAlgorithm = _defaultSigningKeyProvider.GetHashAlgorithm();
+            var data = await _defaultSigningDataProvider.GetSigningDataAsync(default);
+
+            var hashAlgorithm = data.Hash;
             var accessTokenHash = hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(accessTokenValue));
             var atHash = accessTokenHash.Take(accessTokenHash.Length / 2).ToArray();
 
