@@ -68,11 +68,14 @@ namespace Codeworx.Identity.Cryptography.Internal
                 if (disposing)
                 {
                     _subscription.Dispose();
-                    var task = _signingDataTask;
-
-                    if (task.IsCompleted)
+                    lock (_signingDataLocker)
                     {
-                        task.Result?.Dispose();
+                        var task = _signingDataTask;
+
+                        if (task != null && task.IsCompleted)
+                        {
+                            task.Result?.Dispose();
+                        }
                     }
                 }
 
