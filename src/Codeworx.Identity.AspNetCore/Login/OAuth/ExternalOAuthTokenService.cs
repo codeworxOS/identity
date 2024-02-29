@@ -4,11 +4,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
+using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
-using Codeworx.Identity.Token;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace Codeworx.Identity.AspNetCore
@@ -16,13 +19,13 @@ namespace Codeworx.Identity.AspNetCore
     public class ExternalOAuthTokenService : IExternalOAuthTokenService
     {
         private readonly HttpClient _client;
-        private readonly IEnumerable<ITokenProvider> _tokenProviders;
         private readonly JsonWebTokenHandler _jwtHandler;
+        private readonly ISigningDataProvider _signingDataProvider;
 
-        public ExternalOAuthTokenService(HttpClient client, IEnumerable<ITokenProvider> tokenProviders)
+        public ExternalOAuthTokenService(HttpClient client, ISigningDataProvider signingDataProvider = null)
         {
             _client = client;
-            _tokenProviders = tokenProviders;
+            _signingDataProvider = signingDataProvider;
             _jwtHandler = new JsonWebTokenHandler();
         }
 
@@ -36,7 +39,7 @@ namespace Codeworx.Identity.AspNetCore
             return Task.CompletedTask;
         }
 
-        public static HttpRequestMessage CreateTokenRequestMessage(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> content)
+        public static async Task<HttpRequestMessage> CreateTokenRequestMessageAsync(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> content, CancellationToken token, ISigningDataProvider signingDataProvider = null)
         {
             var tokenEndpointUri = oauthConfiguration.GetTokenEndpointUri();
             var message = new HttpRequestMessage(HttpMethod.Post, tokenEndpointUri);
@@ -47,17 +50,17 @@ namespace Codeworx.Identity.AspNetCore
                 body.Add(item.Key, $"{item.Value}");
             }
 
-            if (oauthConfiguration.ClientSecret != null)
+            switch (oauthConfiguration.ClientAuthenticationMode)
             {
-                if (oauthConfiguration.ClientAuthenticationMode == ClientAuthenticationMode.Header)
-                {
-                    var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
-                    message.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
+                case ClientAuthenticationMode.Header:
+                    if (oauthConfiguration.ClientSecret != null)
+                    {
+                        var encodedSecret = Convert.ToBase64String(new UTF8Encoding().GetBytes($"{oauthConfiguration.ClientId}:{oauthConfiguration.ClientSecret}"));
+                        message.Headers.Authorization = new AuthenticationHeaderValue("Basic", encodedSecret);
+                    }
 
-                    message.Content = new FormUrlEncodedContent(body);
-                }
-                else
-                {
+                    break;
+                case ClientAuthenticationMode.Body:
                     if (!body.ContainsKey(Constants.OAuth.ClientIdName))
                     {
                         body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
@@ -68,18 +71,56 @@ namespace Codeworx.Identity.AspNetCore
                         body.Add(Constants.OAuth.ClientSecretName, oauthConfiguration.ClientSecret);
                     }
 
-                    message.Content = new FormUrlEncodedContent(body);
-                }
+                    break;
+                case ClientAuthenticationMode.JwtSymmetric:
+                    if (oauthConfiguration.SigningKey != null)
+                    {
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(oauthConfiguration.SigningKey));
+                        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+                        if (!body.ContainsKey(Constants.OAuth.ClientIdName))
+                        {
+                            body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
+                        }
+
+                        var assertion = GetToken(oauthConfiguration, credentials);
+                        body.Add(Constants.OpenId.Client.AssertionTypeParameter, Constants.OpenId.Client.AssertionType.JwtBearer);
+                        body.Add(Constants.OpenId.Client.AssertionParameter, assertion);
+                    }
+
+                    break;
+                case ClientAuthenticationMode.JwtAsymmetric:
+                    if (oauthConfiguration.SigningKey != null)
+                    {
+                        if (signingDataProvider == null)
+                        {
+                            throw new CertificateNotFoundException("SigningDataProvider not registered");
+                        }
+
+                        using (var data = await signingDataProvider.GetSigningDataAsync(oauthConfiguration.SigningKey, token).ConfigureAwait(false))
+                        {
+                            if (!body.ContainsKey(Constants.OAuth.ClientIdName))
+                            {
+                                body.Add(Constants.OAuth.ClientIdName, oauthConfiguration.ClientId);
+                            }
+
+                            var assertion = GetToken(oauthConfiguration, data.Credentials);
+                            body.Add(Constants.OpenId.Client.AssertionTypeParameter, Constants.OpenId.Client.AssertionType.JwtBearer);
+                            body.Add(Constants.OpenId.Client.AssertionParameter, assertion);
+                        }
+                    }
+
+                    break;
+                default:
+                    throw new NotSupportedException($"The client authentication mode {oauthConfiguration.ClientAuthenticationMode} is not supported");
             }
-            else
-            {
-                message.Content = new FormUrlEncodedContent(body);
-            }
+
+            message.Content = new FormUrlEncodedContent(body);
 
             return message;
         }
 
-        public virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri)
+        public virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, string code, string redirectUri, CancellationToken token)
         {
             var contentCollection = new Dictionary<string, string>
             {
@@ -89,10 +130,10 @@ namespace Codeworx.Identity.AspNetCore
                 { Constants.OAuth.ClientIdName, oauthConfiguration.ClientId },
             };
 
-            return await GetIdentityAsync(oauthConfiguration, contentCollection);
+            return await GetIdentityAsync(oauthConfiguration, contentCollection, token);
         }
 
-        public virtual async Task<ClaimsIdentity> RefreshAsync(OAuthLoginConfiguration oauthConfiguration, string refreshToken)
+        public virtual async Task<ClaimsIdentity> RefreshAsync(OAuthLoginConfiguration oauthConfiguration, string refreshToken, CancellationToken token)
         {
             var contentCollection = new Dictionary<string, string>
             {
@@ -101,12 +142,12 @@ namespace Codeworx.Identity.AspNetCore
                 { Constants.OAuth.ClientIdName, oauthConfiguration.ClientId },
             };
 
-            return await GetIdentityAsync(oauthConfiguration, contentCollection);
+            return await GetIdentityAsync(oauthConfiguration, contentCollection, token);
         }
 
-        protected virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
+        protected virtual async Task<ClaimsIdentity> GetIdentityAsync(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection, CancellationToken cancellationToken)
         {
-            HttpResponseMessage response = await CreateTokenResponse(oauthConfiguration, contentCollection);
+            HttpResponseMessage response = await CreateTokenResponse(oauthConfiguration, contentCollection, cancellationToken);
 
             response.EnsureSuccessStatusCode();
 
@@ -167,9 +208,38 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        private async Task<HttpResponseMessage> CreateTokenResponse(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection)
+        private static string GetToken(OAuthLoginConfiguration oauthConfiguration, SigningCredentials credentials)
         {
-            var response = await _client.SendAsync(CreateTokenRequestMessage(oauthConfiguration, contentCollection));
+            var handler = new JsonWebTokenHandler();
+
+            var now = DateTime.UtcNow;
+
+            var descriptor = new SecurityTokenDescriptor
+            {
+                ////AdditionalHeaderClaims = new Dictionary<string, object>
+                ////{
+                ////    { Constants.Claims.X5t, "CLp/oelcGjFEFFMqLJ+S12EC1Uc=" },
+                ////},
+                Issuer = oauthConfiguration.ClientId,
+                Audience = oauthConfiguration.GetTokenEndpointUri().ToString(),
+                Claims = new Dictionary<string, object>
+                {
+                    { Constants.Claims.Subject, oauthConfiguration.ClientId },
+                    { Constants.Claims.Jti, Guid.NewGuid().ToString("N") },
+                },
+                Expires = now.AddMinutes(5),
+                IssuedAt = now,
+                NotBefore = now,
+                SigningCredentials = credentials,
+            };
+
+            return handler.CreateToken(descriptor);
+        }
+
+        private async Task<HttpResponseMessage> CreateTokenResponse(OAuthLoginConfiguration oauthConfiguration, IDictionary<string, string> contentCollection, CancellationToken token)
+        {
+            var request = await CreateTokenRequestMessageAsync(oauthConfiguration, contentCollection, token, _signingDataProvider);
+            var response = await _client.SendAsync(request);
             return response;
         }
 

@@ -259,6 +259,9 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddSingleton<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
+            collection.AddSingleton<IDefaultSigningDataProvider, DefaultSigningDataProvider>();
+            collection.AddSingleton<ISigningDataProvider, SigningDataProvider>();
+            collection.AddSingleton<ICertificateStore, LocalCertificateStore>();
             collection.AddTransient<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
             collection.AddSingleton<ITokenCache, DistributedTokenCache>();

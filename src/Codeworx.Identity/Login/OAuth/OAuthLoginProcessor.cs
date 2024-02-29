@@ -162,7 +162,7 @@ namespace Codeworx.Identity.Login.OAuth
             callbackUriBuilder.AppendPath("callback");
             callbackUriBuilder.AppendPath(registration.Id);
 
-            var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString());
+            var externalIdentity = await _tokenService.GetIdentityAsync(oauthConfiguration, loginRequest.Code, callbackUriBuilder.ToString(), default);
 
             var cacheKey = loginRequest.State;
             StateLookupItem stateItem = null;

@@ -132,7 +132,7 @@ namespace Codeworx.Identity
 
                         try
                         {
-                            response = await tokenService.RefreshAsync(oauthConfig, data.RefreshToken).ConfigureAwait(false);
+                            response = await tokenService.RefreshAsync(oauthConfig, data.RefreshToken, default).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {

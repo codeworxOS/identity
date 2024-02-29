@@ -31,7 +31,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.AreEqual(
@@ -56,7 +56,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.IsNull(message.Headers.Authorization);
@@ -79,7 +79,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
 
             var request = await message.Content.ReadAsStringAsync();
 
@@ -104,7 +104,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.IsNull(message.Headers.Authorization);
@@ -161,7 +161,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
 
             var body = (FormUrlEncodedContent)message.Content;
             var content = await body.ReadAsStringAsync();
