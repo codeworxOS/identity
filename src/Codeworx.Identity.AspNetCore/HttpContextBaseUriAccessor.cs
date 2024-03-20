@@ -1,11 +1,13 @@
 ﻿using System;
+using Codeworx.Identity.Configuration;
 using Microsoft.AspNetCore.Http;
 
 namespace Codeworx.Identity.AspNetCore
 {
-    public class HttpContextBaseUriAccessor : IBaseUriAccessor
+    public class HttpContextBaseUriAccessor : BaseUriAccessor
     {
-        public HttpContextBaseUriAccessor(IHttpContextAccessor httpContextAccessor = null)
+        public HttpContextBaseUriAccessor(IdentityServerOptions options, IHttpContextAccessor httpContextAccessor = null)
+            : base(options)
         {
             if (httpContextAccessor == null)
             {
@@ -25,6 +27,6 @@ namespace Codeworx.Identity.AspNetCore
             }
         }
 
-        public Uri BaseUri { get; }
+        public override Uri BaseUri { get; }
     }
 }

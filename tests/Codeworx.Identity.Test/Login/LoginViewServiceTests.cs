@@ -22,7 +22,7 @@
         public async Task LoginWithRelativeRedirectUrl()
         {
             const string returnUrl = "/openid10?query1=one";
-            var dummyBaseUriAccessor = new DummyBaseUriAccessor();
+            var dummyBaseUriAccessor = new DummyBaseUriAccessor(new IdentityServerOptions());
 
             var loginViewService = new LoginViewService(null, dummyBaseUriAccessor, new IdentityServerOptions(), null);
             var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
@@ -36,7 +36,7 @@
         public async Task LoginWithAbsoluteRedirectUrl()
         {
             const string returnUrl = "http://example.com/openid10?query1=one";
-            var loginViewService = new LoginViewService(null, new DummyBaseUriAccessor(), new IdentityServerOptions(), null);
+            var loginViewService = new LoginViewService(null, new DummyBaseUriAccessor(new IdentityServerOptions()), new IdentityServerOptions(), null);
             var result = await loginViewService.ProcessLoggedinAsync(new LoggedinRequest(null, returnUrl, false, null, null));
 
             Assert.AreEqual(returnUrl, result.ReturnUrl);
