@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Codeworx.Identity.Configuration
 {
@@ -52,5 +53,13 @@ namespace Codeworx.Identity.Configuration
         public string SelectTenantEndpoint { get; set; }
 
         public string UserInfoEndpoint { get; set; }
+
+        public IEnumerable<Uri> GetWhitelist(Uri baseUri)
+        {
+            yield return new Uri(baseUri, UserInfoEndpoint);
+            yield return new Uri(baseUri, AccountEndpoint);
+            yield return new Uri(baseUri, OauthAuthorizationEndpoint);
+            yield return new Uri(baseUri, OpenIdAuthorizationEndpoint);
+        }
     }
 }

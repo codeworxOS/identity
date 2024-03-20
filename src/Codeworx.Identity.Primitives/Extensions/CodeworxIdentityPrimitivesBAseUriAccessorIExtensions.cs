@@ -4,21 +4,10 @@ namespace Codeworx.Identity
 {
     public static class CodeworxIdentityPrimitivesBAseUriAccessorIExtensions
     {
+        [Obsolete("Ues IBaseUriAccessor.IsValidRelative instead", true)]
         public static bool IsRelative(this IBaseUriAccessor baseUriAccessor, string uri)
         {
-            var toCheck = new Uri(uri, UriKind.RelativeOrAbsolute);
-
-            if (toCheck.IsAbsoluteUri)
-            {
-                return baseUriAccessor.BaseUri.IsBaseOf(toCheck);
-            }
-
-            if (uri.Trim().StartsWith("//"))
-            {
-                return false;
-            }
-
-            return true;
+            return baseUriAccessor.IsRelative(uri);
         }
     }
 }
