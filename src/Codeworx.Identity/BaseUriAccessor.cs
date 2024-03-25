@@ -14,8 +14,13 @@ namespace Codeworx.Identity
 
         public abstract Uri BaseUri { get; }
 
-        public bool IsRelative(string url)
+        public bool IsValidRelative(string url)
         {
+            if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute))
+            {
+                return false;
+            }
+
             var toCheck = new Uri(url, UriKind.RelativeOrAbsolute);
 
             if (toCheck.IsAbsoluteUri)

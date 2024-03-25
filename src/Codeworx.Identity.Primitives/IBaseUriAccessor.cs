@@ -6,6 +6,6 @@ namespace Codeworx.Identity
     {
         Uri BaseUri { get; }
 
-        bool IsRelative(string url);
+        bool IsValidRelative(string url);
     }
 }

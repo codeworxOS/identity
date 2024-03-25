@@ -7,7 +7,7 @@ namespace Codeworx.Identity
         [Obsolete("Ues IBaseUriAccessor.IsValidRelative instead", true)]
         public static bool IsRelative(this IBaseUriAccessor baseUriAccessor, string uri)
         {
-            return baseUriAccessor.IsRelative(uri);
+            return baseUriAccessor.IsValidRelative(uri);
         }
     }
 }
