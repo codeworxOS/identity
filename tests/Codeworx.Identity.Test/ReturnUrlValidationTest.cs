@@ -11,8 +11,9 @@ namespace Codeworx.Identity.Test
 {
     public class ReturnUrlValidationTest : IntegrationTestBase<UrlValidationStartup>
     {
-        private static string[] _values = new string[] { "https://other/redirect", "//www.whatever.com", " //www.whatever.com", "http:2509937118", "http:149%2e154%2e153%2e222", "http:xsec.at" };
+        private static string[] _values = new string[] { "https://other/redirect", "//www.whatever.com", " //www.whatever.com", "http:2509937118", "http:149%2e154%2e153%2e222", "http:xsec.at", "/\\/xsec.at" };
 
+        [TestCaseSource(nameof(_values))]
         [TestCaseSource(nameof(_values))]
         public async Task LoginEndpoint_Expects_Error(string url)
         {

@@ -15,7 +15,7 @@ namespace Codeworx.Identity.Login
 
         public Task ValidateAsync(LoginRequest request)
         {
-            if (request.ReturnUrl != null && !_baseUriAccessor.IsRelative(request.ReturnUrl))
+            if (request.ReturnUrl != null && !_baseUriAccessor.IsValidRelative(request.ReturnUrl))
             {
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse(Constants.InvalidReturnUrlError));
             }

@@ -15,7 +15,7 @@ namespace Codeworx.Identity.Account
 
         public Task ValidateAsync(ForgotPasswordRequest request)
         {
-            if (request.ReturnUrl != null && !_baseUriAccessor.IsRelative(request.ReturnUrl))
+            if (request.ReturnUrl != null && !_baseUriAccessor.IsValidRelative(request.ReturnUrl))
             {
                 throw new ErrorResponseException<NotAcceptableResponse>(new NotAcceptableResponse(Constants.InvalidReturnUrlError));
             }
