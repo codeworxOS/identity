@@ -3,12 +3,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Codeworx.Identity.Cache;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Token;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     public class AuthorizationCodeTokenService : ITokenService<AuthorizationCodeTokenRequest>
     {
+        private readonly IdentityOptions _options;
         private readonly IRequestValidator<AuthorizationCodeTokenRequest> _validator;
         private readonly IClientAuthenticationService _clientAuthenticationService;
         private readonly ITokenProviderService _tokenProviderService;
@@ -20,8 +23,10 @@ namespace Codeworx.Identity.OAuth.Token
             IRequestValidator<AuthorizationCodeTokenRequest> validator,
             IClientAuthenticationService clientAuthenticationService,
             ITokenProviderService tokenProviderService,
+            IOptionsSnapshot<IdentityOptions> options,
             IExternalTokenCache externalTokenCache = null)
         {
+            _options = options.Value;
             _validator = validator;
             _clientAuthenticationService = clientAuthenticationService;
             _tokenProviderService = tokenProviderService;
@@ -82,7 +87,8 @@ namespace Codeworx.Identity.OAuth.Token
 
                 if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
-                    var validFor = TimeSpan.FromDays(30 * 6);
+                    var validFor = client.RefreshTokenExpiration ?? _options.RefreshToken.Expiration;
+
                     var refreshValidUntil = DateTimeOffset.UtcNow.Add(validFor);
 
                     var refreshToken = await _tokenProviderService.CreateRefreshTokenAsync(token).ConfigureAwait(false);

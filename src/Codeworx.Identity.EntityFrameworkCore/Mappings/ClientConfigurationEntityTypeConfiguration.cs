@@ -1,4 +1,5 @@
-﻿using Codeworx.Identity.EntityFrameworkCore.Model;
+﻿using System;
+using Codeworx.Identity.EntityFrameworkCore.Model;
 using Codeworx.Identity.Login;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,6 +20,11 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
             builder.Property(p => p.AllowScim).HasDefaultValue(false);
 
             builder.Property(p => p.AuthenticationMode).HasDefaultValue(AuthenticationMode.Login);
+
+            builder.Property(p => p.RefreshTokenExpiration)
+                .HasConversion(
+                    p => p.HasValue ? (int?)Convert.ToInt32(p.Value.TotalSeconds) : null,
+                    p => p.HasValue ? TimeSpan.FromSeconds(p.Value) : null);
         }
     }
 }

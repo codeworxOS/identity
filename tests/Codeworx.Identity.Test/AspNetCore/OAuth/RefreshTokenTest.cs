@@ -9,9 +9,11 @@ using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.AspNetCore.OAuth
 {
+    using System;
     using Codeworx.Identity.Cache;
     using Codeworx.Identity.OAuth;
     using Codeworx.Identity.Test.Provider;
+    using Microsoft.Extensions.DependencyInjection;
     using UriBuilder = Codeworx.Identity.UriBuilder;
 
     public class RefreshTokenTest : IntegrationTestBase
@@ -352,12 +354,158 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
             Assert.AreEqual("invalid_scope", errorResponse.Error);
         }
 
-        private async Task<TokenResponse> GetTokenResponse(string scopes)
+
+        [Test]
+        public async Task RefreshTokenLifetime_SlidingExpirationTest_ExpectsOk()
         {
+            var scopes = new[] { "openid", "offline_access" };
+
+            var tokenResponseData = await GetTokenResponse(string.Join(" ", scopes), TestConstants.Clients.SlidingExpirationClientId);
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            DateTimeOffset validUntil;
+
+            await using (var scope = this.TestServer.Services.CreateAsyncScope())
+            {
+                var tokenCache = scope.ServiceProvider.GetRequiredService<ITokenCache>();
+                var token = await tokenCache.GetAsync(Token.TokenType.RefreshToken, tokenResponseData.RefreshToken);
+                validUntil = token.ValidUntil;
+            }
+
+            var refreshRequest = new TokenRequestBuilder()
+                                 .WithGrantType("refresh_token")
+                                 .WithRefreshCode(tokenResponseData.RefreshToken)
+                                 .WithClientId(TestConstants.Clients.SlidingExpirationClientId)
+                                 .WithScopes(string.Join(" ", scopes))
+                                 .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+
+            await using (var scope = this.TestServer.Services.CreateAsyncScope())
+            {
+                var tokenCache = scope.ServiceProvider.GetRequiredService<ITokenCache>();
+                var token = await tokenCache.GetAsync(Token.TokenType.RefreshToken, refreshResponseData.RefreshToken);
+                Assert.Greater(token.ValidUntil, validUntil);
+            }
+        }
+
+        [Test]
+        public async Task RefreshTokenLifetime_UseOnce_ExpectsOk()
+        {
+            var scopes = new[] { "openid", "offline_access" };
+
+            var tokenResponseData = await GetTokenResponse(string.Join(" ", scopes), TestConstants.Clients.UseOnceClientId);
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            DateTimeOffset validUntil;
+
+            await using (var scope = this.TestServer.Services.CreateAsyncScope())
+            {
+                var tokenCache = scope.ServiceProvider.GetRequiredService<ITokenCache>();
+                var token = await tokenCache.GetAsync(Token.TokenType.RefreshToken, tokenResponseData.RefreshToken);
+                validUntil = token.ValidUntil;
+            }
+
+            var refreshRequest = new TokenRequestBuilder()
+                                 .WithGrantType("refresh_token")
+                                 .WithRefreshCode(tokenResponseData.RefreshToken)
+                                 .WithClientId(TestConstants.Clients.UseOnceClientId)
+                                 .WithScopes(string.Join(" ", scopes))
+                                 .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+
+            Assert.AreNotEqual(refreshResponseData.RefreshToken, tokenResponseData.RefreshToken);
+        }
+
+        [Test]
+        public async Task RefreshTokenLifetime_RecreateAfterHalf_ExpectsOk()
+        {
+            var scopes = new[] { "openid", "offline_access" };
+
+            var tokenResponseData = await GetTokenResponse(string.Join(" ", scopes), TestConstants.Clients.RecreateAfterHalfClientId);
+
+            Assert.IsNotNull(tokenResponseData.RefreshToken);
+            Assert.IsNotNull(tokenResponseData.AccessToken);
+
+            DateTimeOffset validUntil;
+
+            await using (var scope = this.TestServer.Services.CreateAsyncScope())
+            {
+                var tokenCache = scope.ServiceProvider.GetRequiredService<ITokenCache>();
+                var token = await tokenCache.GetAsync(Token.TokenType.RefreshToken, tokenResponseData.RefreshToken);
+                validUntil = token.ValidUntil;
+            }
+
+            var refreshRequest = new TokenRequestBuilder()
+                                 .WithGrantType("refresh_token")
+                                 .WithRefreshCode(tokenResponseData.RefreshToken)
+                                 .WithClientId(TestConstants.Clients.RecreateAfterHalfClientId)
+                                 .WithScopes(string.Join(" ", scopes))
+                                 .Build();
+
+            var refreshBody = JsonConvert.SerializeObject(refreshRequest);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(refreshBody);
+            var content = new FormUrlEncodedContent(data);
+            var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
+            uriBuilder.AppendPath("oauth20/token");
+
+            var refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            var refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+
+            Assert.AreEqual(refreshResponseData.RefreshToken, tokenResponseData.RefreshToken);
+
+            await using (var scope = this.TestServer.Services.CreateAsyncScope())
+            {
+                var tokenCache = scope.ServiceProvider.GetRequiredService<ITokenCache>();
+                var token = await tokenCache.GetAsync(Token.TokenType.RefreshToken, refreshResponseData.RefreshToken);
+
+                await tokenCache.ExtendLifetimeAsync(Token.TokenType.RefreshToken, refreshResponseData.RefreshToken, token.ValidUntil.AddMinutes(-40));
+            }
+
+            refreshResponse = await this.TestClient.PostAsync(uriBuilder.ToString(), content);
+            Assert.AreEqual(System.Net.HttpStatusCode.OK, refreshResponse.StatusCode);
+
+            refreshResponseData = JsonConvert.DeserializeObject<TokenResponse>(await refreshResponse.Content.ReadAsStringAsync());
+
+
+            Assert.AreNotEqual(refreshResponseData.RefreshToken, tokenResponseData.RefreshToken);
+        }
+
+        private async Task<TokenResponse> GetTokenResponse(string scopes, string clientId = null, string clientSecret = null)
+        {
+            clientSecret = clientId != null ? clientSecret : TestConstants.Clients.DefaultCodeFlowClientSecret;
+
+            clientId = clientId ?? TestConstants.Clients.DefaultCodeFlowClientId;
+
             await this.Authenticate();
 
             var codeRequest = new OAuthAuthorizationRequestBuilder().WithRedirectUri("https://example.org/redirect")
-                                                                    .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId).WithResponseType("code")
+                                                                    .WithClientId(clientId).WithResponseType("code")
                                                                     .WithScope(scopes).Build();
 
             var uriBuilder = new UriBuilder(TestClient.BaseAddress.ToString());
@@ -372,10 +520,16 @@ namespace Codeworx.Identity.Test.AspNetCore.OAuth
 
             Assert.Contains("code", query.Keys);
 
-            var request = new TokenRequestBuilder().WithGrantType("authorization_code").WithCode(query["code"])
-                                                   .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
-                                                   .WithClientSecret(TestConstants.Clients.DefaultCodeFlowClientSecret)
-                                                   .WithRedirectUri("https://example.org/redirect").Build();
+            var builder = new TokenRequestBuilder().WithGrantType("authorization_code").WithCode(query["code"])
+                                                   .WithClientId(clientId)
+                                                   .WithRedirectUri("https://example.org/redirect");
+
+            if (clientSecret != null)
+            {
+                builder = builder.WithClientSecret(clientSecret);
+            }
+
+            var request = builder.Build();
 
             var body = JsonConvert.SerializeObject(request);
 

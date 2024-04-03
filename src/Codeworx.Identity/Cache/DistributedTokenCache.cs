@@ -41,21 +41,23 @@ namespace Codeworx.Identity.Cache
             _logger = logger;
         }
 
-        public Task ExtendLifetimeAsync(TokenType tokenType, string key, TimeSpan extendBy, CancellationToken token = default)
+        public async Task ExtendLifetimeAsync(TokenType tokenType, string key, DateTimeOffset validUntil, CancellationToken token = default)
         {
-            throw new NotImplementedException();
+            GetKeys(key, out var cacheKey, out var encryptionKey);
+            TokenCacheEntry entry = await GetTokenCacheEntryAsync(tokenType, cacheKey, token).ConfigureAwait(false);
+            entry.ValidUntil = validUntil;
+
+            await _cache.SetStringAsync(
+               $"identity_token_{tokenType}_{cacheKey}",
+               JsonConvert.SerializeObject(entry),
+               new DistributedCacheEntryOptions() { AbsoluteExpiration = entry.ValidUntil, },
+               token);
         }
 
         public async Task<ITokenCacheItem> GetAsync(TokenType tokenType, string key, CancellationToken token = default)
         {
             GetKeys(key, out var cacheKey, out var encryptionKey);
-            var cachedGrantInformation = await _cache.GetStringAsync($"identity_token_{tokenType}_{cacheKey}", token).ConfigureAwait(false);
-            if (cachedGrantInformation == null)
-            {
-                throw new CacheEntryNotFoundException();
-            }
-
-            var entry = JsonConvert.DeserializeObject<TokenCacheEntry>(cachedGrantInformation);
+            TokenCacheEntry entry = await GetTokenCacheEntryAsync(tokenType, cacheKey, token).ConfigureAwait(false);
 
             var data = await _dataEncryption.DecryptAsync(entry.Data, encryptionKey);
 
@@ -97,17 +99,16 @@ namespace Codeworx.Identity.Cache
             encryptionKey = splitKey[1];
         }
 
-        private class TokenCacheItem : ITokenCacheItem
+        private async Task<TokenCacheEntry> GetTokenCacheEntryAsync(TokenType tokenType, string cacheKey, CancellationToken token)
         {
-            public TokenCacheItem(IdentityData identityData, DateTimeOffset validUntil)
+            var cachedGrantInformation = await _cache.GetStringAsync($"identity_token_{tokenType}_{cacheKey}", token).ConfigureAwait(false);
+            if (cachedGrantInformation == null)
             {
-                IdentityData = identityData;
-                ValidUntil = validUntil;
+                throw new CacheEntryNotFoundException();
             }
 
-            public IdentityData IdentityData { get; }
-
-            public DateTimeOffset ValidUntil { get; }
+            var entry = JsonConvert.DeserializeObject<TokenCacheEntry>(cachedGrantInformation);
+            return entry;
         }
 
         private class TokenCacheEntry
@@ -119,6 +120,19 @@ namespace Codeworx.Identity.Cache
             public string Data { get; set; }
 
             public DateTimeOffset ValidUntil { get; set; }
+        }
+
+        private class TokenCacheItem : ITokenCacheItem
+        {
+            public TokenCacheItem(IdentityData identityData, DateTimeOffset validUntil)
+            {
+                IdentityData = identityData;
+                ValidUntil = validUntil;
+            }
+
+            public IdentityData IdentityData { get; }
+
+            public DateTimeOffset ValidUntil { get; }
         }
     }
 }

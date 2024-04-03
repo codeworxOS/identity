@@ -3,6 +3,7 @@ using System;
 using Codeworx.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.Migrations
 {
     [DbContext(typeof(CodeworxIdentityDbContext))]
-    partial class CodeworxIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240403114900_AddRefreshTokenOverrides")]
+    partial class AddRefreshTokenOverrides
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.0");

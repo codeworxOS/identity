@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Token;
+using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.OAuth.Token
 {
     public class TokenExchangeService : ITokenService<TokenExchangeRequest>
     {
+        private readonly IdentityOptions _options;
         private readonly ITokenProviderService _tokenProviderService;
         private readonly IEnumerable<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>> _processors;
         private readonly IIdentityService _identityService;
@@ -16,8 +19,10 @@ namespace Codeworx.Identity.OAuth.Token
         public TokenExchangeService(
             ITokenProviderService tokenProviderService,
             IEnumerable<IIdentityRequestProcessor<ITokenExchangeParameters, TokenExchangeRequest>> processors,
-            IIdentityService identityService)
+            IIdentityService identityService,
+            IOptionsSnapshot<IdentityOptions> options)
         {
+            _options = options.Value;
             _tokenProviderService = tokenProviderService;
             _processors = processors;
             _identityService = identityService;
@@ -75,7 +80,8 @@ namespace Codeworx.Identity.OAuth.Token
 
                 if (scopeClaim.Values.Contains(Constants.OpenId.Scopes.OfflineAccess))
                 {
-                    var validUntil = DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(30 * 6));
+                    var validFor = parameters.Client.RefreshTokenExpiration ?? _options.RefreshToken.Expiration;
+                    var validUntil = DateTimeOffset.UtcNow.Add(validFor);
 
                     var refreshToken = await _tokenProviderService.CreateRefreshTokenAsync(token).ConfigureAwait(false);
                     await refreshToken.SetPayloadAsync(identityData, validUntil, token).ConfigureAwait(false);

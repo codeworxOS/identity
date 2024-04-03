@@ -22,9 +22,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
         {
         }
 
-        public async Task ExtendLifetimeAsync(TokenType tokenType, string key, TimeSpan validFor, CancellationToken token = default)
+        public async Task ExtendLifetimeAsync(TokenType tokenType, string key, DateTimeOffset validUntil, CancellationToken token = default)
         {
-            var validUntil = DateTime.UtcNow.Add(validFor);
             await ExtendEntryAsync(GetCacheType(tokenType), key, validUntil, token).ConfigureAwait(false);
         }
 

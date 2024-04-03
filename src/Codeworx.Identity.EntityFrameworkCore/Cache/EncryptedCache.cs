@@ -151,7 +151,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        protected virtual async Task<string> ExtendEntryAsync(CacheType cacheType, string key, DateTime validUntil, CancellationToken token = default)
+        protected virtual async Task<string> ExtendEntryAsync(CacheType cacheType, string key, DateTimeOffset validUntil, CancellationToken token = default)
         {
             string cacheKey, encryptedKey;
             GetKeys(key, out cacheKey, out encryptedKey);
@@ -167,7 +167,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     throw new CacheEntryNotFoundException();
                 }
 
-                entry.ValidUntil = validUntil;
+                entry.ValidUntil = validUntil.UtcDateTime;
 
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 

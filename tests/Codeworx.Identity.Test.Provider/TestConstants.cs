@@ -44,6 +44,11 @@
             public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
             public const string DefaultServiceAccountClientSecret = "clientSecret";
             public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
+
+            public const string SlidingExpirationClientId = "dac9f0fbfd9946099a1fd281144ad603";
+            public const string UseOnceClientId = "3737fe63046741b7b73ca50aec3930ac";
+            public const string RecreateAfterHalfClientId = "0f018f5fb61d4fac96ca7088e4f15c18";
+
             public const string LimitedScope1ClientId = "B25ECAB6-76A4-498A-AA50-B8699E0BDDA6";
             public const string MfaRequiredClientId = "7D04E0B8-35C4-402E-9C33-DBCCDC7EE83B";
             public const string MfaTestServiceAccountClientId = "4A95E657-DC16-438A-B6FA-F87B42026C38";
