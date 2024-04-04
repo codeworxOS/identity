@@ -24,7 +24,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public IClientRegistration Client { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
+        public MfaFlowMode MfaFlowMode => MfaFlowMode.Enabled;
 
         public IToken ParsedRefreshToken { get; }
 

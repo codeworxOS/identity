@@ -73,7 +73,7 @@ namespace Codeworx.Identity
 
             var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
 
-            if (!hasMfa && identityDataParameters.MfaFlowModel == MfaFlowMode.Enabled)
+            if (!hasMfa && identityDataParameters.MfaFlowMode == MfaFlowMode.Enabled)
             {
                 if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
                 {
@@ -81,6 +81,11 @@ namespace Codeworx.Identity
                 }
 
                 if (currentUser.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
+                }
+
+                if (identityDataParameters.Scopes.Contains(Constants.Scopes.Mfa))
                 {
                     identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
                 }
