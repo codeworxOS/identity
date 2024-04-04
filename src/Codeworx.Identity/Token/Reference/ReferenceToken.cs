@@ -27,6 +27,16 @@ namespace Codeworx.Identity.Token.Reference
 
         public DateTimeOffset ValidUntil { get; private set; }
 
+        public async Task ExtendLifetimeAsync(DateTimeOffset validUntil, CancellationToken token = default)
+        {
+            ValidUntil = validUntil;
+
+            if (_key != null)
+            {
+                await _tokenCache.ExtendLifetimeAsync(TokenType, _key, validUntil, token);
+            }
+        }
+
         public async Task ParseAsync(string value, CancellationToken token = default)
         {
             _key = value;
@@ -45,6 +55,8 @@ namespace Codeworx.Identity.Token.Reference
             var data = IdentityData ?? throw new ArgumentNullException(nameof(IdentityData));
 
             var result = await _tokenCache.SetAsync(TokenType, data, ValidUntil, token).ConfigureAwait(false);
+            _key = result;
+
             return result;
         }
 

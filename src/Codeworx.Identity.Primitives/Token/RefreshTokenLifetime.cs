@@ -1,4 +1,4 @@
-﻿namespace Codeworx.Identity.EntityFrameworkCore.Model
+﻿namespace Codeworx.Identity.Token
 {
     public enum RefreshTokenLifetime
     {

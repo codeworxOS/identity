@@ -14,9 +14,9 @@ namespace Codeworx.Identity.Cryptography.Json
     public class Jwt : IToken
     {
         private readonly JwtConfiguration _configuration;
+        private readonly IDefaultSigningDataProvider _defaultSigningDataProvider;
         private readonly JsonWebTokenHandler _handler;
         private readonly ITokenCache _tokenCache;
-        private readonly IDefaultSigningDataProvider _defaultSigningDataProvider;
         private string _key;
 
         private DateTimeOffset _validFrom;
@@ -36,6 +36,15 @@ namespace Codeworx.Identity.Cryptography.Json
         public TokenType TokenType { get; }
 
         public DateTimeOffset ValidUntil { get; private set; }
+
+        public async Task ExtendLifetimeAsync(DateTimeOffset validUntil, CancellationToken token = default)
+        {
+            ValidUntil = validUntil;
+            if (_key != null)
+            {
+                await _tokenCache.ExtendLifetimeAsync(TokenType, _key, validUntil, token).ConfigureAwait(false);
+            }
+        }
 
         public async Task ParseAsync(string value, CancellationToken token = default)
         {

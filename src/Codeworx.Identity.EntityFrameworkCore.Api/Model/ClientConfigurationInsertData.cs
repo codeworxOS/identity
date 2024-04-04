@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
 {
@@ -18,6 +19,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api.Model
         public AuthenticationMode AuthenticationMode { get; set; }
 
         public ClientType ClientType { get; set; }
+
+        public RefreshTokenLifetime? RefreshTokenLifetime { get; set; }
+
+        public TimeSpan? RefreshTokenExpiration { get; set; }
 
         public UserInfoData User { get; set; }
     }

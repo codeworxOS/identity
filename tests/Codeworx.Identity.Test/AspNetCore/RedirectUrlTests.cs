@@ -12,6 +12,7 @@ using Codeworx.Identity.Model;
 using System.Collections.Immutable;
 using Codeworx.Identity.Test.Provider;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.Test.AspNetCore
 {
@@ -149,6 +150,10 @@ namespace Codeworx.Identity.Test.AspNetCore
             public string AccessTokenTypeConfiguration => null;
 
             public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
     }
 }

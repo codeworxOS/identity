@@ -29,7 +29,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public IClientRegistration Client { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Disabled;
+        public MfaFlowMode MfaFlowMode => MfaFlowMode.Disabled;
 
         public IReadOnlyCollection<string> Scopes { get; }
 

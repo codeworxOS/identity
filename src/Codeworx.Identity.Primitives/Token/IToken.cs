@@ -12,6 +12,8 @@ namespace Codeworx.Identity.Token
 
         DateTimeOffset ValidUntil { get; }
 
+        Task ExtendLifetimeAsync(DateTimeOffset validUntil, CancellationToken token = default);
+
         Task ParseAsync(string value, CancellationToken token = default);
 
         Task<string> SerializeAsync(CancellationToken token = default);

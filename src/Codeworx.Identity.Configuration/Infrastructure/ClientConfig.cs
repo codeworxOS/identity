@@ -1,5 +1,6 @@
 ﻿using System;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.Configuration.Infrastructure
 {
@@ -29,5 +30,9 @@ namespace Codeworx.Identity.Configuration.Infrastructure
         public string AccessTokenType { get; set; }
 
         public string AccessTokenTypeConfiguration { get; set; }
+
+        public RefreshTokenLifetime? RefreshTokenLifetime { get; set; }
+
+        public TimeSpan? RefreshTokenExpiration { get; set; }
     }
 }

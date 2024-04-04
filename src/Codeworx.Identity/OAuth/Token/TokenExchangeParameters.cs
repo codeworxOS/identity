@@ -45,7 +45,7 @@ namespace Codeworx.Identity.OAuth.Token
 
         public string ClientSecret { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
+        public MfaFlowMode MfaFlowMode => MfaFlowMode.Enabled;
 
         public IReadOnlyCollection<string> RequestedTokenTypes { get; }
 

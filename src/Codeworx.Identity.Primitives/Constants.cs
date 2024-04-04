@@ -300,6 +300,7 @@
             public const string GroupNames = "group_names";
             public const string Tenant = "tenant";
             public const string ProfileEmail = "profile:email";
+            public const string Mfa = "mfa";
 
             public static class ExternalToken
             {

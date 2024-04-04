@@ -7,7 +7,7 @@ namespace Codeworx.Identity
 {
     public interface IIdentityDataParameters
     {
-        MfaFlowMode MfaFlowModel { get; }
+        MfaFlowMode MfaFlowMode { get; }
 
         IClientRegistration Client { get; }
 

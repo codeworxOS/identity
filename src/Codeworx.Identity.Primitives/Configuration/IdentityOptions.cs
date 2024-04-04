@@ -33,6 +33,9 @@ namespace Codeworx.Identity.Configuration
                 Login = 500,
                 Password = 100,
             };
+
+            RefreshToken = new RefreshTokenOption();
+
             Terms = new TermsOption
             {
                 Mode = TermsOption.TermsMode.None,
@@ -105,6 +108,8 @@ namespace Codeworx.Identity.Configuration
 
         public MaxLengthOption MaxLength { get; set; }
 
+        public RefreshTokenOption RefreshToken { get; set; }
+
         public TermsOption Terms { get; set; }
 
         public SigningOptions Signing { get; set; }
@@ -140,6 +145,7 @@ namespace Codeworx.Identity.Configuration
             target.SupportEmail = this.SupportEmail;
             target.Signing = new SigningOptions(this.Signing);
             target.Cache = new CacheOptions(this.Cache);
+            target.RefreshToken = new RefreshTokenOption(this.RefreshToken);
 
             target.Styles.Clear();
 

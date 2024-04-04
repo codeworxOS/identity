@@ -59,6 +59,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.ClientType,
                 p.AllowScim,
                 p.TokenExpiration,
+                p.RefreshTokenLifetime,
+                p.RefreshTokenExpiration,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
@@ -74,6 +76,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 AllowScim = d.AllowScim,
                 ClientType = d.ClientType,
                 TokenExpiration = d.TokenExpiration,
+                RefreshTokenExpiration = d.RefreshTokenExpiration,
+                RefreshTokenLifetime = d.RefreshTokenLifetime,
                 Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 ValidRedirectUrls = redirectUrls.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 User = d.User,
@@ -151,6 +155,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.ClientType,
                 p.TokenExpiration,
                 p.AllowScim,
+                p.RefreshTokenExpiration,
+                p.RefreshTokenLifetime,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
             }).FirstOrDefaultAsync();
@@ -173,6 +179,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 ClientType = data.ClientType,
                 Scopes = scopes,
                 TokenExpiration = data.TokenExpiration,
+                RefreshTokenExpiration = data.RefreshTokenExpiration,
+                RefreshTokenLifetime = data.RefreshTokenLifetime,
                 ValidRedirectUrls = redirectUrls,
                 User = data.User,
                 HasClientSecret = data.HasClientSecret,
@@ -202,6 +210,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 p.ClientType,
                 p.AllowScim,
                 p.TokenExpiration,
+                p.RefreshTokenExpiration,
+                p.RefreshTokenLifetime,
                 User = p.UserId != null ? new UserInfoData { DisplayName = p.User.Name, Id = p.User.Id } : null,
                 HasClientSecret = p.ClientSecretHash != null,
             }).ToListAsync();
@@ -217,6 +227,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 ClientType = d.ClientType,
                 TokenExpiration = d.TokenExpiration,
                 AllowScim = d.AllowScim,
+                RefreshTokenLifetime = d.RefreshTokenLifetime,
+                RefreshTokenExpiration = d.RefreshTokenExpiration,
                 Scopes = scopes.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 ValidRedirectUrls = redirectUrls.Where(c => c.ClientId == d.Id).Select(c => c.Data).ToList(),
                 User = d.User,
@@ -240,6 +252,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
                 TokenExpiration = configuration.TokenExpiration,
                 UserId = configuration.User?.Id,
                 AllowScim = configuration.AllowScim,
+                RefreshTokenExpiration = configuration.RefreshTokenExpiration,
+                RefreshTokenLifetime = configuration.RefreshTokenLifetime,
             };
 
             if (!string.IsNullOrEmpty(configuration.AccessTokenType))
@@ -313,6 +327,8 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             entity.AuthenticationMode = configuration.AuthenticationMode;
             entity.ClientType = configuration.ClientType;
             entity.TokenExpiration = configuration.TokenExpiration;
+            entity.RefreshTokenExpiration = configuration.RefreshTokenExpiration;
+            entity.RefreshTokenLifetime = configuration.RefreshTokenLifetime;
             entity.UserId = configuration.User?.Id;
 
             await _db.Context.SaveChangesAsync().ConfigureAwait(false);
