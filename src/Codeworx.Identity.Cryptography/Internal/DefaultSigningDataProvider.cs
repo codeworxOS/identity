@@ -25,7 +25,7 @@ namespace Codeworx.Identity.Cryptography.Internal
                 _options = p;
                 lock (_signingDataLocker)
                 {
-                    if (_signingDataTask.IsCompleted)
+                    if (_signingDataTask != null && _signingDataTask.IsCompleted)
                     {
                         _signingDataTask.Result?.Dispose();
                     }
