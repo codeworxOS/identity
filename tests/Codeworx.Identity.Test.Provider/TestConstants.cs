@@ -7,6 +7,15 @@
             public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         }
 
+        public static class Invitations
+        {
+            public static class Default
+            {
+                public const string Code = "defaultinvitationcode";
+                public const string ReturnUrl = "https://some.url/withpath?and=parameters";
+            }
+        }
+
         public static class LoginProviders
         {
             public static class ExternalOAuthProvider

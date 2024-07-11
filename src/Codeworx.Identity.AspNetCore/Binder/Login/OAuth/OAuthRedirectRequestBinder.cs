@@ -34,6 +34,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                 string prompt = null;
                 string returnUrl = null;
                 string invitationCode = null;
+                InvitationItem invitation = null;
 
                 if (providerId.Contains("/"))
                 {
@@ -52,7 +53,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                         throw new NotSupportedException(message);
                     }
 
-                    var invitation = await _invitationService.GetInvitationAsync(invitationCode).ConfigureAwait(false);
+                    invitation = await _invitationService.GetInvitationAsync(invitationCode).ConfigureAwait(false);
                     returnUrl = invitation.RedirectUri;
                 }
                 else
@@ -70,7 +71,7 @@ namespace Codeworx.Identity.AspNetCore.Binder.Login.OAuth
                     prompt = promptValues.FirstOrDefault();
                 }
 
-                var result = new OAuthRedirectRequest(providerId, returnUrl, prompt, invitationCode);
+                var result = new OAuthRedirectRequest(providerId, returnUrl, prompt, invitationCode, invitation);
 
                 return result;
             }
