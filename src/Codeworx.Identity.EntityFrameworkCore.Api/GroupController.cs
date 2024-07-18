@@ -153,9 +153,14 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         }
 
         [HttpGet]
-        public async Task<IEnumerable<GroupListData>> GetGroupsAsync()
+        public async Task<IEnumerable<GroupListData>> GetGroupsAsync([FromQuery] Guid? tenantId = null)
         {
             IQueryable<Group> query = _db.Context.Set<Group>();
+
+            if (tenantId.HasValue)
+            {
+                query = query.Where(p => p.Tenants.Any(x => x.TenantId == tenantId.Value));
+            }
 
             var groups = await query.ToListAsync();
             var result = new List<GroupListData>();
@@ -219,6 +224,51 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
             entry.MapAdditionalProperties(data);
 
             return data;
+        }
+
+        [HttpPut("{id}/tenant/{tenantId}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task AssignTenantAsync(Guid id, Guid tenantId)
+        {
+            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            {
+                var groupExists = await _db.Context.Set<Group>().Where(p => p.Id == id).AnyAsync();
+                var tenantExists = await _db.Context.Set<Tenant>().Where(p => p.Id == tenantId).AnyAsync();
+
+                if (!groupExists || !tenantExists)
+                {
+                    // TODO return 404;
+                }
+
+                var entity = new TenantRightHolder { TenantId = tenantId, RightHolderId = id };
+
+                _db.Context.Add(entity);
+
+                await _db.Context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+        }
+
+        [HttpDelete("{id}/tenant/{tenantId}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task RemoveTenantAsync(Guid id, Guid tenantId)
+        {
+            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            {
+                var assignment = await _db.Context.Set<TenantRightHolder>().Where(p => p.TenantId == tenantId && p.RightHolderId == id).FirstOrDefaultAsync();
+
+                if (assignment == null)
+                {
+                    // TODO return 404;
+                }
+
+                _db.Context.Remove(assignment);
+
+                await _db.Context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
         }
     }
 }

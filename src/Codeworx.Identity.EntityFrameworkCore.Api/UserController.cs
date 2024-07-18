@@ -83,10 +83,10 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
-                var groupExists = await _db.Context.Set<User>().Where(p => p.Id == id).AnyAsync();
+                var userExists = await _db.Context.Set<User>().Where(p => p.Id == id).AnyAsync();
                 var tenantExists = await _db.Context.Set<Tenant>().Where(p => p.Id == tenantId).AnyAsync();
 
-                if (!groupExists || !tenantExists)
+                if (!userExists || !tenantExists)
                 {
                     // TODO return 404;
                 }
@@ -103,7 +103,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [HttpDelete("{id}/tenant/{tenantId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task RemoveMemberAsync(Guid id, Guid tenantId)
+        public async Task RemoveTenantAsync(Guid id, Guid tenantId)
         {
             using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
