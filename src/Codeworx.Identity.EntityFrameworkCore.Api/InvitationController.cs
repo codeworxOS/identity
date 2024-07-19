@@ -43,7 +43,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<string> CreateInvitationAsync(Guid id, [FromBody] InvitationInsertData invitation)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var userExists = await _db.Context.Set<User>().AnyAsync(p => p.Id == id).ConfigureAwait(false);
 
@@ -129,7 +129,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task DisableInvitationAsync(Guid id)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var invitations = await _db.Context
                                             .Set<UserInvitation>()
