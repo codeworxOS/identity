@@ -72,7 +72,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task AddMemberAsync(Guid id, Guid memberId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var groupExists = await _db.Context.Set<Group>().Where(p => p.Id == id).AnyAsync();
                 var memberExists = await _db.Context.Set<RightHolder>().Where(p => p.Id == memberId).AnyAsync();
@@ -96,7 +96,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task RemoveMemberAsync(Guid id, Guid memberId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var assignment = await _db.Context.Set<RightHolderGroup>().Where(p => p.GroupId == id && p.RightHolderId == memberId).FirstOrDefaultAsync();
 
@@ -231,7 +231,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task AssignTenantAsync(Guid id, Guid tenantId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var groupExists = await _db.Context.Set<Group>().Where(p => p.Id == id).AnyAsync();
                 var tenantExists = await _db.Context.Set<Tenant>().Where(p => p.Id == tenantId).AnyAsync();
@@ -255,7 +255,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task RemoveTenantAsync(Guid id, Guid tenantId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var assignment = await _db.Context.Set<TenantRightHolder>().Where(p => p.TenantId == tenantId && p.RightHolderId == id).FirstOrDefaultAsync();
 
