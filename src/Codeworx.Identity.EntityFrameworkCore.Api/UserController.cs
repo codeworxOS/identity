@@ -37,7 +37,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<UserData> InsertUsersAsync([FromBody] UserInsertData user)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync().ConfigureAwait(false))
             {
                 var entity = new User
                 {
@@ -81,12 +81,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task AssignTenantAsync(Guid id, Guid tenantId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
-                var groupExists = await _db.Context.Set<User>().Where(p => p.Id == id).AnyAsync();
+                var userExists = await _db.Context.Set<User>().Where(p => p.Id == id).AnyAsync();
                 var tenantExists = await _db.Context.Set<Tenant>().Where(p => p.Id == tenantId).AnyAsync();
 
-                if (!groupExists || !tenantExists)
+                if (!userExists || !tenantExists)
                 {
                     // TODO return 404;
                 }
@@ -103,9 +103,9 @@ namespace Codeworx.Identity.EntityFrameworkCore.Api
         [HttpDelete("{id}/tenant/{tenantId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task RemoveMemberAsync(Guid id, Guid tenantId)
+        public async Task RemoveTenantAsync(Guid id, Guid tenantId)
         {
-            using (var transaction = await _db.Context.Database.BeginTransactionAsync())
+            await using (var transaction = await _db.Context.Database.BeginTransactionAsync())
             {
                 var assignment = await _db.Context.Set<TenantRightHolder>().Where(p => p.TenantId == tenantId && p.RightHolderId == id).FirstOrDefaultAsync();
 
