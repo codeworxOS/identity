@@ -51,13 +51,19 @@ namespace Codeworx.Identity.EntityFrameworkCore
                     var baseQuery = _db.Set<RightHolder>()
                                         .Where(p => search.Contains(p.Id));
 
+                    var memberQuery = baseQuery
+                                        .SelectMany(p => p.MemberOf);
+
                     if (tenantIdFilter.HasValue)
                     {
-                        baseQuery = baseQuery.Where(p => p.Tenants.Any(x => x.TenantId == tenantIdFilter.Value));
+                        memberQuery = memberQuery.Where(p => p.Group.Tenants.Any(x => x.TenantId == tenantIdFilter.Value) || !p.Group.Tenants.Any());
+                    }
+                    else
+                    {
+                        memberQuery = memberQuery.Where(p => !p.Group.Tenants.Any());
                     }
 
-                    var nextLayer = await baseQuery
-                                        .SelectMany(p => p.MemberOf)
+                    var nextLayer = await memberQuery
                                         .Select(p => new { p.GroupId, p.Group.Name })
                                         .Distinct()
                                         .ToListAsync()
