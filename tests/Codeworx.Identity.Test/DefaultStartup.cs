@@ -1,7 +1,5 @@
 ﻿using System.Security.Claims;
-using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.Configuration;
-using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
