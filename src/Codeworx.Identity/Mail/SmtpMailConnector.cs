@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 
 namespace Codeworx.Identity.Mail
 {
-    public class SmtpMailConnector : IMailConnector
+    public class SmtpMailConnector : IMailConnector, IMailDataConnector
     {
         private readonly SmtpOptions _options;
 
@@ -15,6 +16,11 @@ namespace Codeworx.Identity.Mail
         }
 
         public async Task SendAsync(MailAddress recipient, string subject, string content)
+        {
+            await SendAsync(new MailData(recipient, subject, content)).ConfigureAwait(false);
+        }
+
+        public async Task SendAsync(MailData mail, CancellationToken token = default)
         {
             using (var client = new SmtpClient(_options.Host, _options.Port))
             {
@@ -31,16 +37,24 @@ namespace Codeworx.Identity.Mail
                 client.TargetName = _options.TargetName;
                 client.EnableSsl = _options.EnableSsl;
 
-                var to = recipient;
+                var to = mail.Recipient;
                 var from = new MailAddress(_options.Sender);
 
                 using (var message = new MailMessage(from, to))
                 {
-                    message.Body = content;
+                    message.Body = mail.Content;
                     message.IsBodyHtml = true;
-                    message.Subject = subject;
+                    message.Subject = mail.Subject;
 
-                    await client.SendMailAsync(message).ConfigureAwait(false);
+                    foreach (var attachment in mail.Attachments)
+                    {
+                        message.Attachments.Add(attachment);
+                    }
+
+                    using (token.Register(() => client.SendAsyncCancel()))
+                    {
+                        await client.SendMailAsync(message).ConfigureAwait(false);
+                    }
                 }
             }
         }

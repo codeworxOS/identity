@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
     <Configurations>Debug;Release;MsSql</Configurations>
+	<EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
 
   <ItemGroup>

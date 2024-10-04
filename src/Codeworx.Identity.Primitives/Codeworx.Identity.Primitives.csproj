@@ -6,6 +6,7 @@
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Configurations>Debug;Release;MsSql</Configurations>
+		<EnablePackageValidation>true</EnablePackageValidation>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -274,6 +274,7 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddSingleton<IIdentityAuthenticationHandler, DefaultIdentityAuthenticationHandler>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
+            collection.AddTransient<IJwkInformationSerializer, X509RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
 
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();

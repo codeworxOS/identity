@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6;net8</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
+		<EnablePackageValidation>true</EnablePackageValidation>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">
@@ -23,10 +24,16 @@
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">
 		<DefineConstants>EF6</DefineConstants>
+		<PackageValidationBaselineVersion>1.16000.0</PackageValidationBaselineVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(EfVersion)' == '7'">
+		<PackageValidationBaselineVersion>1.17000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '8'">
 		<DefineConstants>EF8</DefineConstants>
+		<PackageValidationBaselineVersion>1.18000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(EfVersion)'=='6'">

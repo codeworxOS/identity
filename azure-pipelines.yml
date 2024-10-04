@@ -1,35 +1,123 @@
-# Starter pipeline
-
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 pool:
-  vmImage: windows-latest
+  vmImage: ubuntu-latest
+
+variables:
+  major: 1
+  minor: 1
+  buildOffset: 11
+  ef6Minor: 16000
+  ef6BuildOffset: 16
+  ef7Minor: 17000
+  ef7BuildOffset: 17
+  ef8Minor: 18000
+  ef8BuildOffset: 18
+  packageName: 'Codeworx.Identity'
+  projects: 'src/Codeworx.Identity.Primitives;src/Codeworx.Identity.AspNetCore;src/Codeworx.Identity.Cryptography;src/Codeworx.Identity.Configuration;src/Codeworx.Identity;src/Codeworx.Identity.Mfa.Totp'
+  efProjects: 'src/Codeworx.Identity.EntityFrameworkCore;src/Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer;src/Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite;src/Codeworx.Identity.EntityFrameworkCore.Api;src/Codeworx.Identity.EntityFrameworkCore.Api.NSwag;src/Codeworx.Identity.EntityFrameworkCore.Scim.Api'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
 
 steps:
+- task: DotNetCoreCLI@2
+  displayName: "Install package-version tool"
+  inputs:
+    command: 'custom'
+    custom: 'tool'
+    arguments: 'install Codeworx.PackageVersion -g'
+
+- task: DotNetCoreCLI@2
+  displayName: "Get next PackageVersion"
+  inputs:
+    command: 'custom'
+    custom: 'package-version'
+    arguments: '$(packageName) -m $(major) -n $(minor) -b $(buildOffset) -o DevOps -p $(prerelease)'
+
+- task: Bash@3
+  displayName: "Update build version"
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      echo '##vso[build.updatebuildnumber]$(PackageVersion)'
+
+
+- task: Bash@3
+  displayName: "Update core package version"
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your commands here
+      echo '##vso[task.setvariable variable=coreVersion;]$(PackageVersion)'
+
 - task: DownloadSecureFile@1
+  displayName: Download signing key
   inputs:
     secureFile: 'identity_signkey.snk'
+
 - task: CopyFiles@2
+  displayName: copy signing key
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: 'identity_signkey.snk'
     TargetFolder: './private'
-#- task: DotNetCoreCLI@2
-#  inputs:
-#    command: 'test'
-#    projects: '**/*Identity.Test.csproj'
-- task: PowerShell@2
+
+- task: DotNetCoreCLI@2
+  displayName: "run dotnet pack"
   inputs:
-    filePath: './tools/build.ps1'
-    workingDirectory: './tools'
-  displayName: 'Run the build script'
-- task: CopyFiles@2
+    command: 'pack'
+    packagesToPack: '$(projects)'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk'
+
+- task: DotNetCoreCLI@2
+  displayName: "Get next ef6 PackageVersion"
   inputs:
-    SourceFolder: './dist/nuget'
-    Contents: '*'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    command: 'custom'
+    custom: 'package-version'
+    arguments: '$(packageName) -m $(major) -n $(ef6Minor) -b $(ef6BuildOffset) -o DevOps -p $(prerelease)'
+
+- task: DotNetCoreCLI@2
+  displayName: "run dotnet pack for ef6"
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(efProjects)'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=6;IdentityCoreVersion=$(coreVersion)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Get next ef7 PackageVersion"
+  inputs:
+    command: 'custom'
+    custom: 'package-version'
+    arguments: '$(packageName) -m $(major) -n $(ef7Minor) -b $(ef7BuildOffset) -o DevOps -p $(prerelease)'
+
+- task: DotNetCoreCLI@2
+  displayName: "run dotnet pack for ef7"
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(efProjects)'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=7;IdentityCoreVersion=$(coreVersion)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Get next ef8 PackageVersion"
+  inputs:
+    command: 'custom'
+    custom: 'package-version'
+    arguments: '$(packageName) -m $(major) -n $(ef8Minor) -b $(ef8BuildOffset) -o DevOps -p $(prerelease)'
+
+- task: DotNetCoreCLI@2
+  displayName: "run dotnet pack for ef8"
+  inputs:
+    command: 'pack'
+    packagesToPack: '$(efProjects)'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'off'
+    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=8;IdentityCoreVersion=$(coreVersion)'
+
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
