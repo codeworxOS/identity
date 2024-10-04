@@ -261,7 +261,7 @@ namespace Codeworx.Identity.Mfa.Mail
                 var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
                 var content = await _notificationProcessor.GetNotificationContentAsync(notification).ConfigureAwait(false);
 
-                await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content, Enumerable.Empty<Attachment>(), token).ConfigureAwait(false);
+                await _mailConnector.SendAsync(new MailData(new MailAddress(email), notification.Subject, content), token).ConfigureAwait(false);
             }
         }
     }
