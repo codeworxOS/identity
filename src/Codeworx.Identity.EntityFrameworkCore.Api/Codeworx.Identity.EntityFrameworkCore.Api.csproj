@@ -34,15 +34,15 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">
-		<PackageValidationBaselineVersion>1.16000.0</PackageValidationBaselineVersion>
+		<PackageValidationBaselineVersion>1.16000.4</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '7'">
-		<PackageValidationBaselineVersion>1.17000.0</PackageValidationBaselineVersion>
+		<PackageValidationBaselineVersion>1.17000.4</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '8'">
-		<PackageValidationBaselineVersion>1.18000.0</PackageValidationBaselineVersion>
+		<PackageValidationBaselineVersion>1.18000.4</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 </Project>
