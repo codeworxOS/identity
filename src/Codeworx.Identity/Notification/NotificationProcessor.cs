@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Codeworx.Identity.Mail;
 using Codeworx.Identity.View;
@@ -51,7 +53,14 @@ namespace Codeworx.Identity.Notification
             var content = await GetNotificationContentAsync(notification).ConfigureAwait(false);
             var recipient = await _mailAddressProvider.GetMailAdressAsync(notification.Target).ConfigureAwait(false);
 
-            await _connector.SendAsync(recipient, notification.Subject, content).ConfigureAwait(false);
+            IEnumerable<Attachment> attachments = Enumerable.Empty<Attachment>();
+
+            if (notification is IHasAttachments withAttachments)
+            {
+                attachments = await withAttachments.GetAttachmentsAsync(default).ConfigureAwait(false);
+            }
+
+            await _connector.SendAsync(recipient, notification.Subject, content, attachments).ConfigureAwait(false);
         }
     }
 }

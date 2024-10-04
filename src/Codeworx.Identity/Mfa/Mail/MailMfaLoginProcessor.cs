@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -260,7 +261,7 @@ namespace Codeworx.Identity.Mfa.Mail
                 var notification = new MfaMailNotification(code, user, _options.CompanyName, _options.SupportEmail);
                 var content = await _notificationProcessor.GetNotificationContentAsync(notification).ConfigureAwait(false);
 
-                await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content).ConfigureAwait(false);
+                await _mailConnector.SendAsync(new System.Net.Mail.MailAddress(email), notification.Subject, content, Enumerable.Empty<Attachment>(), token).ConfigureAwait(false);
             }
         }
     }
