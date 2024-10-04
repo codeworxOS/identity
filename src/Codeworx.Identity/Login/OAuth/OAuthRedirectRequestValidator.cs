@@ -9,7 +9,7 @@ namespace Codeworx.Identity.Login.OAuth
     {
         private readonly IBaseUriAccessor _baseUriAccessor;
 
-        public OAuthRedirectRequestValidator(IBaseUriAccessor baseUriAccessor, IInvitationService invitationService)
+        public OAuthRedirectRequestValidator(IBaseUriAccessor baseUriAccessor)
         {
             _baseUriAccessor = baseUriAccessor;
         }
