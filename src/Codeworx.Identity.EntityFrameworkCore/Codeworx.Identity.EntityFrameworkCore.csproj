@@ -7,12 +7,15 @@
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">
 		<TargetFrameworks>net6</TargetFrameworks>
+		<PackageValidationBaselineVersion>1.16000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)' == '7'">
 		<TargetFrameworks>net6</TargetFrameworks>
+		<PackageValidationBaselineVersion>1.17000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(EfVersion)' == '8'">
 		<TargetFrameworks>net8</TargetFrameworks>
+		<PackageValidationBaselineVersion>1.18000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '' And '$(TargetFramework)' == 'net8' ">
