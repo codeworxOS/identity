@@ -19,13 +19,6 @@ variables:
 
 steps:
 - task: DotNetCoreCLI@2
-  displayName: Run dotnet test
-  inputs:
-    command: 'test'
-    projects: '$(testProjects)'
-    feedsToUse: 'select'
-    versioningScheme: 'off'
-- task: DotNetCoreCLI@2
   displayName: "Install package-version tool"
   inputs:
     command: 'custom'
@@ -57,12 +50,12 @@ steps:
       echo '##vso[task.setvariable variable=coreVersion;]$(PackageVersion)'
 
 - task: DownloadSecureFile@1
-  displayNmae: Download signing key
+  displayName: Download signing key
   inputs:
     secureFile: 'identity_signkey.snk'
 
 - task: CopyFiles@2
-  displayNmae: copy signing key
+  displayName: copy signing key
   inputs:
     SourceFolder: '$(Agent.TempDirectory)'
     Contents: 'identity_signkey.snk'
