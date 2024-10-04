@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6;net8</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
+		<EnablePackageValidation>true</EnablePackageValidation>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(EfVersion)' == '6'">

@@ -6,6 +6,7 @@
 		<Configurations>Debug;Release;MsSql</Configurations>
 	  <OutputType>Library</OutputType>
 	  <IsPackable>true</IsPackable>
+		<EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
 
 	<ItemGroup>

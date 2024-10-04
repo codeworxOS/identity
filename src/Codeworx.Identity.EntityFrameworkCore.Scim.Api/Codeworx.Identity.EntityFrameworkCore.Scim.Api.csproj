@@ -8,6 +8,7 @@
 		<NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
 		<Nullable>enable</Nullable>
 		<NoWarn>CA1033;AC0180</NoWarn>
+		<EnablePackageValidation>true</EnablePackageValidation>
 		<!--// Interface methods should be callable by child types-->
 	</PropertyGroup>
 

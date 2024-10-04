@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
+	  <EnablePackageValidation>true</EnablePackageValidation>
   </PropertyGroup>
 
 	<ItemGroup>
