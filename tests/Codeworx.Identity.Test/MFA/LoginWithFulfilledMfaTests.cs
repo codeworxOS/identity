@@ -58,5 +58,21 @@ namespace Codeworx.Identity.Test.MFA
             Assert.AreEqual(this.GetRedirectUrl(), authorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
             Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
         }
+
+        [Test]
+        public async Task LoginWithCodeFlow_MfaFulfilled_MfaRequiredByScope_DoesNotShowMfaAfterAuthorization()
+        {
+            await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+            await this.FulfillMfa(TestConstants.Users.MfaTestUser.MfaSharedSecret);
+
+            var authorizationResponse = await this.GetAuthorizationResponse(
+                TestConstants.Clients.DefaultCodeFlowClientId,
+                TestConstants.Tenants.DefaultTenant.Id,
+                Constants.Scopes.Mfa);
+
+            Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
+            Assert.AreEqual(this.GetRedirectUrl(), authorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+            Assert.IsTrue(this.HasCodeParameter(authorizationResponse), "Code Parameter");
+        }
     }
 }

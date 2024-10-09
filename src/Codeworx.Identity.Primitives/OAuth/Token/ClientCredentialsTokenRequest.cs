@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace Codeworx.Identity.OAuth.Token
@@ -10,6 +11,13 @@ namespace Codeworx.Identity.OAuth.Token
             : base(clientId, Constants.OAuth.GrantType.ClientCredentials, clientSecret)
         {
             Scope = scope;
+        }
+
+        public ClientCredentialsTokenRequest(string clientId, string clientSecret, string scope, DateTimeOffset? validUntil)
+            : base(clientId, Constants.OAuth.GrantType.ClientCredentials, clientSecret)
+        {
+            Scope = scope;
+            ValidUntil = validUntil;
         }
 
         [Required]
@@ -25,5 +33,7 @@ namespace Codeworx.Identity.OAuth.Token
         [RegularExpression(Constants.OAuth.ScopeValidation)]
         [DataMember(Order = 4, Name = Constants.OAuth.ScopeName)]
         public virtual string Scope { get; }
+
+        public DateTimeOffset? ValidUntil { get; }
     }
 }

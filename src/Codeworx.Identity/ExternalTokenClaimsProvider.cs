@@ -132,7 +132,7 @@ namespace Codeworx.Identity
 
                         try
                         {
-                            response = await tokenService.RefreshAsync(oauthConfig, data.RefreshToken).ConfigureAwait(false);
+                            response = await tokenService.RefreshAsync(oauthConfig, data.RefreshToken, default).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -172,12 +172,12 @@ namespace Codeworx.Identity
 
                     if (scopes.Contains(Constants.Scopes.ExternalToken.All) || scopes.Contains(Constants.Scopes.ExternalToken.IdToken))
                     {
-                        result.Add(new AssignedClaim(new[] { Constants.Claims.ExternalToken, Constants.OpenId.IdTokenName }, new[] { data.IdToken }, ClaimTarget.AccessToken));
+                        result.Add(new AssignedClaim(new[] { Constants.Claims.ExternalToken, Constants.OpenId.IdTokenName }, new[] { data.IdToken }, ClaimTarget.AccessToken | ClaimTarget.ProfileEndpoint));
                     }
 
                     if (scopes.Contains(Constants.Scopes.ExternalToken.All) || scopes.Contains(Constants.Scopes.ExternalToken.AccessToken))
                     {
-                        result.Add(new AssignedClaim(new[] { Constants.Claims.ExternalToken, Constants.OAuth.AccessTokenName }, new[] { data.AccessToken }, ClaimTarget.AccessToken));
+                        result.Add(new AssignedClaim(new[] { Constants.Claims.ExternalToken, Constants.OAuth.AccessTokenName }, new[] { data.AccessToken }, ClaimTarget.AccessToken | ClaimTarget.ProfileEndpoint));
                     }
                 }
             }

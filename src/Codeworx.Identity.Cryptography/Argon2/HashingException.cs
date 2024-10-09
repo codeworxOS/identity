@@ -16,9 +16,11 @@ namespace Codeworx.Identity.Cryptography.Argon2
         {
         }
 
+#if !NET8_0_OR_GREATER
         protected HashingException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

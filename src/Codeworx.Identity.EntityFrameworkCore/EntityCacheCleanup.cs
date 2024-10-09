@@ -39,7 +39,15 @@ namespace Codeworx.Identity.EntityFrameworkCore
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(_options.Cache.CleanupInterval);
+                try
+                {
+                    await Task.Delay(_options.Cache.CleanupInterval, stoppingToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+
                 await using (var scope = _serviceProvider.CreateAsyncScope())
                 {
                     CleanupStarted(_logger);
@@ -49,37 +57,41 @@ namespace Codeworx.Identity.EntityFrameworkCore
                         var validUntil = now.Subtract(_options.Cache.RetentionPeriod);
 
                         var ctx = scope.ServiceProvider.GetRequiredService<TContext>();
-                        await using (var transaction = await ctx.Database.BeginTransactionAsync())
+                        await using (var transaction = await ctx.Database.BeginTransactionAsync(stoppingToken))
                         {
 #if EF6
                             var invitations = await ctx.Set<UserInvitation>().Where(p => p.IsDisabled && p.ValidUntil > now)
-                                            .Select(p => new UserInvitation { InvitationCode = p.InvitationCode, ValidUntil = p.ValidUntil }).ToListAsync().ConfigureAwait(false);
+                                            .Select(p => new UserInvitation { InvitationCode = p.InvitationCode, ValidUntil = p.ValidUntil }).ToListAsync(stoppingToken).ConfigureAwait(false);
                             var cache = await ctx.Set<IdentityCache>().Where(p => p.Disabled && p.ValidUntil > now)
-                                            .Select(p => new IdentityCache { Key = p.Key, ValidUntil = p.ValidUntil }).ToListAsync().ConfigureAwait(false);
+                                            .Select(p => new IdentityCache { Key = p.Key, ValidUntil = p.ValidUntil }).ToListAsync(stoppingToken).ConfigureAwait(false);
 
                             ctx.AttachRange(invitations);
                             ctx.AttachRange(cache);
                             invitations.ForEach(p => p.ValidUntil = now);
                             cache.ForEach(p => p.ValidUntil = now);
-                            await ctx.SaveChangesAsync().ConfigureAwait(false);
+                            await ctx.SaveChangesAsync(stoppingToken).ConfigureAwait(false);
 
                             invitations = await ctx.Set<UserInvitation>().Where(p => p.ValidUntil < validUntil)
-                                            .Select(p => new UserInvitation { InvitationCode = p.InvitationCode }).ToListAsync().ConfigureAwait(false);
+                                            .Select(p => new UserInvitation { InvitationCode = p.InvitationCode }).ToListAsync(stoppingToken).ConfigureAwait(false);
                             cache = await ctx.Set<IdentityCache>().Where(p => p.ValidUntil < validUntil)
-                                            .Select(p => new IdentityCache { Key = p.Key }).ToListAsync().ConfigureAwait(false);
+                                            .Select(p => new IdentityCache { Key = p.Key }).ToListAsync(stoppingToken).ConfigureAwait(false);
 
                             ctx.RemoveRange(invitations);
                             ctx.RemoveRange(cache);
-                            await ctx.SaveChangesAsync().ConfigureAwait(false);
+                            await ctx.SaveChangesAsync(stoppingToken).ConfigureAwait(false);
 #else
-                            await ctx.Set<UserInvitation>().Where(p => p.IsDisabled && p.ValidUntil > now).ExecuteUpdateAsync(x => x.SetProperty(p => p.ValidUntil, now)).ConfigureAwait(false);
-                            await ctx.Set<IdentityCache>().Where(p => p.Disabled && p.ValidUntil > now).ExecuteUpdateAsync(x => x.SetProperty(p => p.ValidUntil, now)).ConfigureAwait(false);
+                            await ctx.Set<UserInvitation>().Where(p => p.IsDisabled && p.ValidUntil > now).ExecuteUpdateAsync(x => x.SetProperty(p => p.ValidUntil, now), stoppingToken).ConfigureAwait(false);
+                            await ctx.Set<IdentityCache>().Where(p => p.Disabled && p.ValidUntil > now).ExecuteUpdateAsync(x => x.SetProperty(p => p.ValidUntil, now), stoppingToken).ConfigureAwait(false);
 
-                            await ctx.Set<UserInvitation>().Where(p => p.ValidUntil < validUntil).ExecuteDeleteAsync().ConfigureAwait(false);
-                            await ctx.Set<IdentityCache>().Where(p => p.ValidUntil < validUntil).ExecuteDeleteAsync().ConfigureAwait(false);
+                            await ctx.Set<UserInvitation>().Where(p => p.ValidUntil < validUntil).ExecuteDeleteAsync(stoppingToken).ConfigureAwait(false);
+                            await ctx.Set<IdentityCache>().Where(p => p.ValidUntil < validUntil).ExecuteDeleteAsync(stoppingToken).ConfigureAwait(false);
 #endif
-                            await transaction.CommitAsync().ConfigureAwait(false);
+                            await transaction.CommitAsync(stoppingToken).ConfigureAwait(false);
                         }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
                     }
                     catch (Exception ex)
                     {

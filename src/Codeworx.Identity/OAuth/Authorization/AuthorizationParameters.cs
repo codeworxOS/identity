@@ -40,7 +40,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
         public IClientRegistration Client { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Enabled;
+        public MfaFlowMode MfaFlowMode => MfaFlowMode.Enabled;
 
         public string Nonce { get; }
 

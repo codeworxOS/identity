@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddSingleton<IAdditionalDataEntityMapping, AdditionalDataEntityMapping<TenantInsertData, Tenant>>()
                     .AddOpenApiDocument((settings, serviceProvider) =>
                     {
-                        settings.SchemaProcessors.Add(new DbContextSchemaProcessor<TContext>(serviceProvider));
+                        settings.SchemaSettings.SchemaProcessors.Add(new DbContextSchemaProcessor<TContext>(serviceProvider));
                         configuration?.Invoke(settings, serviceProvider);
                     });
         }

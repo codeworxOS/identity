@@ -77,5 +77,6 @@
         EmailAddress,
         MfaProviderCancel,
         ConfirmationBack,
+        AcceptTermsError,
     }
 }

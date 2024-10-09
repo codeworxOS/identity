@@ -74,6 +74,14 @@
             public const string Amr = "amr";
             public const string Trk = "trk";
             public const string Session = "session";
+            public const string Scim = "scim";
+            public const string Jti = "jti";
+            public const string X5t = "x5t";
+
+            public static class Values
+            {
+                public const string Allow = "allow";
+            }
         }
 
         public static class Cache
@@ -223,6 +231,17 @@
             public const string IdTokenName = "id_token";
             public const string IdTokenValidation = VsChars;
 
+            public static class Client
+            {
+                public const string AssertionTypeParameter = "client_assertion_type";
+                public const string AssertionParameter = "client_assertion";
+
+                public static class AssertionType
+                {
+                    public const string JwtBearer = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+                }
+            }
+
             public static class Error
             {
                 public const string AccountSelectionRequired = "account_selection_required";
@@ -281,6 +300,7 @@
             public const string GroupNames = "group_names";
             public const string Tenant = "tenant";
             public const string ProfileEmail = "profile:email";
+            public const string Mfa = "mfa";
 
             public static class ExternalToken
             {

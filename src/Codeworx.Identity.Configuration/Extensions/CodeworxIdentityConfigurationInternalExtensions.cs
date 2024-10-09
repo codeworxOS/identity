@@ -31,7 +31,7 @@ namespace Codeworx.Identity.Configuration.Extensions
             ////{
             ////}
 
-            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, config.AccessTokenType, config.AccessTokenTypeConfiguration, urls, user);
+            return new ClientRegistration(id, config.Secret, ClientType.Native, config.TokenExpiration, config.AccessTokenType, config.AccessTokenTypeConfiguration, urls, user, config.AllowScim, config.RefreshTokenLifetime, config.RefreshTokenExpiration);
         }
     }
 }

@@ -90,7 +90,10 @@ namespace Microsoft.Extensions.DependencyInjection
         private static IdentityServiceBuilder AddCodeworxIdentity(this IServiceCollection collection, IdentityServerOptions identityServerOptions, Action<CookieAuthenticationOptions> cookieOptions)
         {
             var builder = new IdentityServiceBuilder(collection);
-            builder.Argon2()
+
+            builder.RegisterCoreServices()
+                .AddDefaultSecretGenerator()
+                .Argon2()
                 .WithAesSymmetricEncryption();
 
             collection.AddAuthentication(authOptions => { authOptions.DefaultScheme = identityServerOptions.AuthenticationScheme; })
@@ -247,6 +250,8 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, TenantClaimsProvider>();
             collection.AddScoped<ISystemClaimsProvider, ExternalTokenClaimsProvider>();
+            collection.AddScoped<ISystemClaimsProvider, OAuthClaimsProvider>();
+            collection.AddSingleton<ISystemClaimsProvider, ScimClaimsProvider>();
             collection.AddSingleton<ISystemClaimsProvider, OpenIdClaimsProvider>();
 
             collection.AddTransient<IIntrospectionService, IntrospectionService>();
@@ -254,9 +259,13 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddSingleton<IAuthorizationCodeGenerator, AuthorizationCodeGenerator>();
             collection.AddTransient<IClientAuthenticationService, ClientAuthenticationService>();
             collection.AddSingleton<IDefaultSigningKeyProvider, DefaultSigningKeyProvider>();
+            collection.AddSingleton<IDefaultSigningDataProvider, DefaultSigningDataProvider>();
+            collection.AddSingleton<ISigningDataProvider, SigningDataProvider>();
+            collection.AddSingleton<ICertificateStore, LocalCertificateStore>();
             collection.AddTransient<ITokenProvider, JwtProvider>();
             collection.AddSingleton<IAuthorizationCodeCache, DistributedAuthorizationCodeCache>();
             collection.AddSingleton<ITokenCache, DistributedTokenCache>();
+            collection.AddSingleton<IInvitationCache, DistributedInvitationCache>();
             collection.AddSingleton<IExternalTokenCache, DistributedExternalTokenCache>();
             collection.AddSingleton<IStateLookupCache, DistributedStateLookupCache>();
             collection.AddSingleton<IMailMfaCodeCache, DistributedMailMfaCodeCache>();
@@ -265,6 +274,7 @@ namespace Microsoft.Extensions.DependencyInjection
             collection.AddSingleton<IIdentityAuthenticationHandler, DefaultIdentityAuthenticationHandler>();
 
             collection.AddTransient<IJwkInformationSerializer, RsaJwkSerializer>();
+            collection.AddTransient<IJwkInformationSerializer, X509RsaJwkSerializer>();
             collection.AddTransient<IJwkInformationSerializer, EcdJwkSerializer>();
 
             collection.AddScoped<IBaseUriAccessor, HttpContextBaseUriAccessor>();
@@ -286,9 +296,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (context.Properties.AllowRefresh ?? true)
             {
+#if NET8_0_OR_GREATER
+                var timeProvider = context.HttpContext.RequestServices.GetRequiredService<TimeProvider>();
+                var currentUtc = timeProvider.GetUtcNow();
+#else
                 var clock = context.HttpContext.RequestServices.GetRequiredService<ISystemClock>();
-
                 var currentUtc = clock.UtcNow;
+#endif
                 var issuedUtc = context.Properties.IssuedUtc;
                 var expiresUtc = context.Properties.ExpiresUtc;
                 var allowRefresh = context.Properties.AllowRefresh ?? true;

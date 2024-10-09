@@ -30,7 +30,7 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
                 throw new ArgumentNullException(nameof(response));
             }
 
-            response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
+            response.Headers.Append(HeaderNames.ContentType, "application/json;charset=utf-8");
 
             if (headerOnly)
             {
@@ -42,7 +42,8 @@ namespace Codeworx.Identity.AspNetCore.OAuth.Binder
 
                 using (var memoryStream = new MemoryStream())
                 {
-                    using (var writer = new StreamWriter(memoryStream, Encoding.UTF8, 4096, true))
+                    var encoding = new UTF8Encoding(false);
+                    using (var writer = new StreamWriter(memoryStream, encoding, 4096, true))
                     {
                         serializer.Serialize(writer, responseData);
                     }

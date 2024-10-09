@@ -19,6 +19,8 @@ namespace Codeworx.Identity.Login.OAuth
 
         public ClientAuthenticationMode ClientAuthenticationMode { get; set; }
 
+        public string SigningKey { get; set; }
+
         public RedirectCacheMethod RedirectCacheMethod { get; set; }
 
         public Uri BaseUri { get; set; }

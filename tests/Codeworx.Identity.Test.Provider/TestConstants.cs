@@ -7,6 +7,15 @@
             public const string DefaultAdminGroupId = "25E27405-3E81-4C50-8AD5-8C71DCD2191C";
         }
 
+        public static class Invitations
+        {
+            public static class Default
+            {
+                public const string Code = "defaultinvitationcode";
+                public const string ReturnUrl = "https://some.url/withpath?and=parameters";
+            }
+        }
+
         public static class LoginProviders
         {
             public static class ExternalOAuthProvider
@@ -44,6 +53,11 @@
             public const string DefaultServiceAccountClientId = "adad0b0fe1364726b49ffa45253e0dbd";
             public const string DefaultServiceAccountClientSecret = "clientSecret";
             public const string DefaultTokenFlowClientId = "b45aba81aac1403f93dd1ce42f745ed2";
+
+            public const string SlidingExpirationClientId = "dac9f0fbfd9946099a1fd281144ad603";
+            public const string UseOnceClientId = "3737fe63046741b7b73ca50aec3930ac";
+            public const string RecreateAfterHalfClientId = "0f018f5fb61d4fac96ca7088e4f15c18";
+
             public const string LimitedScope1ClientId = "B25ECAB6-76A4-498A-AA50-B8699E0BDDA6";
             public const string MfaRequiredClientId = "7D04E0B8-35C4-402E-9C33-DBCCDC7EE83B";
             public const string MfaTestServiceAccountClientId = "4A95E657-DC16-438A-B6FA-F87B42026C38";
@@ -57,6 +71,7 @@
                 public const string UserId = "DD772FD1-F823-46D0-A8C9-CC0C51C5C820";
                 public const string UserName = "admin";
                 public const string Password = "admin";
+                public const string WindowsSid = "S-1-5-21-3A934309-2641-47F3-833B-F2EE37EC44AB";
             }
 
             public static class DefaultServiceAccount
@@ -77,6 +92,7 @@
                 public const string UserId = "1CDDC1E8-ABF5-4AEE-AB84-07D6AA9DD932";
                 public const string UserName = "changepassword";
                 public const string Password = "changepassword";
+                public const string WindowsSid = "S-1-5-21-99E39B6B-BEA9-4445-9909-D3FA7F0DAE4F";
             }
 
             public static class MultiTenant

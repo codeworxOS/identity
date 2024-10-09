@@ -25,6 +25,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
             var id = Guid.Parse(clientIdentifier);
 
             var result = await _context.Set<ClientConfiguration>()
+                .AsNoTracking()
                 .Include(p => p.ValidRedirectUrls)
                 .SingleOrDefaultAsync(p => p.Id == id);
 
@@ -46,11 +47,14 @@ namespace Codeworx.Identity.EntityFrameworkCore
                 ClientSecretHash = result.ClientSecretHash,
                 ClientType = result.ClientType,
                 TokenExpiration = result.TokenExpiration,
+                AllowScim = result.AllowScim,
                 ValidRedirectUrls = result.ValidRedirectUrls.Select(p => new Uri(p.Url, UriKind.RelativeOrAbsolute)).ToImmutableList(),
                 User = user,
                 AccessTokenType = result.AccessTokenType,
                 AccessTokenTypeConfiguration = result.AccessTokenTypeConfiguration,
                 AuthenticationMode = result.AuthenticationMode,
+                RefreshTokenLifetime = result.RefreshTokenLifetime,
+                RefreshTokenExpiration = result.RefreshTokenExpiration,
             };
         }
     }

@@ -2,13 +2,13 @@
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Codeworx.Identity.Cryptography.Json;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using NUnit.Framework;
 
 namespace Codeworx.Identity.Test.Cryptography.Json
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
     public class JsonWebTokenSigningTest
     {
         private static ECDsa LoadPrivateKey(string privateKey)
@@ -28,6 +28,7 @@ namespace Codeworx.Identity.Test.Cryptography.Json
         [Ignore("For local use only")]
         private async Task SimpleRsaSigningKeyTest()
         {
+            await Task.Yield();
             var test = new JsonWebTokenHandler();
 
             CngKeyCreationParameters keyCreationParameters = new CngKeyCreationParameters();

@@ -11,6 +11,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
         {
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
+            serviceBuilder.RegisterCoreServices();
 
             registration(serviceBuilder);
 
@@ -66,6 +67,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
         {
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
+            serviceBuilder.RegisterCoreServices();
 
             serviceBuilder.Users<DummyUserService>();
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);
@@ -83,6 +85,7 @@ namespace Codeworx.Identity.Test.Primitives.Configuration
         {
             var serviceCollection = new ServiceCollection();
             var serviceBuilder = new IdentityServiceBuilder(serviceCollection);
+            serviceBuilder.RegisterCoreServices();
 
             serviceBuilder.Users(ServiceLifetime.Scoped, p => new DummyUserService());
             serviceBuilder.ReplaceService<IDefaultTenantService, DummyUserService>(ServiceLifetime.Scoped);

@@ -20,7 +20,8 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer\Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite\Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite.csproj",
 "..\src\Codeworx.Identity.EntityFrameworkCore.Api\Codeworx.Identity.EntityFrameworkCore.Api.csproj",
-"..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj"
+"..\src\Codeworx.Identity.EntityFrameworkCore.Api.NSwag\Codeworx.Identity.EntityFrameworkCore.Api.NSwag.csproj",
+"..\src\Codeworx.Identity.EntityFrameworkCore.Scim.Api\Codeworx.Identity.EntityFrameworkCore.Scim.Api.csproj"
 
 
     New-NugetPackages `
@@ -41,6 +42,15 @@ $projects = "..\src\Codeworx.Identity.EntityFrameworkCore\Codeworx.Identity.Enti
     -OutputPath "..\dist\nuget" `
     -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=7;IdentityCoreVersion=$($coreVersion.NugetVersion)"
 
+
+    New-NugetPackages `
+    -Projects $projects `
+    -NugetServerUrl "http://www.nuget.org/api/v2" `
+    -VersionPackage "Codeworx.Identity.EntityFrameworkCore" `
+    -VersionFilePath "..\version_ef8.json" `
+    -DoNotCleanOutput `
+    -OutputPath "..\dist\nuget" `
+    -MsBuildParams "SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=8;IdentityCoreVersion=$($coreVersion.NugetVersion)"
 
 
 Write-Host "##vso[build.updatebuildnumber]$($coreVersion.NugetVersion)"

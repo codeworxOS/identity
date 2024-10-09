@@ -45,7 +45,7 @@ namespace Codeworx.Identity.EntityFrameworkCore
 
         private async Task<IEnumerable<TenantInfo>> GetTenantInfo(Guid identifier)
         {
-            var tenantSet = _context.Set<TenantUser>();
+            var tenantSet = _context.Set<TenantRightHolder>();
 
             var tenants = await tenantSet
                                 .Where(p => p.RightHolderId == identifier)

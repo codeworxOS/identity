@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using Codeworx.Identity.AspNetCore;
 using Codeworx.Identity.AspNetCore.Binder.Login.OAuth;
 using Codeworx.Identity.Login.OAuth;
-using Codeworx.Identity.Test.Provider;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
 
@@ -33,7 +31,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.AreEqual(
@@ -58,7 +56,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.IsNull(message.Headers.Authorization);
@@ -81,7 +79,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
 
             var request = await message.Content.ReadAsStringAsync();
 
@@ -106,7 +104,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
             var request = await message.Content.ReadAsStringAsync();
 
             Assert.IsNull(message.Headers.Authorization);
@@ -163,7 +161,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
                 { "grant_type", "authorization_code" },
             };
 
-            var message = ExternalOAuthTokenService.CreateTokenRequestMessage(config, data);
+            var message = await ExternalOAuthTokenService.CreateTokenRequestMessageAsync(config, data, default);
 
             var body = (FormUrlEncodedContent)message.Content;
             var content = await body.ReadAsStringAsync();
@@ -175,6 +173,7 @@ namespace Codeworx.Identity.Test.Login.OAuth
         [Test]
         public async Task TestDeserialzeTokenAndAuthenticationParametersWithNewtonsoft()
         {
+            await Task.Yield();
             var input =
 "{" +
 "    \"clientId\": \"abc\"," +

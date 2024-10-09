@@ -18,15 +18,22 @@ namespace Codeworx.Identity.OAuth.Token
             IdentityUser = identityUser;
 
             _validFrom = DateTimeOffset.UtcNow;
+            TokenValidUntil = _validFrom.Add(Client.TokenExpiration);
+        }
+
+        public ClientCredentialsParameters(IClientRegistration client, string[] scopes, ClaimsIdentity user, IUser identityUser, DateTimeOffset validUntil)
+            : this(client, scopes, user, identityUser)
+        {
+            TokenValidUntil = validUntil;
         }
 
         public IClientRegistration Client { get; }
 
-        public MfaFlowMode MfaFlowModel => MfaFlowMode.Disabled;
+        public MfaFlowMode MfaFlowMode => MfaFlowMode.Disabled;
 
         public IReadOnlyCollection<string> Scopes { get; }
 
-        public DateTimeOffset TokenValidUntil => _validFrom.Add(Client.TokenExpiration);
+        public DateTimeOffset TokenValidUntil { get; }
 
         public ClaimsIdentity User { get; }
 

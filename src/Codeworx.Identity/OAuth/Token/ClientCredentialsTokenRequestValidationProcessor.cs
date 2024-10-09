@@ -34,6 +34,11 @@ namespace Codeworx.Identity.OAuth.Token
                 builder.WithScopes(request.Scope.Split(' '));
             }
 
+            if (request.ValidUntil.HasValue)
+            {
+                builder.WithValidUntil(request.ValidUntil.Value);
+            }
+
             return Task.CompletedTask;
         }
     }

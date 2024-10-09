@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Codeworx.Identity.Login;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.Model
 {
@@ -14,9 +15,15 @@ namespace Codeworx.Identity.Model
 
         string AccessTokenTypeConfiguration { get; }
 
+        bool AllowScim { get; }
+
         ClientType ClientType { get; }
 
         TimeSpan TokenExpiration { get; }
+
+        RefreshTokenLifetime? RefreshTokenLifetime { get; }
+
+        TimeSpan? RefreshTokenExpiration { get; }
 
         IReadOnlyList<Uri> ValidRedirectUrls { get; }
 

@@ -101,6 +101,50 @@ namespace Codeworx.Identity.Test.AspNetCore
             Assert.AreEqual($"{options.AccountEndpoint}/change-password", authorizationResponse.Headers.Location.AbsolutePath);
         }
 
+        [Test]
+        public async Task LoginWithForcePasswordChangeAndExternalLoginShouldNotShowPasswordChangeForm()
+        {
+            var options = this.TestServer.Host.Services.GetRequiredService<IdentityServerOptions>();
+
+            var loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
+            loginRequestBuilder.AppendPath("/test-setup/windowslogin");
+
+            var response = await this.TestClient.PostAsync(loginRequestBuilder.ToString(),
+                               new FormUrlEncodedContent(new Dictionary<string, string>
+                               {
+                                   {"username", TestConstants.Users.ForceChangePassword.UserName},
+                                   {"sid", TestConstants.Users.ForceChangePassword.WindowsSid}
+                               }));
+
+            response.Headers.TryGetValues(HeaderNames.SetCookie, out var cookies);
+
+            this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, cookies);
+
+            loginRequestBuilder = new UriBuilder(this.TestClient.BaseAddress.ToString());
+            loginRequestBuilder.AppendPath(options.AccountEndpoint);
+            loginRequestBuilder.AppendPath("winlogin");
+            loginRequestBuilder.AppendPath(TestConstants.LoginProviders.ExternalWindowsProvider.Id);
+            loginRequestBuilder.AppendQueryParameter(Constants.ReturnUrlParameter, $"{options.AccountEndpoint}/me");
+
+            response = await this.TestClient.GetAsync(loginRequestBuilder.ToString());
+
+            response.Headers.TryGetValues(HeaderNames.SetCookie, out cookies);
+
+            var authenticationCookie = cookies?.FirstOrDefault(p => p.StartsWith("identity"));
+            this.TestClient.DefaultRequestHeaders.Add(HeaderNames.Cookie, new[] { authenticationCookie });
+
+            var request = new OAuthAuthorizationRequestBuilder()
+                                .WithClientId(TestConstants.Clients.DefaultCodeFlowClientId)
+                                .Build();
+
+            var requestString = this.ToRequestString(request);
+
+            var authorizationResponse = await this.TestClient.GetAsync(options.OauthAuthorizationEndpoint + requestString);
+
+            Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
+            Assert.AreEqual($"/redirect", authorizationResponse.Headers.Location.AbsolutePath);
+        }
+
         private string ToRequestString(AuthorizationRequest request)
         {
             return $"?{Constants.OAuth.ClientIdName}={request.ClientId}" +

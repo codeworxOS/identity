@@ -18,7 +18,7 @@ namespace Codeworx.Identity.Test.MFA
 {
     public class MfaIntegrationTestBase : IntegrationTestBase
     {
-        protected async Task<HttpResponseMessage> GetAuthorizationResponse(string clientId, string defaultTenant)
+        protected async Task<HttpResponseMessage> GetAuthorizationResponse(string clientId, string defaultTenant, string additionalScopes = null)
         {
             var authorizationRequestBuilder = new OpenIdAuthorizationRequestBuilder()
                 .WithClientId(clientId)
@@ -29,6 +29,12 @@ namespace Codeworx.Identity.Test.MFA
             {
                 scopes += $" {defaultTenant}";
             }
+
+            if (additionalScopes != null)
+            {
+                scopes += $" {additionalScopes}";
+            }
+
             authorizationRequestBuilder.WithScope(scopes);
 
             var authorizationRequest = authorizationRequestBuilder.Build();

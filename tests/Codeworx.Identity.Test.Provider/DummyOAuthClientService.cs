@@ -7,6 +7,7 @@ using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
 using Codeworx.Identity.Test.Provider;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.Test
 {
@@ -24,6 +25,9 @@ namespace Codeworx.Identity.Test
                                                 new ServiceAccountClientRegistration(hashingProvider),
                                                 new BackendClientRegistration(hashingProvider),
                                                 new DummyOAuthAuthorizationTokenClientRegistration(),
+                                                new DummySlidingExpirationClientRegistration(),
+                                                new DummyUseOnceClientRegistration(),
+                                                new DummyRecreateAfterHalfClientRegistration(),
                                                 new MfaRequiredClientRegistration(),
                                                 new MfaTestServiceAccountClientRegistration(hashingProvider)
                                             };
@@ -72,6 +76,135 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
+        }
+
+        private class DummySlidingExpirationClientRegistration : IDummyClientRegistration
+        {
+            public DummySlidingExpirationClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Web;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
+                this.RefreshTokenLifetime = Token.RefreshTokenLifetime.SlidingExpiration;
+                this.RefreshTokenExpiration = TimeSpan.FromHours(1);
+            }
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public string ClientId => TestConstants.Clients.SlidingExpirationClientId;
+
+            public string ClientSecretHash => null;
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public ClientType ClientType { get; }
+
+            public TimeSpan TokenExpiration { get; }
+
+            public RefreshTokenLifetime? RefreshTokenLifetime { get; }
+
+            public TimeSpan? RefreshTokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        private class DummyUseOnceClientRegistration : IDummyClientRegistration
+        {
+            public DummyUseOnceClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Web;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
+                this.RefreshTokenLifetime = Token.RefreshTokenLifetime.UseOnce;
+                this.RefreshTokenExpiration = TimeSpan.FromHours(1);
+            }
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public string ClientId => TestConstants.Clients.UseOnceClientId;
+
+            public string ClientSecretHash => null;
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public ClientType ClientType { get; }
+
+            public TimeSpan TokenExpiration { get; }
+
+            public RefreshTokenLifetime? RefreshTokenLifetime { get; }
+
+            public TimeSpan? RefreshTokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode { get; }
+        }
+
+        private class DummyRecreateAfterHalfClientRegistration : IDummyClientRegistration
+        {
+            public DummyRecreateAfterHalfClientRegistration()
+            {
+                this.TokenExpiration = TimeSpan.FromHours(1);
+
+                this.ClientType = ClientType.Web;
+                this.ValidRedirectUrls = ImmutableList.Create(new Uri("https://example.org/redirect"));
+                this.AllowedScopes = ImmutableList<IScope>.Empty;
+                this.AuthenticationMode = AuthenticationMode.Login;
+                this.RefreshTokenLifetime = Token.RefreshTokenLifetime.RecreateAfterHalfLifetime;
+                this.RefreshTokenExpiration = TimeSpan.FromHours(1);
+            }
+
+            public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public string ClientId => TestConstants.Clients.RecreateAfterHalfClientId;
+
+            public string ClientSecretHash => null;
+
+            public string AccessTokenType => null;
+
+            public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public ClientType ClientType { get; }
+
+            public TimeSpan TokenExpiration { get; }
+
+            public RefreshTokenLifetime? RefreshTokenLifetime { get; }
+
+            public TimeSpan? RefreshTokenExpiration { get; }
+
+            public IReadOnlyList<Uri> ValidRedirectUrls { get; }
+
+            public IUser User => null;
+
+            public AuthenticationMode AuthenticationMode { get; }
         }
 
 
@@ -107,6 +240,12 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
 
 
@@ -145,6 +284,11 @@ namespace Codeworx.Identity.Test
 
             public string AccessTokenTypeConfiguration => null;
 
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
 
         private class DummyOAuthAuthorizationTokenClientRegistration : IDummyClientRegistration
@@ -181,6 +325,12 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
 
         private class ServiceAccountClientRegistration : IDummyClientRegistration
@@ -218,6 +368,12 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
 
         private class MfaRequiredClientRegistration : IDummyClientRegistration
@@ -254,6 +410,12 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
 
         public class MfaTestServiceAccountClientRegistration : IDummyClientRegistration
@@ -289,6 +451,12 @@ namespace Codeworx.Identity.Test
             public string AccessTokenType => null;
 
             public string AccessTokenTypeConfiguration => null;
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
 
             public void SetMfaRequired(bool isMfaRequired)
             {
@@ -331,6 +499,12 @@ namespace Codeworx.Identity.Test
             public AuthenticationMode AuthenticationMode => AuthenticationMode.Login;
 
             public IReadOnlyList<IScope> AllowedScopes { get; }
+
+            public bool AllowScim => false;
+
+            public RefreshTokenLifetime? RefreshTokenLifetime => null;
+
+            public TimeSpan? RefreshTokenExpiration => null;
         }
     }
 }

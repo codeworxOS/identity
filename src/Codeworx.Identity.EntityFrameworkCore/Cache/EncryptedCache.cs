@@ -6,6 +6,7 @@ using Codeworx.Identity.Cache;
 using Codeworx.Identity.Cryptography;
 using Codeworx.Identity.EntityFrameworkCore.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -74,7 +75,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             string data = null;
             DateTimeOffset validUntil;
 
-            await using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            await using (var transaction = await _context.Database.EnsureTransactionAsync().ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
 
@@ -127,7 +128,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             string cacheKey, encryptedKey;
             GetKeys(key, out cacheKey, out encryptedKey);
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.EnsureTransactionAsync().ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
                 var entry = await cacheSet.FirstOrDefaultAsync(p => p.CacheType == cacheType && p.Key == cacheKey).ConfigureAwait(false);
@@ -150,12 +151,12 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
             }
         }
 
-        protected virtual async Task<string> ExtendEntryAsync(CacheType cacheType, string key, DateTime validUntil, CancellationToken token = default)
+        protected virtual async Task<string> ExtendEntryAsync(CacheType cacheType, string key, DateTimeOffset validUntil, CancellationToken token = default)
         {
             string cacheKey, encryptedKey;
             GetKeys(key, out cacheKey, out encryptedKey);
 
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.EnsureTransactionAsync().ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
                 var entry = await cacheSet.FirstOrDefaultAsync(p => p.CacheType == cacheType && p.Key == cacheKey).ConfigureAwait(false);
@@ -166,7 +167,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
                     throw new CacheEntryNotFoundException();
                 }
 
-                entry.ValidUntil = validUntil;
+                entry.ValidUntil = validUntil.UtcDateTime;
 
                 await _context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -178,7 +179,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Cache
 
         protected virtual async Task<string> AddEntryAsync(CacheType cacheType, string cacheKey, TData payload, DateTimeOffset validUntil, CancellationToken token = default)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync().ConfigureAwait(false))
+            using (var transaction = await _context.Database.EnsureTransactionAsync().ConfigureAwait(false))
             {
                 var cacheSet = _context.Set<IdentityCache>();
 

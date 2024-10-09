@@ -134,6 +134,8 @@ function New-NugetPackages {
         }
 
         $projects | foreach { 
+            Write-Host "dotnet msbuild $_ -property:"$params" -target:pack"
+
             dotnet msbuild $_ -property:"$params" -target:pack
 
             if ($LASTEXITCODE -ne 0) {

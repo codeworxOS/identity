@@ -21,12 +21,14 @@ namespace Codeworx.Identity.AspNetCore.OpenId
             _jwkInformationSerializers = jwkInformationSerializers;
         }
 
-        public async Task Invoke(HttpContext context, IDefaultSigningKeyProvider keyProvider)
+        public async Task Invoke(HttpContext context, IDefaultSigningDataProvider dataProvider)
         {
-            var defaultKey = keyProvider.GetKey();
+            var data = await dataProvider.GetSigningDataAsync(context.RequestAborted);
+
+            var defaultKey = data.Key;
             var serializer = _jwkInformationSerializers.First(p => p.Supports(defaultKey));
 
-            context.Response.Headers.Add(HeaderNames.ContentType, "application/json;charset=utf-8");
+            context.Response.Headers.Append(HeaderNames.ContentType, "application/json;charset=utf-8");
 
             var responseString = JsonConvert.SerializeObject(new KeyList { Keys = new[] { serializer.SerializeKeyToJsonWebKey(defaultKey, string.Empty) } });
 

@@ -129,6 +129,13 @@ where TBuilder : IIdentityDataParametersBuilder<IRefreshTokenParameters>
             return builder;
         }
 
+        public static TBuilder WithValidUntil<TBuilder>(this TBuilder builder, DateTimeOffset validUntil)
+                                                                            where TBuilder : IIdentityDataParametersBuilder<IClientCredentialsParameters>
+        {
+            builder.SetValue(p => p.TokenValidUntil, validUntil);
+            return builder;
+        }
+
         public static TBuilder WithSubjectToken<TBuilder>(this TBuilder builder, string subjectToken)
     where TBuilder : IIdentityDataParametersBuilder<ITokenExchangeParameters>
         {

@@ -11,7 +11,8 @@ namespace Codeworx.Identity.Test
             return Task.FromResult<IEnumerable<ILoginRegistration>>(
                 new ILoginRegistration[] {
                     new DummyFormsLoginRegistration(),
-                    new DummyWindowsLoginRegistration()
+                    new DummyWindowsLoginRegistration(),
+                    new DummyExternalOAuthLoginRegistration()
                 });
         }
     }

@@ -25,6 +25,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Mappings
                 .HasDatabaseName("IX_RightHolder_Name_Unique");
 #endif
 
+            var collation = "sql_latin1_general_cp1_ci_as";
+
+            if (this.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+            {
+                collation = "NOCASE";
+            }
+
+            builder.Property(p => p.Name)
+                .UseCollation(collation);
+
             builder.Property<byte>("Type")
                     .IsRequired(true);
 

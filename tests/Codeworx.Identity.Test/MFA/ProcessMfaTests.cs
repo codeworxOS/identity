@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Codeworx.Identity.AspNetCore;
-using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login.Mfa;
 using Codeworx.Identity.Mfa.Totp;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.Test.Provider;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -104,6 +100,7 @@ namespace Codeworx.Identity.Test.MFA
         [Test]
         public async Task PerformRegistration_WrongSharedSecret_ExpectsException()
         {
+            await Task.Yield();
             var sp = CreateDefaultServiceProvider();
 
             var dummyUserService = (DummyUserService)sp.GetService<IUserService>();

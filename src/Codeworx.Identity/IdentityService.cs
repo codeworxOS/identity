@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Invitation;
@@ -71,7 +73,7 @@ namespace Codeworx.Identity
 
             var hasMfa = identityDataParameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa);
 
-            if (!hasMfa && identityDataParameters.MfaFlowModel == MfaFlowMode.Enabled)
+            if (!hasMfa && identityDataParameters.MfaFlowMode == MfaFlowMode.Enabled)
             {
                 if (identityDataParameters.Client.AuthenticationMode == AuthenticationMode.Mfa)
                 {
@@ -79,6 +81,11 @@ namespace Codeworx.Identity
                 }
 
                 if (currentUser.AuthenticationMode == AuthenticationMode.Mfa)
+                {
+                    identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
+                }
+
+                if (identityDataParameters.Scopes.Contains(Constants.Scopes.Mfa))
                 {
                     identityDataParameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Claims.Subject);
                 }
@@ -138,7 +145,14 @@ namespace Codeworx.Identity
                 user = await _failedLoginService.ResetFailedLoginsAsync(user);
             }
 
-            return await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
+            var result = await GetClaimsIdentityFromUserAsync(user).ConfigureAwait(false);
+
+            if (user.ForceChangePassword)
+            {
+                result.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
+            }
+
+            return result;
         }
 
         public async Task<ClaimsIdentity> LoginExternalAsync(IExternalLoginData externalLoginData)
@@ -210,11 +224,6 @@ namespace Codeworx.Identity
             identity.AddClaim(new Claim(Constants.Claims.Id, user.Identity));
             identity.AddClaim(new Claim(Constants.Claims.Upn, user.Name));
             identity.AddClaim(new Claim(Constants.Claims.Session, Guid.NewGuid().ToString("N")));
-
-            if (user.ForceChangePassword)
-            {
-                identity.AddClaim(new Claim(Constants.Claims.ForceChangePassword, "true"));
-            }
 
             if (user.AuthenticationMode == AuthenticationMode.Mfa)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.Token;
 
 namespace Codeworx.Identity.EntityFrameworkCore.Model
 {
@@ -23,10 +24,16 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
 
         public TimeSpan TokenExpiration { get; set; }
 
+        public RefreshTokenLifetime? RefreshTokenLifetime { get; set; }
+
+        public TimeSpan? RefreshTokenExpiration { get; set; }
+
         [StringLength(50)]
         public string AccessTokenType { get; set; }
 
         public string AccessTokenTypeConfiguration { get; set; }
+
+        public bool AllowScim { get; set; }
 
         public AuthenticationMode AuthenticationMode { get; set; }
 

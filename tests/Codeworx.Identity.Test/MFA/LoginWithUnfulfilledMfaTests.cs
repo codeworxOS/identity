@@ -10,6 +10,21 @@ namespace Codeworx.Identity.Test.MFA
     public class LoginWithUnfulfilledMfaTests : MfaIntegrationTestBase
     {
         [Test]
+        public async Task LoginWithCodeFlow_MfaRequiredByScope_MfaNotFulfilled_AuthorizationRequestRedirectsToMfa()
+        {
+            await this.Authenticate(TestConstants.Users.MfaTestUser.UserName, TestConstants.Users.MfaTestUser.Password);
+
+            var authorizationResponse = await this.GetAuthorizationResponse(
+                TestConstants.Clients.DefaultTokenFlowClientId,
+                TestConstants.Tenants.DefaultTenant.Id,
+                Constants.Scopes.Mfa);
+
+            Assert.AreEqual(HttpStatusCode.Redirect, authorizationResponse.StatusCode);
+            Assert.AreEqual(this.GetMfaUrl(), authorizationResponse.Headers.Location.GetLeftPart(System.UriPartial.Path));
+        }
+
+
+        [Test]
         public async Task LoginWithCodeFlow_MfaRequiredOnUser_MfaNotFulfilled_AuthorizationRequestRedirectsToMfa()
         {
             await this.Authenticate(TestConstants.Users.MfaTestUserWithMfaRequired.UserName, TestConstants.Users.MfaTestUserWithMfaRequired.Password);

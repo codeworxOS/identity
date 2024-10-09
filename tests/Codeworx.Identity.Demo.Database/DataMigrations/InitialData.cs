@@ -119,7 +119,7 @@ namespace Codeworx.Identity.Demo.Database.DataMigrations
 
             context.Tenants.Add(defaultTenant);
 
-            var defaultTenantUser = new TenantUser
+            var defaultTenantUser = new TenantRightHolder
             {
                 RightHolderId = defaultAdmin.Id,
                 TenantId = defaultTenant.Id,
@@ -135,7 +135,7 @@ namespace Codeworx.Identity.Demo.Database.DataMigrations
                 TokenExpiration = TimeSpan.FromHours(1),
                 ValidRedirectUrls =
                 {
-                    new ValidRedirectUrl { Id = Guid.NewGuid(), Url = "https://localhost:7127/swagger/oauth2-redirect.html" },
+                    new ValidRedirectUrl { Id = Guid.NewGuid(), Url = "/swagger/oauth2-redirect.html" },
                     new ValidRedirectUrl { Id = Guid.NewGuid(), Url = "https://localhost:7127/" },
                 },
             };

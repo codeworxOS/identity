@@ -10,7 +10,7 @@ namespace Codeworx.Identity.Cryptography.Json
     public class JwtProvider : ITokenProvider
     {
         private static readonly JwtSecurityTokenHandler _handler;
-        private readonly IDefaultSigningKeyProvider _defaultSigningKeyProvider;
+        private readonly IDefaultSigningDataProvider _defaultSigningDataProvider;
         private readonly ITokenCache _tokenCache;
 
         static JwtProvider()
@@ -18,9 +18,9 @@ namespace Codeworx.Identity.Cryptography.Json
             _handler = new JwtSecurityTokenHandler();
         }
 
-        public JwtProvider(IDefaultSigningKeyProvider defaultSigningKeyProvider, ITokenCache tokenCache)
+        public JwtProvider(IDefaultSigningDataProvider defaultSigningDataProvider, ITokenCache tokenCache)
         {
-            _defaultSigningKeyProvider = defaultSigningKeyProvider;
+            _defaultSigningDataProvider = defaultSigningDataProvider;
             _tokenCache = tokenCache;
         }
 
@@ -35,7 +35,7 @@ namespace Codeworx.Identity.Cryptography.Json
 
         public Task<IToken> CreateAsync(TokenType tokenType, object configuration, CancellationToken token = default)
         {
-            return Task.FromResult<IToken>(new Jwt(tokenType, _tokenCache, _defaultSigningKeyProvider, configuration as JwtConfiguration));
+            return Task.FromResult<IToken>(new Jwt(tokenType, _tokenCache, _defaultSigningDataProvider, configuration as JwtConfiguration));
         }
     }
 }

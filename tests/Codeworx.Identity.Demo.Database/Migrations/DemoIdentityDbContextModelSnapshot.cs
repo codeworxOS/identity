@@ -170,6 +170,11 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Property<string>("AccessTokenTypeConfiguration")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("AllowScim")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("AuthenticationMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER")
@@ -180,6 +185,12 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ClientType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RefreshTokenExpiration")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RefreshTokenLifetime")
                         .HasColumnType("INTEGER");
 
                     b.Property<TimeSpan>("TokenExpiration")
@@ -300,7 +311,8 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .UseCollation("NOCASE");
 
                     b.Property<byte>("Type")
                         .HasColumnType("INTEGER");
@@ -418,7 +430,7 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.ToTable("Tenant", (string)null);
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantRightHolder", b =>
                 {
                     b.Property<Guid>("RightHolderId")
                         .HasColumnType("TEXT");
@@ -575,6 +587,14 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Property<Guid?>("DefaultTenantId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Department")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(800)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(600)
@@ -598,6 +618,10 @@ namespace Codeworx.Identity.Demo.Database.Migrations
 
                     b.Property<string>("LastName")
                         .HasMaxLength(400)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Organization")
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("PasswordChanged")
@@ -817,23 +841,23 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantUser", b =>
+            modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.TenantRightHolder", b =>
                 {
-                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.User", "User")
+                    b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.RightHolder", "RightHolder")
                         .WithMany("Tenants")
                         .HasForeignKey("RightHolderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", "Tenant")
-                        .WithMany("Users")
+                        .WithMany("RightHolders")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Tenant");
+                    b.Navigation("RightHolder");
 
-                    b.Navigation("User");
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.UserInvitation", b =>
@@ -916,6 +940,8 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Navigation("MemberOf");
 
                     b.Navigation("Providers");
+
+                    b.Navigation("Tenants");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Scope", b =>
@@ -931,7 +957,7 @@ namespace Codeworx.Identity.Demo.Database.Migrations
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Tenant", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("RightHolders");
                 });
 
             modelBuilder.Entity("Codeworx.Identity.EntityFrameworkCore.Model.Group", b =>
@@ -948,8 +974,6 @@ namespace Codeworx.Identity.Demo.Database.Migrations
                     b.Navigation("Invitations");
 
                     b.Navigation("PasswordHistory");
-
-                    b.Navigation("Tenants");
                 });
 #pragma warning restore 612, 618
         }

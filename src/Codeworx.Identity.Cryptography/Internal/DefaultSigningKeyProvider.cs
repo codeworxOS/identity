@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Codeworx.Identity.Cryptography.Internal
 {
+    // TODO remove with next Major Version
     public class DefaultSigningKeyProvider : IDefaultSigningKeyProvider, IDisposable
     {
         private readonly IDisposable _subscription;
@@ -103,7 +104,7 @@ namespace Codeworx.Identity.Cryptography.Internal
 
             if (cert == null)
             {
-                throw new CertificateNotFoundException(options);
+                throw new CertificateNotFoundException(options.Search);
             }
 
             return cert;

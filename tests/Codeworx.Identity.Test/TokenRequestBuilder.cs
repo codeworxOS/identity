@@ -1,5 +1,4 @@
 ﻿using System;
-using Codeworx.Identity.OAuth;
 using Codeworx.Identity.OAuth.Token;
 
 namespace Codeworx.Identity.Test

@@ -67,7 +67,7 @@ namespace Codeworx.Identity.OAuth.Authorization
 
                 if (currentTenant.AuthenticationMode == Login.AuthenticationMode.Mfa && !parameters.User.HasClaim(Constants.Claims.Amr, Constants.OpenId.Amr.Mfa))
                 {
-                    if (parameters.MfaFlowModel == MfaFlowMode.Enabled)
+                    if (parameters.MfaFlowMode == MfaFlowMode.Enabled)
                     {
                         parameters.Throw(Constants.OpenId.Error.MfaAuthenticationRequired, Constants.Scopes.Tenant);
                     }

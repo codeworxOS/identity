@@ -73,5 +73,33 @@ namespace Codeworx.Identity.Test.Introspection
 
             Assert.AreEqual(expiration, new DateTimeOffset(tokenValidity, TimeSpan.Zero));
         }
+
+        [Test]
+        public async Task CheckIfIntrospectionEndpointReturns401ForUnknownToken()
+        {
+
+            var urlBuilder = new UriBuilder(this.TestServer.BaseAddress);
+            urlBuilder.AppendPath("oauth20/introspect");
+
+            var content = new FormUrlEncodedContent(
+                                    new Dictionary<string, string>
+                                    {
+                                        {Constants.OAuth.TokenName,"12345678901234567890123456789012.abcdefg" }
+                                    });
+
+            var auth = $"{TestConstants.Clients.DefaultBackendClientId}:{TestConstants.Clients.DefaultBackendClientSecret}";
+
+            this.TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                            "Basic",
+                            $"{Convert.ToBase64String(Encoding.UTF8.GetBytes(auth))}");
+
+            var introspectResponse = await TestClient.PostAsync(urlBuilder.ToString(), content);
+
+            Assert.AreEqual(HttpStatusCode.OK, introspectResponse.StatusCode);
+
+            var body = await introspectResponse.Content.ReadFromJsonAsync<TempResponse>();
+
+            Assert.IsFalse(body.Active);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
     {
         public RightHolder()
         {
+            this.Tenants = new HashSet<TenantRightHolder>();
             this.MemberOf = new HashSet<RightHolderGroup>();
             this.Providers = new HashSet<AuthenticationProviderRightHolder>();
         }
@@ -21,5 +22,7 @@ namespace Codeworx.Identity.EntityFrameworkCore.Model
         [StringLength(500)]
         [Required]
         public string Name { get; set; }
+
+        public ICollection<TenantRightHolder> Tenants { get; }
     }
 }
