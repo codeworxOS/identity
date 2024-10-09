@@ -12,6 +12,7 @@ variables:
   ef8Minor: 18000
   ef8BuildOffset: 18
   packageName: 'Codeworx.Identity'
+  efPackageName: 'Codeworx.Identity.EntityFrameworkCore'
   projects: 'src/Codeworx.Identity.Primitives;src/Codeworx.Identity.AspNetCore;src/Codeworx.Identity.Cryptography;src/Codeworx.Identity.Configuration;src/Codeworx.Identity;src/Codeworx.Identity.Mfa.Totp'
   efProjects: 'src/Codeworx.Identity.EntityFrameworkCore;src/Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer;src/Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite;src/Codeworx.Identity.EntityFrameworkCore.Api;src/Codeworx.Identity.EntityFrameworkCore.Api.NSwag;src/Codeworx.Identity.EntityFrameworkCore.Scim.Api'
   buildPlatform: 'Any CPU'
@@ -75,7 +76,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'package-version'
-    arguments: '$(packageName) -m $(major) -n $(ef6Minor) -b $(ef6BuildOffset) -o DevOps -p $(prerelease)'
+    arguments: '$(efPackageName) -m $(major) -n $(ef6Minor) -b $(ef6BuildOffset) -o DevOps -p $(prerelease)'
 
 - task: DotNetCoreCLI@2
   displayName: "run dotnet pack for ef6"
@@ -91,7 +92,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'package-version'
-    arguments: '$(packageName) -m $(major) -n $(ef7Minor) -b $(ef7BuildOffset) -o DevOps -p $(prerelease)'
+    arguments: '$(efPackageName) -m $(major) -n $(ef7Minor) -b $(ef7BuildOffset) -o DevOps -p $(prerelease)'
 
 - task: DotNetCoreCLI@2
   displayName: "run dotnet pack for ef7"
@@ -107,7 +108,7 @@ steps:
   inputs:
     command: 'custom'
     custom: 'package-version'
-    arguments: '$(packageName) -m $(major) -n $(ef8Minor) -b $(ef8BuildOffset) -o DevOps -p $(prerelease)'
+    arguments: '$(efPackageName) -m $(major) -n $(ef8Minor) -b $(ef8BuildOffset) -o DevOps -p $(prerelease)'
 
 - task: DotNetCoreCLI@2
   displayName: "run dotnet pack for ef8"
