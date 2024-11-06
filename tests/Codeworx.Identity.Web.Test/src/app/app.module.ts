@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OAuthService, AuthConfig, OAuthModule } from 'angular-oauth2-oidc';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthGuard } from './auth-guard';
 import { UrlHandlingStrategy } from '@angular/router';
 import { AuthInterceptor } from './auth-interceptor';
@@ -14,6 +14,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppRootComponent } from './app-root.component';
 import { OrderListComponent } from './order/order-list.component';
 import { OrderDetailComponent } from './order/order-detail.component';
+import { RefreshInterceptor } from './refresh.interceptor';
 
 const config: AuthConfig = {
   clientId: 'b45aba81aac1403f93dd1ce42f745ed2',
@@ -38,14 +39,19 @@ const config: AuthConfig = {
     BrowserModule,
     AppRoutingModule,
     OAuthModule.forRoot(),
-    HttpClientModule,
     FormsModule,
   ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi()),
     AuthGuard,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: RefreshInterceptor,
       multi: true
     }
   ],

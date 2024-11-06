@@ -324,4 +324,4 @@ ASALocalRun/
 /private
 /dist
 /tools/publish-local.cmd
-/tests/Codeworx.Identity.Web.Test/.angular/cache/18.2.11
+.angular

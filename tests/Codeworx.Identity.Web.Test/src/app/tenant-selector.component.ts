@@ -1,4 +1,3 @@
-import { componentFactoryName } from "@angular/compiler";
 import { Component } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { TenantInfo } from './tenant-info';
@@ -29,7 +28,7 @@ export class TenantSelectorComponent {
     public set selectedTenant(value: TenantInfo) {
         this._selectedTenant = value;
 
-        this.oauthService.scope = 'openid profile group_names tenant ' + this._selectedTenant.key;
+        this.oauthService.scope = 'openid profile offline_access external_token:access_token group_names tenant ' + this._selectedTenant.key;
         this.oauthService.logOut(true);
         this.oauthService.initLoginFlow();
     }
