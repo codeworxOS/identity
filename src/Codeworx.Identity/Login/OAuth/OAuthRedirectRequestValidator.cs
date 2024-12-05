@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Codeworx.Identity.Invitation;
 using Codeworx.Identity.Response;
 
 namespace Codeworx.Identity.Login.OAuth
