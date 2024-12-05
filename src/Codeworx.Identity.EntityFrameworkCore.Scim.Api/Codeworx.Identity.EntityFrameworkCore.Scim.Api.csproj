@@ -43,13 +43,17 @@
 	<PropertyGroup Condition="'$(EfVersion)' == '8'">
 		<PackageValidationBaselineVersion>1.18000.0</PackageValidationBaselineVersion>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<PackageReference Include="Antlr4" Version="4.6.6">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
 	</ItemGroup>
 
 	<ItemGroup>

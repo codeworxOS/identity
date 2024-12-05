@@ -39,15 +39,15 @@
 
 
 	<ItemGroup Condition="'$(EfVersion)' == '6'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.36" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(EfVersion)' == '7'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.20" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(EfVersion)' == '8'">
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
 	</ItemGroup>
 	
 	<ItemGroup>
