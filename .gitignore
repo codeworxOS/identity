@@ -321,6 +321,7 @@ ASALocalRun/
 
 # MSBuild Binary and Structured Log
 *.binlog
+.angular
 /private
 /dist
 /tools/publish-local.cmd
