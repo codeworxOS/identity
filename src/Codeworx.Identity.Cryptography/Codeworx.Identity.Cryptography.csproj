@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6;net7;net8</TargetFrameworks>
+		<TargetFrameworks>net6;net8;net9</TargetFrameworks>
 		<EnablePackageValidation>true</EnablePackageValidation>
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 	</PropertyGroup>
@@ -17,15 +17,16 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net7'">
-		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="7.0.20" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6'">
 		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="6.0.36" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.1" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9'">
+		<PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="..\Codeworx.Identity.Primitives\Codeworx.Identity.Primitives.csproj" />
 	</ItemGroup>

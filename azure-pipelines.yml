@@ -7,10 +7,10 @@ variables:
   buildOffset: 11
   ef6Minor: 16000
   ef6BuildOffset: 16
-  ef7Minor: 17000
-  ef7BuildOffset: 17
   ef8Minor: 18000
   ef8BuildOffset: 18
+  ef9Minor: 19000
+  ef9BuildOffset: 19
   packageName: 'Codeworx.Identity'
   efPackageName: 'Codeworx.Identity.EntityFrameworkCore'
   projects: 'src/Codeworx.Identity.Primitives;src/Codeworx.Identity.AspNetCore;src/Codeworx.Identity.Cryptography;src/Codeworx.Identity.Configuration;src/Codeworx.Identity;src/Codeworx.Identity.Mfa.Totp'
@@ -88,20 +88,20 @@ steps:
     buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=6;IdentityCoreVersion=$(coreVersion)'
 
 - task: DotNetCoreCLI@2
-  displayName: "Get next ef7 PackageVersion"
+  displayName: "Get next ef9 PackageVersion"
   inputs:
     command: 'custom'
     custom: 'package-version'
-    arguments: '$(efPackageName) -m $(major) -n $(ef7Minor) -b $(ef7BuildOffset) -o DevOps -p $(prerelease)'
+    arguments: '$(efPackageName) -m $(major) -n $(ef9Minor) -b $(ef9BuildOffset) -o DevOps -p $(prerelease)'
 
 - task: DotNetCoreCLI@2
-  displayName: "run dotnet pack for ef7"
+  displayName: "run dotnet pack for ef9"
   inputs:
     command: 'pack'
     packagesToPack: '$(efProjects)'
     configuration: '$(buildConfiguration)'
     versioningScheme: 'off'
-    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=7;IdentityCoreVersion=$(coreVersion)'
+    buildProperties: 'Version=$(PackageVersion);FileVersion=$(PackageVersionFileVersion);AssemblyVersion=$(major).0.0.0;SignAssembly=true;AssemblyOriginatorKeyFile=..\..\private\identity_signkey.snk;EfVersion=9;IdentityCoreVersion=$(coreVersion)'
 
 - task: DotNetCoreCLI@2
   displayName: "Get next ef8 PackageVersion"

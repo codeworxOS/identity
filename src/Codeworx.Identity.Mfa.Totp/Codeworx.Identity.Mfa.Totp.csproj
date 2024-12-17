@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6;net7;net8</TargetFrameworks>
+		<TargetFrameworks>net6;net8;net9</TargetFrameworks>
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 		<Configurations>Debug;Release;MsSql</Configurations>
 	  <OutputType>Library</OutputType>
