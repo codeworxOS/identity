@@ -6,6 +6,10 @@
 		<PackageVersion Condition="'$(IdentityCoreVersion)' != ''">$(IdentityCoreVersion)</PackageVersion>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<EnablePackageValidation>false</EnablePackageValidation>
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="libsodium" Version="1.0.20" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
