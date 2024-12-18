@@ -99,7 +99,8 @@ namespace Codeworx.Identity.Web.Test
                     .AddMfaTotp()
                     .WithLoginAsEmail()
                     //.UseDbContext(options => options.UseSqlite(connectionStringBuilder.ToString(), p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.Sqlite")));
-                    .UseDbContext(options => options.UseSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+                    //.UseDbContext(options => options.UseSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=IdentityTest; Integrated Security=True;", p => p.MigrationsAssembly("Codeworx.Identity.EntityFrameworkCore.Migrations.SqlServer")));
+                    .UseDbContextSqlServer("Data Source=(localdb)\\mssqllocaldb;Initial Catalog=IdentityTest; Integrated Security=True;");
             //.UseConfiguration(_configuration);
 
             ////services.AddScoped<IClaimsService, SampleClaimsProvider>();

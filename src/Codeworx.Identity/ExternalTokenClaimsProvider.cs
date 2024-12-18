@@ -8,6 +8,7 @@ using Codeworx.Identity.Configuration;
 using Codeworx.Identity.Login;
 using Codeworx.Identity.Login.OAuth;
 using Codeworx.Identity.Model;
+using Codeworx.Identity.OAuth.Token;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -168,6 +169,12 @@ namespace Codeworx.Identity
                         }
 
                         data = current;
+                    }
+
+                    if (parameters is RefreshTokenParameters refreshTokenParameters && refreshTokenParameters.ParsedRefreshToken != null)
+                    {
+                        var extension = refreshTokenParameters.ParsedRefreshToken.ValidUntil.Subtract(DateTimeOffset.Now);
+                        await externalTokenCache.ExtendAsync(claim.Value, extension).ConfigureAwait(false);
                     }
 
                     if (scopes.Contains(Constants.Scopes.ExternalToken.All) || scopes.Contains(Constants.Scopes.ExternalToken.IdToken))
